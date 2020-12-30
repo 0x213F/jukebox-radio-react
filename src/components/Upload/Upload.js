@@ -1,6 +1,4 @@
 import React from 'react';
-import PropTypes from 'prop-types';
-import { Link } from "react-router-dom";
 import styles from './Upload.module.css';
 
 import { fetchCreateTrack } from './network';
@@ -56,7 +54,7 @@ class Upload extends React.Component {
    */
   async handleSubmit(event) {
     event.preventDefault();
-    const responseJson = await fetchCreateTrack(
+    await fetchCreateTrack(
       this.state.audioFile,
       this.state.imageFile,
       this.state.trackName,

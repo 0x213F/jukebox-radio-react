@@ -1,5 +1,4 @@
 import React from 'react';
-import PropTypes from 'prop-types';
 import styles from './VoiceRecording.module.css';
 import { fetchDeleteVoiceRecording } from './network';
 
@@ -21,7 +20,7 @@ class VoiceRecording extends React.Component {
   async handleDelete(event) {
     event.preventDefault();
     const voiceRecordingUuid = this.props.data.uuid;
-    const responseJson = await fetchDeleteVoiceRecording(voiceRecordingUuid);
+    await fetchDeleteVoiceRecording(voiceRecordingUuid);
     await this.props.destroy(voiceRecordingUuid);
   }
 

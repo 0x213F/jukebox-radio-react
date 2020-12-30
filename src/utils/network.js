@@ -1,8 +1,6 @@
 import { BACKEND_DOMAIN } from '../config/global'
 
 
-const failureCallback = data => { console.error(data); }
-
 async function fetchBackend(method = '', url = '', data = {}, successCallback = null, files = {}) {
   let response;
 

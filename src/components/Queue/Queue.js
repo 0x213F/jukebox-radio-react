@@ -1,5 +1,4 @@
 import React from 'react';
-import PropTypes from 'prop-types';
 import styles from './Queue.module.css';
 import { fetchListQueues, fetchDeleteQueue } from './network'
 import QueueItem from '../QueueItem/QueueItem'

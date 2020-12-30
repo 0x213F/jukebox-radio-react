@@ -1,10 +1,8 @@
 import React from 'react';
-import PropTypes from 'prop-types';
 import Popover from 'react-text-selection-popover';
-import { RoughNotation, RoughNotationGroup } from "react-rough-notation";
+import { RoughNotation } from "react-rough-notation";
 import styles from './TextComment.module.css';
 import {
-  fetchListDeleteTextCommentModifications,
   fetchCreateTextCommentModification,
   STYLE_UNDERLINE,
   STYLE_STRIKE_THROUGH,
