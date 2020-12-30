@@ -1,0 +1,4 @@
+const CLASS_TEXT_COMMENT = 'TextComment'
+const CLASS_VOICE_RECORDING = 'VoiceRecording'
+
+export { CLASS_TEXT_COMMENT, CLASS_VOICE_RECORDING }
