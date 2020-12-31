@@ -21,6 +21,7 @@ class Queue extends React.Component {
 
     // This binding is necessary to make `this` work in the callback.
     this.destroyQueueItem = this.destroyQueueItem.bind(this);
+    this.destroyChildQueueItem = this.destroyChildQueueItem.bind(this);
   }
 
   /*
@@ -31,7 +32,14 @@ class Queue extends React.Component {
     if(jsonResponse.system.status !== 200) {
       this.errorMessage = jsonResponse.system.message;
     } else {
-      this.setState({ queues: jsonResponse.data });
+      const queues = jsonResponse.data;
+      this.setState({ queues: queues });
+      if(!queues.length) {
+        localStorage.setItem('lastQueueUuid', '');
+        return;
+      }
+      const lastQueueUuid = queues[queues.length - 1].uuid;
+      localStorage.setItem('lastQueueUuid', lastQueueUuid);
     }
   }
 
@@ -40,15 +48,24 @@ class Queue extends React.Component {
    * backend, then, on success, it deletes it from the front-end model and
    * view.
    */
-  async destroyQueueItem(uuid) {
-    const jsonResponse = await fetchDeleteQueue(uuid);
-    if(jsonResponse.system.status !== 200) {
-      this.errorMessage = jsonResponse.system.message;
-      return;
-    }
+  async destroyQueueItem(queueUuid) {
+    const jsonResponse = await fetchDeleteQueue(queueUuid);
     const queues = this.state.queues;
-    const filteredQueues = queues.filter(i => i.uuid !== uuid);
+    const filteredQueues = queues.filter(i => i.uuid !== queueUuid);
     await this.setState({ queues: filteredQueues });
+  }
+
+  async destroyChildQueueItem(parentQueueUuid, childQueueUuid) {
+    const jsonResponse = await fetchDeleteQueue(childQueueUuid);
+
+    const queuesCopy = [...this.state.queues];
+    const parentIndex = queuesCopy.findIndex(i => i.uuid === parentQueueUuid);
+
+    const children = queuesCopy[parentIndex].children;
+    const filteredChildren = children.filter(i => i.uuid !== childQueueUuid);
+    queuesCopy[parentIndex].children = filteredChildren;
+
+    await this.setState({ queues: queuesCopy });
   }
 
   /*
@@ -59,7 +76,7 @@ class Queue extends React.Component {
       <div className={styles.Queue}>
         <div>
           {this.state.queues.map((value, index) => (
-            <QueueItem key={index} data={value} destroy={this.destroyQueueItem}></QueueItem>
+            <QueueItem key={index} data={value} destroy={this.destroyQueueItem} destroyChild={this.destroyChildQueueItem}></QueueItem>
           ))}
         </div>
       </div>

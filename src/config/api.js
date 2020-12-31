@@ -17,6 +17,9 @@ const ENDPOINT_LIST_QUEUES = '/streams/queue/list'
 const ENDPOINT_DELETE_QUEUE = '/streams/queue/delete/'
 
 const ENDPOINT_CREATE_TRACK = '/music/track/create/'
+const ENDPOINT_SEARCH_MUSIC = '/music/search'
+
+const ENDPOINT_CREATE_QUEUE = '/streams/queue/create/'
 
 export {
   ENDPOINT_OBTAIN_AUTH_TOKEN,
@@ -38,4 +41,7 @@ export {
   ENDPOINT_DELETE_QUEUE,
 
   ENDPOINT_CREATE_TRACK,
+  ENDPOINT_SEARCH_MUSIC,
+
+  ENDPOINT_CREATE_QUEUE,
 }

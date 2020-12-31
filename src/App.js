@@ -2,7 +2,9 @@ import './App.css';
 import Chat from './components/Chat/Chat'
 import Login from './components/Login/Login'
 import Queue from './components/Queue/Queue'
+import Search from './components/Search/Search'
 import Upload from './components/Upload/Upload'
+import NowPlaying from './components/NowPlaying/NowPlaying'
 
 import React from "react";
 import {
@@ -27,7 +29,13 @@ function App() {
               <Link to="/chat">Chat</Link>
             </li>
             <li>
+              <Link to="/nowplaying">Now playing</Link>
+            </li>
+            <li>
               <Link to="/queue">Queue</Link>
+            </li>
+            <li>
+              <Link to="/search">Search</Link>
             </li>
             <li>
               <Link to="/upload">Upload</Link>
@@ -43,8 +51,14 @@ function App() {
           <Route path="/chat">
             <Chat />
           </Route>
+          <Route path="/nowplaying">
+            <NowPlaying />
+          </Route>
           <Route path="/queue">
             <Queue />
+          </Route>
+          <Route path="/search">
+            <Search />
           </Route>
           <Route path="/upload">
             <Upload />
