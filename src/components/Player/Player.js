@@ -21,8 +21,8 @@ class Player extends React.Component {
 
     this.state = {
       // UI
-      now: undefined,
       progress: undefined,
+      _nextTrackScheduledAt: undefined,
       // Data
       stream: undefined,
     };
@@ -30,6 +30,7 @@ class Player extends React.Component {
     //
     this.getStream = this.getStream.bind(this);
     this.animateProgressBar = this.animateProgressBar.bind(this);
+    this.scheduleNextTrack = this.scheduleNextTrack.bind(this);
     this.handlePrevTrack = this.handlePrevTrack.bind(this);
     this.handleNextTrack = this.handleNextTrack.bind(this);
     this.handlePlayTrack = this.handlePlayTrack.bind(this);
@@ -40,33 +41,70 @@ class Player extends React.Component {
 
   async componentDidMount() {
     await this.getStream();
-    this.animateProgressBar();
+    this.scheduleNextTrack();
   }
 
   async getStream() {
     const jsonResponse = await fetchStream();
     const stream = jsonResponse.data;
     await this.setState({ stream: stream });
+    this.animateProgressBar();
   }
 
   animateProgressBar() {
     const loop = () => {
       const stream = this.state.stream;
-      if(!stream.isPlaying) {
+      if(!stream?.nowPlaying) {
+        this.setState({ progress: undefined, stream: undefined});
+        return;
+      } else if(!stream.isPlaying && stream.isPaused) {
+        this.setState({
+          progress: (stream.pausedAt * 1000) - (stream.playedAt * 1000),
+        });
         return;
       }
 
       const date = new Date();
       const epochNow = date.getTime();
+      const progress = epochNow - (stream.playedAt * 1000);
+
+      if(progress > (stream.nowPlaying.durationMilliseconds + 3000)) {
+        this.setState({ progress: undefined, stream: undefined});
+        return;
+      }
 
       this.setState({
-        now: epochNow,
-        progress: epochNow - (stream.playedAt * 1000),
+        progress: progress,
       });
       window.requestAnimationFrame(loop);
     };
 
     loop();
+  }
+
+  scheduleNextTrack() {
+    let nextTrackScheduledAt = this.state._nextTrackScheduledAt;
+    if(nextTrackScheduledAt) {
+      clearTimeout(nextTrackScheduledAt);
+    }
+
+    const stream = this.state.stream;
+    if(!stream?.isPlaying) {
+      this.setState({ _nextTrackScheduledAt: undefined });
+      return;
+    }
+
+    const date = new Date();
+    const epochNow = date.getTime();
+    const progress = epochNow - (stream.playedAt * 1000);
+    const durationMilliseconds = stream.nowPlaying.durationMilliseconds;
+
+    nextTrackScheduledAt = setTimeout(
+      this.handleNextTrack,
+      (durationMilliseconds - progress)
+    );
+    console.log(nextTrackScheduledAt)
+    this.setState({ _nextTrackScheduledAt: nextTrackScheduledAt });
   }
 
   /*
@@ -79,18 +117,22 @@ class Player extends React.Component {
     const jsonResponse = await fetchPreviousTrack();
 
     await this.getStream();
+    this.scheduleNextTrack();
   }
 
   /*
    * When...
    */
   async handleNextTrack(event) {
-    event.preventDefault();
+    if(event) {
+      event.preventDefault();
+    }
 
     const stream = this.state.stream;
     const jsonResponse = await fetchNextTrack();
 
     await this.getStream();
+    this.scheduleNextTrack();
   }
 
   /*
@@ -111,6 +153,7 @@ class Player extends React.Component {
     });
 
     this.animateProgressBar();
+    this.scheduleNextTrack();
   }
 
   /*
@@ -121,7 +164,7 @@ class Player extends React.Component {
 
     const stream = this.state.stream;
     const jsonResponse = await fetchPauseTrack();
-    this.setState({
+    await this.setState({
       stream: {
         ...stream,
         isPlaying: false,
@@ -129,6 +172,7 @@ class Player extends React.Component {
         pausedAt: jsonResponse.data.pausedAt,
       }
     });
+    this.scheduleNextTrack();
   }
 
   /*
@@ -147,7 +191,8 @@ class Player extends React.Component {
     const proposedProgress = epochNow - (proposedPlayedAt * 1000);
     const playedAt = proposedProgress > 0 ? proposedPlayedAt : Math.floor(epochNow / 1000);
 
-    this.setState( {stream: { ...stream, playedAt: playedAt } });
+    await this.setState( {stream: { ...stream, playedAt: playedAt } });
+    this.scheduleNextTrack();
   }
 
   /*
@@ -158,37 +203,35 @@ class Player extends React.Component {
 
     const stream = this.state.stream;
     const jsonResponse = await fetchScanForward();
-    this.setState( {stream: { ...stream, playedAt: stream.playedAt - (10) } });
+    await this.setState( {stream: { ...stream, playedAt: stream.playedAt - (10) } });
+    this.scheduleNextTrack();
   }
 
   render() {
     const stream = this.state.stream;
-    if(!stream) {
-      return <></>;
-    }
     return (
       <>
         <div>
-          <p>{stream.nowPlaying.name}</p>
-          {(stream.isPlaying || stream.isPaused) &&
-            <progress value={this.state.progress} max={stream.nowPlaying.durationMilliseconds}> 32% </progress>
+          {(stream?.isPlaying || stream?.isPaused) &&
+            <p>{stream?.nowPlaying?.name}</p>
           }
+          <progress value={this.state.progress} max={stream?.nowPlaying?.durationMilliseconds}></progress>
         </div>
         <div>
-          <button onClick={this.handlePrevTrack}>Last</button>
-          {stream.isPaused &&
+          <button onClick={this.handlePrevTrack}>Prev</button>
+          {stream?.isPaused &&
             <button onClick={this.handlePlayTrack}>Play</button>
           }
-          {stream.isPlaying &&
+          {stream?.isPlaying &&
             <button onClick={this.handlePauseTrack}>Pause</button>
           }
           <button onClick={this.handleNextTrack}>Next</button>
         </div>
         <div>
-          {(stream.isPlaying) &&
+          {(stream?.isPlaying) &&
             <button onClick={this.handleScanBackward}>Backward</button>
           }
-          {(stream.isPlaying) &&
+          {(stream?.isPlaying) &&
             <button onClick={this.handleScanForward}>Forward</button>
           }
         </div>
