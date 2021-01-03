@@ -176,7 +176,8 @@ class TextComment extends React.Component {
                            color="red"
                            type={modification.type}
                            animate={modification.animate}
-                           getAnnotationObject={this.updateZIndex}>
+                           getAnnotationObject={this.updateZIndex}
+                           ref={modification.uuid}>
               {styledSubString}
             </RoughNotation>
           </>

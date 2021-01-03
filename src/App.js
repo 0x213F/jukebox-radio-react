@@ -4,7 +4,7 @@ import Login from './components/Login/Login'
 import Queue from './components/Queue/Queue'
 import Search from './components/Search/Search'
 import Upload from './components/Upload/Upload'
-import NowPlaying from './components/NowPlaying/NowPlaying'
+import Player from './components/Player/Player'
 
 import React from "react";
 import {
@@ -29,7 +29,7 @@ function App() {
               <Link to="/chat">Chat</Link>
             </li>
             <li>
-              <Link to="/nowplaying">Now playing</Link>
+              <Link to="/player">Player</Link>
             </li>
             <li>
               <Link to="/queue">Queue</Link>
@@ -51,8 +51,8 @@ function App() {
           <Route path="/chat">
             <Chat />
           </Route>
-          <Route path="/nowplaying">
-            <NowPlaying />
+          <Route path="/player">
+            <Player />
           </Route>
           <Route path="/queue">
             <Queue />

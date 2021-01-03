@@ -1,4 +1,6 @@
-.TextComment {}
+.TextComment {
+  max-width: 300px;
+}
 
 .Notated {
   user-select: none;
