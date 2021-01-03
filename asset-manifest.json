@@ -1,22 +1,22 @@
 {
   "files": {
-    "main.css": "/jukebox-radio-react/static/css/main.f0652e40.chunk.css",
-    "main.js": "/jukebox-radio-react/static/js/main.08aa82ad.chunk.js",
-    "main.js.map": "/jukebox-radio-react/static/js/main.08aa82ad.chunk.js.map",
-    "runtime-main.js": "/jukebox-radio-react/static/js/runtime-main.c6eff29a.js",
-    "runtime-main.js.map": "/jukebox-radio-react/static/js/runtime-main.c6eff29a.js.map",
-    "static/js/2.2a994531.chunk.js": "/jukebox-radio-react/static/js/2.2a994531.chunk.js",
-    "static/js/2.2a994531.chunk.js.map": "/jukebox-radio-react/static/js/2.2a994531.chunk.js.map",
-    "static/js/3.cf4c3e27.chunk.js": "/jukebox-radio-react/static/js/3.cf4c3e27.chunk.js",
-    "static/js/3.cf4c3e27.chunk.js.map": "/jukebox-radio-react/static/js/3.cf4c3e27.chunk.js.map",
+    "main.css": "/jukebox-radio-react/static/css/main.89156c0c.chunk.css",
+    "main.js": "/jukebox-radio-react/static/js/main.e50b73ca.chunk.js",
+    "main.js.map": "/jukebox-radio-react/static/js/main.e50b73ca.chunk.js.map",
+    "runtime-main.js": "/jukebox-radio-react/static/js/runtime-main.3ad237bc.js",
+    "runtime-main.js.map": "/jukebox-radio-react/static/js/runtime-main.3ad237bc.js.map",
+    "static/js/2.e7bcbe97.chunk.js": "/jukebox-radio-react/static/js/2.e7bcbe97.chunk.js",
+    "static/js/2.e7bcbe97.chunk.js.map": "/jukebox-radio-react/static/js/2.e7bcbe97.chunk.js.map",
+    "static/js/3.d488b7ee.chunk.js": "/jukebox-radio-react/static/js/3.d488b7ee.chunk.js",
+    "static/js/3.d488b7ee.chunk.js.map": "/jukebox-radio-react/static/js/3.d488b7ee.chunk.js.map",
     "index.html": "/jukebox-radio-react/index.html",
-    "static/css/main.f0652e40.chunk.css.map": "/jukebox-radio-react/static/css/main.f0652e40.chunk.css.map",
-    "static/js/2.2a994531.chunk.js.LICENSE.txt": "/jukebox-radio-react/static/js/2.2a994531.chunk.js.LICENSE.txt"
+    "static/css/main.89156c0c.chunk.css.map": "/jukebox-radio-react/static/css/main.89156c0c.chunk.css.map",
+    "static/js/2.e7bcbe97.chunk.js.LICENSE.txt": "/jukebox-radio-react/static/js/2.e7bcbe97.chunk.js.LICENSE.txt"
   },
   "entrypoints": [
-    "static/js/runtime-main.c6eff29a.js",
-    "static/js/2.2a994531.chunk.js",
-    "static/css/main.f0652e40.chunk.css",
-    "static/js/main.08aa82ad.chunk.js"
+    "static/js/runtime-main.3ad237bc.js",
+    "static/js/2.e7bcbe97.chunk.js",
+    "static/css/main.89156c0c.chunk.css",
+    "static/js/main.e50b73ca.chunk.js"
   ]
 }
