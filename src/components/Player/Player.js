@@ -198,8 +198,12 @@ class Player extends React.Component {
   async handleScanForward(event) {
     event.preventDefault();
 
+    const responseJson = await fetchScanForward();
+    if(responseJson.system.status !== 200) {
+      throw responseJson.system.message;
+    }
+
     const stream = this.state.stream;
-    await fetchScanForward();
     await this.setState( {stream: { ...stream, playedAt: stream.playedAt - (10) } });
     this.scheduleNextTrack();
   }

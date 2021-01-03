@@ -1,12 +1,8 @@
 import { BACKEND_DOMAIN } from '../config/global'
 
 
-async function fetchBackend(method = '', url = '', data = {}, successCallback = null, files = {}) {
+async function fetchBackend(method = '', url = '', data = {}) {
   let response;
-
-  if(!successCallback) {
-    successCallback = console.log;
-  }
 
   url = BACKEND_DOMAIN + url;
 
@@ -58,6 +54,7 @@ async function fetchBackend(method = '', url = '', data = {}, successCallback = 
       mode: 'cors',
     });
   }
+
   return response;
 }
 
