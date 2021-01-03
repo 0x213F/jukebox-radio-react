@@ -1,5 +1,4 @@
 import React from 'react';
-import styles from './SearchResult.module.css';
 
 
 class SearchResult extends React.Component {

@@ -49,14 +49,14 @@ class Queue extends React.Component {
    * view.
    */
   async destroyQueueItem(queueUuid) {
-    const jsonResponse = await fetchDeleteQueue(queueUuid);
+    await fetchDeleteQueue(queueUuid);
     const queues = this.state.queues;
     const filteredQueues = queues.filter(i => i.uuid !== queueUuid);
     await this.setState({ queues: filteredQueues });
   }
 
   async destroyChildQueueItem(parentQueueUuid, childQueueUuid) {
-    const jsonResponse = await fetchDeleteQueue(childQueueUuid);
+    await fetchDeleteQueue(childQueueUuid);
 
     const queuesCopy = [...this.state.queues];
     const parentIndex = queuesCopy.findIndex(i => i.uuid === parentQueueUuid);

@@ -1,5 +1,4 @@
 import React from 'react';
-import styles from './Player.module.css';
 import {
   fetchStream,
   fetchNextTrack,
@@ -113,8 +112,7 @@ class Player extends React.Component {
   async handlePrevTrack(event) {
     event.preventDefault();
 
-    const stream = this.state.stream;
-    const jsonResponse = await fetchPreviousTrack();
+    await fetchPreviousTrack();
 
     await this.getStream();
     this.scheduleNextTrack();
@@ -128,8 +126,7 @@ class Player extends React.Component {
       event.preventDefault();
     }
 
-    const stream = this.state.stream;
-    const jsonResponse = await fetchNextTrack();
+    await fetchNextTrack();
 
     await this.getStream();
     this.scheduleNextTrack();
@@ -182,7 +179,7 @@ class Player extends React.Component {
     event.preventDefault();
 
     const stream = this.state.stream;
-    const jsonResponse = await fetchScanBackward();
+    await fetchScanBackward();
 
     const date = new Date();
     const epochNow = date.getTime();
@@ -202,7 +199,7 @@ class Player extends React.Component {
     event.preventDefault();
 
     const stream = this.state.stream;
-    const jsonResponse = await fetchScanForward();
+    await fetchScanForward();
     await this.setState( {stream: { ...stream, playedAt: stream.playedAt - (10) } });
     this.scheduleNextTrack();
   }

@@ -46,8 +46,7 @@ class QueueItem extends React.Component {
       <div className={styles.QueueItem}>
         <span>
           {indent}
-          {queue.isDeleted && <i>{queue.trackName || queue.collectionName}</i>}
-          {!queue.isDeleted && queue.trackName || queue.collectionName}
+          {!queue.isDeleted && (queue.trackName || queue.collectionName)}
         </span>
         {!queue.isDeleted && queue.depth === 0 &&
           <button type="button" onClick={async (e) => { await this.props.destroy(this.props.data.uuid); }}>
