@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect } from "react";
 import styles from './Chat.module.css';
 import { fetchCreateTextComment, fetchTextComments, fetchVoiceRecordings } from './network'
 import {
@@ -16,215 +16,153 @@ import {
 } from '../../config/model'
 
 
-class Chat extends React.Component {
+function Chat(props) {
 
   /*
    * 🏗
    */
-  constructor(props) {
-    super(props);
+  const [_textComments, _setTextComments] = useState(undefined);
+  const [_voiceRecordings, _setVoiceRecordings] = useState(undefined);
+  const [text, setText] = useState('');
 
-    this.state = {
-      // UI
-      errorMessage: null,
-      // Data
-      _textComments: undefined,
-      _voiceRecordings: undefined,
-      feed: [],
-      // Form
-      text: '',
-    };
+  // onComponentDidMount
+  useEffect(() => {
+    async function loadData() {
+      const textCommentsResponse = await fetchTextComments();
+      if(textCommentsResponse.system.status === 200) {
+        _setTextComments(textCommentsResponse.data);
+      }
 
-    // This binding is necessary to make `this` work in the callback.
-    this.handleChange = this.handleChange.bind(this);
-    this.buildFeed = this.buildFeed.bind(this);
-    this.destroyFeedItem = this.destroyFeedItem.bind(this);
-    this.destroyTextCommentModifications = this.destroyTextCommentModifications.bind(this);
-    this.destroyTextComment = this.destroyTextComment.bind(this);
-    this.destroyVoiceRecording = this.destroyVoiceRecording.bind(this);
-    this.createTextComment = this.createTextComment.bind(this);
-    this.createTextCommentModification = this.createTextCommentModification.bind(this);
-  }
-
-  /*
-   * Load comments and voice recordings
-   */
-  async componentDidMount() {
-    const textCommentsResponse = await fetchTextComments();
-    if(textCommentsResponse.system.status !== 200) {
-      this.errorMessage = textCommentsResponse.system.message;
-    } else {
-      this.setState({ _textComments: textCommentsResponse.data });
+      const voiceRecordingsResponse = await fetchVoiceRecordings();
+      if(voiceRecordingsResponse.system.status === 200) {
+        _setVoiceRecordings(voiceRecordingsResponse.data);
+      }
     }
-
-    const voiceRecordingsResponse = await fetchVoiceRecordings();
-    if(voiceRecordingsResponse.system.status !== 200) {
-      this.errorMessage = voiceRecordingsResponse.system.message;
-    } else {
-      this.setState({ _voiceRecordings: voiceRecordingsResponse.data });
-    }
-
-    this.buildFeed();
-  }
-
-  /*
-   * Ran when an element value has changed value. The data is updated in the
-   * model layer so the component may re-render.
-   */
-  handleChange(event) {
-    let obj = {};
-    obj[event.target.name] = event.target.value;
-    this.setState(obj);
-  }
-
-  /*
-   * This aggregates text comments and voice recordings into one data list,
-   * sorted by track timestamp.
-   */
-  buildFeed() {
-    const textComments = this.state._textComments,
-          voiceRecordings = this.state._voiceRecordings;
-
-    if(!Array.isArray(textComments) || !Array.isArray(voiceRecordings)) {
-      this.setState({ feed: [] });
-      return;
-    }
-
-    const feedData = [...textComments, ...voiceRecordings];
-    const feed = feedData.sort((a, b) => {
-      return a.timestampMilliseconds - b.timestampMilliseconds;
-    });
-
-    this.setState({ feed: feed });
-  }
+    loadData();
+  }, [])
 
   /*
    * Called inside a child component, this deletes the data (either a text
    * comment or voice recording) from the state, thereby updating the UI.
    */
-  async destroyFeedItem(uuid) {
-    const textComments = this.state._textComments,
-          voiceRecordings = this.state._voiceRecordings;
+  const destroyFeedItem = async function(uuid) {
+    const textComments = _textComments,
+          voiceRecordings = _voiceRecordings;
 
     const filteredTextComments = textComments.filter(i => i.uuid !== uuid),
           filteredVoiceRecordings = voiceRecordings.filter(i => i.uuid !== uuid);
 
-    await this.setState({ _textComments: filteredTextComments });
-    await this.setState({ _voiceRecordings: filteredVoiceRecordings });
-
-    this.buildFeed();
+    _setTextComments(filteredTextComments);
+    _setVoiceRecordings(filteredVoiceRecordings);
   }
 
   /*
    * ...
    */
-  async destroyTextCommentModifications(textCommentUuid) {
+  const destroyTextCommentModifications = async function(textCommentUuid) {
     await fetchListDeleteTextCommentModifications(textCommentUuid);
 
-    const textComments = this.state._textComments;
-    const textCommentIndex = textComments.findIndex(t => t.uuid === textCommentUuid)
+    const textCommentIndex = _textComments.findIndex(t => t.uuid === textCommentUuid)
 
-    textComments[textCommentIndex].modifications = [];
-
-    await this.setState({ _textComments: textComments });
+    _textComments[textCommentIndex].modifications = [];
+    _setTextComments([..._textComments]);
   }
 
   /*
    * ...
    */
-  async destroyTextComment(textCommentUuid) {
+  const destroyTextComment = async function(textCommentUuid) {
     await fetchListDeleteTextCommentModifications(textCommentUuid);
     await fetchDeleteTextComment(textCommentUuid);
-    await this.destroyFeedItem(textCommentUuid);
+    await destroyFeedItem(textCommentUuid);
   }
 
   /*
    * ...
    */
-  async destroyVoiceRecording(voiceRecordingUuid) {
+  const destroyVoiceRecording = async function(voiceRecordingUuid) {
     await fetchDeleteVoiceRecording(voiceRecordingUuid);
-    await this.destroyFeedItem(voiceRecordingUuid);
+    await destroyFeedItem(voiceRecordingUuid);
   }
 
   /*
    * When a user submits a new comment.
    */
-  async createTextComment(event) {
-    event.preventDefault();
-    const responseJson = await fetchCreateTextComment(this.state.text);
+  const createTextComment = async function(e) {
+    e.preventDefault();
+    const responseJson = await fetchCreateTextComment(text);
 
-    let textCommentsCopy = [...this.state._textComments];
-    textCommentsCopy.push(responseJson.data);
-
-    await this.setState({
-      _textComments: textCommentsCopy,
-      text: '',
-    });
-
-    this.buildFeed();
+    _textComments.push(responseJson.data);
+    _setTextComments([..._textComments]);
+    setText('');
   }
 
   /*
    * Called by a child component when the user creates a text comment
    * modification.
    */
-  async createTextCommentModification(textCommentUuid, textCommentModification) {
-    let textCommentsCopy = [...this.state._textComments];
+  const createTextCommentModification = async function(textCommentUuid, textCommentModification) {
+    const textCommentIndex = _textComments.findIndex(t => t.uuid === textCommentUuid);
+    const modifications = _textComments[textCommentIndex].modifications;
 
-    const textCommentIndex = textCommentsCopy.findIndex(t => t.uuid === textCommentUuid)
-    let modificationsCopy = [...textCommentsCopy[textCommentIndex].modifications];
-
-    modificationsCopy.push(textCommentModification);
-
-    const sortedModifications = modificationsCopy.sort((a, b) => {
+    modifications.push(textCommentModification);
+    const sortedModifications = modifications.sort((a, b) => {
       return a.startPtr - b.startPtr;
     });
 
-    textCommentsCopy[textCommentIndex].modifications = sortedModifications;
-
-    await this.setState({ _textComments: textCommentsCopy });
-
-    this.buildFeed();
+    _textComments[textCommentIndex].modifications = sortedModifications;
+    _setTextComments([..._textComments]);
   }
+
+  /*
+   * This aggregates text comments and voice recordings into one data list,
+   * sorted by track timestamp.
+   */
+  let feed;
+
+  if(!Array.isArray(_textComments) || !Array.isArray(_voiceRecordings)) {
+    feed = [];
+  } else {
+    const aggregateFeed = [..._textComments, ..._voiceRecordings];
+    feed = aggregateFeed.sort((a, b) => {
+      return a.timestampMilliseconds - b.timestampMilliseconds;
+    });
+  }
+
 
   /*
    * 🎨
    */
-  render() {
-    return (
-      <div>
-        <div className={styles.Chat}>
-          {this.state.feed.map((value, index) => {
-            if(value.class === CLASS_TEXT_COMMENT) {
-              return <TextComment key={index} data={value} destroy={this.destroyTextComment} destroyModifications={this.destroyTextCommentModifications} create={this.createTextCommentModification} />
-            } else if(value.class === CLASS_VOICE_RECORDING) {
-              return <VoiceRecording key={index} data={value} destroy={this.destroyVoiceRecording} />
-            } else {
-              return null;
-            }
-          })}
-        </div>
-        <form className={styles.CreateTextComment} onSubmit={async (e) => { await this.createTextComment(e); }}>
-
-          <input type="text"
-                 name="text"
-                 placeholder="text"
-                 value={this.state.text}
-                 onChange={this.handleChange} />
-
-          <button type="submit">
-            Send
-          </button>
-
-        </form>
+  return (
+    <div>
+      <div className={styles.Chat}>
+        {feed.map((value, index) => {
+          if(value.class === CLASS_TEXT_COMMENT) {
+            return <TextComment key={index} data={value} destroy={destroyTextComment} destroyModifications={destroyTextCommentModifications} create={createTextCommentModification} />
+          } else if(value.class === CLASS_VOICE_RECORDING) {
+            return <VoiceRecording key={index} data={value} destroy={destroyVoiceRecording} />
+          } else {
+            return null;
+          }
+        })}
       </div>
-    );
-  }
+      <form className={styles.CreateTextComment} onSubmit={async (e) => { await createTextComment(e); }}>
+
+        <input type="text"
+               name="text"
+               placeholder="text"
+               value={text}
+               onChange={(e) => { setText(e.target.value); }} />
+
+        <button type="submit">
+          Send
+        </button>
+
+      </form>
+    </div>
+  );
 
 }
 
-Chat.propTypes = {};
-
-Chat.defaultProps = {};
 
 export default Chat;

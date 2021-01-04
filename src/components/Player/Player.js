@@ -29,7 +29,6 @@ class Player extends React.Component {
     //
     this.getStream = this.getStream.bind(this);
     this.animateProgressBar = this.animateProgressBar.bind(this);
-    this.scheduleNextTrack = this.scheduleNextTrack.bind(this);
     this.handlePrevTrack = this.handlePrevTrack.bind(this);
     this.handleNextTrack = this.handleNextTrack.bind(this);
     this.handlePlayTrack = this.handlePlayTrack.bind(this);
@@ -40,7 +39,6 @@ class Player extends React.Component {
 
   async componentDidMount() {
     await this.getStream();
-    this.scheduleNextTrack();
   }
 
   async getStream() {
@@ -81,30 +79,30 @@ class Player extends React.Component {
     loop();
   }
 
-  scheduleNextTrack() {
-    let nextTrackScheduledAt = this.state._nextTrackScheduledAt;
-    if(nextTrackScheduledAt) {
-      clearTimeout(nextTrackScheduledAt);
-    }
-
-    const stream = this.state.stream;
-    if(!stream?.isPlaying) {
-      this.setState({ _nextTrackScheduledAt: undefined });
-      return;
-    }
-
-    const date = new Date();
-    const epochNow = date.getTime();
-    const progress = epochNow - (stream.playedAt * 1000);
-    const durationMilliseconds = stream.nowPlaying.durationMilliseconds;
-
-    nextTrackScheduledAt = setTimeout(
-      this.handleNextTrack,
-      (durationMilliseconds - progress)
-    );
-    console.log(nextTrackScheduledAt)
-    this.setState({ _nextTrackScheduledAt: nextTrackScheduledAt });
-  }
+  // scheduleNextTrack() {
+  //   let nextTrackScheduledAt = this.state._nextTrackScheduledAt;
+  //   if(nextTrackScheduledAt) {
+  //     clearTimeout(nextTrackScheduledAt);
+  //   }
+  //
+  //   const stream = this.state.stream;
+  //   if(!stream?.isPlaying) {
+  //     this.setState({ _nextTrackScheduledAt: undefined });
+  //     return;
+  //   }
+  //
+  //   const date = new Date();
+  //   const epochNow = date.getTime();
+  //   const progress = epochNow - (stream.playedAt * 1000);
+  //   const durationMilliseconds = stream.nowPlaying.durationMilliseconds;
+  //
+  //   nextTrackScheduledAt = setTimeout(
+  //     this.handleNextTrack,
+  //     (durationMilliseconds - progress)
+  //   );
+  //   console.log(nextTrackScheduledAt)
+  //   this.setState({ _nextTrackScheduledAt: nextTrackScheduledAt });
+  // }
 
   /*
    * When...
@@ -115,7 +113,6 @@ class Player extends React.Component {
     await fetchPreviousTrack();
 
     await this.getStream();
-    this.scheduleNextTrack();
   }
 
   /*
@@ -129,7 +126,6 @@ class Player extends React.Component {
     await fetchNextTrack();
 
     await this.getStream();
-    this.scheduleNextTrack();
   }
 
   /*
@@ -150,7 +146,6 @@ class Player extends React.Component {
     });
 
     this.animateProgressBar();
-    this.scheduleNextTrack();
   }
 
   /*
@@ -169,7 +164,6 @@ class Player extends React.Component {
         pausedAt: jsonResponse.data.pausedAt,
       }
     });
-    this.scheduleNextTrack();
   }
 
   /*
@@ -189,7 +183,6 @@ class Player extends React.Component {
     const playedAt = proposedProgress > 0 ? proposedPlayedAt : Math.floor(epochNow / 1000);
 
     await this.setState( {stream: { ...stream, playedAt: playedAt } });
-    this.scheduleNextTrack();
   }
 
   /*
@@ -205,7 +198,6 @@ class Player extends React.Component {
 
     const stream = this.state.stream;
     await this.setState( {stream: { ...stream, playedAt: stream.playedAt - (10) } });
-    this.scheduleNextTrack();
   }
 
   render() {
