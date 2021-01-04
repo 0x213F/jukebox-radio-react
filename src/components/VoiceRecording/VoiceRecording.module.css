@@ -1,1 +1,3 @@
-.VoiceRecording {}
+.VoiceRecording {
+  max-width: 300px;
+}

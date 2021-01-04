@@ -10,6 +10,7 @@ const ENDPOINT_DELETE_TEXT_COMMENT = '/comments/text-comment/delete/'
 const ENDPOINT_CREATE_TEXT_COMMENT_MODIFICATION = '/comments/text-comment-modification/create/'
 const ENDPOINT_LIST_DELETE_TEXT_COMMENT_MODIFICATIONS = '/comments/text-comment-modification/list-delete/'
 
+const ENDPOINT_CREATE_VOICE_RECORDING = '/comments/voice-recording/create/'
 const ENDPOINT_LIST_VOICE_RECORDINGS = '/comments/voice-recording/list'
 const ENDPOINT_DELETE_VOICE_RECORDING = '/comments/voice-recording/delete/'
 
@@ -42,6 +43,7 @@ export {
   ENDPOINT_CREATE_TEXT_COMMENT_MODIFICATION,
   ENDPOINT_LIST_DELETE_TEXT_COMMENT_MODIFICATIONS,
 
+  ENDPOINT_CREATE_VOICE_RECORDING,
   ENDPOINT_LIST_VOICE_RECORDINGS,
   ENDPOINT_DELETE_VOICE_RECORDING,
 

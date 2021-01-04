@@ -99,6 +99,7 @@ function NotableText(props) {
           modification.endPtr
         )
 
+        // BUG: https://github.com/linkstrifer/react-rough-notation/issues/17
         textCommentHtml = (
           <>
             {textCommentHtml}

@@ -1,4 +1,6 @@
 import React, { useState, useEffect } from "react";
+import SpeechRecognition, { useSpeechRecognition } from 'react-speech-recognition'
+import MicRecorder from 'mic-recorder-to-mp3';
 import styles from './Chat.module.css';
 import { fetchCreateTextComment, fetchTextComments, fetchVoiceRecordings } from './network'
 import {
@@ -6,6 +8,7 @@ import {
   fetchListDeleteTextCommentModifications,
 } from '../TextComment/network'
 import {
+  fetchCreateVoiceRecording,
   fetchDeleteVoiceRecording,
 } from '../VoiceRecording/network'
 import TextComment from '../TextComment/TextComment'
@@ -24,6 +27,9 @@ function Chat(props) {
   const [_textComments, _setTextComments] = useState(undefined);
   const [_voiceRecordings, _setVoiceRecordings] = useState(undefined);
   const [text, setText] = useState('');
+  const [isRecording, setIsRecording] = useState(false);
+  const [recorder, setRecorder] = useState(new MicRecorder({ bitRate: 320 }));
+  const [transcriptData, setTranscriptData] = useState([]);
 
   // onComponentDidMount
   useEffect(() => {
@@ -114,6 +120,57 @@ function Chat(props) {
     _setTextComments([..._textComments]);
   }
 
+  const { transcript, resetTranscript } = useSpeechRecognition();
+
+  /*
+   * ...
+   */
+  const handleRecord = function() {
+    if(!isRecording) {
+      if (SpeechRecognition.browserSupportsSpeechRecognition()) {
+        SpeechRecognition.startListening({ continuous: true });
+        // BUG: https://github.com/JamesBrill/react-speech-recognition/issues/81
+        //
+        // const recognition = SpeechRecognition.getRecognition();
+        // recognition.onresult = (e) => {
+        //   recognition.onresult(e);
+        //   const timeStamp = e.timeStamp,
+        //         transcript = e.results[0][0].transcript,
+        //         confidence = e.results[0][0].confidence,
+        //         isFinal = e.results[0].isFinal;
+        //   transcriptData.push({ timeStamp, transcript, confidence, isFinal });
+        //   setTranscriptData([...transcriptData]);
+        // }
+      }
+      recorder.start();
+      setIsRecording(true);
+    } else {
+      if (SpeechRecognition.browserSupportsSpeechRecognition()) {
+        SpeechRecognition.stopListening();
+      }
+
+      recorder.stop()
+        .getMp3().then(([buffer, blob]) => {
+          (async function () {
+            const file = new File(buffer, 'voice.mp3', {
+              type: blob.type,
+              lastModified: Date.now(),
+            });
+
+            const responseJson = await fetchCreateVoiceRecording(file, JSON.stringify(transcriptData), transcript);
+            _voiceRecordings.push(responseJson.data);
+            _setVoiceRecordings([..._voiceRecordings]);
+
+            if (SpeechRecognition.browserSupportsSpeechRecognition()) {
+              resetTranscript();
+            }
+          })()
+        });
+
+      setIsRecording(false);
+    }
+  }
+
   /*
    * This aggregates text comments and voice recordings into one data list,
    * sorted by track timestamp.
@@ -146,19 +203,23 @@ function Chat(props) {
           }
         })}
       </div>
-      <form className={styles.CreateTextComment} onSubmit={async (e) => { await createTextComment(e); }}>
 
+      <form className={styles.CreateTextComment} onSubmit={async (e) => { await createTextComment(e); }}>
         <input type="text"
                name="text"
                placeholder="text"
                value={text}
                onChange={(e) => { setText(e.target.value); }} />
-
         <button type="submit">
           Send
         </button>
-
       </form>
+
+      <div>
+        <button type="button" onClick={handleRecord}>
+          Record
+        </button>
+      </div>
     </div>
   );
 
