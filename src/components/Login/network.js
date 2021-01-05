@@ -1,4 +1,4 @@
-import { ENDPOINT_OBTAIN_AUTH_TOKEN } from '../../config/api'
+import { ENDPOINT_OBTAIN_AUTH_TOKEN, ENDPOINT_INTIALIZE_STREAM } from '../../config/api'
 import { TYPE_POST } from '../../config/global'
 import { fetchBackend } from '../../utils/network'
 
@@ -10,6 +10,19 @@ export const fetchAuthToken = async (username, password) => {
     TYPE_POST,
     ENDPOINT_OBTAIN_AUTH_TOKEN,
     { username: username, password: password },
+  );
+  const responseJson = await response.json();
+  return responseJson;
+};
+
+
+/*
+ * Fetches an auth token from the server.
+ */
+export const fetchInitializeStream = async () => {
+  const response = await fetchBackend(
+    TYPE_POST,
+    ENDPOINT_INTIALIZE_STREAM,
   );
   const responseJson = await response.json();
   return responseJson;

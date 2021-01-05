@@ -23,6 +23,7 @@ const ENDPOINT_SEARCH_MUSIC = '/music/search'
 const ENDPOINT_CREATE_QUEUE = '/streams/queue/create/'
 
 const ENDPOINT_GET_STREAM = '/streams/stream/get'
+const ENDPOINT_INTIALIZE_STREAM = '/streams/stream/initialize/'
 const ENDPOINT_NEXT_TRACK = '/streams/stream/next-track/'
 const ENDPOINT_PAUSE_TRACK = '/streams/stream/pause-track/'
 const ENDPOINT_PLAY_TRACK = '/streams/stream/play-track/'
@@ -56,6 +57,7 @@ export {
   ENDPOINT_CREATE_QUEUE,
 
   ENDPOINT_GET_STREAM,
+  ENDPOINT_INTIALIZE_STREAM,
   ENDPOINT_NEXT_TRACK,
   ENDPOINT_PAUSE_TRACK,
   ENDPOINT_PLAY_TRACK,

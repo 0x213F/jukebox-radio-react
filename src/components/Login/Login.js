@@ -2,7 +2,7 @@ import React from 'react';
 import { Link } from "react-router-dom";
 import styles from './Login.module.css';
 
-import { fetchAuthToken } from './network';
+import { fetchAuthToken, fetchInitializeStream } from './network';
 
 
 class Login extends React.Component {
@@ -48,6 +48,7 @@ class Login extends React.Component {
     }
     localStorage.setItem('accessToken', responseJson.access);
     localStorage.setItem('refreshToken', responseJson.refresh);
+    await fetchInitializeStream();
   }
 
   render() {
