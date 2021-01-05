@@ -32,13 +32,13 @@ class Queue extends React.Component {
     if(jsonResponse.system.status !== 200) {
       this.errorMessage = jsonResponse.system.message;
     } else {
-      const queues = jsonResponse.data;
-      this.setState({ queues: queues });
-      if(!queues.length) {
+      const { nextUpQueues } = jsonResponse.data;
+      this.setState({ queues: nextUpQueues });
+      if(!nextUpQueues.length) {
         localStorage.setItem('lastQueueUuid', '');
         return;
       }
-      const lastQueueUuid = queues[queues.length - 1].uuid;
+      const lastQueueUuid = nextUpQueues[nextUpQueues.length - 1].uuid;
       localStorage.setItem('lastQueueUuid', lastQueueUuid);
     }
   }

@@ -28,8 +28,8 @@ function Chat(props) {
   const [_voiceRecordings, _setVoiceRecordings] = useState(undefined);
   const [text, setText] = useState('');
   const [isRecording, setIsRecording] = useState(false);
-  const [recorder, setRecorder] = useState(new MicRecorder({ bitRate: 320 }));
-  const [transcriptData, setTranscriptData] = useState([]);
+  const [recorder] = useState(new MicRecorder({ bitRate: 320 }));
+  const [transcriptData] = useState([]);
 
   // onComponentDidMount
   useEffect(() => {

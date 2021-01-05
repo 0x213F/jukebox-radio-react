@@ -1,4 +1,4 @@
-const BACKEND_DOMAIN = 'http://localhost:3000';
+const BACKEND_DOMAIN = process.env.REACT_APP_BACKEND_DOMAIN;
 const TYPE_GET = 'GET';
 const TYPE_POST = 'POST';
 
