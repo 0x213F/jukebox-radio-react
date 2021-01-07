@@ -1,6 +1,8 @@
 import { connect } from 'react-redux'
 // import { CountdownCircleTimer } from 'react-countdown-circle-timer'
+import { fetchListQueues } from '../Queue/network'
 import {
+  fetchStream,
   fetchNextTrack,
   fetchPauseTrack,
   fetchPlayTrack,
@@ -25,7 +27,22 @@ function Player(props) {
    */
   const handlePrevTrack = async function(e) {
     e.preventDefault();
-    await fetchPreviousTrack();
+
+    const responseJson = await fetchPreviousTrack();
+
+    const jsonResponse = await fetchListQueues();
+    const { nextUpQueues, lastUpQueues } = jsonResponse.data;
+
+    await props.dispatch({
+      type: 'stream/prevTrack',
+      startedAt: responseJson.data.startedAt,
+    });
+
+    props.dispatch({
+      type: 'queue/listSet',
+      lastUpQueues: lastUpQueues,
+      nextUpQueues: nextUpQueues,
+    });
   }
 
   /*
@@ -36,11 +53,20 @@ function Player(props) {
       e.preventDefault();
     }
 
-    await fetchNextTrack();
+    const responseJson = await fetchNextTrack();
+
+    const jsonResponse = await fetchListQueues();
+    const { nextUpQueues, lastUpQueues } = jsonResponse.data;
+
+    await props.dispatch({
+      type: 'stream/nextTrack',
+      startedAt: responseJson.data.startedAt,
+    });
 
     props.dispatch({
-      type: 'queue/deleteNode',
-      queueUuid: nextUp.uuid,
+      type: 'queue/listSet',
+      lastUpQueues: lastUpQueues,
+      nextUpQueues: nextUpQueues,
     });
   }
 
@@ -115,8 +141,6 @@ function Player(props) {
       stream: { ...stream, playedAt: stream.playedAt - (10) },
     });
   }
-
-  console.log(lastUp)
 
   return (
     <>

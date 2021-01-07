@@ -4,15 +4,18 @@ import { createStore } from 'redux';
 const initialState = {
   nextUpQueues: [],
   lastUpQueues: [],
-  _lastPlayed: undefined,
 }
 
 
 const reducer = (state = initialState, action) => {
-  let queues;
+  let queues,
+      lastUpQueues,
+      stream,
+      nowPlaying,
+      nextUpQueues;
   switch (action.type) {
     case "stream/set":
-      const stream = action.stream;
+      stream = action.stream;
       const obj = {
         ...state,
         stream: stream,
@@ -21,23 +24,46 @@ const reducer = (state = initialState, action) => {
       if(!stream.isPlaying && !stream.isPaused && stream.nowPlaying) {
         obj.lastUpQueues = [...state.lastUpQueues, stream.nowPlaying];
         obj.lastUp = stream.nowPlaying;
-        obj._lastPlayed = stream.nowPlaying;
         obj.stream.nowPlaying = undefined;
       }
 
       return obj
     case "stream/prevTrack":
-      return { ...state };
+      lastUpQueues = [...state.lastUpQueues];
+      nowPlaying = lastUpQueues[lastUpQueues.length - 1];
+      return {
+          ...state,
+          stream: {
+            ...state.stream,
+            startedAt: action.startedAt,
+            nowPlaying: nowPlaying,
+          }
+      };
     case "stream/nextTrack":
-      return { ...state };
+      nextUpQueues = [...state.nextUpQueues];
+      nowPlaying = (
+        nextUpQueues[0].children.length ?
+          nextUpQueues[0].children[0] :
+          nextUpQueues[0]
+      )
+      return {
+          ...state,
+          stream: {
+            ...state.stream,
+            startedAt: action.startedAt,
+            nowPlaying: nowPlaying,
+          }
+      };
     case "stream/expire":
       return { ...state };
     case "queue/listSet":
-      const lastUpQueues = action.lastUpQueues,
-            nextUpQueues = action.nextUpQueues;
+      lastUpQueues = action.lastUpQueues;
+      nextUpQueues = action.nextUpQueues;
 
-      if(state._lastPlayed) {
-        lastUpQueues.push(state._lastPlayed);
+      stream = state.stream;
+      if(!stream.isPlaying && !stream.isPaused && stream.nowPlaying) {
+        lastUpQueues.push(stream.nowPlaying);
+        stream = { ...stream, nowPlaying: undefined }
       }
 
       const lastUp = (
@@ -54,6 +80,7 @@ const reducer = (state = initialState, action) => {
             );
       return {
         ...state,
+        stream: stream,
         lastUp: lastUp,
         lastUpQueues: lastUpQueues,
         nextUp: nextUp,
