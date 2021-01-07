@@ -25,15 +25,6 @@ function QueueCollection(props) {
   const [reveal, setReveal] = useState(isCurrentlyPlayingCollection);
 
   /*
-   * When the user deletes a text comment.
-   */
-  const handleDelete = async function(e) {
-    e.preventDefault();
-    const queueUuid = props.data.uuid;
-    await props.destroy(queueUuid);
-  }
-
-  /*
    * When...
    */
   const toggleReveal = function(e) {

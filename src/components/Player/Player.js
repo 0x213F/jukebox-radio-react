@@ -1,4 +1,3 @@
-import { useEffect } from "react";
 import { connect } from 'react-redux'
 // import { CountdownCircleTimer } from 'react-countdown-circle-timer'
 import {
@@ -109,7 +108,7 @@ function Player(props) {
   const handleScanForward = async function(e) {
     e.preventDefault();
 
-    const responseJson = await fetchScanForward();
+    await fetchScanForward();
 
     props.dispatch({
       type: 'stream/set',

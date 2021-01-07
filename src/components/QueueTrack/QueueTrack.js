@@ -12,14 +12,6 @@ function QueueTrack(props) {
         lastUp = props.lastUp;
 
   /*
-   * When the user deletes a text comment.
-   */
-  const handleDelete = async function(e) {
-    e.preventDefault();
-    await props.destroy(queue.uuid);
-  }
-
-  /*
    * 🎨
    */
   const currentIndex = stream?.nowPlaying?.index || lastUp.index;

@@ -24,7 +24,6 @@ const reducer = (state = initialState, action) => {
         obj._lastPlayed = stream.nowPlaying;
         obj.stream.nowPlaying = undefined;
       }
-      console.log(obj.lastUpQueues)
 
       return obj
     case "stream/prevTrack":
