@@ -122,7 +122,7 @@ function Player(props) {
     <>
       <div>
         <p><i>Previous...</i></p>
-        <p>{lastUp?.track.name}</p>
+        <p>{lastUp?.track?.name}</p>
       </div>
 
       <div>
