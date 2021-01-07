@@ -5,8 +5,12 @@ import Queue from './components/Queue/Queue'
 import Search from './components/Search/Search'
 import Upload from './components/Upload/Upload'
 import Player from './components/Player/Player'
+import { fetchStream } from './components/Player/network'
+import { fetchListQueues } from './components/Queue/network'
+import { store } from './utils/redux'
 
-import React from "react";
+import { useEffect } from "react";
+import { Provider } from 'react-redux';
 import {
   BrowserRouter as Router,
   Switch,
@@ -14,10 +18,40 @@ import {
   Link
 } from "react-router-dom";
 
+
 function App() {
+
+  // load stream
+  useEffect(() => {
+    async function loadData() {
+      const jsonResponse = await fetchStream();
+
+      store.dispatch({
+        type: 'stream/set',
+        stream: jsonResponse.data,
+      });
+    }
+    loadData();
+  }, []);
+
+  // load queue
+  useEffect(() => {
+    async function loadData() {
+      const jsonResponse = await fetchListQueues();
+      const { nextUpQueues, lastUpQueues } = jsonResponse.data;
+
+      store.dispatch({
+        type: 'queue/listSet',
+        lastUpQueues: lastUpQueues,
+        nextUpQueues: nextUpQueues,
+      });
+    }
+    loadData();
+  }, []);
+
   return (
     <Router>
-      <div className="App">
+      <Provider store={store}>
 
         {/* nav bar */}
         <nav>
@@ -65,7 +99,7 @@ function App() {
           </Route>
         </Switch>
 
-      </div>
+      </Provider>
     </Router>
   );
 }

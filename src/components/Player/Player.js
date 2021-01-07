@@ -1,6 +1,7 @@
-import React from 'react';
+import { useEffect } from "react";
+import { connect } from 'react-redux'
+// import { CountdownCircleTimer } from 'react-countdown-circle-timer'
 import {
-  fetchStream,
   fetchNextTrack,
   fetchPauseTrack,
   fetchPlayTrack,
@@ -10,169 +11,83 @@ import {
 } from './network'
 
 
-class Player extends React.Component {
+function Player(props) {
 
   /*
    * 🏗
    */
-  constructor(props) {
-    super(props);
-
-    this.state = {
-      // UI
-      progress: undefined,
-      _nextTrackScheduledAt: undefined,
-      // Data
-      stream: undefined,
-    };
-
-    //
-    this.getStream = this.getStream.bind(this);
-    this.animateProgressBar = this.animateProgressBar.bind(this);
-    this.handlePrevTrack = this.handlePrevTrack.bind(this);
-    this.handleNextTrack = this.handleNextTrack.bind(this);
-    this.handlePlayTrack = this.handlePlayTrack.bind(this);
-    this.handlePauseTrack = this.handlePauseTrack.bind(this);
-    this.handleScanBackward = this.handleScanBackward.bind(this);
-    this.handleScanForward = this.handleScanForward.bind(this);
-  }
-
-  async componentDidMount() {
-    await this.getStream();
-  }
-
-  async getStream() {
-    const jsonResponse = await fetchStream();
-    const stream = jsonResponse.data;
-    await this.setState({ stream: stream });
-    this.animateProgressBar();
-  }
-
-  animateProgressBar() {
-    const loop = () => {
-      const stream = this.state.stream;
-      if(!stream?.nowPlaying) {
-        this.setState({ progress: undefined, stream: undefined});
-        return;
-      } else if(!stream.isPlaying && stream.isPaused) {
-        this.setState({
-          progress: (stream.pausedAt * 1000) - (stream.playedAt * 1000),
-        });
-        return;
-      }
-
-      const date = new Date();
-      const epochNow = date.getTime();
-      const progress = epochNow - (stream.playedAt * 1000);
-
-      if(progress > (stream.nowPlaying.durationMilliseconds + 3000)) {
-        this.setState({ progress: undefined, stream: undefined});
-        return;
-      }
-
-      this.setState({
-        progress: progress,
-      });
-      window.requestAnimationFrame(loop);
-    };
-
-    loop();
-  }
-
-  // scheduleNextTrack() {
-  //   let nextTrackScheduledAt = this.state._nextTrackScheduledAt;
-  //   if(nextTrackScheduledAt) {
-  //     clearTimeout(nextTrackScheduledAt);
-  //   }
-  //
-  //   const stream = this.state.stream;
-  //   if(!stream?.isPlaying) {
-  //     this.setState({ _nextTrackScheduledAt: undefined });
-  //     return;
-  //   }
-  //
-  //   const date = new Date();
-  //   const epochNow = date.getTime();
-  //   const progress = epochNow - (stream.playedAt * 1000);
-  //   const durationMilliseconds = stream.nowPlaying.durationMilliseconds;
-  //
-  //   nextTrackScheduledAt = setTimeout(
-  //     this.handleNextTrack,
-  //     (durationMilliseconds - progress)
-  //   );
-  //   console.log(nextTrackScheduledAt)
-  //   this.setState({ _nextTrackScheduledAt: nextTrackScheduledAt });
-  // }
+  const stream = props.stream,
+        track = stream?.nowPlaying?.track,
+        nextUp = props.nextUp,
+        lastUp = props.lastUp;
 
   /*
    * When...
    */
-  async handlePrevTrack(event) {
-    event.preventDefault();
-
+  const handlePrevTrack = async function(e) {
+    e.preventDefault();
     await fetchPreviousTrack();
-
-    await this.getStream();
   }
 
   /*
    * When...
    */
-  async handleNextTrack(event) {
-    if(event) {
-      event.preventDefault();
+  const handleNextTrack = async function(e) {
+    if(e) {
+      e.preventDefault();
     }
 
     await fetchNextTrack();
 
-    await this.getStream();
+    props.dispatch({
+      type: 'queue/deleteNode',
+      queueUuid: nextUp.uuid,
+    });
   }
 
   /*
    * When...
    */
-  async handlePlayTrack(event) {
-    event.preventDefault();
+  const handlePlayTrack = async function(e) {
+    e.preventDefault();
 
-    const stream = this.state.stream;
     const jsonResponse = await fetchPlayTrack();
-    await this.setState({
+    props.dispatch({
+      type: 'stream/set',
       stream: {
         ...stream,
         isPlaying: true,
         isPaused: false,
         playedAt: jsonResponse.data.playedAt,
-      }
+      },
     });
-
-    this.animateProgressBar();
   }
 
   /*
    * When...
    */
-  async handlePauseTrack(event) {
-    event.preventDefault();
+  const handlePauseTrack = async function(e) {
+    e.preventDefault();
 
-    const stream = this.state.stream;
     const jsonResponse = await fetchPauseTrack();
-    await this.setState({
+
+    props.dispatch({
+      type: 'stream/set',
       stream: {
         ...stream,
         isPlaying: false,
         isPaused: true,
         pausedAt: jsonResponse.data.pausedAt,
-      }
+      },
     });
   }
 
   /*
    * When...
    */
-  async handleScanBackward(event) {
-    event.preventDefault();
+  const handleScanBackward = async function(e) {
+    e.preventDefault();
 
-    const stream = this.state.stream;
     await fetchScanBackward();
 
     const date = new Date();
@@ -182,59 +97,76 @@ class Player extends React.Component {
     const proposedProgress = epochNow - (proposedPlayedAt * 1000);
     const playedAt = proposedProgress > 0 ? proposedPlayedAt : Math.floor(epochNow / 1000);
 
-    await this.setState( {stream: { ...stream, playedAt: playedAt } });
+    props.dispatch({
+      type: 'stream/set',
+      stream: { ...stream, playedAt: playedAt },
+    });
   }
 
   /*
    * When...
    */
-  async handleScanForward(event) {
-    event.preventDefault();
+  const handleScanForward = async function(e) {
+    e.preventDefault();
 
     const responseJson = await fetchScanForward();
-    if(responseJson.system.status !== 200) {
-      throw responseJson.system.message;
-    }
 
-    const stream = this.state.stream;
-    await this.setState( {stream: { ...stream, playedAt: stream.playedAt - (10) } });
+    props.dispatch({
+      type: 'stream/set',
+      stream: { ...stream, playedAt: stream.playedAt - (10) },
+    });
   }
 
-  render() {
-    const stream = this.state.stream;
-    return (
-      <>
-        <div>
-          {(stream?.isPlaying || stream?.isPaused) &&
-            <p>{stream?.nowPlaying?.name}</p>
-          }
-          <progress value={this.state.progress} max={stream?.nowPlaying?.durationMilliseconds}></progress>
-        </div>
-        <div>
-          <button onClick={this.handlePrevTrack}>Prev</button>
-          {stream?.isPaused &&
-            <button onClick={this.handlePlayTrack}>Play</button>
-          }
-          {stream?.isPlaying &&
-            <button onClick={this.handlePauseTrack}>Pause</button>
-          }
-          <button onClick={this.handleNextTrack}>Next</button>
-        </div>
-        <div>
-          {(stream?.isPlaying) &&
-            <button onClick={this.handleScanBackward}>Backward</button>
-          }
-          {(stream?.isPlaying) &&
-            <button onClick={this.handleScanForward}>Forward</button>
-          }
-        </div>
-      </>
-    );
-  }
+  console.log(lastUp)
+
+  return (
+    <>
+      <div>
+        <p><i>Previous...</i></p>
+        <p>{lastUp?.track.name}</p>
+      </div>
+
+      <div>
+        <p><i>Now playing...</i></p>
+        {(stream?.isPlaying || stream?.isPaused) &&
+          <p>{track?.name}</p>
+        }
+        {(!stream?.isPlaying && !stream?.isPaused) &&
+          <p>Waiting...</p>
+        }
+      </div>
+
+      <div>
+        <button onClick={handlePrevTrack}>Prev</button>
+        {stream?.isPaused &&
+          <button onClick={handlePlayTrack}>Play</button>
+        }
+        {stream?.isPlaying &&
+          <button onClick={handlePauseTrack}>Pause</button>
+        }
+        <button onClick={handleNextTrack}>Next</button>
+      </div>
+      <div>
+        {(stream?.isPlaying) &&
+          <button onClick={handleScanBackward}>Backward</button>
+        }
+        {(stream?.isPlaying) &&
+          <button onClick={handleScanForward}>Forward</button>
+        }
+      </div>
+
+      <div>
+        <p><i>Next...</i></p>
+        <p>{nextUp?.track.name}</p>
+      </div>
+    </>
+  );
 }
 
-Player.propTypes = {};
+const mapStateToProps = (state) => ({
+    stream: state.stream,
+    nextUp: state.nextUp,
+    lastUp: state.lastUp,
+});
 
-Player.defaultProps = {};
-
-export default Player;
+export default connect(mapStateToProps)(Player);

@@ -28,11 +28,11 @@ export const fetchSearchMusicLibrary = async (query, providerSpotify, providerYo
 /*
  * Fetches an auth token from the server.
  */
-export const fetchCreateQueue = async (className, genericUuid, prevQueueUuid, nextQueueUuid) => {
+export const fetchCreateQueue = async (className, genericUuid) => {
   const response = await fetchBackend(
     TYPE_POST,
     ENDPOINT_CREATE_QUEUE,
-    { className, genericUuid, prevQueueUuid, nextQueueUuid },
+    { className, genericUuid },
   );
   const responseJson = await response.json();
   return responseJson;

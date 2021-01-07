@@ -31,7 +31,7 @@ function Chat(props) {
   const [recorder] = useState(new MicRecorder({ bitRate: 320 }));
   const [transcriptData] = useState([]);
 
-  // onComponentDidMount
+  // componentDidMount
   useEffect(() => {
     async function loadData() {
       const textCommentsResponse = await fetchTextComments();
@@ -199,7 +199,7 @@ function Chat(props) {
           } else if(value.class === CLASS_VOICE_RECORDING) {
             return <VoiceRecording key={index} data={value} destroy={destroyVoiceRecording} />
           } else {
-            return null;
+            return <></>;
           }
         })}
       </div>
