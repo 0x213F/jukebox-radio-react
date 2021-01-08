@@ -1,7 +1,6 @@
-.Login {
-  text-align: center;
-}
+.Login {}
 
 .FormBlock {
   display: block;
+  text-align: center;
 }

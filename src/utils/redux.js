@@ -4,6 +4,7 @@ import { createStore } from 'redux';
 const initialState = {
   nextUpQueues: [],
   lastUpQueues: [],
+  _lastPlayed: undefined,
 }
 
 
@@ -12,18 +13,20 @@ const reducer = (state = initialState, action) => {
       lastUpQueues,
       stream,
       nowPlaying,
-      nextUpQueues;
+      nextUpQueues,
+      obj;
   switch (action.type) {
     case "stream/set":
       stream = action.stream;
-      const obj = {
+      obj = {
         ...state,
         stream: stream,
       };
 
       if(!stream.isPlaying && !stream.isPaused && stream.nowPlaying) {
-        obj.lastUpQueues = [...state.lastUpQueues, stream.nowPlaying];
+        // obj.lastUpQueues = [...state.lastUpQueues, stream.nowPlaying];
         obj.lastUp = stream.nowPlaying;
+        obj._lastPlayed = stream.nowPlaying;
         obj.stream.nowPlaying = undefined;
       }
 
@@ -55,10 +58,22 @@ const reducer = (state = initialState, action) => {
           }
       };
     case "stream/expire":
-      return { ...state };
+      stream = { ...state.stream };
+
+      stream.isPlaying = false;
+      stream.isPaused = false;
+      const tempVar = stream.nowPlaying;
+      stream.nowPlaying = undefined;
+
+      return { ...state, stream: stream, _lastPlayed: tempVar };
     case "queue/listSet":
       lastUpQueues = action.lastUpQueues;
       nextUpQueues = action.nextUpQueues;
+
+      const _lastPlayed = state._lastPlayed;
+      if(_lastPlayed) {
+        lastUpQueues.push(_lastPlayed);
+      }
 
       stream = state.stream;
       if(!stream.isPlaying && !stream.isPaused && stream.nowPlaying) {

@@ -1,8 +1,8 @@
+import { useState } from "react";
 import { connect } from 'react-redux'
 // import { CountdownCircleTimer } from 'react-countdown-circle-timer'
 import { fetchListQueues } from '../Queue/network'
 import {
-  fetchStream,
   fetchNextTrack,
   fetchPauseTrack,
   fetchPlayTrack,
@@ -21,6 +21,8 @@ function Player(props) {
         track = stream?.nowPlaying?.track,
         nextUp = props.nextUp,
         lastUp = props.lastUp;
+
+  const [key, setKey] = useState(0);
 
   /*
    * When...
@@ -118,14 +120,18 @@ function Player(props) {
     const date = new Date();
     const epochNow = date.getTime();
 
-    const proposedPlayedAt = stream.playedAt + 10 ;
-    const proposedProgress = epochNow - (proposedPlayedAt * 1000);
-    const playedAt = proposedProgress > 0 ? proposedPlayedAt : Math.floor(epochNow / 1000);
+    const proposedStartedAt = stream.startedAt + 10000;
+    const proposedProgress = epochNow - proposedStartedAt;
+    const startedAt = proposedProgress > 0 ? proposedStartedAt : epochNow;
 
-    props.dispatch({
+    console.log(stream.startedAt, startedAt)
+    console.log(stream.startedAt - startedAt)
+
+    await props.dispatch({
       type: 'stream/set',
-      stream: { ...stream, playedAt: playedAt },
+      stream: { ...stream, startedAt: startedAt },
     });
+    setKey(key + 1);
   }
 
   /*
@@ -134,13 +140,44 @@ function Player(props) {
   const handleScanForward = async function(e) {
     e.preventDefault();
 
-    await fetchScanForward();
+    const response = await fetchScanForward();
 
-    props.dispatch({
+    if(response.system.status === 400) {
+      return;
+    }
+
+    await props.dispatch({
       type: 'stream/set',
-      stream: { ...stream, playedAt: stream.playedAt - (10) },
+      stream: { ...stream, startedAt: stream.startedAt - (10000) },
     });
+    setKey(key + 1);
   }
+
+  /*
+   * When...
+   */
+  // const handleIdle = async function() {
+  //   await props.dispatch({
+  //     type: "stream/expire",
+  //   });
+  //
+  //   await props.dispatch({
+  //     type: "queue/listSet",
+  //     lastUpQueues: props.lastUpQueues,
+  //     nextUpQueues: props.nextUpQueues,
+  //   });
+  // }
+
+  // const progress = (
+  //   stream ?
+  //   (
+  //     stream.pausedAt ?
+  //       stream.pausedAt - stream.startedAt:
+  //       Date.now() - stream.startedAt
+  //   ) :
+  //   undefined
+  // );
+  // const trackDuration = stream?.nowPlaying?.track?.durationMilliseconds;
 
   return (
     <>
@@ -188,8 +225,10 @@ function Player(props) {
 
 const mapStateToProps = (state) => ({
     stream: state.stream,
-    nextUp: state.nextUp,
     lastUp: state.lastUp,
+    lastUpQueues: state.lastUpQueues,
+    nextUp: state.nextUp,
+    nextUpQueues: state.nextUpQueues,
 });
 
 export default connect(mapStateToProps)(Player);

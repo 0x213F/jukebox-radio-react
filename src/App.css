@@ -1,0 +1,38 @@
+nav {
+  /* sizing and position */
+  height: 100%;
+  width: 160px;
+  position: fixed;
+  left: 0px;
+
+  /* center things */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+nav > ul > li {
+  line-height: 2rem;
+  list-style: none;
+}
+
+.app-main-container {
+  /* sizing and position */
+  height: 100%;
+  width: calc(100% - 160px);
+  position: fixed;
+  right: 0px;
+
+  /* center things */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.app-main {
+  display: block;
+  min-width: 400px;
+  max-width: 800px;
+  border: 1px solid black;
+  padding: 1rem;
+}

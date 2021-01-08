@@ -21,26 +21,24 @@ import {
 
 function App() {
 
-  // load stream
+  // componentDidMount
   useEffect(() => {
     async function loadData() {
-      const jsonResponse = await fetchStream();
+      let jsonResponse;
 
-      store.dispatch({
+      // load stream
+      jsonResponse = await fetchStream();
+
+      await store.dispatch({
         type: 'stream/set',
         stream: jsonResponse.data,
       });
-    }
-    loadData();
-  }, []);
 
-  // load queue
-  useEffect(() => {
-    async function loadData() {
-      const jsonResponse = await fetchListQueues();
+      // load queue
+      jsonResponse = await fetchListQueues();
       const { nextUpQueues, lastUpQueues } = jsonResponse.data;
 
-      store.dispatch({
+      await store.dispatch({
         type: 'queue/listSet',
         lastUpQueues: lastUpQueues,
         nextUpQueues: nextUpQueues,
@@ -78,26 +76,30 @@ function App() {
         </nav>
 
         {/* main section */}
-        <Switch>
-          <Route path="/login">
-            <Login />
-          </Route>
-          <Route path="/chat">
-            <Chat />
-          </Route>
-          <Route path="/player">
-            <Player />
-          </Route>
-          <Route path="/queue">
-            <Queue />
-          </Route>
-          <Route path="/search">
-            <Search />
-          </Route>
-          <Route path="/upload">
-            <Upload />
-          </Route>
-        </Switch>
+        <div class="app-main-container">
+          <div class="app-main">
+            <Switch>
+              <Route path="/login">
+                <Login />
+              </Route>
+              <Route path="/chat">
+                <Chat />
+              </Route>
+              <Route path="/player">
+                <Player />
+              </Route>
+              <Route path="/queue">
+                <Queue />
+              </Route>
+              <Route path="/search">
+                <Search />
+              </Route>
+              <Route path="/upload">
+                <Upload />
+              </Route>
+            </Switch>
+          </div>
+        </div>
 
       </Provider>
     </Router>
