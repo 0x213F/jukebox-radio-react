@@ -50,6 +50,8 @@ function Upload(props) {
                onChange={(e) => {setImageFile(e.target.files[0])}} />
       </label>
 
+      <br></br>
+
       <label className={styles.FormBlock}>
         Track name
         <input type="text"
@@ -77,9 +79,11 @@ function Upload(props) {
                onChange={(e) => {setAlbumName(e.target.value)}} />
       </label>
 
+      <br></br>
+
       <div className={styles.FormBlock}>
         <button type="submit">
-          Upload
+          Submit
         </button>
       </div>
     </form>

@@ -1,3 +1,11 @@
 .Player {
   text-align: center;
 }
+
+.Div {
+  display: block;
+}
+
+.Button {
+  width: 80px;
+}

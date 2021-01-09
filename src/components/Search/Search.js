@@ -60,13 +60,15 @@ function Search(props) {
         <h3>Search</h3>
 
         <label className={styles.FormBlock}>
-          Query
+          Query &nbsp;
           <input type="text"
                  name="query"
-                 placeholder="Search by name or artist"
+                 placeholder=""
                  value={query}
                  onChange={(e) => {setQuery(e.target.value)}} />
         </label>
+
+        <br></br>
 
         <div className={styles.FormBlock}>
           <label>
@@ -123,12 +125,17 @@ function Search(props) {
           </label>
         </div>
 
+        <br></br>
+
         <div className={styles.FormBlock}>
           <button type="submit">
             Search
           </button>
         </div>
       </form>
+
+      <br></br>
+
       <div>
         {searchResults.map((value, index) => (
           <SearchResult key={index} data={value} addToQueue={addToQueue}></SearchResult>

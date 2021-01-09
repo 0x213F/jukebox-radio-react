@@ -14,8 +14,8 @@ function QueueTrack(props) {
   /*
    * 🎨
    */
-  const currentIndex = stream?.nowPlaying?.index || lastUp.index;
-  const isNextUp = currentIndex < queue.index;
+  const currentIndex = stream?.nowPlaying?.index || lastUp?.index;
+  const isNextUp = !currentIndex || currentIndex < queue.index;
   const indent = queue.parentUuid && isNextUp ? '-' : '';
   return (
     <div className={styles.QueueTrack}>
@@ -24,7 +24,7 @@ function QueueTrack(props) {
         {queue.track.name}
       </span>
       {isNextUp &&
-        <button type="button" onClick={async (e) => { await props.destroy(queue); }}>
+        <button className={styles.Button} type="button" onClick={async (e) => { await props.destroy(queue); }}>
           Delete
         </button>
       }

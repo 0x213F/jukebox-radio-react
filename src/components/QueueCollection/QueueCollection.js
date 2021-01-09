@@ -36,33 +36,35 @@ function QueueCollection(props) {
    */
   return (
     <div className={styles.QueueCollection}>
-      <span>
-        {queue.collection.name}
-      </span>
-      {!isCurrentlyPlayingCollection &&
-        <button type="button" onClick={async (e) => { await props.destroy(queue); }}>
-          Delete
-        </button>
-      }
-      {queue.children.length > 0 && !reveal &&
-        <button type="button" onClick={toggleReveal}>
-          More
-        </button>
-      }
-      {queue.children.length > 0 && reveal &&
-        <>
-          <button type="button" onClick={toggleReveal}>
+      <div className={styles.Item}>
+        <span>
+          {queue.collection.name}
+        </span>
+        {!isCurrentlyPlayingCollection &&
+          <button className={styles.Button} type="button" onClick={async (e) => { await props.destroy(queue); }}>
+            Delete
+          </button>
+        }
+        {queue.children.length > 0 && !reveal &&
+          <button className={styles.Button} type="button" onClick={toggleReveal}>
+            More
+          </button>
+        }
+        {queue.children.length > 0 && reveal &&
+          <button className={styles.Button} type="button" onClick={toggleReveal}>
             Less
           </button>
-          <div>
-            {queue.children.map((value, index) => (
-              <QueueTrack key={index}
-                          data={value}
-                          destroy={props.destroy}>
-              </QueueTrack>
-            ))}
-          </div>
-        </>
+        }
+      </div>
+      {queue.children.length > 0 && reveal &&
+        <div className={styles.Children}>
+          {queue.children.map((value, index) => (
+            <QueueTrack key={index}
+                        data={value}
+                        destroy={props.destroy}>
+            </QueueTrack>
+          ))}
+        </div>
       }
     </div>
   );

@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { connect } from 'react-redux'
 // import { CountdownCircleTimer } from 'react-countdown-circle-timer'
+import styles from './Player.module.css';
 import { fetchListQueues } from '../Queue/network'
 import {
   fetchNextTrack,
@@ -181,12 +182,12 @@ function Player(props) {
 
   return (
     <>
-      <div>
-        <p><i>Previous...</i></p>
+      <div className={styles.Div}>
+        <p><i>Last...</i></p>
         <p>{lastUp?.track?.name}</p>
       </div>
 
-      <div>
+      <div className={styles.Div}>
         <p><i>Now playing...</i></p>
         {(stream?.isPlaying || stream?.isPaused) &&
           <p>{track?.name}</p>
@@ -196,28 +197,28 @@ function Player(props) {
         }
       </div>
 
-      <div>
-        <button onClick={handlePrevTrack}>Prev</button>
-        {stream?.isPaused &&
-          <button onClick={handlePlayTrack}>Play</button>
-        }
-        {stream?.isPlaying &&
-          <button onClick={handlePauseTrack}>Pause</button>
-        }
-        <button onClick={handleNextTrack}>Next</button>
-      </div>
-      <div>
-        {(stream?.isPlaying) &&
-          <button onClick={handleScanBackward}>Backward</button>
-        }
-        {(stream?.isPlaying) &&
-          <button onClick={handleScanForward}>Forward</button>
-        }
-      </div>
-
-      <div>
+      <div className={styles.Div}>
         <p><i>Next...</i></p>
         <p>{nextUp?.track.name}</p>
+      </div>
+
+      <div className={styles.Div}>
+        <button className={styles.Button} onClick={handlePrevTrack}>Prev</button>
+        {stream?.isPaused &&
+          <button className={styles.Button} onClick={handlePlayTrack}>Play</button>
+        }
+        {stream?.isPlaying &&
+          <button className={styles.Button} onClick={handlePauseTrack}>Pause</button>
+        }
+        <button className={styles.Button} onClick={handleNextTrack}>Next</button>
+      </div>
+      <div className={styles.Div}>
+        {(stream?.isPlaying) &&
+          <button className={styles.Button} onClick={handleScanBackward}>Backward</button>
+        }
+        {(stream?.isPlaying) &&
+          <button className={styles.Button} onClick={handleScanForward}>Forward</button>
+        }
       </div>
     </>
   );

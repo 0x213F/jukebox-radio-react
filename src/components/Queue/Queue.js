@@ -37,6 +37,7 @@ function Queue(props) {
    */
   return (
     <div className={styles.Queue}>
+      <p><i>Last up...</i></p>
       <div>
         {props.lastUpQueues.map((value, index) => {
           if(value.track) {
@@ -52,9 +53,10 @@ function Queue(props) {
         })}
       </div>
       <div>
-        <i>Now playing...</i>
+        <p><i>Now playing...</i></p>
         <p>{props.stream?.nowPlaying?.track.name}</p>
       </div>
+      <p><i>Next up...</i></p>
       <div>
         {props.nextUpQueues.map((value, index) => {
           if(value.collection) {

@@ -1,1 +1,15 @@
-.QueueCollection {}
+.QueueCollection {
+  height: auto;
+}
+
+.Item {
+  height: 1.4rem;
+}
+
+.Button {
+  float: right;
+}
+
+.Children {
+  display: block;
+}

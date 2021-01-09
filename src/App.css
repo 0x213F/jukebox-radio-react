@@ -35,4 +35,6 @@ nav > ul > li {
   max-width: 800px;
   border: 1px solid black;
   padding: 1rem;
+  max-height: 80%;
+  overflow-y: auto;
 }

@@ -76,8 +76,8 @@ function App() {
         </nav>
 
         {/* main section */}
-        <div class="app-main-container">
-          <div class="app-main">
+        <div className="app-main-container">
+          <div className="app-main">
             <Switch>
               <Route path="/login">
                 <Login />
