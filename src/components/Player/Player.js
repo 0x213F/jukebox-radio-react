@@ -11,6 +11,7 @@ import {
   fetchScanBackward,
   fetchScanForward,
 } from './network'
+import { fetchTextComments, fetchVoiceRecordings } from '../Chat/network'
 
 
 function Player(props) {
@@ -19,11 +20,32 @@ function Player(props) {
    * 🏗
    */
   const stream = props.stream,
+        playback = props.playback,
         track = stream?.nowPlaying?.track,
         nextUp = props.nextUp,
         lastUp = props.lastUp;
 
   const [key, setKey] = useState(0);
+
+
+  /*
+   *
+   */
+  const updateFeed = async function() {
+    // load comments
+    const textCommentsJsonResponse = await fetchTextComments();
+    await props.dispatch({
+      type: 'textComment/listSet',
+      textComments: textCommentsJsonResponse.data,
+    });
+
+    // load voice recordings
+    const voiceRecordingsJsonResponse = await fetchVoiceRecordings();
+    await props.dispatch({
+      type: 'voiceRecording/listSet',
+      voiceRecordings: voiceRecordingsJsonResponse.data,
+    });
+  }
 
   /*
    * When...
@@ -41,11 +63,13 @@ function Player(props) {
       startedAt: responseJson.data.startedAt,
     });
 
-    props.dispatch({
+    await props.dispatch({
       type: 'queue/listSet',
       lastUpQueues: lastUpQueues,
       nextUpQueues: nextUpQueues,
     });
+
+    await updateFeed();
   }
 
   /*
@@ -66,11 +90,13 @@ function Player(props) {
       startedAt: responseJson.data.startedAt,
     });
 
-    props.dispatch({
+    await props.dispatch({
       type: 'queue/listSet',
       lastUpQueues: lastUpQueues,
       nextUpQueues: nextUpQueues,
     });
+
+    await updateFeed();
   }
 
   /*
@@ -154,6 +180,10 @@ function Player(props) {
     setKey(key + 1);
   }
 
+  if(stream?.isPlaying && !playback.nowPlaying) {
+    props.dispatch({ type: 'playback/play' });
+  }
+
   /*
    * When...
    */
@@ -226,6 +256,7 @@ function Player(props) {
 
 const mapStateToProps = (state) => ({
     stream: state.stream,
+    playback: state.playback,
     lastUp: state.lastUp,
     lastUpQueues: state.lastUpQueues,
     nextUp: state.nextUp,

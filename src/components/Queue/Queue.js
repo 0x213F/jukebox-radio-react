@@ -61,14 +61,14 @@ function Queue(props) {
         {props.nextUpQueues.map((value, index) => {
           if(value.collection) {
             return (
-              <QueueCollection key={index}
+              <QueueCollection key={value.uuid}
                                data={value}
                                destroy={destroyQueueItem}>
               </QueueCollection>
             );
           } else if(value.track) {
             return (
-              <QueueTrack key={index}
+              <QueueTrack key={value.uuid}
                           data={value}
                           destroy={destroyQueueItem}>
               </QueueTrack>

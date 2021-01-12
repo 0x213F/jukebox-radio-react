@@ -1,5 +1,9 @@
 .TextComment {
   max-width: 300px;
+  background-color: #d4d4d4;
+  border-radius: 4px;
+  padding: 4px;
+  margin-bottom: 8px;
 }
 
 .Notated {

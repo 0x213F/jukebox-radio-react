@@ -1,4 +1,6 @@
+import React, { useState } from "react";
 import { connect } from 'react-redux'
+import EditTrack from '../EditTrack/EditTrack'
 import styles from './QueueTrack.module.css';
 
 
@@ -10,6 +12,16 @@ function QueueTrack(props) {
   const queue = props.data,
         stream = props.stream,
         lastUp = props.lastUp;
+
+  const [showEditing, setShowEditing] = useState(false);
+
+  const edit = async function(e) {
+    setShowEditing(true);
+  }
+
+  const save = async function(e) {
+    setShowEditing(false);
+  }
 
   /*
    * 🎨
@@ -24,9 +36,24 @@ function QueueTrack(props) {
         {queue.track.name}
       </span>
       {isNextUp &&
-        <button className={styles.Button} type="button" onClick={async (e) => { await props.destroy(queue); }}>
-          Delete
-        </button>
+        <>
+          <button className={styles.Button} type="button" onClick={async (e) => { await props.destroy(queue); }}>
+            Delete
+          </button>
+          {!showEditing &&
+            <button className={styles.Button} type="button" onClick={edit}>
+              Edit
+            </button>
+          }
+          {showEditing &&
+            <button className={styles.Button} type="button" onClick={save}>
+              Save
+            </button>
+          }
+        </>
+      }
+      {showEditing &&
+        <EditTrack />
       }
     </div>
   );

@@ -5,6 +5,8 @@ import Queue from './components/Queue/Queue'
 import Search from './components/Search/Search'
 import Upload from './components/Upload/Upload'
 import Player from './components/Player/Player'
+import { fetchTextComments, fetchVoiceRecordings } from './components/Chat/network'
+import { fetchVerifyToken } from './components/Login/network'
 import { fetchStream } from './components/Player/network'
 import { fetchListQueues } from './components/Queue/network'
 import { store } from './utils/redux'
@@ -24,24 +26,42 @@ function App() {
   // componentDidMount
   useEffect(() => {
     async function loadData() {
-      let jsonResponse;
+
+      // verify authentication
+      const authResponse = await fetchVerifyToken();
+      console.log(authResponse);
 
       // load stream
-      jsonResponse = await fetchStream();
+      const streamJsonResponse = await fetchStream();
+      const stream = streamJsonResponse.data;
 
       await store.dispatch({
         type: 'stream/set',
-        stream: jsonResponse.data,
+        stream: stream,
       });
 
       // load queue
-      jsonResponse = await fetchListQueues();
-      const { nextUpQueues, lastUpQueues } = jsonResponse.data;
+      const queueJsonResponse = await fetchListQueues();
+      const { nextUpQueues, lastUpQueues } = queueJsonResponse.data;
 
       await store.dispatch({
         type: 'queue/listSet',
         lastUpQueues: lastUpQueues,
         nextUpQueues: nextUpQueues,
+      });
+
+      // load comments
+      const textCommentsJsonResponse = await fetchTextComments();
+      await store.dispatch({
+        type: 'textComment/listSet',
+        textComments: textCommentsJsonResponse.data,
+      });
+
+      // load voice recordings
+      const voiceRecordingsJsonResponse = await fetchVoiceRecordings();
+      await store.dispatch({
+        type: 'voiceRecording/listSet',
+        voiceRecordings: voiceRecordingsJsonResponse.data,
       });
     }
     loadData();

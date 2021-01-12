@@ -71,7 +71,7 @@ function NotableText(props) {
    * neighboring text.
    */
   const updateZIndex = function(annotation) {
-    annotation._svg.style.zIndex = -1;
+    annotation._svg.style.zIndex = 16;
   }
 
   /*

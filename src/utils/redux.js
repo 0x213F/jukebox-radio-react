@@ -5,6 +5,12 @@ const initialState = {
   nextUpQueues: [],
   lastUpQueues: [],
   _lastPlayed: undefined,
+  textComments: [],
+  voiceRecordings: [],
+  feed: [],
+  playback: {
+    nowPlaying: undefined,
+  },
 }
 
 
@@ -34,6 +40,8 @@ function streamPrevTrack(state, action) {
         ...state.stream,
         startedAt: action.startedAt,
         nowPlaying: nowPlaying,
+        isPlaying: true,
+        isPaused: false,
       },
       _lastPlayed: undefined,
   };
@@ -53,6 +61,8 @@ function streamNextTrack(state, action) {
         ...state.stream,
         startedAt: action.startedAt,
         nowPlaying: nowPlaying,
+        isPlaying: true,
+        isPaused: false,
       },
       _lastPlayed: undefined,
   };
@@ -68,6 +78,17 @@ function streamExpire(state, action) {
   stream.nowPlaying = undefined;
 
   return { ...state, stream: stream, _lastPlayed: _lastPlayed };
+}
+
+
+function playbackPlay(state, action) {
+  return {
+    ...state,
+    playback: {
+      ...state.playback,
+      nowPlaying: state.stream.nowPlaying,
+    },
+  };
 }
 
 
@@ -139,6 +160,101 @@ function queueDeleteChildNode(state, action) {
 }
 
 
+function textCommentListSet(state, action) {
+  const textComments = action.textComments,
+        aggregateFeed = [...textComments, ...state.voiceRecordings];
+
+  const feed = aggregateFeed.sort((a, b) => {
+    return a.timestampMilliseconds - b.timestampMilliseconds;
+  });
+
+  return {
+    ...state,
+    textComments: action.textComments,
+    feed: feed,
+  }
+}
+
+
+function textCommentCreate(state, action) {
+  const textComments = [...state.textComments, action.textComment],
+        aggregateFeed = [...textComments, ...state.voiceRecordings],
+        feed = aggregateFeed.sort((a, b) => {
+          return a.timestampMilliseconds - b.timestampMilliseconds;
+        });
+
+  return {
+    ...state,
+    textComments: textComments,
+    feed: feed,
+  }
+}
+
+
+// function textCommentClearModifications(state, action) {
+//   const textCommentIndex = state.textComments.findIndex(t => t.uuid === action.textCommentUuid),
+//         textComments = [...state.textComments];
+//
+//   textComments[textCommentIndex].modifications = [];
+//
+//   const aggregateFeed = [...textComments, ...state.voiceRecordings],
+//         feed = aggregateFeed.sort((a, b) => {
+//           return a.timestampMilliseconds - b.timestampMilliseconds;
+//         });
+//
+//   return {
+//     ...state,
+//     textComments: textComments,
+//     feed: feed,
+//   }
+// }
+
+
+function voiceRecordingListSet(state, action) {
+  const voiceRecordings = action.voiceRecordings,
+        aggregateFeed = [...state.textComments, ...voiceRecordings],
+        feed = aggregateFeed.sort((a, b) => {
+          return a.timestampMilliseconds - b.timestampMilliseconds;
+        });
+
+  return {
+    ...state,
+    voiceRecordings: action.voiceRecordings,
+    feed: feed,
+  }
+}
+
+
+function textCommentDelete(state, action) {
+  const textComments = state.textComments.filter(i => i.uuid !== action.textCommentUuid),
+        aggregateFeed = [...textComments, ...state.voiceRecordings],
+        feed = aggregateFeed.sort((a, b) => {
+          return a.timestampMilliseconds - b.timestampMilliseconds;
+        });
+
+  return {
+    ...state,
+    textComments: textComments,
+    feed: feed,
+  }
+}
+
+
+function voiceRecordingDelete(state, action) {
+  const voiceRecordings = state.voiceRecordings.filter(i => i.uuid !== action.voiceRecordingUuid),
+        aggregateFeed = [...state.textComments, ...voiceRecordings],
+        feed = aggregateFeed.sort((a, b) => {
+          return a.timestampMilliseconds - b.timestampMilliseconds;
+        });
+
+  return {
+    ...state,
+    voiceRecordings: voiceRecordings,
+    feed: feed,
+  }
+}
+
+
 const reducer = (state = initialState, action) => {
   switch (action.type) {
     case "stream/set":
@@ -149,12 +265,26 @@ const reducer = (state = initialState, action) => {
       return streamNextTrack(state, action);
     case "stream/expire":
       return streamExpire(state, action);
+    case "playback/play":
+      return playbackPlay(state, action);
     case "queue/listSet":
       return queueListSet(state, action);
     case "queue/deleteNode":
       return queueDeleteNode(state, action);
     case "queue/deleteChildNode":
       return queueDeleteChildNode(state, action);
+    case "textComment/listSet":
+      return textCommentListSet(state, action);
+    case "textComment/create":
+      return textCommentCreate(state, action);
+    case "textComment/delete":
+      return textCommentDelete(state, action);
+    // case "textComment/clearModifications":
+    //   return textCommentClearModifications(state, action);
+    case "voiceRecording/listSet":
+      return voiceRecordingListSet(state, action);
+    case "voiceRecording/delete":
+      return voiceRecordingDelete(state, action);
     default:
       return state;
   }
