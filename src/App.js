@@ -5,6 +5,7 @@ import Queue from './components/Queue/Queue'
 import Search from './components/Search/Search'
 import Upload from './components/Upload/Upload'
 import Player from './components/Player/Player'
+import UserSettings from './components/UserSettings/UserSettings'
 import { fetchTextComments, fetchVoiceRecordings } from './components/Chat/network'
 import { fetchVerifyToken } from './components/Login/network'
 import { fetchStream } from './components/Player/network'
@@ -78,6 +79,9 @@ function App() {
               <Link to="/login">Login</Link>
             </li>
             <li>
+              <Link to="/settings">Settings</Link>
+            </li>
+            <li>
               <Link to="/chat">Chat</Link>
             </li>
             <li>
@@ -101,6 +105,9 @@ function App() {
             <Switch>
               <Route path="/login">
                 <Login />
+              </Route>
+              <Route path="/settings">
+                <UserSettings />
               </Route>
               <Route path="/chat">
                 <Chat />
