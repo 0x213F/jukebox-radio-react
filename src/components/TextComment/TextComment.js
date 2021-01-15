@@ -1,5 +1,5 @@
 import React from "react";
-import NotableText from '../NotableText/NotableText'
+// import NotableText from '../NotableText/NotableText'
 import styles from './TextComment.module.css';
 
 

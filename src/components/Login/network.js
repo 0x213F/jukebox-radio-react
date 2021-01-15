@@ -44,7 +44,7 @@ export const fetchVerifyToken = async () => {
     { token: token }
   );
   if(response.status !== 200) {
-    throw "Not logged in!";
+    throw new Error("Not logged in!");
   }
   const responseJson = await response.json();
   return responseJson;
