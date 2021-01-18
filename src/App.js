@@ -10,6 +10,7 @@ import { fetchTextComments, fetchVoiceRecordings } from './components/Chat/netwo
 import { fetchVerifyToken } from './components/Login/network'
 import { fetchStream } from './components/Player/network'
 import { fetchListQueues } from './components/Queue/network'
+import { fetchGetUserSettings } from './components/UserSettings/network'
 import { store } from './utils/redux'
 
 import { useEffect } from "react";
@@ -63,6 +64,12 @@ function App() {
       await store.dispatch({
         type: 'voiceRecording/listSet',
         voiceRecordings: voiceRecordingsJsonResponse.data,
+      });
+
+      // get user settings
+      const userSettingsJsonResponse = await fetchGetUserSettings();
+      await store.dispatch({
+        type:
       });
     }
     loadData();
