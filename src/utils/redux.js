@@ -210,21 +210,6 @@ function textCommentCreate(state, action) {
 // }
 
 
-function voiceRecordingListSet(state, action) {
-  const voiceRecordings = action.voiceRecordings,
-        aggregateFeed = [...state.textComments, ...voiceRecordings],
-        feed = aggregateFeed.sort((a, b) => {
-          return a.timestampMilliseconds - b.timestampMilliseconds;
-        });
-
-  return {
-    ...state,
-    voiceRecordings: action.voiceRecordings,
-    feed: feed,
-  }
-}
-
-
 function textCommentDelete(state, action) {
   const textComments = state.textComments.filter(i => i.uuid !== action.textCommentUuid),
         aggregateFeed = [...textComments, ...state.voiceRecordings],
@@ -235,6 +220,36 @@ function textCommentDelete(state, action) {
   return {
     ...state,
     textComments: textComments,
+    feed: feed,
+  }
+}
+
+
+function voiceRecordingCreate(state, action) {
+  const voiceRecordings = [...state.voiceRecordings, action.voiceRecording],
+        aggregateFeed = [...state.textComments, ...voiceRecordings],
+        feed = aggregateFeed.sort((a, b) => {
+          return a.timestampMilliseconds - b.timestampMilliseconds;
+        });
+
+  return {
+    ...state,
+    voiceRecordings: voiceRecordings,
+    feed: feed,
+  }
+}
+
+
+function voiceRecordingListSet(state, action) {
+  const voiceRecordings = action.voiceRecordings,
+        aggregateFeed = [...state.textComments, ...voiceRecordings],
+        feed = aggregateFeed.sort((a, b) => {
+          return a.timestampMilliseconds - b.timestampMilliseconds;
+        });
+
+  return {
+    ...state,
+    voiceRecordings: action.voiceRecordings,
     feed: feed,
   }
 }
@@ -281,6 +296,8 @@ const reducer = (state = initialState, action) => {
       return textCommentDelete(state, action);
     // case "textComment/clearModifications":
     //   return textCommentClearModifications(state, action);
+    case "voiceRecording/create":
+      return voiceRecordingCreate(state, action);
     case "voiceRecording/listSet":
       return voiceRecordingListSet(state, action);
     case "voiceRecording/delete":
