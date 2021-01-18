@@ -1,12 +1,11 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { connect } from 'react-redux'
 import SpeechRecognition, { useSpeechRecognition } from 'react-speech-recognition'
 import MicRecorder from 'mic-recorder-to-mp3';
 import styles from './Chat.module.css';
-import { fetchCreateTextComment, fetchTextComments, fetchVoiceRecordings } from './network'
+import { fetchCreateTextComment } from './network'
 import {
   fetchDeleteTextComment,
-  fetchListDeleteTextCommentModifications,
 } from '../TextComment/network'
 import {
   fetchCreateVoiceRecording,
@@ -25,23 +24,10 @@ function Chat(props) {
   /*
    * 🏗
    */
-  const [_textComments, _setTextComments] = useState(undefined);
-  const [_voiceRecordings, _setVoiceRecordings] = useState(undefined);
   const [text, setText] = useState('');
   const [isRecording, setIsRecording] = useState(false);
   const [recorder] = useState(new MicRecorder({ bitRate: 320 }));
   const [transcriptData] = useState([]);
-
-  /*
-   * Called inside a child component, this deletes the data (either a text
-   * comment or voice recording) from the state, thereby updating the UI.
-   */
-  const destroyFeedItem = async function(genericUuid) {
-    await props.dispatch({
-      type: 'textComment/delete',
-      textCommentUuid: genericUuid,
-    });
-  }
 
   /*
    * ...
@@ -149,8 +135,11 @@ function Chat(props) {
             });
 
             const responseJson = await fetchCreateVoiceRecording(file, JSON.stringify(transcriptData), transcript);
-            _voiceRecordings.push(responseJson.data);
-            _setVoiceRecordings([..._voiceRecordings]);
+
+            await props.dispatch({
+              type: 'voiceRecording/create',
+              voiceRecording: responseJson.data,
+            });
 
             if (SpeechRecognition.browserSupportsSpeechRecognition()) {
               resetTranscript();
@@ -167,15 +156,6 @@ function Chat(props) {
    * sorted by track timestamp.
    */
   let feed = props.feed;
-
-  // if(!Array.isArray(_textComments) || !Array.isArray(_voiceRecordings)) {
-  //   feed = [];
-  // } else {
-  //   const aggregateFeed = [..._textComments, ..._voiceRecordings];
-  //   feed = aggregateFeed.sort((a, b) => {
-  //     return a.timestampMilliseconds - b.timestampMilliseconds;
-  //   });
-  // }
 
 
   /*
