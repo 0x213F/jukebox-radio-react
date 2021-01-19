@@ -2,7 +2,6 @@ import React from "react";
 import { connect } from 'react-redux';
 
 function UserSettings(props) {
-  console.log(props.userSettings);
   if (!props.userSettings) {
     return <></>;
   }
