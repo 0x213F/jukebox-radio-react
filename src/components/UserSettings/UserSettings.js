@@ -1,19 +1,19 @@
-import React, { useState } from "react";
-import styles from './UserSettings.module.css'
+import React from "react";
+import { connect } from 'react-redux';
 
-import { fetchGetUserSettings } from './network';
+function UserSettings(props) {
+  console.log(props.userSettings);
+  if (!props.userSettings) {
+    return <></>;
+  }
 
-function UserSettings() {
-
-  // users/user/get-settings
-
-    return (
-      <button type="submit" onClick={}>Connect Your Spotify Account</button>
-    );
+  return (
+    <a href={props.userSettings.spotify.authorizationUrl}>Connect Your Spotify Account</a>
+  );
 }
 
 const mapStateToProps = (state) => ({
-
+  userSettings: state.userSettings,
 });
 
-export default UserSettings;
+export default connect(mapStateToProps)(UserSettings);

@@ -11,6 +11,7 @@ const initialState = {
   playback: {
     nowPlaying: undefined,
   },
+  userSettings: undefined,
 }
 
 
@@ -269,6 +270,13 @@ function voiceRecordingDelete(state, action) {
   }
 }
 
+function userGetSettings(state, action) {
+  return {
+    ...state,
+    userSettings: action.userSettings,
+  }
+}
+
 
 const reducer = (state = initialState, action) => {
   switch (action.type) {
@@ -302,6 +310,8 @@ const reducer = (state = initialState, action) => {
       return voiceRecordingListSet(state, action);
     case "voiceRecording/delete":
       return voiceRecordingDelete(state, action);
+    case "user/get-settings":
+      return userGetSettings(state, action);
     default:
       return state;
   }

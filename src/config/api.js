@@ -31,7 +31,7 @@ const ENDPOINT_PREVIOUS_TRACK = '/streams/stream/previous-track/'
 const ENDPOINT_SCAN_BACKWARD = '/streams/stream/scan-backward/'
 const ENDPOINT_SCAN_FORWARD = '/streams/stream/scan-forward/'
 
-const ENDPOINT_GET_USER_SETTINGS = '/users/user-connect-spotify'
+const ENDPOINT_GET_USER_SETTINGS = '/users/user/get-settings'
 
 export {
   ENDPOINT_OBTAIN_AUTH_TOKEN,

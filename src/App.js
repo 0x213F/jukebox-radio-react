@@ -31,7 +31,10 @@ function App() {
 
       // verify authentication
       const authResponse = await fetchVerifyToken();
-      console.log(authResponse);
+        if (!authResponse) {
+          return;
+        }
+        console.log(authResponse);
 
       // load stream
       const streamJsonResponse = await fetchStream();
@@ -69,7 +72,8 @@ function App() {
       // get user settings
       const userSettingsJsonResponse = await fetchGetUserSettings();
       await store.dispatch({
-        type:
+        type: 'user/get-settings',
+        userSettings: userSettingsJsonResponse.data,
       });
     }
     loadData();
