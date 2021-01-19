@@ -5,10 +5,12 @@ import Queue from './components/Queue/Queue'
 import Search from './components/Search/Search'
 import Upload from './components/Upload/Upload'
 import Player from './components/Player/Player'
+import UserSettings from './components/UserSettings/UserSettings'
 import { fetchTextComments, fetchVoiceRecordings } from './components/Chat/network'
 import { fetchVerifyToken } from './components/Login/network'
 import { fetchStream } from './components/Player/network'
 import { fetchListQueues } from './components/Queue/network'
+import { fetchGetUserSettings } from './components/UserSettings/network'
 import { store } from './utils/redux'
 
 import { useEffect } from "react";
@@ -29,7 +31,10 @@ function App() {
 
       // verify authentication
       const authResponse = await fetchVerifyToken();
-      console.log(authResponse);
+        if (!authResponse) {
+          return;
+        }
+        console.log(authResponse);
 
       // load stream
       const streamJsonResponse = await fetchStream();
@@ -63,6 +68,13 @@ function App() {
         type: 'voiceRecording/listSet',
         voiceRecordings: voiceRecordingsJsonResponse.data,
       });
+
+      // get user settings
+      const userSettingsJsonResponse = await fetchGetUserSettings();
+      await store.dispatch({
+        type: 'user/get-settings',
+        userSettings: userSettingsJsonResponse.data,
+      });
     }
     loadData();
   }, []);
@@ -76,6 +88,9 @@ function App() {
           <ul>
             <li>
               <Link to="/login">Login</Link>
+            </li>
+            <li>
+              <Link to="/settings">Settings</Link>
             </li>
             <li>
               <Link to="/chat">Chat</Link>
@@ -101,6 +116,9 @@ function App() {
             <Switch>
               <Route path="/login">
                 <Login />
+              </Route>
+              <Route path="/settings">
+                <UserSettings />
               </Route>
               <Route path="/chat">
                 <Chat />

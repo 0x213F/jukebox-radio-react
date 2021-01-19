@@ -31,6 +31,8 @@ const ENDPOINT_PREVIOUS_TRACK = '/streams/stream/previous-track/'
 const ENDPOINT_SCAN_BACKWARD = '/streams/stream/scan-backward/'
 const ENDPOINT_SCAN_FORWARD = '/streams/stream/scan-forward/'
 
+const ENDPOINT_GET_USER_SETTINGS = '/users/user/get-settings'
+
 export {
   ENDPOINT_OBTAIN_AUTH_TOKEN,
   ENDPOINT_REFRESH_AUTH_TOKEN,
@@ -64,4 +66,6 @@ export {
   ENDPOINT_PREVIOUS_TRACK,
   ENDPOINT_SCAN_BACKWARD,
   ENDPOINT_SCAN_FORWARD,
+
+  ENDPOINT_GET_USER_SETTINGS,
 }
