@@ -29,6 +29,8 @@ function Login(props) {
     localStorage.setItem('refreshToken', responseJson.refresh);
 
     await fetchInitializeStream();
+
+    window.location.reload();
   }
 
   return (
