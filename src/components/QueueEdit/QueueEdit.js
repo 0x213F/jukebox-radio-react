@@ -1,51 +1,61 @@
 import React, { useState, useEffect } from "react";
-import { connect } from 'react-redux'
-import { fetchCreateTrackMarker, fetchListTrackMarkers } from '../TrackMarker/network';
-import { fetchCreateQueueInterval } from '../QueueInterval/network';
+import { connect } from 'react-redux';
+import {
+  fetchStreamMarkerCreate,
+  fetchStreamMarkerList,
+} from '../TrackMarker/network';
+import {
+  fetchStreamQueueIntervalCreate,
+} from '../QueueInterval/network';
 import TrackMarker from '../TrackMarker/TrackMarker'
 import QueueInterval from '../QueueInterval/QueueInterval'
 
 
 function QueueEdit(props) {
 
-  const queue = props.data;
+  const queue = props.data,
+        queueUuid = queue.uuid,
+        parentQueueUuid = queue.parentUuid,
+        trackMarkerMap = props.trackMarkerMap;
 
-  const [markers, setMarkers] = useState([]);
+  const markers = trackMarkerMap[queueUuid] || [];
+
   const [formMarkerTimestamp, setFormMarkerTimestamp] = useState('');
-  const [lowerBoundMarkerUuid, setLowerBoundMarkerUuid] = useState('');
-  const [upperBoundMarkerUuid, setUpperBoundMarkerUuid] = useState('');
-  const [isMuted, setIsMuted] = useState('');
+  const [lowerBoundMarkerUuid, setLowerBoundMarkerUuid] = useState('null');
+  const [upperBoundMarkerUuid, setUpperBoundMarkerUuid] = useState('null');
 
   useEffect(() => {
     async function loadData() {
-      const responseJson = await fetchListTrackMarkers(queue.track.uuid);
-      console.log(responseJson.data)
-      setMarkers(responseJson.data.markers);
+      const responseJson = await fetchStreamMarkerList(queue.track.uuid, queueUuid);
     }
     loadData();
   }, [])
 
   const createTrackMarker = async function() {
-    await fetchCreateTrackMarker(queue.track.uuid, formMarkerTimestamp);
+    await fetchStreamMarkerCreate(queue.track.uuid, formMarkerTimestamp, queueUuid);
+    setFormMarkerTimestamp('');
   }
 
   const createQueueInterval = async function() {
-    await fetchCreateQueueInterval(
+    await fetchStreamQueueIntervalCreate(
       queue.uuid,
       lowerBoundMarkerUuid,
       upperBoundMarkerUuid,
       true,
       null,
+      parentQueueUuid,
     )
   }
-
-  console.log(markers)
 
   return (
     <div>
       <p>Markers</p>
       {markers.map((value, index) => (
-        <TrackMarker key={index} data={value} />
+        <TrackMarker key={index}
+                     data={{
+                       trackMarker: value,
+                       queueUuid: queueUuid,
+                     }} />
       ))}
       <div>
         <input type="text"
@@ -57,19 +67,24 @@ function QueueEdit(props) {
       </div>
       <p>Intervals</p>
       {queue.intervals.map((value, index) => (
-        <QueueInterval key={index} data={value} />
+        <QueueInterval key={index}
+                       data={{
+                         queueInterval: value,
+                         queueUuid: queueUuid,
+                         parentQueueUuid: parentQueueUuid,
+                       }} />
       ))}
       <div>
         <select value={lowerBoundMarkerUuid} onChange={(e) => {setLowerBoundMarkerUuid(e.target.value)}}>
-          <option value={null}>Beginning</option>
+          <option value={'null'}>Beginning</option>
           {markers.map((value, index) => (
-            <option value={value.uuid}>@ {value.timestampMilliseconds}</option>
+            <option key={index} value={value.uuid}>@ {value.timestampMilliseconds}</option>
           ))}
         </select>
         <select value={upperBoundMarkerUuid} onChange={(e) => {setUpperBoundMarkerUuid(e.target.value)}}>
-          <option value={null}>End</option>
+          <option value={'null'}>End</option>
           {markers.map((value, index) => (
-            <option value={value.uuid}>@ {value.timestampMilliseconds}</option>
+            <option key={index} value={value.uuid}>@ {value.timestampMilliseconds}</option>
           ))}
         </select>
         <button onClick={createQueueInterval}>Mute Interval</button>
@@ -79,7 +94,8 @@ function QueueEdit(props) {
 }
 
 const mapStateToProps = (state) => ({
-
+  trackMarkerMap: state.trackMarkerMap,
+  nextUpQueues: state.nextUpQueues,
 });
 
 export default connect(mapStateToProps)(QueueEdit);

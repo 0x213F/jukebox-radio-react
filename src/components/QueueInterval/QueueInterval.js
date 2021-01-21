@@ -1,14 +1,14 @@
 import React, { useState, useEffect } from "react";
 import { connect } from 'react-redux'
-import { fetchDeleteQueueInterval } from './network';
+import { fetchStreamQueueIntervalDelete } from './network';
 
 
 function QueueInterval(props) {
 
-  const queueInterval = props.data;
+  const { queueInterval, queueUuid, parentQueueUuid } = props.data;
 
   const deleteQueueInterval = async function() {
-    await fetchDeleteQueueInterval(queueInterval.uuid);
+    await fetchStreamQueueIntervalDelete(queueInterval.uuid, queueUuid, parentQueueUuid);
   }
 
   const lowerBound = queueInterval.lowerBound ?
@@ -28,6 +28,8 @@ function QueueInterval(props) {
   );
 }
 
-const mapStateToProps = (state) => ({});
+const mapStateToProps = (state) => ({
+  nextUpQueues: state.nextUpQueues,
+});
 
 export default connect(mapStateToProps)(QueueInterval);

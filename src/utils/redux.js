@@ -1,4 +1,13 @@
 import { createStore } from 'redux';
+import {
+  markerCreate,
+  markerDelete,
+  markerList,
+} from './reducers/marker'
+import {
+  queueIntervalCreate,
+  queueIntervalDelete,
+} from './reducers/queueInterval'
 
 
 const initialState = {
@@ -12,6 +21,8 @@ const initialState = {
     nowPlaying: undefined,
   },
   userSettings: undefined,
+  trackMarkerMap: {},
+  queueIntervalMap: {},
 }
 
 
@@ -312,6 +323,16 @@ const reducer = (state = initialState, action) => {
       return voiceRecordingDelete(state, action);
     case "user/get-settings":
       return userGetSettings(state, action);
+    case "marker/create":
+      return markerCreate(state, action.payload);
+    case "marker/delete":
+      return markerDelete(state, action.payload);
+    case "marker/list":
+      return markerList(state, action.payload);
+    case "queueInterval/create":
+      return queueIntervalCreate(state, action.payload);
+    case "queueInterval/delete":
+      return queueIntervalDelete(state, action.payload);
     default:
       return state;
   }

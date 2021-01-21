@@ -1,43 +1,52 @@
-import { ENDPOINT_CREATE_TRACK_MARKER, ENDPOINT_DELETE_TRACK_MARKER, ENDPOINT_LIST_TRACK_MARKERS } from '../../config/api'
-import { TYPE_GET, TYPE_POST } from '../../config/global'
-import { fetchBackend } from '../../utils/network'
+import {
+  ENDPOINT_CREATE_TRACK_MARKER,
+  ENDPOINT_DELETE_TRACK_MARKER,
+  ENDPOINT_LIST_TRACK_MARKERS,
+} from '../../config/api';
+import { TYPE_GET, TYPE_POST } from '../../config/global';
+import { fetchBackend } from '../../utils/network';
+import { store } from '../../utils/redux';
 
 
 /*
- * Fetches...
+ * Creates a marker. The queue context is passed so the Redux state may be
+ * updated.
  */
-export const fetchCreateTrackMarker = async (trackUuid, timestampMilliseconds) => {
+export const fetchStreamMarkerCreate = async (trackUuid, timestampMilliseconds, queueUuid) => {
   const response = await fetchBackend(
     TYPE_POST,
     ENDPOINT_CREATE_TRACK_MARKER,
-    { trackUuid, timestampMilliseconds }
+    { trackUuid, timestampMilliseconds, queueUuid }
   );
   const responseJson = await response.json();
-  return responseJson;
+  await store.dispatch(responseJson.redux);
 };
 
+
 /*
- * Fetches...
+ * Deletes a marker. The queue context is passed so the Redux state may be
+ * updated.
  */
-export const fetchDeleteTrackMarker = async (markerUuid) => {
+export const fetchStreamMarkerDelete = async (markerUuid, queueUuid) => {
   const response = await fetchBackend(
     TYPE_POST,
     ENDPOINT_DELETE_TRACK_MARKER,
-    { markerUuid }
+    { markerUuid, queueUuid }
   );
   const responseJson = await response.json();
-  return responseJson;
+  await store.dispatch(responseJson.redux);
 };
 
 /*
- * Fetches...
+ * Fetches a list of markers for a given track. The queue context is passed so
+ * the Redux state may be updated.
  */
-export const fetchListTrackMarkers = async (trackUuid) => {
+export const fetchStreamMarkerList = async (trackUuid, queueUuid) => {
   const response = await fetchBackend(
     TYPE_GET,
     ENDPOINT_LIST_TRACK_MARKERS,
-    { trackUuid }
+    { trackUuid, queueUuid }
   );
   const responseJson = await response.json();
-  return responseJson;
+  await store.dispatch(responseJson.redux);
 };
