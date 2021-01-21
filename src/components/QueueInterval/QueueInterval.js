@@ -1,5 +1,4 @@
-import React, { useState, useEffect } from "react";
-import { connect } from 'react-redux'
+import React from "react";
 import { fetchStreamQueueIntervalDelete } from './network';
 
 
@@ -28,8 +27,4 @@ function QueueInterval(props) {
   );
 }
 
-const mapStateToProps = (state) => ({
-  nextUpQueues: state.nextUpQueues,
-});
-
-export default connect(mapStateToProps)(QueueInterval);
+export default QueueInterval;

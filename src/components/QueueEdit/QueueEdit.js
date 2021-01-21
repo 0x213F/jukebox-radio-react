@@ -24,9 +24,9 @@ function QueueEdit(props) {
   const [lowerBoundMarkerUuid, setLowerBoundMarkerUuid] = useState('null');
   const [upperBoundMarkerUuid, setUpperBoundMarkerUuid] = useState('null');
 
-  useEffect(() => {
+  useEffect((queue, queueUuid) => {
     async function loadData() {
-      const responseJson = await fetchStreamMarkerList(queue.track.uuid, queueUuid);
+      await fetchStreamMarkerList(queue.track.uuid, queueUuid);
     }
     loadData();
   }, [])
@@ -95,7 +95,6 @@ function QueueEdit(props) {
 
 const mapStateToProps = (state) => ({
   trackMarkerMap: state.trackMarkerMap,
-  nextUpQueues: state.nextUpQueues,
 });
 
 export default connect(mapStateToProps)(QueueEdit);

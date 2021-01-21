@@ -72,35 +72,34 @@ export const queueIntervalCreate = function(state, action) {
 /*
  * Delete a queue interval relevant to a queue item (track).
  */
- export const queueIntervalDelete = function(state, action) {
-   const queueInterval = action.queueInterval,
-         queueUuid = action.queueUuid,
-         parentQueueUuid = action.parentQueueUuid;
+export const queueIntervalDelete = function(state, action) {
+  const queueInterval = action.queueInterval,
+        queueUuid = action.queueUuid,
+        parentQueueUuid = action.parentQueueUuid;
 
-   // get the queue that the queue interval belongs too.
-   let queues = state.nextUpQueues;
-   let parentIndex, index;
-   if(parentQueueUuid) {
-     parentIndex = queues.findIndex(findByUuid(parentQueueUuid));
-     queues = queues[parentIndex].children;
-   }
-   index = queues.findIndex(findByUuid(queueUuid));
-   const trackQueue = queues[index];
+  // get the queue that the queue interval belongs too.
+  let queues = state.nextUpQueues;
+  let parentIndex, index;
+  if(parentQueueUuid) {
+    parentIndex = queues.findIndex(findByUuid(parentQueueUuid));
+    queues = queues[parentIndex].children;
+  }
+  index = queues.findIndex(findByUuid(queueUuid));
+  const trackQueue = queues[index];
 
-   // delete queue interval from that queue.
-   const queueIntervals = trackQueue.intervals,
-         deletedIndex = queueIntervals.findIndex(findByUuid(queueInterval.uuid)),
-         filteredQueueIntervals = queueIntervals.filter(filterByUuid(deletedIndex));
+  // delete queue interval from that queue.
+  const queueIntervals = [...trackQueue.intervals],
+        filteredQueueIntervals = queueIntervals.filter(filterByUuid(queueInterval.uuid));
 
-   // save the state
-   const nextUpQueues = [...state.nextUpQueues];
-   if(parentIndex) {
-     nextUpQueues[parentIndex].children[index].intervals = filteredQueueIntervals;
-   } else {
-     nextUpQueues[index].intervals = filteredQueueIntervals;
-   }
-   return {
-     ...state,
-     nextUpQueues: nextUpQueues,
-   };
- }
+  // save the state
+  const nextUpQueues = [...state.nextUpQueues];
+  if(parentIndex) {
+    nextUpQueues[parentIndex].children[index].intervals = filteredQueueIntervals;
+  } else {
+    nextUpQueues[index].intervals = filteredQueueIntervals;
+  }
+  return {
+   ...state,
+   nextUpQueues: nextUpQueues,
+  };
+}
