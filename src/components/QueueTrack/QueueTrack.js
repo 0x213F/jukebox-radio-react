@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { connect } from 'react-redux'
-import EditTrack from '../EditTrack/EditTrack'
+import QueueEdit from '../QueueEdit/QueueEdit'
 import styles from './QueueTrack.module.css';
 
 
@@ -47,13 +47,13 @@ function QueueTrack(props) {
           }
           {showEditing &&
             <button className={styles.Button} type="button" onClick={save}>
-              Save
+              Done
             </button>
           }
         </>
       }
       {showEditing &&
-        <EditTrack />
+        <QueueEdit data={queue}/>
       }
     </div>
   );
