@@ -13,7 +13,7 @@ import { fetchListQueues } from './components/Queue/network'
 import { fetchGetUserSettings } from './components/UserSettings/network'
 import { store } from './utils/redux'
 
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { Provider } from 'react-redux';
 import {
   BrowserRouter as Router,
@@ -25,6 +25,13 @@ import {
 
 function App() {
 
+  // keeps track of the status of the webpage
+  //  - initial: when the page is first loaded
+  //  - unauthenticated: the client does NOT have a valid access token
+  //  - authenticated: the client has a valid access token
+  //  - ready: all API data has been loaded
+  const [status, setStatus] = useState('initial');
+
   // componentDidMount
   useEffect(() => {
     async function loadData() {
@@ -32,9 +39,13 @@ function App() {
       // verify authentication
       const authResponse = await fetchVerifyToken();
         if (!authResponse) {
+          setStatus('unauthenticated');
           return;
         }
         console.log(authResponse);
+
+      // set state
+      setStatus('authenticated');
 
       // load stream
       const streamJsonResponse = await fetchStream();
@@ -75,10 +86,50 @@ function App() {
         type: 'user/get-settings',
         userSettings: userSettingsJsonResponse.data,
       });
+
+      setStatus('ready');
     }
     loadData();
   }, []);
 
+  // as the page is loading, display nothing
+  if(status === 'initial') {
+    return (
+      <Router>
+        <Provider store={store}>
+          <></>
+        </Provider>
+      </Router>
+    );
+  }
+
+  // if the user is not authenticated, only display the login portal
+  if(status === 'unauthenticated') {
+    return (
+      <Router>
+        <Provider store={store}>
+          <div className="app-main-container">
+            <div className="app-main">
+              <Login />
+            </div>
+          </div>
+        </Provider>
+      </Router>
+    )
+  }
+
+  // if the user is not authenticated, only display the login portal
+  if(status === 'authenticated') {
+    return (
+      <Router>
+        <Provider store={store}>
+          Loading...
+        </Provider>
+      </Router>
+    )
+  }
+
+  // display the main UI now that everything is loaded up
   return (
     <Router>
       <Provider store={store}>
@@ -86,9 +137,6 @@ function App() {
         {/* nav bar */}
         <nav>
           <ul>
-            <li>
-              <Link to="/login">Login</Link>
-            </li>
             <li>
               <Link to="/settings">Settings</Link>
             </li>
@@ -114,9 +162,6 @@ function App() {
         <div className="app-main-container">
           <div className="app-main">
             <Switch>
-              <Route path="/login">
-                <Login />
-              </Route>
               <Route path="/settings">
                 <UserSettings />
               </Route>
