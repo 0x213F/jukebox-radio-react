@@ -30,6 +30,11 @@ const ENDPOINT_PLAY_TRACK = '/streams/stream/play-track/'
 const ENDPOINT_PREVIOUS_TRACK = '/streams/stream/previous-track/'
 const ENDPOINT_SCAN_BACKWARD = '/streams/stream/scan-backward/'
 const ENDPOINT_SCAN_FORWARD = '/streams/stream/scan-forward/'
+const ENDPOINT_CREATE_TRACK_MARKER = '/streams/marker/create/'
+const ENDPOINT_DELETE_TRACK_MARKER = '/streams/marker/delete/'
+const ENDPOINT_LIST_TRACK_MARKERS = '/streams/marker/list'
+const ENDPOINT_CREATE_QUEUE_INTERVAL = '/streams/queue-interval/create/'
+const ENDPOINT_DELETE_QUEUE_INTERVAL = '/streams/queue-interval/delete/'
 
 const ENDPOINT_GET_USER_SETTINGS = '/users/user/get-settings'
 
@@ -66,6 +71,11 @@ export {
   ENDPOINT_PREVIOUS_TRACK,
   ENDPOINT_SCAN_BACKWARD,
   ENDPOINT_SCAN_FORWARD,
+  ENDPOINT_CREATE_TRACK_MARKER,
+  ENDPOINT_DELETE_TRACK_MARKER,
+  ENDPOINT_LIST_TRACK_MARKERS,
+  ENDPOINT_CREATE_QUEUE_INTERVAL,
+  ENDPOINT_DELETE_QUEUE_INTERVAL,
 
   ENDPOINT_GET_USER_SETTINGS,
 }
