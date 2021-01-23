@@ -1,4 +1,4 @@
-import { ENDPOINT_CREATE_VOICE_RECORDING, ENDPOINT_DELETE_VOICE_RECORDING } from '../../config/api'
+import { ENDPOINT_VOICE_RECORDING_CREATE, ENDPOINT_VOICE_RECORDING_DELETE } from '../../config/api'
 import { TYPE_POST } from '../../config/global'
 import { fetchBackend } from '../../utils/network'
 
@@ -9,7 +9,7 @@ import { fetchBackend } from '../../utils/network'
 export const fetchCreateVoiceRecording = async (audioFile, transcriptData, transcriptFinal) => {
   const response = await fetchBackend(
     TYPE_POST,
-    ENDPOINT_CREATE_VOICE_RECORDING,
+    ENDPOINT_VOICE_RECORDING_CREATE,
     {
       audioFile: audioFile,
       transcriptData: transcriptData,
@@ -26,7 +26,7 @@ export const fetchCreateVoiceRecording = async (audioFile, transcriptData, trans
 export const fetchDeleteVoiceRecording = async (voiceRecordingUuid) => {
   const response = await fetchBackend(
     TYPE_POST,
-    ENDPOINT_DELETE_VOICE_RECORDING,
+    ENDPOINT_VOICE_RECORDING_DELETE,
     { voiceRecordingUuid: voiceRecordingUuid },
   );
   const responseJson = await response.json();
