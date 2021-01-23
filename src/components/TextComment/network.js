@@ -1,7 +1,7 @@
 import {
-  ENDPOINT_DELETE_TEXT_COMMENT,
-  ENDPOINT_UPDATE_TEXT_COMMENT,
-  ENDPOINT_LIST_DELETE_TEXT_COMMENT_MODIFICATIONS,
+  ENDPOINT_TEXT_COMMENT_DELETE,
+  ENDPOINT_TEXT_COMMENT_UPDATE,
+  ENDPOINT_TEXT_COMMENT_MODIFICATION_LIST_DELETE,
 } from '../../config/api'
 import { TYPE_POST } from '../../config/global'
 import { fetchBackend } from '../../utils/network'
@@ -13,7 +13,7 @@ import { fetchBackend } from '../../utils/network'
 export const fetchDeleteTextComment = async (textCommentUuid) => {
   const response = await fetchBackend(
     TYPE_POST,
-    ENDPOINT_DELETE_TEXT_COMMENT,
+    ENDPOINT_TEXT_COMMENT_DELETE,
     { textCommentUuid: textCommentUuid },
   );
   const responseJson = await response.json();
@@ -27,7 +27,7 @@ export const fetchDeleteTextComment = async (textCommentUuid) => {
 export const fetchUpdateTextComment = async (textCommentUuid, text) => {
   const response = await fetchBackend(
     TYPE_POST,
-    ENDPOINT_UPDATE_TEXT_COMMENT,
+    ENDPOINT_TEXT_COMMENT_UPDATE,
     { textCommentUuid: textCommentUuid, text: text },
   );
   const responseJson = await response.json();
@@ -41,7 +41,7 @@ export const fetchUpdateTextComment = async (textCommentUuid, text) => {
 export const fetchListDeleteTextCommentModifications = async (textCommentUuid) => {
   const response = await fetchBackend(
     TYPE_POST,
-    ENDPOINT_LIST_DELETE_TEXT_COMMENT_MODIFICATIONS,
+    ENDPOINT_TEXT_COMMENT_MODIFICATION_LIST_DELETE,
     { textCommentUuid: textCommentUuid },
   );
   const responseJson = await response.json();

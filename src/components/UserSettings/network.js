@@ -1,5 +1,5 @@
 import {
-  ENDPOINT_GET_USER_SETTINGS
+  ENDPOINT_USER_GET_SETTINGS
 } from '../../config/api'
 import { TYPE_GET } from '../../config/global'
 import { fetchBackend } from '../../utils/network'
@@ -10,7 +10,7 @@ import { fetchBackend } from '../../utils/network'
 export const fetchGetUserSettings = async () => {
   const response = await fetchBackend(
     TYPE_GET,
-    ENDPOINT_GET_USER_SETTINGS,
+    ENDPOINT_USER_GET_SETTINGS,
   );
   const responseJson = await response.json();
   return responseJson;

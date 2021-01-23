@@ -1,4 +1,4 @@
-import { ENDPOINT_SEARCH_MUSIC, ENDPOINT_CREATE_QUEUE } from '../../config/api'
+import { ENDPOINT_MUSIC_SEARCH, ENDPOINT_QUEUE_CREATE } from '../../config/api'
 import { TYPE_GET, TYPE_POST } from '../../config/global'
 import { fetchBackend } from '../../utils/network'
 
@@ -8,7 +8,7 @@ import { fetchBackend } from '../../utils/network'
 export const fetchSearchMusicLibrary = async (query, providerSpotify, providerYouTube, providerJukeboxRadio, formatTrack, formatAlbum, formatPlaylist, formatVideo) => {
   const response = await fetchBackend(
     TYPE_GET,
-    ENDPOINT_SEARCH_MUSIC,
+    ENDPOINT_MUSIC_SEARCH,
     {
       query,
       providerSpotify,
@@ -31,7 +31,7 @@ export const fetchSearchMusicLibrary = async (query, providerSpotify, providerYo
 export const fetchCreateQueue = async (className, genericUuid) => {
   const response = await fetchBackend(
     TYPE_POST,
-    ENDPOINT_CREATE_QUEUE,
+    ENDPOINT_QUEUE_CREATE,
     { className, genericUuid },
   );
   const responseJson = await response.json();

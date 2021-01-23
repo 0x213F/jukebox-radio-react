@@ -1,7 +1,7 @@
 import {
-  ENDPOINT_CREATE_TEXT_COMMENT,
-  ENDPOINT_LIST_TEXT_COMMENTS,
-  ENDPOINT_LIST_VOICE_RECORDINGS
+  ENDPOINT_TEXT_COMMENT_CREATE,
+  ENDPOINT_TEXT_COMMENT_LIST,
+  ENDPOINT_VOICE_RECORDING_LIST
 } from '../../config/api'
 import { TYPE_GET, TYPE_POST } from '../../config/global'
 import { fetchBackend } from '../../utils/network'
@@ -13,7 +13,7 @@ import { fetchBackend } from '../../utils/network'
 const fetchCreateTextComment = async (text) => {
   const response = await fetchBackend(
     TYPE_POST,
-    ENDPOINT_CREATE_TEXT_COMMENT,
+    ENDPOINT_TEXT_COMMENT_CREATE,
     {text: text},
   );
   const responseJson = await response.json();
@@ -26,7 +26,7 @@ const fetchCreateTextComment = async (text) => {
 const fetchTextComments = async () => {
   const response = await fetchBackend(
     TYPE_GET,
-    ENDPOINT_LIST_TEXT_COMMENTS
+    ENDPOINT_TEXT_COMMENT_LIST
   );
   const responseJson = await response.json();
   return responseJson;
@@ -38,7 +38,7 @@ const fetchTextComments = async () => {
 const fetchVoiceRecordings = async () => {
   const response = await fetchBackend(
     TYPE_GET,
-    ENDPOINT_LIST_VOICE_RECORDINGS
+    ENDPOINT_VOICE_RECORDING_LIST
   );
   const responseJson = await response.json();
   return responseJson;

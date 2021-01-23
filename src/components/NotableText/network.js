@@ -1,5 +1,5 @@
 import {
-  ENDPOINT_CREATE_TEXT_COMMENT_MODIFICATION,
+  ENDPOINT_TEXT_COMMENT_MODIFICATION_CREATE,
 } from '../../config/api'
 import { TYPE_POST } from '../../config/global'
 import { fetchBackend } from '../../utils/network'
@@ -11,7 +11,7 @@ import { fetchBackend } from '../../utils/network'
 export const fetchCreateTextCommentModification = async (textCommentUuid, style, anchorOffset, focusOffset) => {
   const response = await fetchBackend(
     TYPE_POST,
-    ENDPOINT_CREATE_TEXT_COMMENT_MODIFICATION,
+    ENDPOINT_TEXT_COMMENT_MODIFICATION_CREATE,
     {
       textCommentUuid: textCommentUuid,
       style: style,

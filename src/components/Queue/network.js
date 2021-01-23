@@ -1,4 +1,4 @@
-import { ENDPOINT_LIST_QUEUES, ENDPOINT_DELETE_QUEUE } from '../../config/api'
+import { ENDPOINT_QUEUE_LIST, ENDPOINT_QUEUE_DELETE } from '../../config/api'
 import { TYPE_GET, TYPE_POST } from '../../config/global'
 import { fetchBackend } from '../../utils/network'
 
@@ -8,7 +8,7 @@ import { fetchBackend } from '../../utils/network'
 export const fetchListQueues = async () => {
   const response = await fetchBackend(
     TYPE_GET,
-    ENDPOINT_LIST_QUEUES,
+    ENDPOINT_QUEUE_LIST,
   );
   const responseJson = await response.json();
   return responseJson;
@@ -20,7 +20,7 @@ export const fetchListQueues = async () => {
 export const fetchDeleteQueue = async (queueUuid) => {
   const response = await fetchBackend(
     TYPE_POST,
-    ENDPOINT_DELETE_QUEUE,
+    ENDPOINT_QUEUE_DELETE,
     { queueUuid: queueUuid },
   );
   const responseJson = await response.json();

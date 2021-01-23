@@ -1,7 +1,7 @@
 import {
-  ENDPOINT_CREATE_TRACK_MARKER,
-  ENDPOINT_DELETE_TRACK_MARKER,
-  ENDPOINT_LIST_TRACK_MARKERS,
+  ENDPOINT_MARKER_CREATE,
+  ENDPOINT_MARKER_DELETE,
+  ENDPOINT_MARKER_LIST,
 } from '../../config/api';
 import { TYPE_GET, TYPE_POST } from '../../config/global';
 import { fetchBackend } from '../../utils/network';
@@ -15,7 +15,7 @@ import { store } from '../../utils/redux';
 export const fetchStreamMarkerCreate = async (trackUuid, timestampMilliseconds, queueUuid) => {
   const response = await fetchBackend(
     TYPE_POST,
-    ENDPOINT_CREATE_TRACK_MARKER,
+    ENDPOINT_MARKER_CREATE,
     { trackUuid, timestampMilliseconds, queueUuid }
   );
   const responseJson = await response.json();
@@ -30,7 +30,7 @@ export const fetchStreamMarkerCreate = async (trackUuid, timestampMilliseconds, 
 export const fetchStreamMarkerDelete = async (markerUuid, queueUuid) => {
   const response = await fetchBackend(
     TYPE_POST,
-    ENDPOINT_DELETE_TRACK_MARKER,
+    ENDPOINT_MARKER_DELETE,
     { markerUuid, queueUuid }
   );
   const responseJson = await response.json();
@@ -44,7 +44,7 @@ export const fetchStreamMarkerDelete = async (markerUuid, queueUuid) => {
 export const fetchStreamMarkerList = async (trackUuid, queueUuid) => {
   const response = await fetchBackend(
     TYPE_GET,
-    ENDPOINT_LIST_TRACK_MARKERS,
+    ENDPOINT_MARKER_LIST,
     { trackUuid, queueUuid }
   );
   const responseJson = await response.json();

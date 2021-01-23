@@ -24,12 +24,12 @@ function QueueEdit(props) {
   const [lowerBoundMarkerUuid, setLowerBoundMarkerUuid] = useState('null');
   const [upperBoundMarkerUuid, setUpperBoundMarkerUuid] = useState('null');
 
-  useEffect((queue, queueUuid) => {
+  useEffect(() => {
     async function loadData() {
       await fetchStreamMarkerList(queue.track.uuid, queueUuid);
     }
     loadData();
-  }, [])
+  }, [queue, queueUuid])
 
   const createTrackMarker = async function() {
     await fetchStreamMarkerCreate(queue.track.uuid, formMarkerTimestamp, queueUuid);

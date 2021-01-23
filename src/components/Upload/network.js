@@ -1,4 +1,4 @@
-import { ENDPOINT_CREATE_TRACK } from '../../config/api'
+import { ENDPOINT_TRACK_CREATE } from '../../config/api'
 import { TYPE_POST } from '../../config/global'
 import { fetchBackend } from '../../utils/network'
 
@@ -8,7 +8,7 @@ import { fetchBackend } from '../../utils/network'
 export const fetchCreateTrack = async (audioFile, imageFile, trackName, artistName, albumName) => {
   const response = await fetchBackend(
     TYPE_POST,
-    ENDPOINT_CREATE_TRACK,
+    ENDPOINT_TRACK_CREATE,
     {
       audioFile: audioFile,
       imageFile: imageFile,

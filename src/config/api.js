@@ -1,81 +1,52 @@
-const ENDPOINT_OBTAIN_AUTH_TOKEN = '/auth/obtain-tokens/'
-const ENDPOINT_REFRESH_AUTH_TOKEN = '/auth/refresh-token/'
-const ENDPOINT_VERIFY_TOKEN = '/auth/verify-token/'
+// AUTHENTICATION
+export const ENDPOINT_OBTAIN_TOKENS = '/auth/obtain-tokens/'
+export const ENDPOINT_REFRESH_TOKEN = '/auth/refresh-token/'
+export const ENDPOINT_VERIFY_TOKEN = '/auth/verify-token/'
 
-const ENDPOINT_CREATE_TEXT_COMMENT = '/comments/text-comment/create/'
-const ENDPOINT_LIST_TEXT_COMMENTS = '/comments/text-comment/list'
-const ENDPOINT_UPDATE_TEXT_COMMENT = '/comments/text-comment/update/'
-const ENDPOINT_DELETE_TEXT_COMMENT = '/comments/text-comment/delete/'
+// USER
+export const ENDPOINT_USER_GET_SETTINGS = '/users/user/get-settings'
 
-const ENDPOINT_CREATE_TEXT_COMMENT_MODIFICATION = '/comments/text-comment-modification/create/'
-const ENDPOINT_LIST_DELETE_TEXT_COMMENT_MODIFICATIONS = '/comments/text-comment-modification/list-delete/'
+// TEXT COMMENT
+export const ENDPOINT_TEXT_COMMENT_CREATE = '/comments/text-comment/create/'
+export const ENDPOINT_TEXT_COMMENT_UPDATE = '/comments/text-comment/update/'
+export const ENDPOINT_TEXT_COMMENT_DELETE = '/comments/text-comment/delete/'
+export const ENDPOINT_TEXT_COMMENT_LIST = '/comments/text-comment/list'
 
-const ENDPOINT_CREATE_VOICE_RECORDING = '/comments/voice-recording/create/'
-const ENDPOINT_LIST_VOICE_RECORDINGS = '/comments/voice-recording/list'
-const ENDPOINT_DELETE_VOICE_RECORDING = '/comments/voice-recording/delete/'
+// TEXT COMMENT MODIFICATION
+export const ENDPOINT_TEXT_COMMENT_MODIFICATION_CREATE = '/comments/text-comment-modification/create/'
+export const ENDPOINT_TEXT_COMMENT_MODIFICATION_LIST_DELETE = '/comments/text-comment-modification/list-delete/'
 
-const ENDPOINT_LIST_QUEUES = '/streams/queue/list'
-const ENDPOINT_DELETE_QUEUE = '/streams/queue/delete/'
+// VOICE RECORDING
+export const ENDPOINT_VOICE_RECORDING_CREATE = '/comments/voice-recording/create/'
+export const ENDPOINT_VOICE_RECORDING_DELETE = '/comments/voice-recording/delete/'
+export const ENDPOINT_VOICE_RECORDING_LIST = '/comments/voice-recording/list'
 
-const ENDPOINT_CREATE_TRACK = '/music/track/create/'
-const ENDPOINT_SEARCH_MUSIC = '/music/search'
+// TRACK
+export const ENDPOINT_TRACK_CREATE = '/music/track/create/'
 
-const ENDPOINT_CREATE_QUEUE = '/streams/queue/create/'
+// MUSIC
+export const ENDPOINT_MUSIC_SEARCH = '/music/search'
 
-const ENDPOINT_GET_STREAM = '/streams/stream/get'
-const ENDPOINT_INTIALIZE_STREAM = '/streams/stream/initialize/'
-const ENDPOINT_NEXT_TRACK = '/streams/stream/next-track/'
-const ENDPOINT_PAUSE_TRACK = '/streams/stream/pause-track/'
-const ENDPOINT_PLAY_TRACK = '/streams/stream/play-track/'
-const ENDPOINT_PREVIOUS_TRACK = '/streams/stream/previous-track/'
-const ENDPOINT_SCAN_BACKWARD = '/streams/stream/scan-backward/'
-const ENDPOINT_SCAN_FORWARD = '/streams/stream/scan-forward/'
-const ENDPOINT_CREATE_TRACK_MARKER = '/streams/marker/create/'
-const ENDPOINT_DELETE_TRACK_MARKER = '/streams/marker/delete/'
-const ENDPOINT_LIST_TRACK_MARKERS = '/streams/marker/list'
-const ENDPOINT_CREATE_QUEUE_INTERVAL = '/streams/queue-interval/create/'
-const ENDPOINT_DELETE_QUEUE_INTERVAL = '/streams/queue-interval/delete/'
+// QUEUE
+export const ENDPOINT_QUEUE_CREATE = '/streams/queue/create/'
+export const ENDPOINT_QUEUE_DELETE = '/streams/queue/delete/'
+export const ENDPOINT_QUEUE_LIST = '/streams/queue/list'
 
-const ENDPOINT_GET_USER_SETTINGS = '/users/user/get-settings'
+// STREAM
+export const ENDPOINT_STREAM_GET = '/streams/stream/get'
+export const ENDPOINT_STREAM_INITIALIZE = '/streams/stream/initialize/'
+export const ENDPOINT_STREAM_NEXT_TRACK = '/streams/stream/next-track/'
+export const ENDPOINT_STREAM_PAUSE_TRACK = '/streams/stream/pause-track/'
+export const ENDPOINT_STREAM_PLAY_TRACK = '/streams/stream/play-track/'
+export const ENDPOINT_STREAM_PREVIOUS_TRACK = '/streams/stream/previous-track/'
+export const ENDPOINT_STREAM_SCAN_BACKWARD = '/streams/stream/scan-backward/'
+export const ENDPOINT_STREAM_SCAN_FORWARD = '/streams/stream/scan-forward/'
 
-export {
-  ENDPOINT_OBTAIN_AUTH_TOKEN,
-  ENDPOINT_REFRESH_AUTH_TOKEN,
-  ENDPOINT_VERIFY_TOKEN,
+// MARKER
+export const ENDPOINT_MARKER_CREATE = '/streams/marker/create/'
+export const ENDPOINT_MARKER_DELETE = '/streams/marker/delete/'
+export const ENDPOINT_MARKER_LIST = '/streams/marker/list'
 
-  ENDPOINT_CREATE_TEXT_COMMENT,
-  ENDPOINT_LIST_TEXT_COMMENTS,
-  ENDPOINT_UPDATE_TEXT_COMMENT,
-  ENDPOINT_DELETE_TEXT_COMMENT,
-
-  ENDPOINT_CREATE_TEXT_COMMENT_MODIFICATION,
-  ENDPOINT_LIST_DELETE_TEXT_COMMENT_MODIFICATIONS,
-
-  ENDPOINT_CREATE_VOICE_RECORDING,
-  ENDPOINT_LIST_VOICE_RECORDINGS,
-  ENDPOINT_DELETE_VOICE_RECORDING,
-
-  ENDPOINT_LIST_QUEUES,
-  ENDPOINT_DELETE_QUEUE,
-
-  ENDPOINT_CREATE_TRACK,
-  ENDPOINT_SEARCH_MUSIC,
-
-  ENDPOINT_CREATE_QUEUE,
-
-  ENDPOINT_GET_STREAM,
-  ENDPOINT_INTIALIZE_STREAM,
-  ENDPOINT_NEXT_TRACK,
-  ENDPOINT_PAUSE_TRACK,
-  ENDPOINT_PLAY_TRACK,
-  ENDPOINT_PREVIOUS_TRACK,
-  ENDPOINT_SCAN_BACKWARD,
-  ENDPOINT_SCAN_FORWARD,
-  ENDPOINT_CREATE_TRACK_MARKER,
-  ENDPOINT_DELETE_TRACK_MARKER,
-  ENDPOINT_LIST_TRACK_MARKERS,
-  ENDPOINT_CREATE_QUEUE_INTERVAL,
-  ENDPOINT_DELETE_QUEUE_INTERVAL,
-
-  ENDPOINT_GET_USER_SETTINGS,
-}
+// QUEUE INTERVAL
+export const ENDPOINT_QUEUE_INTERVAL_CREATE = '/streams/queue-interval/create/'
+export const ENDPOINT_QUEUE_INTERVAL_DELETE = '/streams/queue-interval/delete/'

@@ -1,11 +1,11 @@
 import {
-  ENDPOINT_GET_STREAM,
-  ENDPOINT_NEXT_TRACK,
-  ENDPOINT_PAUSE_TRACK,
-  ENDPOINT_PLAY_TRACK,
-  ENDPOINT_PREVIOUS_TRACK,
-  ENDPOINT_SCAN_BACKWARD,
-  ENDPOINT_SCAN_FORWARD,
+  ENDPOINT_STREAM_GET,
+  ENDPOINT_STREAM_NEXT_TRACK,
+  ENDPOINT_STREAM_PAUSE_TRACK,
+  ENDPOINT_STREAM_PLAY_TRACK,
+  ENDPOINT_STREAM_PREVIOUS_TRACK,
+  ENDPOINT_STREAM_SCAN_BACKWARD,
+  ENDPOINT_STREAM_SCAN_FORWARD,
 } from '../../config/api'
 import { TYPE_GET, TYPE_POST } from '../../config/global'
 import { fetchBackend } from '../../utils/network'
@@ -17,7 +17,7 @@ import { fetchBackend } from '../../utils/network'
 const fetchStream = async () => {
   const response = await fetchBackend(
     TYPE_GET,
-    ENDPOINT_GET_STREAM,
+    ENDPOINT_STREAM_GET,
   );
   const responseJson = await response.json();
   return responseJson;
@@ -29,7 +29,7 @@ const fetchStream = async () => {
 const fetchNextTrack = async () => {
   const response = await fetchBackend(
     TYPE_POST,
-    ENDPOINT_NEXT_TRACK,
+    ENDPOINT_STREAM_NEXT_TRACK,
   );
   const responseJson = await response.json();
   return responseJson;
@@ -41,7 +41,7 @@ const fetchNextTrack = async () => {
 const fetchPauseTrack = async () => {
   const response = await fetchBackend(
     TYPE_POST,
-    ENDPOINT_PAUSE_TRACK,
+    ENDPOINT_STREAM_PAUSE_TRACK,
   );
   const responseJson = await response.json();
   return responseJson;
@@ -53,7 +53,7 @@ const fetchPauseTrack = async () => {
 const fetchPlayTrack = async () => {
   const response = await fetchBackend(
     TYPE_POST,
-    ENDPOINT_PLAY_TRACK,
+    ENDPOINT_STREAM_PLAY_TRACK,
   );
   const responseJson = await response.json();
   return responseJson;
@@ -65,7 +65,7 @@ const fetchPlayTrack = async () => {
 const fetchPreviousTrack = async () => {
   const response = await fetchBackend(
     TYPE_POST,
-    ENDPOINT_PREVIOUS_TRACK,
+    ENDPOINT_STREAM_PREVIOUS_TRACK,
   );
   const responseJson = await response.json();
   return responseJson;
@@ -77,7 +77,7 @@ const fetchPreviousTrack = async () => {
 const fetchScanBackward = async () => {
   const response = await fetchBackend(
     TYPE_POST,
-    ENDPOINT_SCAN_BACKWARD,
+    ENDPOINT_STREAM_SCAN_BACKWARD,
   );
   const responseJson = await response.json();
   return responseJson;
@@ -89,7 +89,7 @@ const fetchScanBackward = async () => {
 const fetchScanForward = async () => {
   const response = await fetchBackend(
     TYPE_POST,
-    ENDPOINT_SCAN_FORWARD,
+    ENDPOINT_STREAM_SCAN_FORWARD,
   );
   const responseJson = await response.json();
   return responseJson;
