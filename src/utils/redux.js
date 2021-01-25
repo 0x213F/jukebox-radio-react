@@ -8,6 +8,9 @@ import {
   queueIntervalCreate,
   queueIntervalDelete,
 } from './reducers/queueInterval'
+import {
+  streamSet,
+} from './reducers/stream'
 
 
 const initialState = {
@@ -23,23 +26,6 @@ const initialState = {
   userSettings: undefined,
   trackMarkerMap: {},
   queueIntervalMap: {},
-}
-
-
-function streamSet(state, action) {
-  const stream = action.stream,
-        obj = {
-          ...state,
-          stream: stream,
-        };
-
-  if(!stream.isPlaying && !stream.isPaused && stream.nowPlaying) {
-    obj.lastUp = stream.nowPlaying;
-    obj._lastPlayed = stream.nowPlaying;
-    obj.stream.nowPlaying = undefined;
-  }
-
-  return obj;
 }
 
 
@@ -292,7 +278,7 @@ function userGetSettings(state, action) {
 const reducer = (state = initialState, action) => {
   switch (action.type) {
     case "stream/set":
-      return streamSet(state, action);
+      return streamSet(state, action.payload);
     case "stream/prevTrack":
       return streamPrevTrack(state, action);
     case "stream/nextTrack":
