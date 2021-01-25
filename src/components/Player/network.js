@@ -14,13 +14,12 @@ import { fetchBackend } from '../../utils/network'
 /*
  * Fetches...
  */
-const fetchStream = async () => {
+const fetchStreamGet = async () => {
   const response = await fetchBackend(
     TYPE_GET,
     ENDPOINT_STREAM_GET,
   );
-  const responseJson = await response.json();
-  return responseJson;
+  return await response.json();
 };
 
 /*
@@ -96,7 +95,7 @@ const fetchScanForward = async () => {
 };
 
 export {
-  fetchStream,
+  fetchStreamGet,
   fetchNextTrack,
   fetchPauseTrack,
   fetchPlayTrack,

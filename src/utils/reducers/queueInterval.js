@@ -49,8 +49,6 @@ export const queueIntervalCreate = function(state, action) {
   index = queues.findIndex(findByUuid(queueUuid));
   const trackQueue = queues[index];
 
-  console.log(trackQueue);
-
   // add queue interval to that queue (and sort).
   const queueIntervals = [...trackQueue.intervals, queueInterval],
         sortedQueueIntervals = queueIntervals.sort(sortQueueIntervals);

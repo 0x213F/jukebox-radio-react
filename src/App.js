@@ -8,7 +8,7 @@ import Player from './components/Player/Player'
 import UserSettings from './components/UserSettings/UserSettings'
 import { fetchTextComments, fetchVoiceRecordings } from './components/Chat/network'
 import { fetchVerifyToken } from './components/Login/network'
-import { fetchStream } from './components/Player/network'
+import { fetchStreamGet } from './components/Player/network'
 import { fetchListQueues } from './components/Queue/network'
 import { fetchGetUserSettings } from './components/UserSettings/network'
 import { store } from './utils/redux'
@@ -48,13 +48,8 @@ function App() {
       setStatus('authenticated');
 
       // load stream
-      const streamJsonResponse = await fetchStream();
-      const stream = streamJsonResponse.data;
-
-      await store.dispatch({
-        type: 'stream/set',
-        stream: stream,
-      });
+      const responseJson = await fetchStreamGet();
+      await store.dispatch(responseJson.redux);
 
       // load queue
       const queueJsonResponse = await fetchListQueues();
