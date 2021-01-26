@@ -4,7 +4,6 @@ import {
 } from '../../config/api';
 import { TYPE_POST } from '../../config/global';
 import { fetchBackend } from '../../utils/network';
-import { store } from '../../utils/redux';
 
 /*
  * Fetches...
@@ -15,8 +14,7 @@ export const fetchStreamQueueIntervalCreate = async (queueUuid, lowerBoundMarker
     ENDPOINT_QUEUE_INTERVAL_CREATE,
     { queueUuid, lowerBoundMarkerUuid, upperBoundMarkerUuid, isMuted, repeatCount, parentQueueUuid }
   );
-  const responseJson = await response.json();
-  await store.dispatch(responseJson.redux);
+  return await response.json();
 };
 
 
@@ -29,6 +27,5 @@ export const fetchStreamQueueIntervalDelete = async (queueIntervalUuid, queueUui
     ENDPOINT_QUEUE_INTERVAL_DELETE,
     { queueIntervalUuid, queueUuid, parentQueueUuid }
   );
-  const responseJson = await response.json();
-  await store.dispatch(responseJson.redux);
+  return await response.json();
 };

@@ -5,7 +5,6 @@ import {
 } from '../../config/api';
 import { TYPE_GET, TYPE_POST } from '../../config/global';
 import { fetchBackend } from '../../utils/network';
-import { store } from '../../utils/redux';
 
 
 /*
@@ -18,8 +17,7 @@ export const fetchStreamMarkerCreate = async (trackUuid, timestampMilliseconds, 
     ENDPOINT_MARKER_CREATE,
     { trackUuid, timestampMilliseconds, queueUuid }
   );
-  const responseJson = await response.json();
-  await store.dispatch(responseJson.redux);
+  return await response.json();
 };
 
 
@@ -33,8 +31,7 @@ export const fetchStreamMarkerDelete = async (markerUuid, queueUuid) => {
     ENDPOINT_MARKER_DELETE,
     { markerUuid, queueUuid }
   );
-  const responseJson = await response.json();
-  await store.dispatch(responseJson.redux);
+  return await response.json();
 };
 
 /*
@@ -47,6 +44,5 @@ export const fetchStreamMarkerList = async (trackUuid, queueUuid) => {
     ENDPOINT_MARKER_LIST,
     { trackUuid, queueUuid }
   );
-  const responseJson = await response.json();
-  await store.dispatch(responseJson.redux);
+  return await response.json();
 };

@@ -1,4 +1,5 @@
 import React from "react";
+import { connect } from 'react-redux';
 import { fetchStreamQueueIntervalDelete } from './network';
 
 
@@ -7,7 +8,10 @@ function QueueInterval(props) {
   const { queueInterval, queueUuid, parentQueueUuid } = props.data;
 
   const deleteQueueInterval = async function() {
-    await fetchStreamQueueIntervalDelete(queueInterval.uuid, queueUuid, parentQueueUuid);
+    const responseJson = await fetchStreamQueueIntervalDelete(
+      queueInterval.uuid, queueUuid, parentQueueUuid
+    );
+    await props.dispatch(responseJson.redux);
   }
 
   const lowerBound = queueInterval.lowerBound ?
@@ -27,4 +31,6 @@ function QueueInterval(props) {
   );
 }
 
-export default QueueInterval;
+const mapStateToProps = (state) => ({});
+
+export default connect(mapStateToProps)(QueueInterval);

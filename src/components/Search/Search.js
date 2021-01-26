@@ -1,8 +1,10 @@
 import React, { useState } from "react";
+import { connect } from 'react-redux';
 import styles from './Search.module.css';
 
 import { fetchSearchMusicLibrary, fetchCreateQueue } from './network';
-import SearchResult from '../SearchResult/SearchResult'
+import SearchResult from '../SearchResult/SearchResult';
+import { fetchQueueList } from '../Queue/network';
 
 
 function Search(props) {
@@ -51,7 +53,11 @@ function Search(props) {
       className,
       genericUuid,
     );
+
     setSearchResults([]);
+
+    const responseJsonQueueList = await fetchQueueList();
+    await props.dispatch(responseJsonQueueList.redux);
   }
 
   return (
@@ -145,4 +151,6 @@ function Search(props) {
   );
 }
 
-export default Search;
+const mapStateToProps = (state) => ({});
+
+export default connect(mapStateToProps)(Search);
