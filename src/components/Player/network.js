@@ -3,7 +3,7 @@ import {
   ENDPOINT_STREAM_NEXT_TRACK,
   ENDPOINT_STREAM_PAUSE_TRACK,
   ENDPOINT_STREAM_PLAY_TRACK,
-  ENDPOINT_STREAM_PREVIOUS_TRACK,
+  ENDPOINT_STREAM_PREV_TRACK,
   ENDPOINT_STREAM_SCAN_BACKWARD,
   ENDPOINT_STREAM_SCAN_FORWARD,
 } from '../../config/api'
@@ -61,10 +61,10 @@ const fetchPlayTrack = async () => {
 /*
  * Fetches...
  */
-const fetchPreviousTrack = async () => {
+const fetchPrevTrack = async () => {
   const response = await fetchBackend(
     TYPE_POST,
-    ENDPOINT_STREAM_PREVIOUS_TRACK,
+    ENDPOINT_STREAM_PREV_TRACK,
   );
   const responseJson = await response.json();
   return responseJson;
@@ -99,7 +99,7 @@ export {
   fetchNextTrack,
   fetchPauseTrack,
   fetchPlayTrack,
-  fetchPreviousTrack,
+  fetchPrevTrack,
   fetchScanBackward,
   fetchScanForward,
 }

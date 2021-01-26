@@ -9,7 +9,7 @@ import UserSettings from './components/UserSettings/UserSettings'
 import { fetchTextComments, fetchVoiceRecordings } from './components/Chat/network'
 import { fetchVerifyToken } from './components/Login/network'
 import { fetchStreamGet } from './components/Player/network'
-import { fetchListQueues } from './components/Queue/network'
+import { fetchQueueList } from './components/Queue/network'
 import { fetchGetUserSettings } from './components/UserSettings/network'
 import { store } from './utils/redux'
 
@@ -35,6 +35,7 @@ function App() {
   // componentDidMount
   useEffect(() => {
     async function loadData() {
+      let responseJson;
 
       // verify authentication
       const authResponse = await fetchVerifyToken();
@@ -42,24 +43,17 @@ function App() {
           setStatus('unauthenticated');
           return;
         }
-        console.log(authResponse);
 
       // set state
       setStatus('authenticated');
 
       // load stream
-      const responseJson = await fetchStreamGet();
+      responseJson = await fetchStreamGet();
       await store.dispatch(responseJson.redux);
 
       // load queue
-      const queueJsonResponse = await fetchListQueues();
-      const { nextUpQueues, lastUpQueues } = queueJsonResponse.data;
-
-      await store.dispatch({
-        type: 'queue/listSet',
-        lastUpQueues: lastUpQueues,
-        nextUpQueues: nextUpQueues,
-      });
+      responseJson = await fetchQueueList();
+      await store.dispatch(responseJson.redux);
 
       // load comments
       const textCommentsJsonResponse = await fetchTextComments();

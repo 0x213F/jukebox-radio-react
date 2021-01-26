@@ -2,12 +2,12 @@ import { useState } from "react";
 import { connect } from 'react-redux'
 // import { CountdownCircleTimer } from 'react-countdown-circle-timer'
 import styles from './Player.module.css';
-import { fetchListQueues } from '../Queue/network'
+import { fetchQueueList } from '../Queue/network'
 import {
   fetchNextTrack,
   fetchPauseTrack,
   fetchPlayTrack,
-  fetchPreviousTrack,
+  fetchPrevTrack,
   fetchScanBackward,
   fetchScanForward,
 } from './network'
@@ -50,24 +50,12 @@ function Player(props) {
   /*
    * When...
    */
-  const handlePrevTrack = async function(e) {
-    e.preventDefault();
+  const handlePrevTrack = async function() {
+    const responseJsonPrevTrack = await fetchPrevTrack(),
+          responseJsonQueueList = await fetchQueueList();
 
-    const responseJson = await fetchPreviousTrack();
-
-    const jsonResponse = await fetchListQueues();
-    const { nextUpQueues, lastUpQueues } = jsonResponse.data;
-
-    await props.dispatch({
-      type: 'stream/prevTrack',
-      startedAt: responseJson.data.startedAt,
-    });
-
-    await props.dispatch({
-      type: 'queue/listSet',
-      lastUpQueues: lastUpQueues,
-      nextUpQueues: nextUpQueues,
-    });
+    await props.dispatch(responseJsonPrevTrack.redux);
+    await props.dispatch(responseJsonQueueList.redux);
 
     await updateFeed();
   }
@@ -75,26 +63,12 @@ function Player(props) {
   /*
    * When...
    */
-  const handleNextTrack = async function(e) {
-    if(e) {
-      e.preventDefault();
-    }
+  const handleNextTrack = async function() {
+    const responseJsonNextTrack = await fetchNextTrack(),
+          responseJsonQueueList = await fetchQueueList();
 
-    const responseJson = await fetchNextTrack();
-
-    const jsonResponse = await fetchListQueues();
-    const { nextUpQueues, lastUpQueues } = jsonResponse.data;
-
-    await props.dispatch({
-      type: 'stream/nextTrack',
-      startedAt: responseJson.data.startedAt,
-    });
-
-    await props.dispatch({
-      type: 'queue/listSet',
-      lastUpQueues: lastUpQueues,
-      nextUpQueues: nextUpQueues,
-    });
+    await props.dispatch(responseJsonNextTrack.redux);
+    await props.dispatch(responseJsonQueueList.redux);
 
     await updateFeed();
   }
@@ -150,9 +124,6 @@ function Player(props) {
     const proposedStartedAt = stream.startedAt + 10000;
     const proposedProgress = epochNow - proposedStartedAt;
     const startedAt = proposedProgress > 0 ? proposedStartedAt : epochNow;
-
-    console.log(stream.startedAt, startedAt)
-    console.log(stream.startedAt - startedAt)
 
     await props.dispatch({
       type: 'stream/set',
