@@ -1,4 +1,5 @@
 import React from "react";
+import { connect } from 'react-redux';
 import { fetchStreamMarkerDelete } from './network';
 
 
@@ -7,7 +8,10 @@ function TrackMarker(props) {
   const { trackMarker, queueUuid } = props.data;
 
   const deleteTrackMarker = async function() {
-    await fetchStreamMarkerDelete(trackMarker.uuid, queueUuid);
+    const responseJson = await fetchStreamMarkerDelete(
+      trackMarker.uuid, queueUuid
+    );
+    await props.dispatch(responseJson.redux);
   }
 
   return (
@@ -20,4 +24,6 @@ function TrackMarker(props) {
   );
 }
 
-export default TrackMarker;
+const mapStateToProps = (state) => ({});
+
+export default connect(mapStateToProps)(TrackMarker);

@@ -1,3 +1,6 @@
+ import { finalizeQueue } from './queue';
+
+
 /*
  * Used to "findIndex" by uuid in an array.
  */
@@ -60,9 +63,13 @@ export const queueIntervalCreate = function(state, action) {
   } else {
     nextUpQueues[index].intervals = sortedQueueIntervals;
   }
+
+  // update playback intervals
+  const finalizedNextUpQueues = nextUpQueues.map(finalizeQueue);
+
   return {
     ...state,
-    nextUpQueues: nextUpQueues,
+    nextUpQueues: finalizedNextUpQueues,
   };
 }
 
@@ -96,8 +103,12 @@ export const queueIntervalDelete = function(state, action) {
   } else {
     nextUpQueues[index].intervals = filteredQueueIntervals;
   }
+
+  // update playback intervals
+  const finalizedNextUpQueues = nextUpQueues.map(finalizeQueue);
+
   return {
    ...state,
-   nextUpQueues: nextUpQueues,
+   nextUpQueues: finalizedNextUpQueues,
   };
 }

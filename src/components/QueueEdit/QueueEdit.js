@@ -26,25 +26,32 @@ function QueueEdit(props) {
 
   useEffect(() => {
     async function loadData() {
-      await fetchStreamMarkerList(queue.track.uuid, queueUuid);
+      const responseJson = await fetchStreamMarkerList(
+        queue.track.uuid, queueUuid
+      );
+      await props.dispatch(responseJson.redux);
     }
     loadData();
-  }, [queue, queueUuid])
+  }, [props, queue, queueUuid])
 
   const createTrackMarker = async function() {
-    await fetchStreamMarkerCreate(queue.track.uuid, formMarkerTimestamp, queueUuid);
+    const responseJson = await fetchStreamMarkerCreate(
+      queue.track.uuid, formMarkerTimestamp, queueUuid
+    );
+    await props.dispatch(responseJson.redux);
     setFormMarkerTimestamp('');
   }
 
   const createQueueInterval = async function() {
-    await fetchStreamQueueIntervalCreate(
+    const responseJson = await fetchStreamQueueIntervalCreate(
       queue.uuid,
       lowerBoundMarkerUuid,
       upperBoundMarkerUuid,
       true,
       null,
       parentQueueUuid,
-    )
+    );
+    await props.dispatch(responseJson.redux);
   }
 
   return (
@@ -95,6 +102,7 @@ function QueueEdit(props) {
 
 const mapStateToProps = (state) => ({
   trackMarkerMap: state.trackMarkerMap,
+  nextUpQueues: state.nextUpQueues,
 });
 
 export default connect(mapStateToProps)(QueueEdit);
