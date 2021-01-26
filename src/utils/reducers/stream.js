@@ -1,12 +1,18 @@
+ import { finalizeQueue } from './queue';
+
 /*
  * Set the stream context.
  */
-export const streamSet = function(state, action) {
-  const stream = action.stream,
-        obj = {
-          ...state,
-          stream: stream,
-        };
+export const streamSet = function(state, payload) {
+  const stream = payload.stream,
+        nowPlaying = stream.nowPlaying,
+        obj = { ...state };
+
+  if(nowPlaying) {
+    stream.nowPlaying = finalizeQueue(nowPlaying);
+  }
+
+  obj.stream = stream;
 
   if(!stream.isPlaying && !stream.isPaused && stream.nowPlaying) {
     obj.lastUp = stream.nowPlaying;
