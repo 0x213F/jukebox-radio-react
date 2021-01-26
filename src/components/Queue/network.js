@@ -5,7 +5,7 @@ import { fetchBackend } from '../../utils/network'
 /*
  * Fetches...
  */
-export const fetchListQueues = async () => {
+export const fetchQueueList = async () => {
   const response = await fetchBackend(
     TYPE_GET,
     ENDPOINT_QUEUE_LIST,

@@ -4,12 +4,15 @@ import {
   markerDelete,
   markerList,
 } from './reducers/marker'
+import { queueListSet } from './reducers/queue'
 import {
   queueIntervalCreate,
   queueIntervalDelete,
 } from './reducers/queueInterval'
 import {
   streamSet,
+  streamPrevTrack,
+  streamNextTrack,
 } from './reducers/stream'
 
 
@@ -26,44 +29,6 @@ const initialState = {
   userSettings: undefined,
   trackMarkerMap: {},
   queueIntervalMap: {},
-}
-
-
-function streamPrevTrack(state, action) {
-  const lastUpQueues = [...state.lastUpQueues];
-  const nowPlaying = lastUpQueues[lastUpQueues.length - 1];
-  return {
-      ...state,
-      stream: {
-        ...state.stream,
-        startedAt: action.startedAt,
-        nowPlaying: nowPlaying,
-        isPlaying: true,
-        isPaused: false,
-      },
-      _lastPlayed: undefined,
-  };
-}
-
-
-function streamNextTrack(state, action) {
-  const nextUpQueues = [...state.nextUpQueues];
-  const nowPlaying = (
-    nextUpQueues[0].children.length ?
-      nextUpQueues[0].children[0] :
-      nextUpQueues[0]
-  );
-  return {
-      ...state,
-      stream: {
-        ...state.stream,
-        startedAt: action.startedAt,
-        nowPlaying: nowPlaying,
-        isPlaying: true,
-        isPaused: false,
-      },
-      _lastPlayed: undefined,
-  };
 }
 
 
@@ -87,44 +52,6 @@ function playbackPlay(state, action) {
       nowPlaying: state.stream.nowPlaying,
     },
   };
-}
-
-
-function queueListSet(state, action) {
-  const lastUpQueues = action.lastUpQueues,
-        nextUpQueues = action.nextUpQueues,
-        _lastPlayed = state._lastPlayed;
-
-  if(_lastPlayed) {
-    lastUpQueues.push(_lastPlayed);
-  }
-
-  let stream = state.stream;
-  if(!stream.isPlaying && !stream.isPaused && stream.nowPlaying) {
-    lastUpQueues.push(stream.nowPlaying);
-    stream = { ...stream, nowPlaying: undefined }
-  }
-
-  const lastUp = (
-          !lastUpQueues.length ?
-            undefined :
-            lastUpQueues[lastUpQueues.length - 1]
-        ),
-        nextUp = (
-          !nextUpQueues.length ? undefined : (
-            !nextUpQueues[0].children.length ?
-              nextUpQueues[0] :
-              nextUpQueues[0].children[0]
-          )
-        );
-  return {
-    ...state,
-    stream: stream,
-    lastUp: lastUp,
-    lastUpQueues: lastUpQueues,
-    nextUp: nextUp,
-    nextUpQueues: nextUpQueues,
-  }
 }
 
 
@@ -280,15 +207,15 @@ const reducer = (state = initialState, action) => {
     case "stream/set":
       return streamSet(state, action.payload);
     case "stream/prevTrack":
-      return streamPrevTrack(state, action);
+      return streamPrevTrack(state, action.payload);
     case "stream/nextTrack":
-      return streamNextTrack(state, action);
+      return streamNextTrack(state, action.payload);
     case "stream/expire":
       return streamExpire(state, action);
     case "playback/play":
       return playbackPlay(state, action);
     case "queue/listSet":
-      return queueListSet(state, action);
+      return queueListSet(state, action.payload);
     case "queue/deleteNode":
       return queueDeleteNode(state, action);
     case "queue/deleteChildNode":
