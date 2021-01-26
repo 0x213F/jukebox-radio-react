@@ -11,7 +11,6 @@ export const streamSet = function(state, payload) {
   if(nowPlaying) {
     stream.nowPlaying = finalizeQueue(nowPlaying);
   }
-  console.log(stream)
 
   obj.stream = stream;
 
