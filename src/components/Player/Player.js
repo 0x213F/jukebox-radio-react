@@ -1,8 +1,7 @@
-import { useState } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { connect } from 'react-redux'
 // import { CountdownCircleTimer } from 'react-countdown-circle-timer'
 import styles from './Player.module.css';
-import { fetchQueueList } from '../Queue/network'
 import {
   fetchNextTrack,
   fetchPauseTrack,
@@ -12,6 +11,7 @@ import {
   fetchScanForward,
 } from './network'
 import { fetchTextComments, fetchVoiceRecordings } from '../Chat/network'
+import { addToQueue, start, play, pause } from './controls';
 
 
 function Player(props) {
@@ -20,18 +20,39 @@ function Player(props) {
    * 🏗
    */
   const stream = props.stream,
-        playback = props.playback,
         track = stream?.nowPlaying?.track,
-        nextUp = props.nextUp,
-        lastUp = props.lastUp;
+        lastUpQueues = props.lastUpQueues,
+        lastUp = lastUpQueues[lastUpQueues.length - 1],
+        nextUpQueues = props.nextUpQueues,
+        nextUp = (
+          nextUpQueues.length ?
+            (nextUpQueues[0].children.length ?
+              nextUpQueues[0].children[0] :
+              nextUpQueues[0]) :
+            undefined
+        );
 
-  const [key, setKey] = useState(0);
+  const [nextTrackTimeout, setNextTrackTimeout] = useState(undefined);
 
+  /*
+   * ...
+   */
+  const getProgress = useCallback(() => (
+    stream ?
+    (
+      stream.pausedAt ?
+        stream.pausedAt - stream.startedAt:
+        Date.now() - stream.startedAt
+    ) :
+    undefined
+  ), [stream]);
+
+  const trackDuration = stream?.nowPlaying?.totalDurationMilliseconds;
 
   /*
    *
    */
-  const updateFeed = async function() {
+  const updateFeed = useCallback(async function() {
     // load comments
     const textCommentsJsonResponse = await fetchTextComments();
     await props.dispatch({
@@ -45,39 +66,52 @@ function Player(props) {
       type: 'voiceRecording/listSet',
       voiceRecordings: voiceRecordingsJsonResponse.data,
     });
-  }
+  }, [props]);
 
   /*
    * When...
    */
   const handlePrevTrack = async function() {
-    const responseJsonPrevTrack = await fetchPrevTrack(),
-          responseJsonQueueList = await fetchQueueList();
+    start(undefined);
+
+    const responseJsonPrevTrack = await fetchPrevTrack();
 
     await props.dispatch(responseJsonPrevTrack.redux);
-    await props.dispatch(responseJsonQueueList.redux);
 
     await updateFeed();
+
+    clearTimeout(nextTrackTimeout);
+    setNextTrackTimeout(undefined);
   }
 
   /*
    * When...
    */
-  const handleNextTrack = async function() {
-    const responseJsonNextTrack = await fetchNextTrack(),
-          responseJsonQueueList = await fetchQueueList();
+  const handleNextTrack = useCallback(async function() {
+    const responseJsonNextTrack = await fetchNextTrack();
+
+    const remaining = trackDuration - getProgress();
+    if(remaining <= 3000) {
+      addToQueue(undefined);
+    } else {
+      start(undefined);
+    }
 
     await props.dispatch(responseJsonNextTrack.redux);
-    await props.dispatch(responseJsonQueueList.redux);
 
     await updateFeed();
-  }
+
+    clearTimeout(nextTrackTimeout);
+    setNextTrackTimeout(undefined);
+  }, [getProgress, nextTrackTimeout, props, trackDuration, updateFeed]);
 
   /*
    * When...
    */
   const handlePlayTrack = async function(e) {
     e.preventDefault();
+
+    play(undefined);
 
     const jsonResponse = await fetchPlayTrack();
     props.dispatch({
@@ -97,6 +131,8 @@ function Player(props) {
   const handlePauseTrack = async function(e) {
     e.preventDefault();
 
+    pause(undefined);
+
     const jsonResponse = await fetchPauseTrack();
 
     props.dispatch({
@@ -108,6 +144,9 @@ function Player(props) {
         pausedAt: jsonResponse.data.pausedAt,
       },
     });
+
+    clearTimeout(nextTrackTimeout);
+    setNextTrackTimeout(undefined);
   }
 
   /*
@@ -127,9 +166,11 @@ function Player(props) {
 
     await props.dispatch({
       type: 'stream/set',
-      stream: { ...stream, startedAt: startedAt },
+      payload: {stream: { ...stream, startedAt: startedAt }},
     });
-    setKey(key + 1);
+
+    clearTimeout(nextTrackTimeout)
+    setNextTrackTimeout(undefined);
   }
 
   /*
@@ -146,13 +187,11 @@ function Player(props) {
 
     await props.dispatch({
       type: 'stream/set',
-      stream: { ...stream, startedAt: stream.startedAt - (10000) },
+      payload: {stream: { ...stream, startedAt: stream.startedAt - (10000) }},
     });
-    setKey(key + 1);
-  }
 
-  if(stream?.isPlaying && !playback.nowPlaying) {
-    props.dispatch({ type: 'playback/play' });
+    clearTimeout(nextTrackTimeout);
+    setNextTrackTimeout(undefined);
   }
 
   /*
@@ -170,16 +209,30 @@ function Player(props) {
   //   });
   // }
 
-  // const progress = (
-  //   stream ?
-  //   (
-  //     stream.pausedAt ?
-  //       stream.pausedAt - stream.startedAt:
-  //       Date.now() - stream.startedAt
-  //   ) :
-  //   undefined
-  // );
-  // const trackDuration = stream?.nowPlaying?.track?.durationMilliseconds;
+  /*
+   * Schedule next track
+   */
+  useEffect(() => {
+    const progress = getProgress();
+    if(stream?.isPlaying && (progress < trackDuration) && !nextTrackTimeout) {
+      const timeout = trackDuration - progress - 3000,
+            timeoutId = setTimeout(handleNextTrack, timeout);
+      setNextTrackTimeout(timeoutId);
+    }
+  }, [
+    nextTrackTimeout, setNextTrackTimeout, handleNextTrack, trackDuration,
+    stream, getProgress
+  ]);
+
+  /*
+   * Schedule next section
+   */
+
+  // BUG: edge case needed to refresh the webpage. In the future, there should
+  //      be an API endpoint to fetch additional past queue items.
+  if(stream?.nowPlaying?.index !== 1 && !lastUp) {
+    window.location.reload();
+  }
 
   return (
     <>
@@ -227,10 +280,7 @@ function Player(props) {
 
 const mapStateToProps = (state) => ({
     stream: state.stream,
-    playback: state.playback,
-    lastUp: state.lastUp,
     lastUpQueues: state.lastUpQueues,
-    nextUp: state.nextUp,
     nextUpQueues: state.nextUpQueues,
 });
 

@@ -23,12 +23,8 @@ const initialState = {
   textComments: [],
   voiceRecordings: [],
   feed: [],
-  playback: {
-    nowPlaying: undefined,
-  },
   userSettings: undefined,
   trackMarkerMap: {},
-  queueIntervalMap: {},
 }
 
 
@@ -41,17 +37,6 @@ function streamExpire(state, action) {
   stream.nowPlaying = undefined;
 
   return { ...state, stream: stream, _lastPlayed: _lastPlayed };
-}
-
-
-function playbackPlay(state, action) {
-  return {
-    ...state,
-    playback: {
-      ...state.playback,
-      nowPlaying: state.stream.nowPlaying,
-    },
-  };
 }
 
 
@@ -212,8 +197,6 @@ const reducer = (state = initialState, action) => {
       return streamNextTrack(state, action.payload);
     case "stream/expire":
       return streamExpire(state, action);
-    case "playback/play":
-      return playbackPlay(state, action);
     case "queue/listSet":
       return queueListSet(state, action.payload);
     case "queue/deleteNode":
