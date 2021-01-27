@@ -29,17 +29,31 @@ export const streamSet = function(state, payload) {
  * Set the stream context.
  */
 export const streamPrevTrack = function(state, action) {
-  const lastUpQueues = [...state.lastUpQueues];
-  const nowPlaying = lastUpQueues[lastUpQueues.length - 1];
+  const lastUpQueues = [...state.lastUpQueues],
+        nextUpQueues = [...state.nextUpQueues],
+        lastNowPlaying = state.stream.nowPlaying,
+        nextUpQueue = nextUpQueues[0],
+        nextNowPlaying = lastUpQueues[lastUpQueues.length - 1];
+
+  if(lastNowPlaying?.parentUuid === nextUpQueue?.uuid) {
+    nextUpQueue.children.unshift(lastNowPlaying);
+  } else {
+    nextUpQueues.unshift(lastNowPlaying);
+  }
+
+  lastUpQueues.pop();
+
   return {
       ...state,
       stream: {
         ...state.stream,
         startedAt: action.startedAt,
-        nowPlaying: nowPlaying,
+        nowPlaying: nextNowPlaying,
         isPlaying: true,
         isPaused: false,
       },
+      lastUpQueues: lastUpQueues,
+      nextUpQueues: nextUpQueues,
       _lastPlayed: undefined,
   };
 }
@@ -49,21 +63,36 @@ export const streamPrevTrack = function(state, action) {
  * ...
  */
 export const streamNextTrack = function(state, action) {
-  const nextUpQueues = [...state.nextUpQueues];
-  const nowPlaying = (
-    nextUpQueues[0].children.length ?
-      nextUpQueues[0].children[0] :
-      nextUpQueues[0]
-  );
+  const lastUpQueues = [...state.lastUpQueues],
+        nextUpQueues = [...state.nextUpQueues],
+        lastNowPlaying = state.stream.nowPlaying,
+        nextUpQueue = nextUpQueues[0],
+        nextNowPlaying = (
+          nextUpQueue.children.length ? nextUpQueue.children[0] : nextUpQueue
+        );
+
+  lastUpQueues.push(lastNowPlaying);
+
+  if(nextUpQueue.children.length) {
+    nextUpQueue.children.shift();
+    if(!nextUpQueue.children.length) {
+      nextUpQueues.shift();
+    }
+  } else {
+    nextUpQueues.shift();
+  }
+
   return {
       ...state,
       stream: {
         ...state.stream,
         startedAt: action.startedAt,
-        nowPlaying: nowPlaying,
+        nowPlaying: nextNowPlaying,
         isPlaying: true,
         isPaused: false,
       },
-      _lastPlayed: undefined,
+      lastUpQueues: lastUpQueues,
+      nextUpQueues: nextUpQueues,
+      _lastPlayed: lastNowPlaying,
   };
 }

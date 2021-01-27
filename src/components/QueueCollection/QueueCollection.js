@@ -11,7 +11,8 @@ function QueueCollection(props) {
    */
   const queue = props.data,
         stream = props.stream,
-        lastUp = props.lastUp,
+        lastUpQueues = props.lastUpQueues,
+        lastUp = lastUpQueues[lastUpQueues.length - 1],
         queueUuid = props.data.uuid;
 
   const isCurrentlyPlayingCollection = (
@@ -73,7 +74,7 @@ function QueueCollection(props) {
 
 const mapStateToProps = (state) => ({
   stream: state.stream,
-  lastUp: state.lastUp,
+  lastUpQueues: state.lastUpQueues,
 });
 
 export default connect(mapStateToProps)(QueueCollection);
