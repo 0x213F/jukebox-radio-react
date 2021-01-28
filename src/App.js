@@ -6,7 +6,10 @@ import Search from './components/Search/Search'
 import Upload from './components/Upload/Upload'
 import Player from './components/Player/Player'
 import UserSettings from './components/UserSettings/UserSettings'
-import { fetchTextComments, fetchVoiceRecordings } from './components/Chat/network'
+import {
+  fetchTextCommentList,
+  fetchVoiceRecordingList,
+} from './components/Chat/network';
 import { fetchVerifyToken } from './components/Login/network'
 import { fetchStreamGet } from './components/Player/network'
 import { fetchQueueList } from './components/Queue/network'
@@ -56,18 +59,12 @@ function App() {
       await store.dispatch(responseJson.redux);
 
       // load comments
-      const textCommentsJsonResponse = await fetchTextComments();
-      await store.dispatch({
-        type: 'textComment/listSet',
-        textComments: textCommentsJsonResponse.data,
-      });
+      const textCommentsJsonResponse = await fetchTextCommentList();
+      await store.dispatch(textCommentsJsonResponse.redux);
 
       // load voice recordings
-      const voiceRecordingsJsonResponse = await fetchVoiceRecordings();
-      await store.dispatch({
-        type: 'voiceRecording/listSet',
-        voiceRecordings: voiceRecordingsJsonResponse.data,
-      });
+      const voiceRecordingsJsonResponse = await fetchVoiceRecordingList();
+      await store.dispatch(voiceRecordingsJsonResponse.redux);
 
       // get user settings
       const userSettingsJsonResponse = await fetchGetUserSettings();

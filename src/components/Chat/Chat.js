@@ -3,7 +3,7 @@ import { connect } from 'react-redux'
 import SpeechRecognition, { useSpeechRecognition } from 'react-speech-recognition'
 import MicRecorder from 'mic-recorder-to-mp3';
 import styles from './Chat.module.css';
-import { fetchCreateTextComment } from './network'
+import { fetchTextCommentCreate } from './network'
 import {
   fetchDeleteTextComment,
 } from '../TextComment/network'
@@ -69,7 +69,7 @@ function Chat(props) {
    */
   const createTextComment = async function(e) {
     e.preventDefault();
-    const responseJson = await fetchCreateTextComment(text);
+    const responseJson = await fetchTextCommentCreate(text);
 
     await props.dispatch({
       type: 'textComment/create',

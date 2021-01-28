@@ -10,11 +10,13 @@ import {
   fetchScanBackward,
   fetchScanForward,
 } from './network'
-import { fetchTextComments, fetchVoiceRecordings } from '../Chat/network'
+import { fetchTextCommentList, fetchVoiceRecordingList } from '../Chat/network';
 import { addToQueue, start, play, pause } from './controls';
 
 
 function Player(props) {
+
+  const PRELOAD_DURATION = 3000;
 
   /*
    * 🏗
@@ -32,50 +34,42 @@ function Player(props) {
             undefined
         );
 
-  const [nextTrackTimeout, setNextTrackTimeout] = useState(undefined);
-
-  /*
-   * ...
-   */
-  const getProgress = useCallback(() => (
-    stream ?
-    (
-      stream.pausedAt ?
-        stream.pausedAt - stream.startedAt:
-        Date.now() - stream.startedAt
-    ) :
-    undefined
-  ), [stream]);
-
   const trackDuration = stream?.nowPlaying?.totalDurationMilliseconds;
 
+  const [nextTrackTimeout, setNextTrackTimeout] = useState(undefined);
+  const [counter, setCounter] = useState(0);
+
   /*
-   *
+   * A function used to calculate time elapsed since the now playing track was
+   * started.
+   */
+  const getProgress = useCallback(() => {
+    if(stream?.isPaused) {
+      return stream.pausedAt - stream.startedAt;
+    } else if(stream?.isPlaying) {
+      return Date.now() - stream.startedAt;
+    } else {
+      return undefined;
+    }
+  }, [stream]);
+
+  /*
+   * Load comments and voice recordings to update the feed.
    */
   const updateFeed = useCallback(async function() {
-    // load comments
-    const textCommentsJsonResponse = await fetchTextComments();
-    await props.dispatch({
-      type: 'textComment/listSet',
-      textComments: textCommentsJsonResponse.data,
-    });
-
-    // load voice recordings
-    const voiceRecordingsJsonResponse = await fetchVoiceRecordings();
-    await props.dispatch({
-      type: 'voiceRecording/listSet',
-      voiceRecordings: voiceRecordingsJsonResponse.data,
-    });
+    const responseJsonTextCommentList = await fetchTextCommentList();
+    const responseJsonVoiceRecordingList = await fetchVoiceRecordingList();
+    await props.dispatch(responseJsonTextCommentList.redux);
+    await props.dispatch(responseJsonVoiceRecordingList.redux);
   }, [props]);
 
   /*
-   * When...
+   * Go back and play the track that was last playing.
    */
   const handlePrevTrack = async function() {
-    start(undefined);
+    start(lastUp);
 
     const responseJsonPrevTrack = await fetchPrevTrack();
-
     await props.dispatch(responseJsonPrevTrack.redux);
 
     await updateFeed();
@@ -91,14 +85,13 @@ function Player(props) {
     const responseJsonNextTrack = await fetchNextTrack();
 
     const remaining = trackDuration - getProgress();
-    if(remaining <= 3000) {
+    if(remaining <= PRELOAD_DURATION) {
       addToQueue(undefined);
     } else {
       start(undefined);
     }
 
     await props.dispatch(responseJsonNextTrack.redux);
-
     await updateFeed();
 
     clearTimeout(nextTrackTimeout);
@@ -108,42 +101,21 @@ function Player(props) {
   /*
    * When...
    */
-  const handlePlayTrack = async function(e) {
-    e.preventDefault();
-
-    play(undefined);
+  const handlePlayTrack = async function() {
+    play();
 
     const jsonResponse = await fetchPlayTrack();
-    props.dispatch({
-      type: 'stream/set',
-      stream: {
-        ...stream,
-        isPlaying: true,
-        isPaused: false,
-        playedAt: jsonResponse.data.playedAt,
-      },
-    });
+    props.dispatch(jsonResponse.redux);
   }
 
   /*
    * When...
    */
-  const handlePauseTrack = async function(e) {
-    e.preventDefault();
-
-    pause(undefined);
+  const handlePauseTrack = async function() {
+    pause();
 
     const jsonResponse = await fetchPauseTrack();
-
-    props.dispatch({
-      type: 'stream/set',
-      stream: {
-        ...stream,
-        isPlaying: false,
-        isPaused: true,
-        pausedAt: jsonResponse.data.pausedAt,
-      },
-    });
+    props.dispatch(jsonResponse.redux);
 
     clearTimeout(nextTrackTimeout);
     setNextTrackTimeout(undefined);
@@ -157,12 +129,12 @@ function Player(props) {
 
     await fetchScanBackward();
 
-    const date = new Date();
-    const epochNow = date.getTime();
+    const date = new Date(),
+          epochNow = date.getTime();
 
-    const proposedStartedAt = stream.startedAt + 10000;
-    const proposedProgress = epochNow - proposedStartedAt;
-    const startedAt = proposedProgress > 0 ? proposedStartedAt : epochNow;
+    const proposedStartedAt = stream.startedAt + 10000,
+          proposedProgress = epochNow - proposedStartedAt,
+          startedAt = proposedProgress > 0 ? proposedStartedAt : epochNow;
 
     await props.dispatch({
       type: 'stream/set',
@@ -194,6 +166,10 @@ function Player(props) {
     setNextTrackTimeout(undefined);
   }
 
+  const handleRefreshProgress = function() {
+    setCounter(counter + 1);
+  }
+
   /*
    * When...
    */
@@ -215,7 +191,7 @@ function Player(props) {
   useEffect(() => {
     const progress = getProgress();
     if(stream?.isPlaying && (progress < trackDuration) && !nextTrackTimeout) {
-      const timeout = trackDuration - progress - 3000,
+      const timeout = trackDuration - progress - PRELOAD_DURATION,
             timeoutId = setTimeout(handleNextTrack, timeout);
       setNextTrackTimeout(timeoutId);
     }
@@ -257,6 +233,10 @@ function Player(props) {
       </div>
 
       <div className={styles.Div}>
+        {getProgress()}
+      </div>
+
+      <div className={styles.Div}>
         <button className={styles.Button} onClick={handlePrevTrack}>Prev</button>
         {stream?.isPaused &&
           <button className={styles.Button} onClick={handlePlayTrack}>Play</button>
@@ -272,6 +252,9 @@ function Player(props) {
         }
         {(stream?.isPlaying) &&
           <button className={styles.Button} onClick={handleScanForward}>Forward</button>
+        }
+        {(stream?.isPlaying) &&
+          <button className={styles.Button} onClick={handleRefreshProgress}>Progress</button>
         }
       </div>
     </>

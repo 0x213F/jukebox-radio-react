@@ -11,9 +11,17 @@ import {
 } from './reducers/queueInterval'
 import {
   streamSet,
+  streamPlay,
+  streamPause,
   streamPrevTrack,
   streamNextTrack,
-} from './reducers/stream'
+} from './reducers/stream';
+import {
+  textCommentListSet,
+} from './reducers/textComment';
+import {
+  voiceRecordingListSet,
+} from './reducers/voiceRecording';
 
 
 const initialState = {
@@ -66,22 +74,6 @@ function queueDeleteChildNode(state, action) {
   return {
     ...state,
     nextUpQueues: queues,
-  }
-}
-
-
-function textCommentListSet(state, action) {
-  const textComments = action.textComments,
-        aggregateFeed = [...textComments, ...state.voiceRecordings];
-
-  const feed = aggregateFeed.sort((a, b) => {
-    return a.timestampMilliseconds - b.timestampMilliseconds;
-  });
-
-  return {
-    ...state,
-    textComments: action.textComments,
-    feed: feed,
   }
 }
 
@@ -150,21 +142,6 @@ function voiceRecordingCreate(state, action) {
 }
 
 
-function voiceRecordingListSet(state, action) {
-  const voiceRecordings = action.voiceRecordings,
-        aggregateFeed = [...state.textComments, ...voiceRecordings],
-        feed = aggregateFeed.sort((a, b) => {
-          return a.timestampMilliseconds - b.timestampMilliseconds;
-        });
-
-  return {
-    ...state,
-    voiceRecordings: action.voiceRecordings,
-    feed: feed,
-  }
-}
-
-
 function voiceRecordingDelete(state, action) {
   const voiceRecordings = state.voiceRecordings.filter(i => i.uuid !== action.voiceRecordingUuid),
         aggregateFeed = [...state.textComments, ...voiceRecordings],
@@ -191,6 +168,10 @@ const reducer = (state = initialState, action) => {
   switch (action.type) {
     case "stream/set":
       return streamSet(state, action.payload);
+    case "stream/play":
+      return streamPlay(state, action.payload);
+    case "stream/pause":
+      return streamPause(state, action.payload);
     case "stream/prevTrack":
       return streamPrevTrack(state, action.payload);
     case "stream/nextTrack":
@@ -204,7 +185,7 @@ const reducer = (state = initialState, action) => {
     case "queue/deleteChildNode":
       return queueDeleteChildNode(state, action);
     case "textComment/listSet":
-      return textCommentListSet(state, action);
+      return textCommentListSet(state, action.payload);
     case "textComment/create":
       return textCommentCreate(state, action);
     case "textComment/delete":
@@ -214,7 +195,7 @@ const reducer = (state = initialState, action) => {
     case "voiceRecording/create":
       return voiceRecordingCreate(state, action);
     case "voiceRecording/listSet":
-      return voiceRecordingListSet(state, action);
+      return voiceRecordingListSet(state, action.payload);
     case "voiceRecording/delete":
       return voiceRecordingDelete(state, action);
     case "user/get-settings":
