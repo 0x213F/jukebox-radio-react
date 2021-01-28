@@ -10,7 +10,7 @@ import { fetchBackend } from '../../utils/network'
 /*
  * Fetches...
  */
-const fetchCreateTextComment = async (text) => {
+export const fetchTextCommentCreate = async (text) => {
   const response = await fetchBackend(
     TYPE_POST,
     ENDPOINT_TEXT_COMMENT_CREATE,
@@ -23,7 +23,7 @@ const fetchCreateTextComment = async (text) => {
 /*
  * Fetches...
  */
-const fetchTextComments = async () => {
+export const fetchTextCommentList = async () => {
   const response = await fetchBackend(
     TYPE_GET,
     ENDPOINT_TEXT_COMMENT_LIST
@@ -35,7 +35,7 @@ const fetchTextComments = async () => {
 /*
  * Fetches...
  */
-const fetchVoiceRecordings = async () => {
+export const fetchVoiceRecordingList = async () => {
   const response = await fetchBackend(
     TYPE_GET,
     ENDPOINT_VOICE_RECORDING_LIST
@@ -43,5 +43,3 @@ const fetchVoiceRecordings = async () => {
   const responseJson = await response.json();
   return responseJson;
 };
-
-export { fetchCreateTextComment, fetchTextComments, fetchVoiceRecordings }

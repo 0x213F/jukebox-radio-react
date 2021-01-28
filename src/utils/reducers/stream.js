@@ -26,19 +26,58 @@ export const streamSet = function(state, payload) {
 
 
 /*
+ * ...
+ */
+export const streamPlay = function(state, payload) {
+  const updatedPayload = {
+    stream: {
+      ...state.stream,
+      isPlaying: true,
+      isPaused: false,
+      startedAt: payload.startedAt,
+    }
+  };
+  return streamSet(state, updatedPayload);
+}
+
+
+/*
+ * ...
+ */
+export const streamPause = function(state, payload) {
+  const updatedPayload = {
+    stream: {
+      ...state.stream,
+      isPlaying: false,
+      isPaused: true,
+      pausedAt: payload.pausedAt,
+    }
+  };
+  return streamSet(state, updatedPayload);
+}
+
+
+/*
  * Set the stream context.
  */
-export const streamPrevTrack = function(state, action) {
+export const streamPrevTrack = function(state, payload) {
   const lastUpQueues = [...state.lastUpQueues],
         nextUpQueues = [...state.nextUpQueues],
         lastNowPlaying = state.stream.nowPlaying,
         nextUpQueue = nextUpQueues[0],
         nextNowPlaying = lastUpQueues[lastUpQueues.length - 1];
 
-  if(lastNowPlaying?.parentUuid === nextUpQueue?.uuid) {
-    nextUpQueue.children.unshift(lastNowPlaying);
-  } else {
-    nextUpQueues.unshift(lastNowPlaying);
+  const isTrackInCollection = (
+    lastNowPlaying?.parentUuid &&
+    nextUpQueue?.uuid &&
+    lastNowPlaying?.parentUuid === nextUpQueue?.uuid
+  );
+  if(lastNowPlaying) {
+    if(isTrackInCollection) {
+      nextUpQueue.children.unshift(lastNowPlaying);
+    } else {
+      nextUpQueues.unshift(lastNowPlaying);
+    }
   }
 
   lastUpQueues.pop();
@@ -47,7 +86,7 @@ export const streamPrevTrack = function(state, action) {
       ...state,
       stream: {
         ...state.stream,
-        startedAt: action.startedAt,
+        startedAt: payload.startedAt,
         nowPlaying: nextNowPlaying,
         isPlaying: true,
         isPaused: false,
@@ -62,31 +101,39 @@ export const streamPrevTrack = function(state, action) {
 /*
  * ...
  */
-export const streamNextTrack = function(state, action) {
+export const streamNextTrack = function(state, payload) {
   const lastUpQueues = [...state.lastUpQueues],
         nextUpQueues = [...state.nextUpQueues],
         lastNowPlaying = state.stream.nowPlaying,
         nextUpQueue = nextUpQueues[0],
         nextNowPlaying = (
-          nextUpQueue.children.length ? nextUpQueue.children[0] : nextUpQueue
+          nextUpQueue ?
+            (nextUpQueue.children.length ?
+              nextUpQueue.children[0] :
+              nextUpQueue) :
+            undefined
         );
 
-  lastUpQueues.push(lastNowPlaying);
+  if(lastNowPlaying) {
+    lastUpQueues.push(lastNowPlaying);
+  }
 
-  if(nextUpQueue.children.length) {
-    nextUpQueue.children.shift();
-    if(!nextUpQueue.children.length) {
+  if(nextUpQueue) {
+    if(nextUpQueue.children.length) {
+      nextUpQueue.children.shift();
+      if(!nextUpQueue.children.length) {
+        nextUpQueues.shift();
+      }
+    } else {
       nextUpQueues.shift();
     }
-  } else {
-    nextUpQueues.shift();
   }
 
   return {
       ...state,
       stream: {
         ...state.stream,
-        startedAt: action.startedAt,
+        startedAt: payload.startedAt,
         nowPlaying: nextNowPlaying,
         isPlaying: true,
         isPaused: false,
