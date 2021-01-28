@@ -78,6 +78,8 @@ function App() {
     loadData();
   }, []);
 
+  // scheduler
+
   // as the page is loading, display nothing
   if(status === 'initial') {
     return (

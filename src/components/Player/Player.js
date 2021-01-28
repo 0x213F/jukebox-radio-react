@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from "react";
+import { useState } from "react";
 import { connect } from 'react-redux'
 // import { CountdownCircleTimer } from 'react-countdown-circle-timer'
 import styles from './Player.module.css';
@@ -36,14 +36,13 @@ function Player(props) {
 
   const trackDuration = stream?.nowPlaying?.totalDurationMilliseconds;
 
-  const [nextTrackTimeout, setNextTrackTimeout] = useState(undefined);
   const [counter, setCounter] = useState(0);
 
   /*
    * A function used to calculate time elapsed since the now playing track was
    * started.
    */
-  const getProgress = useCallback(() => {
+  const getProgress = function() {
     if(stream?.isPaused) {
       return stream.pausedAt - stream.startedAt;
     } else if(stream?.isPlaying) {
@@ -51,17 +50,17 @@ function Player(props) {
     } else {
       return undefined;
     }
-  }, [stream]);
+  };
 
   /*
    * Load comments and voice recordings to update the feed.
    */
-  const updateFeed = useCallback(async function() {
+  const updateFeed = async function() {
     const responseJsonTextCommentList = await fetchTextCommentList();
     const responseJsonVoiceRecordingList = await fetchVoiceRecordingList();
     await props.dispatch(responseJsonTextCommentList.redux);
     await props.dispatch(responseJsonVoiceRecordingList.redux);
-  }, [props]);
+  };
 
   /*
    * Go back and play the track that was last playing.
@@ -73,15 +72,12 @@ function Player(props) {
     await props.dispatch(responseJsonPrevTrack.redux);
 
     await updateFeed();
-
-    clearTimeout(nextTrackTimeout);
-    setNextTrackTimeout(undefined);
   }
 
   /*
    * When...
    */
-  const handleNextTrack = useCallback(async function() {
+  const handleNextTrack = async function() {
     const responseJsonNextTrack = await fetchNextTrack();
 
     const remaining = trackDuration - getProgress();
@@ -93,10 +89,7 @@ function Player(props) {
 
     await props.dispatch(responseJsonNextTrack.redux);
     await updateFeed();
-
-    clearTimeout(nextTrackTimeout);
-    setNextTrackTimeout(undefined);
-  }, [getProgress, nextTrackTimeout, props, trackDuration, updateFeed]);
+  }
 
   /*
    * When...
@@ -116,9 +109,6 @@ function Player(props) {
 
     const jsonResponse = await fetchPauseTrack();
     props.dispatch(jsonResponse.redux);
-
-    clearTimeout(nextTrackTimeout);
-    setNextTrackTimeout(undefined);
   }
 
   /*
@@ -140,9 +130,6 @@ function Player(props) {
       type: 'stream/set',
       payload: {stream: { ...stream, startedAt: startedAt }},
     });
-
-    clearTimeout(nextTrackTimeout)
-    setNextTrackTimeout(undefined);
   }
 
   /*
@@ -161,9 +148,6 @@ function Player(props) {
       type: 'stream/set',
       payload: {stream: { ...stream, startedAt: stream.startedAt - (10000) }},
     });
-
-    clearTimeout(nextTrackTimeout);
-    setNextTrackTimeout(undefined);
   }
 
   const handleRefreshProgress = function() {
@@ -184,21 +168,6 @@ function Player(props) {
   //     nextUpQueues: props.nextUpQueues,
   //   });
   // }
-
-  /*
-   * Schedule next track
-   */
-  useEffect(() => {
-    const progress = getProgress();
-    if(stream?.isPlaying && (progress < trackDuration) && !nextTrackTimeout) {
-      const timeout = trackDuration - progress - PRELOAD_DURATION,
-            timeoutId = setTimeout(handleNextTrack, timeout);
-      setNextTrackTimeout(timeoutId);
-    }
-  }, [
-    nextTrackTimeout, setNextTrackTimeout, handleNextTrack, trackDuration,
-    stream, getProgress
-  ]);
 
   /*
    * Schedule next section

@@ -1,22 +1,22 @@
 import React, { useState } from "react";
 import { connect } from 'react-redux'
-import SpeechRecognition, { useSpeechRecognition } from 'react-speech-recognition'
+import SpeechRecognition, { useSpeechRecognition } from 'react-speech-recognition';
 import MicRecorder from 'mic-recorder-to-mp3';
 import styles from './Chat.module.css';
-import { fetchTextCommentCreate } from './network'
+import { fetchTextCommentCreate } from './network';
 import {
   fetchDeleteTextComment,
-} from '../TextComment/network'
+} from '../TextComment/network';
 import {
   fetchCreateVoiceRecording,
   fetchDeleteVoiceRecording,
-} from '../VoiceRecording/network'
-import TextComment from '../TextComment/TextComment'
-import VoiceRecording from '../VoiceRecording/VoiceRecording'
+} from '../VoiceRecording/network';
+import TextComment from '../TextComment/TextComment';
+import VoiceRecording from '../VoiceRecording/VoiceRecording';
 import {
   CLASS_TEXT_COMMENT,
   CLASS_VOICE_RECORDING
-} from '../../config/model'
+} from '../../config/model';
 
 
 function Chat(props) {
@@ -155,8 +155,7 @@ function Chat(props) {
    * This aggregates text comments and voice recordings into one data list,
    * sorted by track timestamp.
    */
-  let feed = props.feed;
-
+  const feed = props.feed;
 
   /*
    * 🎨

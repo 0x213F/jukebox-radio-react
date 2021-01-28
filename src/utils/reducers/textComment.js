@@ -2,7 +2,6 @@
  * ...
  */
 export const textCommentListSet = function(state, payload) {
-  console.log(payload)
   const textComments = payload.textComments,
         aggregateFeed = [...textComments, ...state.voiceRecordings];
 
