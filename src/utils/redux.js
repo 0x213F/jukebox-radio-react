@@ -3,12 +3,13 @@ import {
   markerCreate,
   markerDelete,
   markerList,
-} from './reducers/marker'
-import { queueListSet } from './reducers/queue'
+} from './reducers/marker';
+import { playerSpotify } from './reducers/player';
+import { queueListSet } from './reducers/queue';
 import {
   queueIntervalCreate,
   queueIntervalDelete,
-} from './reducers/queueInterval'
+} from './reducers/queueInterval';
 import {
   streamSet,
   streamPlay,
@@ -210,6 +211,8 @@ const reducer = (state = initialState, action) => {
       return queueIntervalCreate(state, action.payload);
     case "queueInterval/delete":
       return queueIntervalDelete(state, action.payload);
+    case "player/spotify":
+      return playerSpotify(state, action.payload);
     default:
       return state;
   }

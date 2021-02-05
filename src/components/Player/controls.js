@@ -28,3 +28,10 @@ export const play = function() {
 export const pause = function() {
   return;
 }
+
+/*
+ *
+ */
+export const seek = function() {
+  return;
+}
