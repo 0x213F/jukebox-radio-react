@@ -21,6 +21,9 @@ import {
   textCommentListSet,
 } from './reducers/textComment';
 import {
+  textCommentModificationCreate,
+} from './reducers/textCommentModification';
+import {
   voiceRecordingListSet,
 } from './reducers/voiceRecording';
 
@@ -94,23 +97,17 @@ function textCommentCreate(state, action) {
 }
 
 
-// function textCommentClearModifications(state, action) {
-//   const textCommentIndex = state.textComments.findIndex(t => t.uuid === action.textCommentUuid),
-//         textComments = [...state.textComments];
-//
-//   textComments[textCommentIndex].modifications = [];
-//
-//   const aggregateFeed = [...textComments, ...state.voiceRecordings],
-//         feed = aggregateFeed.sort((a, b) => {
-//           return a.timestampMilliseconds - b.timestampMilliseconds;
-//         });
-//
-//   return {
-//     ...state,
-//     textComments: textComments,
-//     feed: feed,
-//   }
-// }
+function textCommentClearModifications(state, action) {
+  const textCommentIndex = state.textComments.findIndex(t => t.uuid === action.textCommentUuid),
+        textComments = [...state.textComments];
+
+  textComments[textCommentIndex].modifications = [];
+
+  return {
+    ...state,
+    textComments: textComments,
+  }
+}
 
 
 function textCommentDelete(state, action) {
@@ -191,8 +188,10 @@ const reducer = (state = initialState, action) => {
       return textCommentCreate(state, action);
     case "textComment/delete":
       return textCommentDelete(state, action);
-    // case "textComment/clearModifications":
-    //   return textCommentClearModifications(state, action);
+    case "textCommentModification/create":
+      return textCommentModificationCreate(state, action.payload);
+    case "textComment/clearModifications":
+      return textCommentClearModifications(state, action);
     case "voiceRecording/create":
       return voiceRecordingCreate(state, action);
     case "voiceRecording/listSet":
