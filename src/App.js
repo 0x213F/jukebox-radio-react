@@ -11,7 +11,15 @@ import {
   fetchVoiceRecordingList,
 } from './components/Chat/network';
 import { fetchVerifyToken } from './components/Login/network'
-import { fetchStreamGet, fetchNextTrack } from './components/Player/network';
+import {
+  fetchStreamGet,
+  fetchNextTrack,
+  fetchPrevTrack,
+  fetchScanBackward,
+  fetchScanForward,
+  fetchPauseTrack,
+  fetchPlayTrack,
+} from './components/Player/network';
 import { fetchQueueList } from './components/Queue/network'
 import { fetchGetUserSettings } from './components/UserSettings/network'
 import { store } from './utils/redux'
@@ -30,8 +38,6 @@ const SpotifyWebApi = require('spotify-web-api-js');
 
 function App() {
 
-  const state = store.getState();
-
   // keeps track of the status of the webpage
   //  - initial: when the page is first loaded
   //  - unauthenticated: the client does NOT have a valid access token
@@ -44,6 +50,11 @@ function App() {
   const [shouldScheduleReset, setShouldScheduleReset] = useState(false);
 
   const [nextTrackReduxJson, setNextTrackReduxJson] = useState({});
+
+  // eslint-disable-next-line
+  const [nextTrackTimeoutId, setNextTrackTimeoutId] = useState(undefined);
+  // eslint-disable-next-line
+  const [resetNextTrackTimeoutId, setResetNextTrackTimeoutId] = useState(undefined);
 
   // componentDidMount
   useEffect(() => {
@@ -97,6 +108,8 @@ function App() {
   }, []);
 
   const start = function() {
+    const state = store.getState();
+
     setPlayerIsPlaying(true);
 
     const progress = Date.now() - state.stream.startedAt;
@@ -109,11 +122,108 @@ function App() {
     setShouldScheduleNextTrack(true);
   }
 
-  const nextTrack = async function() {
+  const nextTrack = async function(forced = false) {
+    const state = store.getState();
     const responseJsonNextTrack = await fetchNextTrack();
+    if(forced) {
+      await store.dispatch(responseJsonNextTrack.redux);
+      await setNextTrackReduxJson({});
+      await setPlayerIsPlaying(false);
+      return;
+    }
     setNextTrackReduxJson(responseJsonNextTrack.redux);
     setShouldScheduleReset(true);
     addToQueue(state);
+  }
+
+  const prevTrack = async function() {
+    const responseJsonPrevTrack = await fetchPrevTrack();
+    await store.dispatch(responseJsonPrevTrack.redux);
+    await setNextTrackReduxJson({});
+    await setPlayerIsPlaying(false);
+    return;
+  }
+
+  const seek = async function(direction) {
+    const state = store.getState();
+    let startedAt;
+    const stream = state.stream;
+    if(direction === 'forward') {
+      const response = await fetchScanForward();
+
+      if(response.system.status === 400) {
+        return;
+      }
+
+      startedAt = stream.startedAt - (10000);
+    } else if(direction === 'backward') {
+      await fetchScanBackward();
+
+      const date = new Date(),
+            epochNow = date.getTime();
+
+      const proposedStartedAt = stream.startedAt + 10000,
+            proposedProgress = epochNow - proposedStartedAt;
+
+      startedAt = proposedProgress > 0 ? proposedStartedAt : epochNow;
+    }
+
+    await store.dispatch({
+      type: 'stream/set',
+      payload: {stream: { ...stream, startedAt: startedAt }},
+    });
+
+    const progress = Date.now() - startedAt;
+    state.spotifyApi.seek(progress);
+
+    setNextTrackTimeoutId(prev => {
+      clearTimeout(prev);
+      return undefined;
+    });
+
+    setResetNextTrackTimeoutId(prev => {
+      clearTimeout(prev);
+      return undefined;
+    });
+
+    setShouldScheduleNextTrack(true);
+  }
+
+  const pause = async function() {
+    const state = store.getState();
+    const jsonResponse = await fetchPauseTrack();
+    store.dispatch(jsonResponse.redux);
+
+    // NOTE: this is not called because it would "start" the song again
+    // setPlayerIsPlaying(false);
+
+    setNextTrackTimeoutId(prev => {
+      clearTimeout(prev);
+      return undefined;
+    });
+
+    setResetNextTrackTimeoutId(prev => {
+      clearTimeout(prev);
+      return undefined;
+    });
+
+    state.spotifyApi.pause();
+  }
+
+  const play = async function() {
+    const state = store.getState();
+    const jsonResponse = await fetchPlayTrack();
+    await store.dispatch(jsonResponse.redux);
+
+    if(!playerIsPlaying) {
+      // TODO this case isn't working needs refactor
+      return;
+    }
+
+    state.spotifyApi.play();
+    // NOTE: this is not called because it would "start" the song again
+    // setPlayerIsPlaying(true);
+    setShouldScheduleNextTrack(true);
   }
 
   const resetNextTrack = async function() {
@@ -123,6 +233,7 @@ function App() {
   }
 
   const addToQueue = function() {
+    const state = store.getState();
     const nextUpQueues = state.nextUpQueues,
           nextUp = (
             nextUpQueues.length ?
@@ -138,6 +249,7 @@ function App() {
   // Will schedule task to queue up the next track near the end of the
   // currently playing track.
   useEffect(() => {
+    const state = store.getState();
 
     // check
     if(!shouldScheduleNextTrack) {
@@ -151,15 +263,19 @@ function App() {
           timeout = nowPlayingDuration - progress - 5000;
 
     // schedule
-    setTimeout(() => {
+    const timeoutId = setTimeout(() => {
       nextTrack();
     }, timeout);
+
+    setNextTrackTimeoutId(timeoutId);
+
   // eslint-disable-next-line
   }, [shouldScheduleNextTrack]);
 
   // Will schedule a task to reset the cycle at the end of the currently
   // playing track.
   useEffect(() => {
+    const state = store.getState();
     if(!shouldScheduleReset) {
       return;
     }
@@ -168,9 +284,12 @@ function App() {
           progress = Date.now() - state.stream.startedAt,
           timeout = nowPlayingDuration - progress;
 
-    setTimeout(() => {
+    const timeoutId = setTimeout(() => {
       resetNextTrack();
     }, timeout);
+
+    setResetNextTrackTimeoutId(timeoutId);
+
   // eslint-disable-next-line
   }, [shouldScheduleReset]);
 
@@ -211,7 +330,8 @@ function App() {
     )
   }
 
-  // TODO: play the music!
+  // Play the music.
+  const state = store.getState();
   if(state.stream.isPlaying && !playerIsPlaying) {
     start();
   }
@@ -256,7 +376,11 @@ function App() {
                 <Chat />
               </Route>
               <Route path="/player">
-                <Player />
+                <Player nextTrack={nextTrack}
+                        prevTrack={prevTrack}
+                        seek={seek}
+                        pause={pause}
+                        play={play} />
               </Route>
               <Route path="/queue">
                 <Queue />

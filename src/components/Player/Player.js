@@ -2,21 +2,10 @@ import { useState } from "react";
 import { connect } from 'react-redux'
 // import { CountdownCircleTimer } from 'react-countdown-circle-timer'
 import styles from './Player.module.css';
-import {
-  fetchNextTrack,
-  fetchPauseTrack,
-  fetchPlayTrack,
-  fetchPrevTrack,
-  fetchScanBackward,
-  fetchScanForward,
-} from './network'
 import { fetchTextCommentList, fetchVoiceRecordingList } from '../Chat/network';
-import { addToQueue, start, play, pause } from './controls';
 
 
 function Player(props) {
-
-  const PRELOAD_DURATION = 3000;
 
   /*
    * 🏗
@@ -33,8 +22,6 @@ function Player(props) {
               nextUpQueues[0]) :
             undefined
         );
-
-  const trackDuration = stream?.nowPlaying?.totalDurationMilliseconds;
 
   const [counter, setCounter] = useState(0);
 
@@ -66,11 +53,7 @@ function Player(props) {
    * Go back and play the track that was last playing.
    */
   const handlePrevTrack = async function() {
-    start(lastUp);
-
-    const responseJsonPrevTrack = await fetchPrevTrack();
-    await props.dispatch(responseJsonPrevTrack.redux);
-
+    props.prevTrack();
     await updateFeed();
   }
 
@@ -78,16 +61,7 @@ function Player(props) {
    * When...
    */
   const handleNextTrack = async function() {
-    const responseJsonNextTrack = await fetchNextTrack();
-
-    const remaining = trackDuration - getProgress();
-    if(remaining <= PRELOAD_DURATION) {
-      addToQueue(undefined);
-    } else {
-      start(undefined);
-    }
-
-    await props.dispatch(responseJsonNextTrack.redux);
+    await props.nextTrack(true);
     await updateFeed();
   }
 
@@ -95,59 +69,28 @@ function Player(props) {
    * When...
    */
   const handlePlayTrack = async function() {
-    play();
-
-    const jsonResponse = await fetchPlayTrack();
-    props.dispatch(jsonResponse.redux);
+    props.play();
   }
 
   /*
    * When...
    */
   const handlePauseTrack = async function() {
-    pause();
-
-    const jsonResponse = await fetchPauseTrack();
-    props.dispatch(jsonResponse.redux);
+    props.pause();
   }
 
   /*
    * When...
    */
-  const handleScanBackward = async function(e) {
-    e.preventDefault();
-
-    await fetchScanBackward();
-
-    const date = new Date(),
-          epochNow = date.getTime();
-
-    const proposedStartedAt = stream.startedAt + 10000,
-          proposedProgress = epochNow - proposedStartedAt,
-          startedAt = proposedProgress > 0 ? proposedStartedAt : epochNow;
-
-    await props.dispatch({
-      type: 'stream/set',
-      payload: {stream: { ...stream, startedAt: startedAt }},
-    });
+  const handleScanBackward = async function() {
+    await props.seek('backward');
   }
 
   /*
    * When...
    */
-  const handleScanForward = async function(e) {
-    e.preventDefault();
-
-    const response = await fetchScanForward();
-
-    if(response.system.status === 400) {
-      return;
-    }
-
-    await props.dispatch({
-      type: 'stream/set',
-      payload: {stream: { ...stream, startedAt: stream.startedAt - (10000) }},
-    });
+  const handleScanForward = async function() {
+    await props.seek('forward');
   }
 
   const handleRefreshProgress = function() {
