@@ -12,7 +12,10 @@ function VoiceRecording(props) {
     e.preventDefault();
     const voiceRecordingUuid = props.data.uuid;
     await fetchDeleteVoiceRecording(voiceRecordingUuid);
-    await props.destroy(voiceRecordingUuid);
+    await props.dispatch({
+      type: 'voiceRecording/delete',
+      voiceRecordingUuid: voiceRecordingUuid,
+    });
   }
 
   /*

@@ -5,11 +5,7 @@ import MicRecorder from 'mic-recorder-to-mp3';
 import styles from './Chat.module.css';
 import { fetchTextCommentCreate } from './network';
 import {
-  fetchDeleteTextComment,
-} from '../TextComment/network';
-import {
   fetchCreateVoiceRecording,
-  fetchDeleteVoiceRecording,
 } from '../VoiceRecording/network';
 import TextComment from '../TextComment/TextComment';
 import VoiceRecording from '../VoiceRecording/VoiceRecording';
@@ -30,41 +26,6 @@ function Chat(props) {
   const [transcriptData] = useState([]);
 
   /*
-   * ...
-   */
-  const destroyTextCommentModifications = () => {};
-  // const destroyTextCommentModifications = async function(textCommentUuid) {
-  //   await fetchListDeleteTextCommentModifications(textCommentUuid);
-  //   await props.dispatch({
-  //     type: 'textComment/clearModifications',
-  //     textCommentUuid: textCommentUuid,
-  //   });
-  // }
-
-  /*
-   * ...
-   */
-  const destroyTextComment = async function(textCommentUuid) {
-    // await fetchListDeleteTextCommentModifications(textCommentUuid);
-    await fetchDeleteTextComment(textCommentUuid);
-    await props.dispatch({
-      type: 'textComment/delete',
-      textCommentUuid: textCommentUuid,
-    });
-  }
-
-  /*
-   * ...
-   */
-  const destroyVoiceRecording = async function(voiceRecordingUuid) {
-    await fetchDeleteVoiceRecording(voiceRecordingUuid);
-    await props.dispatch({
-      type: 'voiceRecording/delete',
-      voiceRecordingUuid: voiceRecordingUuid,
-    });
-  }
-
-  /*
    * When a user submits a new comment.
    */
   const createTextComment = async function(e) {
@@ -78,24 +39,6 @@ function Chat(props) {
 
     setText('');
   }
-
-  /*
-   * Called by a child component when the user creates a text comment
-   * modification.
-   */
-  const createTextCommentModification = () => {};
-  // const createTextCommentModification = async function(textCommentUuid, textCommentModification) {
-  //   const textCommentIndex = _textComments.findIndex(t => t.uuid === textCommentUuid);
-  //   const modifications = _textComments[textCommentIndex].modifications;
-  //
-  //   modifications.push(textCommentModification);
-  //   const sortedModifications = modifications.sort((a, b) => {
-  //     return a.startPtr - b.startPtr;
-  //   });
-  //
-  //   _textComments[textCommentIndex].modifications = sortedModifications;
-  //   _setTextComments([..._textComments]);
-  // }
 
   const { transcript, resetTranscript } = useSpeechRecognition();
 
@@ -165,9 +108,9 @@ function Chat(props) {
       <div>
         {feed.map((value, index) => {
           if(value.class === CLASS_TEXT_COMMENT) {
-            return <TextComment key={index} data={value} destroy={destroyTextComment} destroyModifications={destroyTextCommentModifications} create={createTextCommentModification} />
+            return <TextComment key={index} data={value} />
           } else if(value.class === CLASS_VOICE_RECORDING) {
-            return <VoiceRecording key={index} data={value} destroy={destroyVoiceRecording} />
+            return <VoiceRecording key={index} data={value} />
           } else {
             return <></>;
           }

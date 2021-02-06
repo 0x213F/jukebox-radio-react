@@ -1,30 +1,46 @@
 import React from "react";
-// import NotableText from '../NotableText/NotableText'
+import { connect } from 'react-redux';
+import NotableText from '../NotableText/NotableText'
 import styles from './TextComment.module.css';
+import {
+  fetchDeleteTextComment,
+  fetchListDeleteTextCommentModifications,
+} from './network';
 
 
 function TextComment(props) {
+
+  const textComment = props.data,
+        textCommentUuid = textComment.uuid;
+
+  const deleteTextComment = async function() {
+    await fetchDeleteTextComment(textCommentUuid);
+    await props.dispatch({
+      type: 'textComment/delete',
+      textCommentUuid: textCommentUuid,
+    });
+  }
+
+  const clearModifications = async function() {
+    await fetchListDeleteTextCommentModifications(textCommentUuid);
+    await props.dispatch({
+      type: 'textComment/clearModifications',
+      textCommentUuid: textCommentUuid,
+    });
+  }
 
   /*
    * 🎨
    */
   return (
     <div className={styles.TextComment}>
-      {/*
-      <NotableText data={props.data} create={props.create}></NotableText>
-      */}
+      <NotableText data={textComment}></NotableText>
 
-      <span>
-        {props.data.text} &nbsp;
-      </span>
-
-      {/*
-      <button type="button" onClick={async (e) => { await props.destroyModifications(props.data.uuid); }}>
+      <button type="button" onClick={clearModifications}>
         Clear modifications
       </button>
-      */}
 
-      <button type="button" onClick={async (e) => { await props.destroy(props.data.uuid); }}>
+      <button type="button" onClick={deleteTextComment}>
         Delete
       </button>
     </div>
@@ -32,4 +48,6 @@ function TextComment(props) {
 
 }
 
-export default TextComment;
+const mapStateToProps = (state) => ({});
+
+export default connect(mapStateToProps)(TextComment);
