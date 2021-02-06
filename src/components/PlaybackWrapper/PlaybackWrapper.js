@@ -46,6 +46,37 @@ function PlaybackWrapper(props) {
   const [nextTrackTimeoutId, setNextTrackTimeoutId] = useState(undefined);
   // eslint-disable-next-line
   const [resetNextTrackTimeoutId, setResetNextTrackTimeoutId] = useState(undefined);
+  // eslint-disable-next-line
+  const [nextSeekTimeoutId, setNextSeekTimeoutId] = useState(undefined);
+
+  const [nextSeekTimeout, setNextSeekTimeout] = useState(undefined);
+
+  const getPositionMilliseconds = function(startedAt = stream.startedAt) {
+    let progress = Date.now() - startedAt,
+        seekTimeout,
+        playbackIntervalIdx = 0,
+        cumulativeProgress = 0;
+    while(true) {
+      const playbackInterval = stream.nowPlaying.playbackIntervals[playbackIntervalIdx],
+            playbackIntervalDuration = playbackInterval[1] - playbackInterval[0],
+            remainingProgress = progress - cumulativeProgress;
+      if(remainingProgress < playbackIntervalDuration) {
+        progress = playbackInterval[0] + remainingProgress;
+
+        if(playbackIntervalIdx !== stream.nowPlaying.playbackIntervals.length - 1) {
+          seekTimeout = playbackInterval[1] - progress;
+        }
+
+        break;
+      }
+
+      playbackIntervalIdx += 1;
+      cumulativeProgress += playbackIntervalDuration;
+    }
+
+    // TODO setForceNextTrackOnTimeout - when trimming the end of a song
+    return [progress, seekTimeout];
+  }
 
   const resetScheduledTasks = function() {
     setNextTrackTimeoutId(prev => {
@@ -57,22 +88,27 @@ function PlaybackWrapper(props) {
       clearTimeout(prev);
       return undefined;
     });
+
+    setNextSeekTimeoutId(prev => {
+      clearTimeout(prev);
+      return undefined;
+    });
   }
 
   const start = function() {
     setPlayerIsPlaying(true);
 
-    const progress = Date.now() - stream.startedAt;
-
     if(!stream.nowPlaying.track) {
       return;
     }
 
+    const [positionMilliseconds, seekTimeout] = getPositionMilliseconds();
+
     spotifyApi.play({
       uris: [stream.nowPlaying.track.externalId],
-      position_ms: progress,
+      position_ms: positionMilliseconds,
     });
-
+    setNextSeekTimeout(seekTimeout);
     setShouldScheduleNextTrack(true);
   }
 
@@ -98,7 +134,7 @@ function PlaybackWrapper(props) {
     await setPlayerIsPlaying(false);
   }
 
-  const seek = async function(direction) {
+  const seek = async function(direction = undefined) {
     let startedAt;
     if(direction === 'forward') {
       const response = await fetchScanForward();
@@ -118,6 +154,8 @@ function PlaybackWrapper(props) {
             proposedProgress = epochNow - proposedStartedAt;
 
       startedAt = proposedProgress > 0 ? proposedStartedAt : epochNow;
+    } else {
+      startedAt = stream.startedAt;
     }
 
     await props.dispatch({
@@ -125,10 +163,11 @@ function PlaybackWrapper(props) {
       payload: {stream: { ...stream, startedAt: startedAt }},
     });
 
-    const progress = Date.now() - startedAt;
-    spotifyApi.seek(progress);
+    const [positionMilliseconds, seekTimeout] = getPositionMilliseconds(startedAt);
+    spotifyApi.seek(positionMilliseconds);
 
     resetScheduledTasks();
+    setNextSeekTimeout(seekTimeout);
     setShouldScheduleNextTrack(true);
   }
 
@@ -183,7 +222,15 @@ function PlaybackWrapper(props) {
           progress = Date.now() - stream.startedAt,
           timeout = nowPlayingDuration - progress - 5000;
 
-    // schedule
+    // schedule seek
+    if(nextSeekTimeout) {
+      const seekTimeoutId = setTimeout(() => {
+        seek();
+      }, nextSeekTimeout);
+      setNextSeekTimeoutId(seekTimeoutId);
+    }
+
+    // schedule next track
     const timeoutId = setTimeout(() => {
       nextTrack();
     }, timeout);

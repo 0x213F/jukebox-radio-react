@@ -32,7 +32,8 @@ function QueueEdit(props) {
       await props.dispatch(responseJson.redux);
     }
     loadData();
-  }, [props, queue, queueUuid])
+  // eslint-disable-next-line
+  }, [])
 
   const createTrackMarker = async function() {
     const responseJson = await fetchStreamMarkerCreate(
