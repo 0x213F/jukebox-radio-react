@@ -19,6 +19,13 @@ export const streamSet = function(state, payload) {
     obj.lastUp = stream.nowPlaying;
     obj._lastPlayed = stream.nowPlaying;
     obj.stream.nowPlaying = undefined;
+  } else if(stream.isPlaying) {
+    const progress = Date.now() - stream.nowPlaying.startedAt;
+    if(progress >= stream.nowPlaying.totalDurationMilliseconds) {
+      obj.lastUp = stream.nowPlaying;
+      obj._lastPlayed = stream.nowPlaying;
+      obj.stream.nowPlaying = undefined;
+    }
   }
 
   return obj;

@@ -23,6 +23,9 @@ function Player(props) {
             undefined
         );
 
+  // NOTE: This is a temporary mechanism to allow the user to refresh the
+  //       progress value on the front-end.
+  // eslint-disable-next-line
   const [counter, setCounter] = useState(0);
 
   /*
@@ -50,7 +53,7 @@ function Player(props) {
   };
 
   /*
-   * Go back and play the track that was last playing.
+   * Go back and play the track that was last playing. Update the feed
    */
   const handlePrevTrack = async function() {
     props.prevTrack();
@@ -61,62 +64,15 @@ function Player(props) {
    * When...
    */
   const handleNextTrack = async function() {
-    await props.nextTrack(true);
+    await props.nextTrack(true);  // Meaning: play the next track now.
     await updateFeed();
   }
 
-  /*
-   * When...
-   */
-  const handlePlayTrack = async function() {
-    props.play();
-  }
-
-  /*
-   * When...
-   */
-  const handlePauseTrack = async function() {
-    props.pause();
-  }
-
-  /*
-   * When...
-   */
-  const handleScanBackward = async function() {
-    await props.seek('backward');
-  }
-
-  /*
-   * When...
-   */
-  const handleScanForward = async function() {
-    await props.seek('forward');
-  }
-
   const handleRefreshProgress = function() {
-    setCounter(counter + 1);
+    setCounter(prev => prev + 1);
   }
 
-  /*
-   * When...
-   */
-  // const handleIdle = async function() {
-  //   await props.dispatch({
-  //     type: "stream/expire",
-  //   });
-  //
-  //   await props.dispatch({
-  //     type: "queue/listSet",
-  //     lastUpQueues: props.lastUpQueues,
-  //     nextUpQueues: props.nextUpQueues,
-  //   });
-  // }
-
-  /*
-   * Schedule next section
-   */
-
-  // BUG: edge case needed to refresh the webpage. In the future, there should
+  // BUG: Edge case needed to refresh the webpage. In the future, there should
   //      be an API endpoint to fetch additional past queue items.
   if(stream?.nowPlaying?.index !== 1 && !lastUp) {
     window.location.reload();
@@ -149,24 +105,45 @@ function Player(props) {
       </div>
 
       <div className={styles.Div}>
-        <button className={styles.Button} onClick={handlePrevTrack}>Prev</button>
+        <button className={styles.Button}
+                onClick={handlePrevTrack}>
+          Prev
+        </button>
         {stream?.isPaused &&
-          <button className={styles.Button} onClick={handlePlayTrack}>Play</button>
+          <button className={styles.Button}
+                  onClick={props.play}>
+            Play
+          </button>
         }
         {stream?.isPlaying &&
-          <button className={styles.Button} onClick={handlePauseTrack}>Pause</button>
+          <button className={styles.Button}
+                  onClick={props.pause}>
+            Pause
+          </button>
         }
-        <button className={styles.Button} onClick={handleNextTrack}>Next</button>
+        <button className={styles.Button}
+                onClick={handleNextTrack}>
+          Next
+        </button>
       </div>
       <div className={styles.Div}>
         {(stream?.isPlaying) &&
-          <button className={styles.Button} onClick={handleScanBackward}>Backward</button>
+          <button className={styles.Button}
+                  onClick={() => { props.seek('backward'); }}>
+            Backward
+          </button>
         }
         {(stream?.isPlaying) &&
-          <button className={styles.Button} onClick={handleScanForward}>Forward</button>
+          <button className={styles.Button}
+                  onClick={() => { props.seek('forward'); }}>
+            Forward
+          </button>
         }
         {(stream?.isPlaying) &&
-          <button className={styles.Button} onClick={handleRefreshProgress}>Progress</button>
+          <button className={styles.Button}
+                  onClick={handleRefreshProgress}>
+            Progress
+          </button>
         }
       </div>
     </>
