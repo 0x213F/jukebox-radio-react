@@ -90,10 +90,10 @@ function QueueEdit(props) {
           ))}
         </select>
         <select value={upperBoundMarkerUuid} onChange={(e) => {setUpperBoundMarkerUuid(e.target.value)}}>
-          <option value={'null'}>End</option>
           {markers.map((value, index) => (
             <option key={index} value={value.uuid}>@ {value.timestampMilliseconds}</option>
           ))}
+          <option value={'null'}>End</option>
         </select>
         <button onClick={createQueueInterval}>Mute Interval</button>
       </div>
