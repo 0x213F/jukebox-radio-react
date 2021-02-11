@@ -44,7 +44,7 @@ export const queueIntervalCreate = function(state, action) {
 
   // get the queue that the queue interval belongs too.
   let queues = state.nextUpQueues;
-  let parentIndex, index;
+  let parentIndex = -1, index;
   if(parentQueueUuid) {
     parentIndex = queues.findIndex(findByUuid(parentQueueUuid));
     queues = queues[parentIndex].children;
@@ -58,7 +58,8 @@ export const queueIntervalCreate = function(state, action) {
 
   // save the state
   const nextUpQueues = [...state.nextUpQueues];
-  if(parentIndex) {
+  console.log(nextUpQueues, parentIndex, index)
+  if(parentIndex !== -1) {
     nextUpQueues[parentIndex].children[index].intervals = sortedQueueIntervals;
   } else {
     nextUpQueues[index].intervals = sortedQueueIntervals;
@@ -84,7 +85,7 @@ export const queueIntervalDelete = function(state, action) {
 
   // get the queue that the queue interval belongs too.
   let queues = state.nextUpQueues;
-  let parentIndex, index;
+  let parentIndex = -1, index;
   if(parentQueueUuid) {
     parentIndex = queues.findIndex(findByUuid(parentQueueUuid));
     queues = queues[parentIndex].children;
@@ -98,7 +99,7 @@ export const queueIntervalDelete = function(state, action) {
 
   // save the state
   const nextUpQueues = [...state.nextUpQueues];
-  if(parentIndex) {
+  if(parentIndex !== -1) {
     nextUpQueues[parentIndex].children[index].intervals = filteredQueueIntervals;
   } else {
     nextUpQueues[index].intervals = filteredQueueIntervals;
