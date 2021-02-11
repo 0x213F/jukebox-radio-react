@@ -1,9 +1,20 @@
-/*
- *
- */
-export const playerSpotify = function(state, payload) {
+export const playerDisable = function(state, payload) {
   return {
     ...state,
-    spotifyApi: payload.spotifyApi,
+    player: {
+      ...state.player,
+      controlsEnabled: false,
+    }
+  }
+}
+
+
+export const playerEnable = function(state, payload) {
+  return {
+    ...state,
+    player: {
+      ...state.player,
+      controlsEnabled: true,
+    }
   }
 }

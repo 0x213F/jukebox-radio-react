@@ -18,7 +18,9 @@ import {
   fetchPrevTrack,
   fetchScanBackward,
   fetchScanForward,
+  // eslint-disable-next-line
   fetchPauseTrack,
+  // eslint-disable-next-line
   fetchPlayTrack,
 } from '../Player/network';
 
@@ -29,30 +31,14 @@ function PlaybackWrapper(props) {
    * 🏗
    */
   const stream = props.stream,
-        spotifyApi = props.spotifyApi,
-        nextUpQueues = props.nextUpQueues,
-        nextUp = (
-          nextUpQueues.length ?
-            (nextUpQueues[0].children.length ?
-              nextUpQueues[0].children[0] :
-              nextUpQueues[0]) :
-            undefined
-        );
+        playback = props.playback;
 
-  const [playerIsPlaying, setPlayerIsPlaying] = useState(false);
-  const [messageScheduleAddToQueue, setMessageScheduleAddToQueue] = useState(false);
   const [messageScheduleNextTrack, setMessageScheduleNextTrack] = useState(false);
 
   const [nextTrackJson, setNextTrackJson] = useState({});
 
   // eslint-disable-next-line
-  const [addToQueueTimeoutId, setAddToQueueTimeoutId] = useState(undefined);
-  // eslint-disable-next-line
-  const [nextTrackTimeoutId, setNextTrackTimeoutId] = useState(undefined);
-  // eslint-disable-next-line
   const [nextSeekTimeoutId, setNextSeekTimeoutId] = useState(undefined);
-
-  const [forceNextTrackOnTimeout, setForceNextTrackOnTimeout] = useState(false);
 
   /*
    * This gets the position that the track should be at.
@@ -60,19 +46,15 @@ function PlaybackWrapper(props) {
    * @return [
    *   progress: Time in milliseconds,
    *   seekTimeout: Time in milliseconds until the next seek should happen,
-   *   forceNextTrack: Boolean that determines wether nextTrack triggers the
-   *                   the next track to play. Set to true when the tail end of
-   *                   a track is muted.
    * ]
    */
   const getPositionMilliseconds = function(startedAt = stream.startedAt) {
     if(!stream.nowPlaying) {
-      return [undefined, undefined, undefined];
+      return [undefined, undefined];
     }
 
     let progress = Date.now() - startedAt,
         seekTimeout,
-        forceNextTrack = false,
         playbackIntervalIdx = 0,
         cumulativeProgress = 0;
 
@@ -90,101 +72,97 @@ function PlaybackWrapper(props) {
     }
 
     if(playbackIntervalIdx === stream.nowPlaying.playbackIntervals.length - 1) {
-      const intervals = stream.nowPlaying.intervals;
-      if(intervals.length && !intervals[intervals.length - 1].upperBound) {
-        forceNextTrack = true;
-      }
       seekTimeout = undefined;
     }
 
-    return [progress, seekTimeout, forceNextTrack];
+    return [progress, seekTimeout];
   }
 
   /*
    *
    */
-  const resetScheduledTasks = function() {
-    const reduxClearTimeout = (prev) => {
-      clearTimeout(prev);
-      return undefined;
-    }
-
-    setAddToQueueTimeoutId(reduxClearTimeout);
-    setNextTrackTimeoutId(reduxClearTimeout);
-    setNextSeekTimeoutId(reduxClearTimeout);
-  }
+  // const resetScheduledTasks = function() {
+  //   const reduxClearTimeout = (prev) => {
+  //     clearTimeout(prev);
+  //     return undefined;
+  //   }
+  //
+  //   setNextSeekTimeoutId(reduxClearTimeout);
+  // }
 
   /*
-   * This triggers a track to start.
+   * This starts the now playing track.
    * Note: You can think of this as "playing" the track, but "play" in code
    *       references different behavior. "Play" is used for toggling the
    *       current track from a "paused" state to "play."
    */
   const start = function() {
-    setPlayerIsPlaying(true);
-
     if(!stream.nowPlaying.track) {
       return;
     }
+    props.dispatch({ type: 'playback/started' });
 
-    const arr = getPositionMilliseconds(),
-          // eslint-disable-next-line
-          [positionMilliseconds, seekTimeoutDuration, forceNextTrack] = arr;
+    const arr = getPositionMilliseconds();
+    let positionMilliseconds = arr[0];
 
-    if(!positionMilliseconds) {
-      return;
-    }
+    // if(positionMilliseconds < 1000) {
+    //   positionMilliseconds = 0;
+    // }
 
-    spotifyApi.play({
+    playback.spotifyApi.play({
       uris: [stream.nowPlaying.track.externalId],
       position_ms: positionMilliseconds,
     });
-    setMessageScheduleAddToQueue(true);
   }
 
   /*
-   * This adds the nextUp item in the queue to play next (add to queue). If
-   * forced === true, then immediately play the nextUp item.
+   * This adds the nextUp item in the queue to play next (add to queue). This
+   * happens ~5 seconds before the next item should play.
    */
-  const addToQueue = async function(forced = false) {
+  const addToQueue = async function() {
+
+    // disable the player UI
+    await props.dispatch({ type: 'player/disable' });
+
+    // update the back-end
     const responseJsonNextTrack = await fetchNextTrack();
 
-    if(forced) {
-      await props.dispatch(responseJsonNextTrack.redux);
-      await setNextTrackJson({});
-      resetScheduledTasks();
-      await setPlayerIsPlaying(false);
-      return;
-    }
-
+    // update the front-end later
     setNextTrackJson(responseJsonNextTrack);
+
+    // add to queue
+    await props.dispatch({ type: 'playback/addToQueue' });
+
+    // schedule "next track"
     setMessageScheduleNextTrack(true);
-    spotifyApi.queue(nextUp.track.externalId);
   }
 
   /*
-   * This plays the previous track.
+   *  Triggered by a scheduled task, this plays the next track.
+   */
+  const plannedNextTrack = async function() {
+    await props.dispatch({
+      type: 'playback/plannedNextTrack',
+      payload: { payload: nextTrackJson.redux },  // yes
+    });
+  }
+
+  /*
+   * Triggered by human interaction, this plays the previous track.
    */
   const prevTrack = async function() {
     const responseJsonPrevTrack = await fetchPrevTrack();
     await props.dispatch(responseJsonPrevTrack.redux);
-    resetScheduledTasks();
-    await setPlayerIsPlaying(false);
+    await props.dispatch({ type: 'playback/start' });
   }
 
   /*
-   * This does "next track" behavior. In some cases, next track happens
-   * passively (e.g. on Spotify the next track automatically plays). Else, the
-   * next track must be forcibly triggered.
+   * Triggered by human interaction, this plays the next track.
    */
   const nextTrack = async function() {
-    console.log(forceNextTrackOnTimeout)
-    if(forceNextTrackOnTimeout) {
-      spotifyApi.skipToNext();
-    }
-    await props.dispatch(nextTrackJson.redux);
-    setForceNextTrackOnTimeout(false);
-    setMessageScheduleAddToQueue(true);
+    const responseJsonNextTrack = await fetchNextTrack();
+    await props.dispatch(responseJsonNextTrack.redux);
+    await props.dispatch({ type: 'playback/start' });
   }
 
   /*
@@ -220,83 +198,87 @@ function PlaybackWrapper(props) {
       type: 'stream/set',
       payload: {stream: { ...stream, startedAt: startedAt }},
     });
+
     const arr = getPositionMilliseconds(startedAt),
-          // eslint-disable-next-line
-          [positionMilliseconds, seekTimeoutDuration, forceNextTrack] = arr;
-    spotifyApi.seek(positionMilliseconds);
-    if(forceNextTrack) {
-      setForceNextTrackOnTimeout(forceNextTrack);
-    }
-    resetScheduledTasks();
-    setMessageScheduleAddToQueue(true);
+          positionMilliseconds = arr[0];
+    playback.spotifyApi.seek(positionMilliseconds);
+    await props.dispatch({ type: 'playback/addToQueueReschedule' });
   }
 
   /*
    * Toggling the player from the "playing" to "paused" state.
    */
-  const pause = async function() {
-    const jsonResponse = await fetchPauseTrack();
-    props.dispatch(jsonResponse.redux);
-    resetScheduledTasks();
-    spotifyApi.pause();
-  }
+  // const pause = async function() {
+  //   const jsonResponse = await fetchPauseTrack();
+  //   props.dispatch(jsonResponse.redux);
+  //   resetScheduledTasks();
+  //   spotifyApi.pause();
+  // }
 
   /*
    * Toggling the player from the "paused" to "playing" state.
    */
-  const play = async function() {
-    const jsonResponse = await fetchPlayTrack();
-    await props.dispatch(jsonResponse.redux);
+  // const play = async function() {
+  //   const jsonResponse = await fetchPlayTrack();
+  //   await props.dispatch(jsonResponse.redux);
+  //
+  //   // When page loads with the player in the "paused" state and then the user
+  //   // toggles to the "playing" state.
+  //   if(!playback.isPlaying) {
+  //     return;
+  //   }
+  //
+  //   spotifyApi.play();
+  //   setMessageScheduleAddToQueue(true);
+  // }
 
-    // When page loads with the player in the "paused" state and then the user
-    // toggles to the "playing" state.
-    if(!playerIsPlaying) {
-      return;
-    }
-
-    spotifyApi.play();
-    setMessageScheduleAddToQueue(true);
-  }
-
-  // Will schedule task to add to queue. Happens near the end of the currently
-  // playing track.
+  //////////////////////////////////////////////////////////////////////////////
+  // SCHEDULE ADD TO QUEUE
+  // Happens near the end of the currently playing track.
   useEffect(() => {
 
     // debouncer
-    if(!messageScheduleAddToQueue) {
+    const needsToScheduleAddToQueue = (
+      playback.isPlaying && !playback.addToQueueTimeoutId
+    );
+    if(!needsToScheduleAddToQueue) {
       return;
     }
-    setMessageScheduleAddToQueue(false);
-    setNextTrackJson({});
 
-    // schedule seek
-    const arr = getPositionMilliseconds(),
-          // eslint-disable-next-line
-          [positionMilliseconds, seekTimeoutDuration, forceNextTrack] = arr;
-    if(seekTimeoutDuration) {
-      const seekTimeoutId = setTimeout(() => {
-        seek();
-      }, seekTimeoutDuration);
-      setNextSeekTimeoutId(seekTimeoutId);
-    }
-    if(forceNextTrack) {
-      setForceNextTrackOnTimeout(forceNextTrack);
+    if(!stream?.nowPlaying) {
+      return;
     }
 
     // schedule add to queue
-    const nowPlayingDuration = stream.nowPlaying.totalDurationMilliseconds,
-          progress = Date.now() - stream.startedAt,
-          addToQueueTimeoutDuration = nowPlayingDuration - progress - 5000;
+    const progress = Date.now() - stream.startedAt,
+          timeLeft = (
+            stream.nowPlaying.totalDurationMilliseconds - progress
+          ),
+          timeoutDuration = timeLeft - 5000;
     const timeoutId = setTimeout(() => {
       addToQueue();
-    }, addToQueueTimeoutDuration);
-    setAddToQueueTimeoutId(timeoutId);
+    }, timeoutDuration);
+    props.dispatch({
+      type: 'playback/addToQueueScheduled',
+      payload: { addToQueueTimeoutId: timeoutId },
+    });
+
+    // schedule seek
+    // const arr = getPositionMilliseconds(),
+    //       seekTimeoutDuration = arr[1];
+    // if(seekTimeoutDuration) {
+    //   const seekTimeoutId = setTimeout(() => {
+    //     seek();
+    //   }, seekTimeoutDuration);
+    //   setNextSeekTimeoutId(seekTimeoutId);
+    // }
 
   // eslint-disable-next-line
-  }, [messageScheduleAddToQueue]);
+  }, [playback]);
 
-  // Will schedule a task to perform "next track" action at the end of the
-  // currently playing track.
+  //////////////////////////////////////////////////////////////////////////////
+  // SCHEDULE PLANNED NEXT TRACK
+  // Happens at the very end of the currently playing track.
   useEffect(() => {
 
     // debouncer
@@ -306,21 +288,24 @@ function PlaybackWrapper(props) {
     setMessageScheduleNextTrack(false);
 
     // schedule next track
-    const nowPlayingDuration = stream.nowPlaying.totalDurationMilliseconds,
-          progress = Date.now() - stream.startedAt,
-          nextTrackTimeoutDuration = nowPlayingDuration - progress;
-    const timeoutId = setTimeout(() => {
-      nextTrack();
-    }, nextTrackTimeoutDuration);
-    setNextTrackTimeoutId(timeoutId);
+    const progress = Date.now() - stream.startedAt,
+          timeoutDuration = (
+            stream.nowPlaying.totalDurationMilliseconds - progress
+          );
+    setTimeout(() => {
+      plannedNextTrack();
+    }, timeoutDuration);
 
   // eslint-disable-next-line
   }, [messageScheduleNextTrack]);
 
   // Play the music.
-  if(stream.isPlaying && !playerIsPlaying) {
+  if(stream.isPlaying && !playback.isPlaying && playback.isReady) {
     start();
   }
+
+  const pause = () => {},
+        play = () => {};
 
   return (
     <>
@@ -332,7 +317,7 @@ function PlaybackWrapper(props) {
         <Chat />
       </Route>
       <Route path="/player">
-        <Player nextTrack={addToQueue}
+        <Player nextTrack={nextTrack}
                 prevTrack={prevTrack}
                 seek={seek}
                 pause={pause}
@@ -354,8 +339,7 @@ function PlaybackWrapper(props) {
 
 const mapStateToProps = (state) => ({
     stream: state.stream,
-    spotifyApi: state.spotifyApi,
-    nextUpQueues: state.nextUpQueues,
+    playback: state.playback,
 });
 
 export default connect(mapStateToProps)(PlaybackWrapper);

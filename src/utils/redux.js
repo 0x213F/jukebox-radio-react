@@ -4,7 +4,19 @@ import {
   markerDelete,
   markerList,
 } from './reducers/marker';
-import { playerSpotify } from './reducers/player';
+import {
+  playbackSpotify,
+  playbackAddToQueue,
+  playbackPlannedNextTrack,
+  playbackStart,
+  playbackStarted,
+  playbackAddToQueueReschedule,
+  playbackAddToQueueScheduled,
+} from  './reducers/playback';
+import {
+  playerDisable,
+  playerEnable,
+} from './reducers/player';
 import { queueListSet } from './reducers/queue';
 import {
   queueIntervalCreate,
@@ -37,6 +49,15 @@ const initialState = {
   feed: [],
   userSettings: undefined,
   trackMarkerMap: {},
+  playback: {
+    controlsEnabled: true,
+    spotifyApi: undefined,
+    isPlaying: false,
+    queuedUp: false,
+    noopNextTrack: false,
+    addToQueueTimeoutId: undefined,
+    isReady: false,
+  },
 }
 
 
@@ -210,12 +231,28 @@ const reducer = (state = initialState, action) => {
       return queueIntervalCreate(state, action.payload);
     case "queueInterval/delete":
       return queueIntervalDelete(state, action.payload);
-    case "player/spotify":
-      return playerSpotify(state, action.payload);
+    case "player/disable":
+      return playerDisable(state);
+    case "player/enable":
+      return playerEnable(state);
+    case "playback/spotify":
+      return playbackSpotify(state, action.payload);
+    case "playback/addToQueue":
+      return playbackAddToQueue(state);
+    case "playback/plannedNextTrack":
+      return playbackPlannedNextTrack(state, action.payload);
+    case "playback/start":
+      return playbackStart(state);
+    case "playback/started":
+      return playbackStarted(state);
+    case "playback/addToQueueReschedule":
+      return playbackAddToQueueReschedule(state);
+    case "playback/addToQueueScheduled":
+      return playbackAddToQueueScheduled(state, action.payload);
     default:
       return state;
   }
 }
 
 
-export const store = createStore(reducer, window.__REDUX_DEVTOOLS_EXTENSION__ && window.__REDUX_DEVTOOLS_EXTENSION__());
+export const store = createStore(reducer, window.__REDUX_DEVTOOLS_EXTENSION__ && window.__REDUX_DEVTOOLS_EXTENSION__({ trace: true }));

@@ -64,7 +64,7 @@ function Player(props) {
    * When...
    */
   const handleNextTrack = async function() {
-    await props.nextTrack(true);  // Meaning: play the next track now.
+    await props.nextTrack();
     await updateFeed();
   }
 
@@ -101,7 +101,7 @@ function Player(props) {
       </div>
 
       <div className={styles.Div}>
-        {getProgress()}
+        {getProgress() || 'Waiting...'}
       </div>
 
       <div className={styles.Div}>
