@@ -71,7 +71,7 @@ function App() {
       const spotifyApi = new SpotifyWebApi();
       spotifyApi.setAccessToken(userSettingsJsonResponse.data.spotify.accessToken);
       await store.dispatch({
-        type: 'player/spotify',
+        type: 'playback/spotify',
         payload: { spotifyApi: spotifyApi },
       });
 

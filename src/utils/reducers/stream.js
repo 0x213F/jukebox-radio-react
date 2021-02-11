@@ -19,12 +19,16 @@ export const streamSet = function(state, payload) {
     obj.lastUp = stream.nowPlaying;
     obj._lastPlayed = stream.nowPlaying;
     obj.stream.nowPlaying = undefined;
+    obj.stream.isPlaying = false;
+    obj.stream.isPaused = false;
   } else if(stream.isPlaying) {
-    const progress = Date.now() - stream.nowPlaying.startedAt;
-    if(progress >= stream.nowPlaying.totalDurationMilliseconds) {
+    const progress = Date.now() - stream.startedAt;
+    if(progress && progress >= stream.nowPlaying.totalDurationMilliseconds) {
       obj.lastUp = stream.nowPlaying;
       obj._lastPlayed = stream.nowPlaying;
       obj.stream.nowPlaying = undefined;
+      obj.stream.isPlaying = false;
+      obj.stream.isPaused = false;
     }
   }
 
@@ -142,7 +146,7 @@ export const streamNextTrack = function(state, payload) {
         ...state.stream,
         startedAt: payload.startedAt,
         nowPlaying: nextNowPlaying,
-        isPlaying: true,
+        isPlaying: !!nextNowPlaying,
         isPaused: false,
       },
       lastUpQueues: lastUpQueues,
