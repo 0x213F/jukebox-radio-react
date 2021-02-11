@@ -98,7 +98,8 @@ function Chat(props) {
    * This aggregates text comments and voice recordings into one data list,
    * sorted by track timestamp.
    */
-  const feed = props.feed;
+  const feed = props.feed,
+        stream = props.stream;
 
   /*
    * 🎨
@@ -118,15 +119,19 @@ function Chat(props) {
       </div>
 
       <form className={styles.CreateTextComment} onSubmit={async (e) => { await createTextComment(e); }}>
-        <button type="button" onClick={handleRecord}>
+        <button type="button"
+                onClick={handleRecord}
+                disabled={!stream.isPlaying} >
           Record
         </button>
         <input type="text"
                name="text"
                placeholder="text"
                value={text}
-               onChange={(e) => { setText(e.target.value); }} />
-        <button type="submit">
+               onChange={(e) => { setText(e.target.value); }}
+               disabled={!stream.isPlaying} />
+        <button type="submit"
+                disabled={!stream.isPlaying} >
           Send
         </button>
       </form>

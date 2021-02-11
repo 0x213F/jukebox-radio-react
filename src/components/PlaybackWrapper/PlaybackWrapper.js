@@ -34,11 +34,8 @@ function PlaybackWrapper(props) {
         playback = props.playback;
 
   const [messageScheduleNextTrack, setMessageScheduleNextTrack] = useState(false);
-
+  const [plannedNextTrackTimeoutId, setPlannedNextTrackTimeoutId] = useState({});
   const [nextTrackJson, setNextTrackJson] = useState({});
-
-  // eslint-disable-next-line
-  const [nextSeekTimeoutId, setNextSeekTimeoutId] = useState(undefined);
 
   /*
    * This gets the position that the track should be at.
@@ -79,18 +76,6 @@ function PlaybackWrapper(props) {
   }
 
   /*
-   *
-   */
-  // const resetScheduledTasks = function() {
-  //   const reduxClearTimeout = (prev) => {
-  //     clearTimeout(prev);
-  //     return undefined;
-  //   }
-  //
-  //   setNextSeekTimeoutId(reduxClearTimeout);
-  // }
-
-  /*
    * This starts the now playing track.
    * Note: You can think of this as "playing" the track, but "play" in code
    *       references different behavior. "Play" is used for toggling the
@@ -104,10 +89,6 @@ function PlaybackWrapper(props) {
 
     const arr = getPositionMilliseconds();
     let positionMilliseconds = arr[0];
-
-    // if(positionMilliseconds < 1000) {
-    //   positionMilliseconds = 0;
-    // }
 
     playback.spotifyApi.play({
       uris: [stream.nowPlaying.track.externalId],
@@ -200,37 +181,51 @@ function PlaybackWrapper(props) {
     });
 
     const arr = getPositionMilliseconds(startedAt),
-          positionMilliseconds = arr[0];
+          positionMilliseconds = arr[0],
+          seekTimeoutDuration = arr[1];
     playback.spotifyApi.seek(positionMilliseconds);
     await props.dispatch({ type: 'playback/addToQueueReschedule' });
+
+    // schedule seek
+    if(seekTimeoutDuration) {
+      const seekTimeoutId = setTimeout(() => {
+        seek();
+      }, seekTimeoutDuration);
+      // setNextSeekTimeoutId(seekTimeoutId);
+      props.dispatch({
+        type: 'playback/nextSeekScheduled',
+        payload: { nextSeekTimeoutId: seekTimeoutId },
+      });
+    }
   }
 
   /*
    * Toggling the player from the "playing" to "paused" state.
    */
-  // const pause = async function() {
-  //   const jsonResponse = await fetchPauseTrack();
-  //   props.dispatch(jsonResponse.redux);
-  //   resetScheduledTasks();
-  //   spotifyApi.pause();
-  // }
+  const pause = async function() {
+    const jsonResponse = await fetchPauseTrack();
+    await props.dispatch(jsonResponse.redux);
+    await props.dispatch({ type: 'playback/addToQueueReschedule' });
+    playback.spotifyApi.pause();
+    clearTimeout(plannedNextTrackTimeoutId);
+  }
 
   /*
    * Toggling the player from the "paused" to "playing" state.
    */
-  // const play = async function() {
-  //   const jsonResponse = await fetchPlayTrack();
-  //   await props.dispatch(jsonResponse.redux);
-  //
-  //   // When page loads with the player in the "paused" state and then the user
-  //   // toggles to the "playing" state.
-  //   if(!playback.isPlaying) {
-  //     return;
-  //   }
-  //
-  //   spotifyApi.play();
-  //   setMessageScheduleAddToQueue(true);
-  // }
+  const play = async function() {
+    const jsonResponse = await fetchPlayTrack();
+    await props.dispatch(jsonResponse.redux);
+
+    // When page loads with the player in the "paused" state and then the user
+    // toggles to the "playing" state.
+    if(!playback.isPlaying) {
+      return;
+    }
+
+    await props.dispatch({ type: 'playback/addToQueueReschedule' });
+    playback.spotifyApi.play();
+  }
 
   //////////////////////////////////////////////////////////////////////////////
   // SCHEDULE ADD TO QUEUE
@@ -239,7 +234,9 @@ function PlaybackWrapper(props) {
 
     // debouncer
     const needsToScheduleAddToQueue = (
-      playback.isPlaying && !playback.addToQueueTimeoutId
+      stream.isPlaying &&
+      playback.isPlaying &&
+      !playback.addToQueueTimeoutId
     );
     if(!needsToScheduleAddToQueue) {
       return;
@@ -264,14 +261,18 @@ function PlaybackWrapper(props) {
     });
 
     // schedule seek
-    // const arr = getPositionMilliseconds(),
-    //       seekTimeoutDuration = arr[1];
-    // if(seekTimeoutDuration) {
-    //   const seekTimeoutId = setTimeout(() => {
-    //     seek();
-    //   }, seekTimeoutDuration);
-    //   setNextSeekTimeoutId(seekTimeoutId);
-    // }
+    const arr = getPositionMilliseconds(),
+          seekTimeoutDuration = arr[1];
+    if(seekTimeoutDuration) {
+      const seekTimeoutId = setTimeout(() => {
+        seek();
+      }, seekTimeoutDuration);
+      // setNextSeekTimeoutId(seekTimeoutId);
+      props.dispatch({
+        type: 'playback/nextSeekScheduled',
+        payload: { nextSeekTimeoutId: seekTimeoutId },
+      });
+    }
 
   // eslint-disable-next-line
   }, [playback]);
@@ -292,9 +293,11 @@ function PlaybackWrapper(props) {
           timeoutDuration = (
             stream.nowPlaying.totalDurationMilliseconds - progress
           );
-    setTimeout(() => {
+    const timeoutId = setTimeout(() => {
       plannedNextTrack();
     }, timeoutDuration);
+    clearTimeout(plannedNextTrackTimeoutId);
+    setPlannedNextTrackTimeoutId(timeoutId);
 
   // eslint-disable-next-line
   }, [messageScheduleNextTrack]);
@@ -303,9 +306,6 @@ function PlaybackWrapper(props) {
   if(stream.isPlaying && !playback.isPlaying && playback.isReady) {
     start();
   }
-
-  const pause = () => {},
-        play = () => {};
 
   return (
     <>
