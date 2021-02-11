@@ -12,6 +12,7 @@ import {
   playbackStarted,
   playbackAddToQueueReschedule,
   playbackAddToQueueScheduled,
+  playbackNextSeekScheduled
 } from  './reducers/playback';
 import {
   playerDisable,
@@ -249,6 +250,8 @@ const reducer = (state = initialState, action) => {
       return playbackAddToQueueReschedule(state);
     case "playback/addToQueueScheduled":
       return playbackAddToQueueScheduled(state, action.payload);
+    case "playback/nextSeekScheduled":
+      return playbackNextSeekScheduled(state, action.payload);
     default:
       return state;
   }

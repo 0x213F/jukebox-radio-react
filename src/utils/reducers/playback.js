@@ -82,6 +82,7 @@ const playbackPlannedNextTrackHelper = function(state) {
         queuedUp = state.playback.queuedUp,
         noopNextTrack = state.playback.noopNextTrack,
         addToQueueTimeoutId = state.playback.addToQueueTimeoutId,
+        nextSeekTimeoutId = state.playback.nextSeekTimeoutId,
         playback = {
           ...state.playback,
           queuedUp: false,
@@ -106,8 +107,10 @@ const playbackPlannedNextTrackHelper = function(state) {
   }
 
   clearTimeout(addToQueueTimeoutId);
+  clearTimeout(nextSeekTimeoutId);
   playback.isPlaying = false;
   playback.addToQueueTimeoutId = undefined;
+  playback.nextSeekTimeoutId = undefined;
   return {
     ...state,
     playback: playback,
@@ -138,6 +141,7 @@ export const playbackPlannedNextTrack = function(state, payload) {
  */
 export const playbackStart = function(state) {
   const addToQueueTimeoutId = state.playback.addToQueueTimeoutId,
+        nextSeekTimeoutId = state.playback.nextSeekTimeoutId,
         playback = {
           ...state.playback,
           queuedUp: false,
@@ -147,6 +151,7 @@ export const playbackStart = function(state) {
         };
 
   clearTimeout(addToQueueTimeoutId);
+  clearTimeout(nextSeekTimeoutId);
 
   return {
     ...state,
@@ -172,12 +177,15 @@ export const playbackStarted = function(state) {
 
 export const playbackAddToQueueReschedule = function(state) {
   const addToQueueTimeoutId = state.playback.addToQueueTimeoutId,
+        nextSeekTimeoutId = state.playback.nextSeekTimeoutId,
         playback = {
           ...state.playback,
           addToQueueTimeoutId: undefined,
+          nextSeekTimeoutId: undefined,
         };
 
   clearTimeout(addToQueueTimeoutId);
+  clearTimeout(nextSeekTimeoutId);
 
   return {
     ...state,
@@ -191,6 +199,22 @@ export const playbackAddToQueueScheduled = function(state, payload) {
           ...state.playback,
           addToQueueTimeoutId: payload.addToQueueTimeoutId,
         };
+  return {
+    ...state,
+    playback: playback,
+  };
+}
+
+
+export const playbackNextSeekScheduled = function(state, payload) {
+  const nextSeekTimeoutId = state.playback.nextSeekTimeoutId,
+        playback = {
+          ...state.playback,
+          nextSeekTimeoutId: payload.nextSeekTimeoutId,
+        };
+
+  clearTimeout(nextSeekTimeoutId);
+
   return {
     ...state,
     playback: playback,
