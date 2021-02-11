@@ -27,7 +27,7 @@ export const textCommentCreate = function(state, action) {
           ...state,
           textComments: textComments,
         };
-
+  console.log(action.textComment)
   return {
     ...updatedState,
     feed: generateFeed(updatedState),
