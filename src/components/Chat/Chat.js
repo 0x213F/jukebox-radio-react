@@ -21,6 +21,7 @@ function Chat(props) {
    * 🏗
    */
   const [text, setText] = useState('');
+  const [isAbc, setIsAbc] = useState('');
   const [isRecording, setIsRecording] = useState(false);
   const [recorder] = useState(new MicRecorder({ bitRate: 320 }));
   const [transcriptData] = useState([]);
@@ -30,7 +31,8 @@ function Chat(props) {
    */
   const createTextComment = async function(e) {
     e.preventDefault();
-    const responseJson = await fetchTextCommentCreate(text);
+    const format = isAbc ? 'abc_notation' : 'text';
+    const responseJson = await fetchTextCommentCreate(text, format);
 
     await props.dispatch({
       type: 'textComment/create',
@@ -119,17 +121,29 @@ function Chat(props) {
       </div>
 
       <form className={styles.CreateTextComment} onSubmit={async (e) => { await createTextComment(e); }}>
+        <input type="checkbox"
+               value={isAbc}
+               onChange={(e) => { setIsAbc(e.target.checked); }} />
         <button type="button"
                 onClick={handleRecord}
                 disabled={!stream.isPlaying} >
           Record
         </button>
-        <input type="text"
-               name="text"
-               placeholder="text"
-               value={text}
-               onChange={(e) => { setText(e.target.value); }}
-               disabled={!stream.isPlaying} />
+        {isAbc ? (
+          <textarea type="text"
+                    name="text"
+                    placeholder="text"
+                    value={text}
+                    onChange={(e) => { setText(e.target.value); }}
+                    disabled={!stream.isPlaying} />
+        ) : (
+          <input type="text"
+                 name="text"
+                 placeholder="text"
+                 value={text}
+                 onChange={(e) => { setText(e.target.value); }}
+                 disabled={!stream.isPlaying} />
+        )}
         <button type="submit"
                 disabled={!stream.isPlaying} >
           Send

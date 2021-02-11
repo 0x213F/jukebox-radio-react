@@ -32,12 +32,16 @@ import {
 } from './reducers/stream';
 import {
   textCommentListSet,
+  textCommentCreate,
+  textCommentDelete,
 } from './reducers/textComment';
 import {
   textCommentModificationCreate,
 } from './reducers/textCommentModification';
 import {
   voiceRecordingListSet,
+  voiceRecordingCreate,
+  voiceRecordingDelete,
 } from './reducers/voiceRecording';
 
 
@@ -104,21 +108,6 @@ function queueDeleteChildNode(state, action) {
 }
 
 
-function textCommentCreate(state, action) {
-  const textComments = [...state.textComments, action.textComment],
-        aggregateFeed = [...textComments, ...state.voiceRecordings],
-        feed = aggregateFeed.sort((a, b) => {
-          return a.timestampMilliseconds - b.timestampMilliseconds;
-        });
-
-  return {
-    ...state,
-    textComments: textComments,
-    feed: feed,
-  }
-}
-
-
 function textCommentClearModifications(state, action) {
   const textCommentIndex = state.textComments.findIndex(t => t.uuid === action.textCommentUuid),
         textComments = [...state.textComments];
@@ -131,50 +120,6 @@ function textCommentClearModifications(state, action) {
   }
 }
 
-
-function textCommentDelete(state, action) {
-  const textComments = state.textComments.filter(i => i.uuid !== action.textCommentUuid),
-        aggregateFeed = [...textComments, ...state.voiceRecordings],
-        feed = aggregateFeed.sort((a, b) => {
-          return a.timestampMilliseconds - b.timestampMilliseconds;
-        });
-
-  return {
-    ...state,
-    textComments: textComments,
-    feed: feed,
-  }
-}
-
-
-function voiceRecordingCreate(state, action) {
-  const voiceRecordings = [...state.voiceRecordings, action.voiceRecording],
-        aggregateFeed = [...state.textComments, ...voiceRecordings],
-        feed = aggregateFeed.sort((a, b) => {
-          return a.timestampMilliseconds - b.timestampMilliseconds;
-        });
-
-  return {
-    ...state,
-    voiceRecordings: voiceRecordings,
-    feed: feed,
-  }
-}
-
-
-function voiceRecordingDelete(state, action) {
-  const voiceRecordings = state.voiceRecordings.filter(i => i.uuid !== action.voiceRecordingUuid),
-        aggregateFeed = [...state.textComments, ...voiceRecordings],
-        feed = aggregateFeed.sort((a, b) => {
-          return a.timestampMilliseconds - b.timestampMilliseconds;
-        });
-
-  return {
-    ...state,
-    voiceRecordings: voiceRecordings,
-    feed: feed,
-  }
-}
 
 function userGetSettings(state, action) {
   return {

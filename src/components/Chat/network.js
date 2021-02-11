@@ -10,11 +10,11 @@ import { fetchBackend } from '../../utils/network'
 /*
  * Fetches...
  */
-export const fetchTextCommentCreate = async (text) => {
+export const fetchTextCommentCreate = async (text, format) => {
   const response = await fetchBackend(
     TYPE_POST,
     ENDPOINT_TEXT_COMMENT_CREATE,
-    {text: text},
+    {text: text, format: format},
   );
   const responseJson = await response.json();
   return responseJson;

@@ -1,6 +1,7 @@
 import React from "react";
 import { connect } from 'react-redux';
-import NotableText from '../NotableText/NotableText'
+import NotableText from '../NotableText/NotableText';
+import { Notation } from 'react-abc';
 import styles from './TextComment.module.css';
 import {
   fetchDeleteTextComment,
@@ -34,11 +35,17 @@ function TextComment(props) {
    */
   return (
     <div className={styles.TextComment}>
-      <NotableText data={textComment}></NotableText>
 
-      <button type="button" onClick={clearModifications}>
-        Clear modifications
-      </button>
+      {textComment.format === 'text' ?
+        <NotableText data={textComment}></NotableText> :
+        <Notation notation={textComment.text} engraverParams={{ staffwidth: 278 }}/>
+      }
+
+      {textComment.format === 'text' &&
+        <button type="button" onClick={clearModifications}>
+          Clear modifications
+        </button>
+      }
 
       <button type="button" onClick={deleteTextComment}>
         Delete
