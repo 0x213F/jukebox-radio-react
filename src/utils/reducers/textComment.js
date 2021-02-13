@@ -1,4 +1,4 @@
-import { generateFeed } from './feed';
+import { feedGenerate } from './feed';
 
 
 /*
@@ -13,7 +13,7 @@ export const textCommentListSet = function(state, payload) {
 
   return {
     ...updatedState,
-    feed: generateFeed(updatedState),
+    feed: feedGenerate(updatedState),
   };
 }
 
@@ -27,10 +27,10 @@ export const textCommentCreate = function(state, action) {
           ...state,
           textComments: textComments,
         };
-  console.log(action.textComment)
+
   return {
     ...updatedState,
-    feed: generateFeed(updatedState),
+    feed: feedGenerate(updatedState),
   };
 }
 
@@ -48,6 +48,6 @@ export const textCommentDelete = function(state, action) {
 
   return {
     ...updatedState,
-    feed: generateFeed(updatedState),
+    feed: feedGenerate(updatedState),
   };
 }
