@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { connect } from 'react-redux'
 import SpeechRecognition, { useSpeechRecognition } from 'react-speech-recognition';
 import MicRecorder from 'mic-recorder-to-mp3';
@@ -25,6 +25,21 @@ function Chat(props) {
   const [isRecording, setIsRecording] = useState(false);
   const [recorder] = useState(new MicRecorder({ bitRate: 320 }));
   const [transcriptData] = useState([]);
+
+  //////////////////////////////////////////////////////////////////////////////
+  // REGENERATE THE FEED
+  useEffect(() => {
+
+    const periodicTask = setInterval(() => {
+      props.dispatch({ type: "feed/update" });
+    }, 1000);
+
+    return () => {
+      clearInterval(periodicTask);
+    }
+
+  // eslint-disable-next-line
+  }, []);
 
   /*
    * When a user submits a new comment.

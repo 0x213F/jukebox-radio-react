@@ -1,4 +1,5 @@
 import { createStore } from 'redux';
+import { feedUpdate } from './reducers/feed';
 import {
   markerCreate,
   markerDelete,
@@ -197,6 +198,8 @@ const reducer = (state = initialState, action) => {
       return playbackAddToQueueScheduled(state, action.payload);
     case "playback/nextSeekScheduled":
       return playbackNextSeekScheduled(state, action.payload);
+    case "feed/update":
+      return feedUpdate(state);
     default:
       return state;
   }
