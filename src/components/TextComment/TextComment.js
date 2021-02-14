@@ -30,6 +30,15 @@ function TextComment(props) {
     });
   }
 
+  let textColor;
+  if(textComment.renderStatus === 'history') {
+    textColor = 'grey';
+  } else if(textComment.renderStatus === 'display') {
+    textColor = 'black';
+  } else {
+    textColor = 'red';
+  }
+
   /*
    * 🎨
    */
@@ -37,7 +46,7 @@ function TextComment(props) {
     <div className={styles.TextComment}>
 
       {textComment.format === 'text' ?
-        <NotableText data={textComment}></NotableText> :
+        <NotableText data={textComment} textColor={textColor}></NotableText> :
         <Notation notation={textComment.text} engraverParams={{ staffwidth: 278 }}/>
       }
 

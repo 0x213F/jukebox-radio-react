@@ -32,7 +32,7 @@ function Chat(props) {
 
     const periodicTask = setInterval(() => {
       props.dispatch({ type: "feed/update" });
-    }, 1000);
+    }, 250);
 
     return () => {
       clearInterval(periodicTask);
