@@ -76,8 +76,7 @@ const getPositionMilliseconds = function(stream) {
 
   while(true) {
     const playbackInterval = stream.nowPlaying.playbackIntervals[playbackIntervalIdx],
-          playbackIntervalDuration = playbackInterval[1] - playbackInterval[0],
-          totalProgress = cumulativeProgress + playbackIntervalDuration;
+          playbackIntervalDuration = playbackInterval[1] - playbackInterval[0];
     let remainingProgress;
 
     // if display threshold progress definition has been reached
