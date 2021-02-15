@@ -58,7 +58,7 @@ export const feedGenerate = function(state) {
 }
 
 
-const getPositionMilliseconds = function(stream) {
+export const getPositionMilliseconds = function(stream) {
 
   if(!stream?.nowPlaying) {
     return [undefined, undefined, undefined];
