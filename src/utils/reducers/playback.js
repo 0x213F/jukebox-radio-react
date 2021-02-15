@@ -220,3 +220,25 @@ export const playbackNextSeekScheduled = function(state, payload) {
     playback: playback,
   };
 }
+
+
+export const playbackDisable = function(state) {
+  return {
+    ...state,
+    playback: {
+      ...state.playback,
+      controlsEnabled: false,
+    }
+  }
+}
+
+
+export const playbackEnable = function(state) {
+  return {
+    ...state,
+    playback: {
+      ...state.playback,
+      controlsEnabled: true,
+    }
+  }
+}

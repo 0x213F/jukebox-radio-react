@@ -103,7 +103,7 @@ function PlaybackWrapper(props) {
   const addToQueue = async function() {
 
     // disable the player UI
-    await props.dispatch({ type: 'player/disable' });
+    await props.dispatch({ type: 'playback/disable' });
 
     // update the back-end
     const responseJsonNextTrack = await fetchNextTrack();
@@ -132,18 +132,22 @@ function PlaybackWrapper(props) {
    * Triggered by human interaction, this plays the previous track.
    */
   const prevTrack = async function() {
+    await props.dispatch({ type: 'playback/disable' });
     const responseJsonPrevTrack = await fetchPrevTrack();
     await props.dispatch(responseJsonPrevTrack.redux);
     await props.dispatch({ type: 'playback/start' });
+    await props.dispatch({ type: 'playback/enable' });
   }
 
   /*
    * Triggered by human interaction, this plays the next track.
    */
   const nextTrack = async function() {
+    await props.dispatch({ type: 'playback/disable' });
     const responseJsonNextTrack = await fetchNextTrack();
     await props.dispatch(responseJsonNextTrack.redux);
     await props.dispatch({ type: 'playback/start' });
+    await props.dispatch({ type: 'playback/enable' });
   }
 
   /*
@@ -155,12 +159,14 @@ function PlaybackWrapper(props) {
    *      interval).
    */
   const seek = async function(direction = undefined) {
+    await props.dispatch({ type: 'playback/disable' });
     let startedAt;
 
     if(direction === 'forward') {
       const response = await fetchScanForward();
       // Seeking forward is not allowed because the track is almost over.
       if(response.system.status === 400) {
+        await props.dispatch({ type: 'playback/enable' });
         return;
       }
       startedAt = stream.startedAt - (10000);
@@ -197,34 +203,41 @@ function PlaybackWrapper(props) {
         payload: { nextSeekTimeoutId: seekTimeoutId },
       });
     }
+
+    await props.dispatch({ type: 'playback/enable' });
   }
 
   /*
    * Toggling the player from the "playing" to "paused" state.
    */
   const pause = async function() {
+    await props.dispatch({ type: 'playback/disable' });
     const jsonResponse = await fetchPauseTrack();
     await props.dispatch(jsonResponse.redux);
     await props.dispatch({ type: 'playback/addToQueueReschedule' });
     playback.spotifyApi.pause();
     clearTimeout(plannedNextTrackTimeoutId);
+    await props.dispatch({ type: 'playback/enable' });
   }
 
   /*
    * Toggling the player from the "paused" to "playing" state.
    */
   const play = async function() {
+    await props.dispatch({ type: 'playback/disable' });
     const jsonResponse = await fetchPlayTrack();
     await props.dispatch(jsonResponse.redux);
 
     // When page loads with the player in the "paused" state and then the user
     // toggles to the "playing" state.
     if(!playback.isPlaying) {
+      await props.dispatch({ type: 'playback/enable' });
       return;
     }
 
     await props.dispatch({ type: 'playback/addToQueueReschedule' });
     playback.spotifyApi.play();
+    await props.dispatch({ type: 'playback/enable' });
   }
 
   //////////////////////////////////////////////////////////////////////////////
