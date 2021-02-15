@@ -4,7 +4,10 @@ import {
   fetchVoiceRecordingList,
 } from './components/Chat/network';
 import { fetchVerifyToken } from './components/Login/network'
-import { fetchStreamGet } from './components/Player/network';
+import {
+  fetchStreamGet,
+  fetchPauseTrack,
+} from './components/Player/network';
 import { fetchQueueList } from './components/Queue/network'
 import { fetchGetUserSettings } from './components/UserSettings/network'
 import { store } from './utils/redux'
@@ -75,9 +78,19 @@ function App() {
         payload: { spotifyApi: spotifyApi },
       });
 
+      // enable playback controls
+      await store.dispatch({ type: 'playback/enable' });
+
       setStatus('ready');
     }
     loadData();
+
+    window.addEventListener("beforeunload", (e) => {
+      e.preventDefault();
+      const state = store.getState();
+      fetchPauseTrack();
+      state.playback.spotifyApi.pause();
+    });
   }, []);
 
   // as the page is loading, display nothing

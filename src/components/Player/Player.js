@@ -11,6 +11,7 @@ function Player(props) {
    * 🏗
    */
   const stream = props.stream,
+        playback = props.playback,
         track = stream?.nowPlaying?.track,
         lastUpQueues = props.lastUpQueues,
         lastUp = lastUpQueues[lastUpQueues.length - 1],
@@ -106,42 +107,49 @@ function Player(props) {
 
       <div className={styles.Div}>
         <button className={styles.Button}
-                onClick={handlePrevTrack}>
+                onClick={handlePrevTrack}
+                disabled={!playback.controlsEnabled}>
           Prev
         </button>
         {stream?.isPaused &&
           <button className={styles.Button}
-                  onClick={props.play}>
+                  onClick={props.play}
+                  disabled={!playback.controlsEnabled}>
             Play
           </button>
         }
         {stream?.isPlaying &&
           <button className={styles.Button}
-                  onClick={props.pause}>
+                  onClick={props.pause}
+                  disabled={!playback.controlsEnabled}>
             Pause
           </button>
         }
         <button className={styles.Button}
-                onClick={handleNextTrack}>
+                onClick={handleNextTrack}
+                disabled={!playback.controlsEnabled}>
           Next
         </button>
       </div>
       <div className={styles.Div}>
         {(stream?.isPlaying) &&
           <button className={styles.Button}
-                  onClick={() => { props.seek('backward'); }}>
+                  onClick={() => { props.seek('backward'); }}
+                  disabled={!playback.controlsEnabled}>
             Backward
           </button>
         }
         {(stream?.isPlaying) &&
           <button className={styles.Button}
-                  onClick={() => { props.seek('forward'); }}>
+                  onClick={() => { props.seek('forward'); }}
+                  disabled={!playback.controlsEnabled}>
             Forward
           </button>
         }
         {(stream?.isPlaying) &&
           <button className={styles.Button}
-                  onClick={handleRefreshProgress}>
+                  onClick={handleRefreshProgress}
+                  disabled={!playback.controlsEnabled}>
             Progress
           </button>
         }
@@ -154,6 +162,7 @@ const mapStateToProps = (state) => ({
     stream: state.stream,
     lastUpQueues: state.lastUpQueues,
     nextUpQueues: state.nextUpQueues,
+    playback: state.playback,
 });
 
 export default connect(mapStateToProps)(Player);

@@ -60,7 +60,7 @@ export const feedGenerate = function(state) {
 
 export const getPositionMilliseconds = function(stream) {
 
-  if(!stream?.nowPlaying) {
+  if(!stream?.nowPlaying?.track) {
     return [undefined, undefined, undefined];
   }
 

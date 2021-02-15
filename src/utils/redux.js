@@ -13,12 +13,10 @@ import {
   playbackStarted,
   playbackAddToQueueReschedule,
   playbackAddToQueueScheduled,
-  playbackNextSeekScheduled
+  playbackNextSeekScheduled,
+  playbackDisable,
+  playbackEnable,
 } from  './reducers/playback';
-import {
-  playerDisable,
-  playerEnable,
-} from './reducers/player';
 import { queueListSet } from './reducers/queue';
 import {
   queueIntervalCreate,
@@ -56,7 +54,7 @@ const initialState = {
   userSettings: undefined,
   trackMarkerMap: {},
   playback: {
-    controlsEnabled: true,
+    controlsEnabled: false,
     spotifyApi: undefined,
     isPlaying: false,
     queuedUp: false,
@@ -178,10 +176,10 @@ const reducer = (state = initialState, action) => {
       return queueIntervalCreate(state, action.payload);
     case "queueInterval/delete":
       return queueIntervalDelete(state, action.payload);
-    case "player/disable":
-      return playerDisable(state);
-    case "player/enable":
-      return playerEnable(state);
+    case "playback/disable":
+      return playbackDisable(state);
+    case "playback/enable":
+      return playbackEnable(state);
     case "playback/spotify":
       return playbackSpotify(state, action.payload);
     case "playback/addToQueue":
