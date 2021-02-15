@@ -119,7 +119,7 @@ function App() {
 
   // display the main UI now that everything is loaded up
   return (
-    <Router>
+    <Router basename={process.env.PUBLIC_URL}>
       <Provider store={store}>
 
         {/* nav bar */}
