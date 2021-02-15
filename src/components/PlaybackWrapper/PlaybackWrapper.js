@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { connect } from 'react-redux'
-// import { CountdownCircleTimer } from 'react-countdown-circle-timer'
+import { fetchTextCommentList, fetchVoiceRecordingList } from '../Chat/network';
 // import styles from './PlaybackWrapper.module.css';
 import {
   Switch,
@@ -76,6 +76,16 @@ function PlaybackWrapper(props) {
   }
 
   /*
+   * Load comments and voice recordings to update the feed.
+   */
+  const updateFeed = async function() {
+    const responseJsonTextCommentList = await fetchTextCommentList();
+    const responseJsonVoiceRecordingList = await fetchVoiceRecordingList();
+    await props.dispatch(responseJsonTextCommentList.redux);
+    await props.dispatch(responseJsonVoiceRecordingList.redux);
+  };
+
+  /*
    * This starts the now playing track.
    * Note: You can think of this as "playing" the track, but "play" in code
    *       references different behavior. "Play" is used for toggling the
@@ -126,6 +136,7 @@ function PlaybackWrapper(props) {
       type: 'playback/plannedNextTrack',
       payload: { payload: nextTrackJson.redux },  // yes
     });
+    await updateFeed();
   }
 
   /*
@@ -137,6 +148,7 @@ function PlaybackWrapper(props) {
     await props.dispatch(responseJsonPrevTrack.redux);
     await props.dispatch({ type: 'playback/start' });
     await props.dispatch({ type: 'playback/enable' });
+    await updateFeed();
   }
 
   /*
@@ -148,6 +160,7 @@ function PlaybackWrapper(props) {
     await props.dispatch(responseJsonNextTrack.redux);
     await props.dispatch({ type: 'playback/start' });
     await props.dispatch({ type: 'playback/enable' });
+    await updateFeed();
   }
 
   /*

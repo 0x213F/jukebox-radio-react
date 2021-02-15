@@ -2,7 +2,6 @@ import { useState } from "react";
 import { connect } from 'react-redux'
 // import { CountdownCircleTimer } from 'react-countdown-circle-timer'
 import styles from './Player.module.css';
-import { fetchTextCommentList, fetchVoiceRecordingList } from '../Chat/network';
 
 
 function Player(props) {
@@ -43,32 +42,6 @@ function Player(props) {
     }
   };
 
-  /*
-   * Load comments and voice recordings to update the feed.
-   */
-  const updateFeed = async function() {
-    const responseJsonTextCommentList = await fetchTextCommentList();
-    const responseJsonVoiceRecordingList = await fetchVoiceRecordingList();
-    await props.dispatch(responseJsonTextCommentList.redux);
-    await props.dispatch(responseJsonVoiceRecordingList.redux);
-  };
-
-  /*
-   * Go back and play the track that was last playing. Update the feed
-   */
-  const handlePrevTrack = async function() {
-    props.prevTrack();
-    await updateFeed();
-  }
-
-  /*
-   * When...
-   */
-  const handleNextTrack = async function() {
-    await props.nextTrack();
-    await updateFeed();
-  }
-
   const handleRefreshProgress = function() {
     setCounter(prev => prev + 1);
   }
@@ -107,7 +80,7 @@ function Player(props) {
 
       <div className={styles.Div}>
         <button className={styles.Button}
-                onClick={handlePrevTrack}
+                onClick={props.prevTrack}
                 disabled={!playback.controlsEnabled}>
           Prev
         </button>
@@ -126,7 +99,7 @@ function Player(props) {
           </button>
         }
         <button className={styles.Button}
-                onClick={handleNextTrack}
+                onClick={props.nextTrack}
                 disabled={!playback.controlsEnabled}>
           Next
         </button>
