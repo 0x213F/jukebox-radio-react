@@ -13,6 +13,7 @@ import {
   CLASS_TEXT_COMMENT,
   CLASS_VOICE_RECORDING
 } from '../../config/model';
+import { getPositionMilliseconds } from '../../utils/reducers/feed';
 
 
 function Chat(props) {
@@ -20,7 +21,12 @@ function Chat(props) {
   /*
    * 🏗
    */
+  const feed = props.feed,
+        stream = props.stream;
+
   const [text, setText] = useState('');
+  const [textCommentUuid, setTextCommentUuid] = useState(undefined);
+  const [textCommentTimestamp, setTextCommentTimestamp] = useState(undefined);
   const [isAbc, setIsAbc] = useState('');
   const [isRecording, setIsRecording] = useState(false);
   const [recorder] = useState(new MicRecorder({ bitRate: 320 }));
@@ -41,19 +47,33 @@ function Chat(props) {
   // eslint-disable-next-line
   }, []);
 
+  const handleTextChange = function(e) {
+    if(!textCommentUuid) {
+      const arr = getPositionMilliseconds(stream),
+            position = arr[0];
+      setTextCommentTimestamp(position);
+      setTextCommentUuid(stream.nowPlaying.track.uuid);
+    }
+    setText(e.target.value);
+  }
+
   /*
    * When a user submits a new comment.
    */
   const createTextComment = async function(e) {
     e.preventDefault();
     const format = isAbc ? 'abc_notation' : 'text';
-    const responseJson = await fetchTextCommentCreate(text, format);
+    const responseJson = await fetchTextCommentCreate(
+      text, format, textCommentUuid, textCommentTimestamp
+    );
 
     await props.dispatch({
       type: 'textComment/create',
       textComment: responseJson.data,
     });
 
+    setTextCommentTimestamp(undefined);
+    setTextCommentUuid(undefined);
     setText('');
   }
 
@@ -112,13 +132,6 @@ function Chat(props) {
   }
 
   /*
-   * This aggregates text comments and voice recordings into one data list,
-   * sorted by track timestamp.
-   */
-  const feed = props.feed,
-        stream = props.stream;
-
-  /*
    * 🎨
    */
   return (
@@ -156,7 +169,7 @@ function Chat(props) {
                  name="text"
                  placeholder="text"
                  value={text}
-                 onChange={(e) => { setText(e.target.value); }}
+                 onChange={handleTextChange}
                  disabled={!stream.isPlaying} />
         )}
         <button type="submit"
