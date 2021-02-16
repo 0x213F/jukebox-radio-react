@@ -116,7 +116,9 @@ function PlaybackWrapper(props) {
     await props.dispatch({ type: 'playback/disable' });
 
     // update the back-end
-    const responseJsonNextTrack = await fetchNextTrack();
+    const responseJsonNextTrack = await fetchNextTrack(
+      stream.nowPlaying.totalDurationMilliseconds, true
+    );
 
     // update the front-end later
     setNextTrackJson(responseJsonNextTrack);
@@ -136,6 +138,7 @@ function PlaybackWrapper(props) {
       type: 'playback/plannedNextTrack',
       payload: { payload: nextTrackJson.redux },  // yes
     });
+    await props.dispatch({ type: 'playback/enable' });
     await updateFeed();
   }
 
@@ -156,7 +159,9 @@ function PlaybackWrapper(props) {
    */
   const nextTrack = async function() {
     await props.dispatch({ type: 'playback/disable' });
-    const responseJsonNextTrack = await fetchNextTrack();
+    const responseJsonNextTrack = await fetchNextTrack(
+      stream.nowPlaying.totalDurationMilliseconds, false
+    );
     await props.dispatch(responseJsonNextTrack.redux);
     await props.dispatch({ type: 'playback/start' });
     await props.dispatch({ type: 'playback/enable' });
@@ -176,7 +181,9 @@ function PlaybackWrapper(props) {
     let startedAt;
 
     if(direction === 'forward') {
-      const response = await fetchScanForward();
+      const response = await fetchScanForward(
+        stream.nowPlaying.totalDurationMilliseconds
+      );
       // Seeking forward is not allowed because the track is almost over.
       if(response.system.status === 400) {
         await props.dispatch({ type: 'playback/enable' });
