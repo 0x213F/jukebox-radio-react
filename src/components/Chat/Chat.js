@@ -162,7 +162,7 @@ function Chat(props) {
                     name="text"
                     placeholder="text"
                     value={text}
-                    onChange={(e) => { setText(e.target.value); }}
+                    onChange={handleTextChange}
                     disabled={!stream.isPlaying} />
         ) : (
           <input type="text"
