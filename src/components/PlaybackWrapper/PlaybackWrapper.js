@@ -117,7 +117,7 @@ function PlaybackWrapper(props) {
 
     // update the back-end
     const responseJsonNextTrack = await fetchNextTrack(
-      stream.nowPlaying.totalDurationMilliseconds, true
+      stream.nowPlaying?.totalDurationMilliseconds, true
     );
 
     // update the front-end later
@@ -160,7 +160,7 @@ function PlaybackWrapper(props) {
   const nextTrack = async function() {
     await props.dispatch({ type: 'playback/disable' });
     const responseJsonNextTrack = await fetchNextTrack(
-      stream.nowPlaying.totalDurationMilliseconds, false
+      stream.nowPlaying?.totalDurationMilliseconds, false
     );
     await props.dispatch(responseJsonNextTrack.redux);
     await props.dispatch({ type: 'playback/start' });
