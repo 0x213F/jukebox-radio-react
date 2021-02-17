@@ -43,6 +43,9 @@ import {
   voiceRecordingCreate,
   voiceRecordingDelete,
 } from './reducers/voiceRecording';
+import {
+  userSettingsUpdate,
+} from './reducers/userSettings';
 
 
 const initialState = {
@@ -197,6 +200,8 @@ const reducer = (state = initialState, action) => {
       return playbackAddToQueueScheduled(state, action.payload);
     case "playback/nextSeekScheduled":
       return playbackNextSeekScheduled(state, action.payload);
+    case "userSettings/update":
+      return userSettingsUpdate(state, action.payload);
     default:
       return state;
   }
