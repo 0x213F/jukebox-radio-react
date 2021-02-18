@@ -1,4 +1,8 @@
-import { PROVIDER_SPOTIFY } from '../../config/providers';
+import { SERVICE_SPOTIFY } from '../../config/services';
+import {
+  playbackQueue,
+  playbackSkipToNext,
+} from '../../components/PlaybackWrapper/playback';
 import { streamNextTrack } from './stream';
 
 
@@ -47,14 +51,14 @@ export const playbackAddToQueue = function(state) {
   const playback = { ...state.playback },
         nowPlaying = state.stream.nowPlaying,
         spotifyShouldAddToQueue = (
-          nowPlaying.track.service === PROVIDER_SPOTIFY &&
-          nextUp.track.service === PROVIDER_SPOTIFY &&
+          nowPlaying.track.service === SERVICE_SPOTIFY &&
+          nextUp.track.service === SERVICE_SPOTIFY &&
           nextUp.playbackIntervals[0][0] === 0
         );
 
   if(spotifyShouldAddToQueue) {
-    const spotifyApi = state.playback.spotifyApi;
-    spotifyApi.queue(nextUp.track.externalId);
+    playbackQueue(state.playback, state.stream, nextUp);
+
     playback.queuedUp = true;
 
     const lastInterval = (
@@ -97,8 +101,7 @@ const playbackPlannedNextTrackHelper = function(state) {
   }
 
   if(queuedUp) {
-    const spotifyApi = state.playback.spotifyApi;
-    spotifyApi.skipToNext();
+    playbackSkipToNext(state.playback, state.stream);
     playback.addToQueueTimeoutId = undefined;
     return {
       ...state,

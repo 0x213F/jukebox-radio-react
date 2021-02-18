@@ -9,7 +9,8 @@ import {
   fetchPauseTrack,
 } from './components/Player/network';
 import { fetchQueueList } from './components/Queue/network'
-import { fetchGetUserSettings } from './components/UserSettings/network'
+import { fetchGetUserSettings } from './components/UserSettings/network';
+import { playbackPause } from './components/PlaybackWrapper/playback';
 import { store } from './utils/redux'
 import Login from './components/Login/Login';
 import PlaybackWrapper from './components/PlaybackWrapper/PlaybackWrapper';
@@ -88,8 +89,11 @@ function App() {
     window.addEventListener("beforeunload", (e) => {
       e.preventDefault();
       const state = store.getState();
+      if(!state.stream.isPlaying) {
+        return;
+      }
       fetchPauseTrack();
-      state.playback.spotifyApi.pause();
+      playbackPause(state.playback, state.stream);
     });
   }, []);
 
