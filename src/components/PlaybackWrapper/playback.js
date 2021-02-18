@@ -84,8 +84,8 @@ export const playbackPause = function(playback, stream) {
 /*
  *
  */
-export const playbackSeek = function(playback, stream) {
-  const arr = getPositionMilliseconds(stream, stream.startedAt),
+export const playbackSeek = function(playback, stream, startedAt) {
+  const arr = getPositionMilliseconds(stream, startedAt),
         positionMilliseconds = arr[0],
         playbackService = stream.nowPlaying.track.service;
 
