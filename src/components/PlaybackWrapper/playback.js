@@ -60,7 +60,17 @@ export const playbackStart = function(playback, stream) {
   } else if(playbackService === SERVICE_YOUTUBE) {
     // TODO
   } else if(playbackService === SERVICE_JUKEBOX_RADIO) {
-    // TODO
+    const trackUuid = stream.nowPlaying.track.uuid,
+          audio = playback.files[trackUuid].audio;
+    console.log(positionMilliseconds)
+    if(positionMilliseconds < 0) {
+      setTimeout(function() {
+        audio.play();
+      }, -positionMilliseconds);
+    } else {
+      audio.currentTime = positionMilliseconds;
+      audio.play();
+    }
   }
 };
 
@@ -76,7 +86,9 @@ export const playbackPause = function(playback, stream) {
   } else if(playbackService === SERVICE_YOUTUBE) {
     // TODO
   } else if(playbackService === SERVICE_JUKEBOX_RADIO) {
-    // TODO
+    const trackUuid = stream.nowPlaying.track.uuid,
+          audio = playback.files[trackUuid].audio;
+    audio.pause();
   }
 }
 
@@ -94,7 +106,10 @@ export const playbackSeek = function(playback, stream, startedAt) {
   } else if(playbackService === SERVICE_YOUTUBE) {
     // TODO
   } else if(playbackService === SERVICE_JUKEBOX_RADIO) {
-    // TODO
+    const trackUuid = stream.nowPlaying.track.uuid,
+          audio = playback.files[trackUuid].audio;
+    audio.currentTime = positionMilliseconds;
+    audio.play();
   }
 }
 
@@ -110,7 +125,9 @@ export const playbackPlay = function(playback, stream) {
   } else if(playbackService === SERVICE_YOUTUBE) {
     // TODO
   } else if(playbackService === SERVICE_JUKEBOX_RADIO) {
-    // TODO
+    const trackUuid = stream.nowPlaying.track.uuid,
+          audio = playback.files[trackUuid].audio;
+    audio.play();
   }
 }
 

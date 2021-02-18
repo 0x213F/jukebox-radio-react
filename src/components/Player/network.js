@@ -1,5 +1,6 @@
 import {
   ENDPOINT_STREAM_GET,
+  ENDPOINT_TRACK_GET_FILES,
   ENDPOINT_STREAM_NEXT_TRACK,
   ENDPOINT_STREAM_PAUSE_TRACK,
   ENDPOINT_STREAM_PLAY_TRACK,
@@ -21,6 +22,17 @@ const fetchStreamGet = async () => {
   );
   return await response.json();
 };
+
+
+const fetchTrackGetFiles = async(trackUuid) => {
+  const response = await fetchBackend(
+    TYPE_GET,
+    ENDPOINT_TRACK_GET_FILES,
+    { trackUuid },
+  );
+  return await response.json();
+}
+
 
 /*
  * Fetches...
@@ -104,4 +116,5 @@ export {
   fetchPrevTrack,
   fetchScanBackward,
   fetchScanForward,
+  fetchTrackGetFiles,
 }

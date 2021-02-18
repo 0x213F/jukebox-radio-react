@@ -7,6 +7,7 @@ import { fetchVerifyToken } from './components/Login/network'
 import {
   fetchStreamGet,
   fetchPauseTrack,
+  fetchTrackGetFiles,
 } from './components/Player/network';
 import { fetchQueueList } from './components/Queue/network'
 import { fetchGetUserSettings } from './components/UserSettings/network';
@@ -20,6 +21,7 @@ import {
   BrowserRouter as Router,
   Link
 } from "react-router-dom";
+import { SERVICE_JUKEBOX_RADIO } from './config/services';
 
 const SpotifyWebApi = require('spotify-web-api-js');
 
@@ -51,6 +53,14 @@ function App() {
       // load stream
       responseJson = await fetchStreamGet();
       await store.dispatch(responseJson.redux);
+
+      const payload = responseJson.redux.payload,
+            nowPlayingTrack = payload.stream.nowPlaying?.track;
+      if(nowPlayingTrack?.service === SERVICE_JUKEBOX_RADIO) {
+        const trackUuid = nowPlayingTrack.uuid;
+        responseJson = await fetchTrackGetFiles(trackUuid);
+        await store.dispatch(responseJson.redux);
+      }
 
       // load queue
       responseJson = await fetchQueueList();

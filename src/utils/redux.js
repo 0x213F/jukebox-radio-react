@@ -16,6 +16,7 @@ import {
   playbackNextSeekScheduled,
   playbackDisable,
   playbackEnable,
+  playbackLoadFiles,
 } from  './reducers/playback';
 import { queueListSet } from './reducers/queue';
 import {
@@ -61,6 +62,7 @@ const initialState = {
     noopNextTrack: false,
     addToQueueTimeoutId: undefined,
     isReady: false,
+    files: {},
   },
 }
 
@@ -196,6 +198,8 @@ const reducer = (state = initialState, action) => {
       return playbackAddToQueueScheduled(state, action.payload);
     case "playback/nextSeekScheduled":
       return playbackNextSeekScheduled(state, action.payload);
+    case "playback/loadFiles":
+      return playbackLoadFiles(state, action.payload);
     case "feed/update":
       return feedUpdate(state);
     default:
