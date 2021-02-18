@@ -1,6 +1,13 @@
 import { useEffect, useState } from "react";
 import { connect } from 'react-redux'
 import { fetchTextCommentList, fetchVoiceRecordingList } from '../Chat/network';
+import {
+  getPositionMilliseconds,
+  playbackStart,
+  playbackSeek,
+  playbackPause,
+  playbackPlay,
+} from './playback'
 // import styles from './PlaybackWrapper.module.css';
 import {
   Switch,
@@ -39,44 +46,6 @@ function PlaybackWrapper(props) {
   const [nextTrackJson, setNextTrackJson] = useState({});
 
   /*
-   * This gets the position that the track should be at.
-   *
-   * @return [
-   *   progress: Time in milliseconds,
-   *   seekTimeout: Time in milliseconds until the next seek should happen,
-   * ]
-   */
-  const getPositionMilliseconds = function(startedAt = stream.startedAt) {
-    if(!stream.nowPlaying) {
-      return [undefined, undefined];
-    }
-
-    let progress = Date.now() - startedAt,
-        seekTimeout,
-        playbackIntervalIdx = 0,
-        cumulativeProgress = 0;
-
-    while(true) {
-      const playbackInterval = stream.nowPlaying.playbackIntervals[playbackIntervalIdx],
-            playbackIntervalDuration = playbackInterval[1] - playbackInterval[0],
-            remainingProgress = progress - cumulativeProgress;
-      if(remainingProgress < playbackIntervalDuration) {
-        progress = playbackInterval[0] + remainingProgress;
-        seekTimeout = playbackInterval[1] - progress;
-        break;
-      }
-      playbackIntervalIdx += 1;
-      cumulativeProgress += playbackIntervalDuration;
-    }
-
-    if(playbackIntervalIdx === stream.nowPlaying.playbackIntervals.length - 1) {
-      seekTimeout = undefined;
-    }
-
-    return [progress, seekTimeout];
-  }
-
-  /*
    * Load comments and voice recordings to update the feed.
    */
   const updateFeed = async function() {
@@ -98,13 +67,7 @@ function PlaybackWrapper(props) {
     }
     props.dispatch({ type: 'playback/started' });
 
-    const arr = getPositionMilliseconds();
-    let positionMilliseconds = arr[0];
-
-    playback.spotifyApi.play({
-      uris: [stream.nowPlaying.track.externalId],
-      position_ms: positionMilliseconds,
-    });
+    playbackStart(playback, stream);
   }
 
   /*
@@ -207,10 +170,9 @@ function PlaybackWrapper(props) {
       payload: {stream: { ...stream, startedAt: startedAt }},
     });
 
-    const arr = getPositionMilliseconds(startedAt),
-          positionMilliseconds = arr[0],
+    const arr = getPositionMilliseconds(stream, startedAt),
           seekTimeoutDuration = arr[1];
-    playback.spotifyApi.seek(positionMilliseconds);
+    playbackSeek(playback, stream)
     await props.dispatch({ type: 'playback/addToQueueReschedule' });
 
     // schedule seek
@@ -236,7 +198,7 @@ function PlaybackWrapper(props) {
     const jsonResponse = await fetchPauseTrack();
     await props.dispatch(jsonResponse.redux);
     await props.dispatch({ type: 'playback/addToQueueReschedule' });
-    playback.spotifyApi.pause();
+    playbackPause(playback, stream);
     clearTimeout(plannedNextTrackTimeoutId);
     await props.dispatch({ type: 'playback/enable' });
   }
@@ -257,7 +219,7 @@ function PlaybackWrapper(props) {
     }
 
     await props.dispatch({ type: 'playback/addToQueueReschedule' });
-    playback.spotifyApi.play();
+    playbackPlay(playback, stream);
     await props.dispatch({ type: 'playback/enable' });
   }
 
@@ -295,7 +257,7 @@ function PlaybackWrapper(props) {
     });
 
     // schedule seek
-    const arr = getPositionMilliseconds(),
+    const arr = getPositionMilliseconds(stream, stream.startedAt),
           seekTimeoutDuration = arr[1];
     if(seekTimeoutDuration) {
       const seekTimeoutId = setTimeout(() => {
