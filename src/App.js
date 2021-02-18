@@ -56,6 +56,8 @@ function App() {
 
       const payload = responseJson.redux.payload,
             nowPlayingTrack = payload.stream.nowPlaying?.track;
+      console.log(nowPlayingTrack, nowPlayingTrack?.service, SERVICE_JUKEBOX_RADIO)
+      console.log(nowPlayingTrack?.service === SERVICE_JUKEBOX_RADIO)
       if(nowPlayingTrack?.service === SERVICE_JUKEBOX_RADIO) {
         const trackUuid = nowPlayingTrack.uuid;
         responseJson = await fetchTrackGetFiles(trackUuid);
