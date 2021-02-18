@@ -172,7 +172,7 @@ function PlaybackWrapper(props) {
 
     const arr = getPositionMilliseconds(stream, startedAt),
           seekTimeoutDuration = arr[1];
-    playbackSeek(playback, stream)
+    playbackSeek(playback, stream, startedAt);
     await props.dispatch({ type: 'playback/addToQueueReschedule' });
 
     // schedule seek
