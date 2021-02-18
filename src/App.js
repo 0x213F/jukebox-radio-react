@@ -56,12 +56,22 @@ function App() {
 
       const payload = responseJson.redux.payload,
             nowPlayingTrack = payload.stream.nowPlaying?.track;
-      console.log(nowPlayingTrack, nowPlayingTrack?.service, SERVICE_JUKEBOX_RADIO)
-      console.log(nowPlayingTrack?.service === SERVICE_JUKEBOX_RADIO)
       if(nowPlayingTrack?.service === SERVICE_JUKEBOX_RADIO) {
         const trackUuid = nowPlayingTrack.uuid;
         responseJson = await fetchTrackGetFiles(trackUuid);
-        await store.dispatch(responseJson.redux);
+
+        var request = new XMLHttpRequest();
+        request.open("GET", responseJson.redux.payload.track.audioUrl, true);
+        request.responseType = "blob";
+        request.onload = function() {
+          if(this.status !== 200) {
+            return;
+          }
+          const audio = new Audio(URL.createObjectURL(this.response));
+          responseJson.redux.payload.track.audio = audio;
+          store.dispatch(responseJson.redux);
+        }
+        request.send();
       }
 
       // load queue

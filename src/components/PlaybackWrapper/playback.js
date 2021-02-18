@@ -68,7 +68,7 @@ export const playbackStart = function(playback, stream) {
         audio.play();
       }, -positionMilliseconds);
     } else {
-      audio.currentTime = positionMilliseconds;
+      audio.currentTime = positionMilliseconds / 1000;
       audio.play();
     }
   }
@@ -108,7 +108,8 @@ export const playbackSeek = function(playback, stream, startedAt) {
   } else if(playbackService === SERVICE_JUKEBOX_RADIO) {
     const trackUuid = stream.nowPlaying.track.uuid,
           audio = playback.files[trackUuid].audio;
-    audio.currentTime = positionMilliseconds;
+    audio.load();
+    audio.currentTime = positionMilliseconds / 1000;
     audio.play();
   }
 }
