@@ -10,6 +10,7 @@ import {
 import Chat from '../Chat/Chat';
 import Queue from '../Queue/Queue';
 import Search from '../Search/Search';
+import SpotifySync from '../SpotifySync/SpotifySync';
 import Upload from '../Upload/Upload';
 import Player from '../Player/Player';
 import UserSettings from '../UserSettings/UserSettings';
@@ -364,6 +365,9 @@ function PlaybackWrapper(props) {
       </Route>
       <Route path="/upload">
         <Upload />
+      </Route>
+      <Route path="/spotify">
+        <SpotifySync />
       </Route>
     </Switch>
     </>

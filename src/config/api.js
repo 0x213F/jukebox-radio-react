@@ -5,6 +5,7 @@ export const ENDPOINT_VERIFY_TOKEN = '/auth/verify-token/'
 
 // USER
 export const ENDPOINT_USER_GET_SETTINGS = '/users/user/get-settings'
+export const ENDPOINT_USER_CONNECT_SPOTIFY = '/users/user/connect-spotify/'
 
 // TEXT COMMENT
 export const ENDPOINT_TEXT_COMMENT_CREATE = '/comments/text-comment/create/'
