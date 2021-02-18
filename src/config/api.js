@@ -24,6 +24,7 @@ export const ENDPOINT_VOICE_RECORDING_LIST = '/comments/voice-recording/list'
 
 // TRACK
 export const ENDPOINT_TRACK_CREATE = '/music/track/create/'
+export const ENDPOINT_TRACK_GET_FILES = '/music/track/get-files'
 
 // MUSIC
 export const ENDPOINT_MUSIC_SEARCH = '/music/search'
