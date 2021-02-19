@@ -55,6 +55,16 @@ function PlaybackWrapper(props) {
   const [plannedNextTrackTimeoutId, setPlannedNextTrackTimeoutId] = useState({});
   const [nextTrackJson, setNextTrackJson] = useState({});
 
+  const shouldPause = function(nextPlayingQueue) {
+    return (
+      stream.nowPlaying.track.service === SERVICE_JUKEBOX_RADIO ||
+      (
+        stream.nowPlaying.track.service === SERVICE_SPOTIFY &&
+        nextPlayingQueue.track.service !== SERVICE_SPOTIFY
+      )
+    )
+  }
+
   /*
    * Load comments and voice recordings to update the feed.
    */
@@ -113,7 +123,7 @@ function PlaybackWrapper(props) {
    *  Triggered by a scheduled task, this plays the next track.
    */
   const plannedNextTrack = async function() {
-    if(stream.nowPlaying.track.service === SERVICE_JUKEBOX_RADIO) {
+    if(shouldPause(nextUp)) {
       playbackPause(playback, stream);
     }
     await props.dispatch({
@@ -129,7 +139,7 @@ function PlaybackWrapper(props) {
    */
   const prevTrack = async function() {
     await props.dispatch({ type: 'playback/disable' });
-    if(stream.nowPlaying.track.service === SERVICE_JUKEBOX_RADIO) {
+    if(shouldPause(lastUp)) {
       playbackPause(playback, stream);
     }
     if(lastUp.track.service === SERVICE_JUKEBOX_RADIO) {
@@ -148,7 +158,7 @@ function PlaybackWrapper(props) {
    */
   const nextTrack = async function() {
     await props.dispatch({ type: 'playback/disable' });
-    if(stream.nowPlaying.track.service === SERVICE_JUKEBOX_RADIO) {
+    if(shouldPause(nextUp)) {
       playbackPause(playback, stream);
     }
     if(nextUp.track.service === SERVICE_JUKEBOX_RADIO) {
