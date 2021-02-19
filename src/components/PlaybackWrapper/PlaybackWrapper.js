@@ -60,11 +60,11 @@ function PlaybackWrapper(props) {
       stream.nowPlaying.track.service === SERVICE_JUKEBOX_RADIO ||
       (
         stream.nowPlaying.track.service === SERVICE_SPOTIFY &&
-        nextPlayingQueue.track.service !== SERVICE_SPOTIFY
+        !nextPlayingQueue.track
       ) ||
       (
         stream.nowPlaying.track.service === SERVICE_SPOTIFY &&
-        !nextPlayingQueue.track
+        nextPlayingQueue.track.service !== SERVICE_SPOTIFY
       )
     )
   }
