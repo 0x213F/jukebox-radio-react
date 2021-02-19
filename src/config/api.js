@@ -1,3 +1,7 @@
+// NOTE: If the API endpoint is a GET, then there is no ending slash.
+//       Else, the endpoint is probably a POST and there should be a slash.
+
+
 // AUTHENTICATION
 export const ENDPOINT_OBTAIN_TOKENS = '/auth/obtain-tokens/'
 export const ENDPOINT_REFRESH_TOKEN = '/auth/refresh-token/'
@@ -5,6 +9,7 @@ export const ENDPOINT_VERIFY_TOKEN = '/auth/verify-token/'
 
 // USER
 export const ENDPOINT_USER_GET_SETTINGS = '/users/user/get-settings'
+export const ENDPOINT_USER_UPDATE_SETTINGS = '/users/user/update-settings/'
 export const ENDPOINT_USER_CONNECT_SPOTIFY = '/users/user/connect-spotify/'
 
 // TEXT COMMENT
