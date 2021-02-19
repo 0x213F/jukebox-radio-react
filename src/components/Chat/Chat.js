@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { connect } from 'react-redux'
 import SpeechRecognition, { useSpeechRecognition } from 'react-speech-recognition';
 import MicRecorder from 'mic-recorder-to-mp3';
@@ -13,6 +13,7 @@ import {
   CLASS_TEXT_COMMENT,
   CLASS_VOICE_RECORDING
 } from '../../config/model';
+import { getPositionMilliseconds } from '../../utils/reducers/feed';
 
 
 function Chat(props) {
@@ -20,11 +21,41 @@ function Chat(props) {
   /*
    * 🏗
    */
+  const feed = props.feed,
+        stream = props.stream;
+
   const [text, setText] = useState('');
+  const [textCommentUuid, setTextCommentUuid] = useState(undefined);
+  const [textCommentTimestamp, setTextCommentTimestamp] = useState(undefined);
   const [isAbc, setIsAbc] = useState('');
   const [isRecording, setIsRecording] = useState(false);
   const [recorder] = useState(new MicRecorder({ bitRate: 320 }));
   const [transcriptData] = useState([]);
+
+  //////////////////////////////////////////////////////////////////////////////
+  // REGENERATE THE FEED
+  useEffect(() => {
+
+    const periodicTask = setInterval(() => {
+      props.dispatch({ type: "feed/update" });
+    }, 250);
+
+    return () => {
+      clearInterval(periodicTask);
+    }
+
+  // eslint-disable-next-line
+  }, []);
+
+  const handleTextChange = function(e) {
+    if(!textCommentUuid) {
+      const arr = getPositionMilliseconds(stream),
+            position = arr[0];
+      setTextCommentTimestamp(position);
+      setTextCommentUuid(stream.nowPlaying.track.uuid);
+    }
+    setText(e.target.value);
+  }
 
   /*
    * When a user submits a new comment.
@@ -32,13 +63,17 @@ function Chat(props) {
   const createTextComment = async function(e) {
     e.preventDefault();
     const format = isAbc ? 'abc_notation' : 'text';
-    const responseJson = await fetchTextCommentCreate(text, format);
+    const responseJson = await fetchTextCommentCreate(
+      text, format, textCommentUuid, textCommentTimestamp
+    );
 
     await props.dispatch({
       type: 'textComment/create',
       textComment: responseJson.data,
     });
 
+    setTextCommentTimestamp(undefined);
+    setTextCommentUuid(undefined);
     setText('');
   }
 
@@ -97,13 +132,6 @@ function Chat(props) {
   }
 
   /*
-   * This aggregates text comments and voice recordings into one data list,
-   * sorted by track timestamp.
-   */
-  const feed = props.feed,
-        stream = props.stream;
-
-  /*
    * 🎨
    */
   return (
@@ -134,14 +162,14 @@ function Chat(props) {
                     name="text"
                     placeholder="text"
                     value={text}
-                    onChange={(e) => { setText(e.target.value); }}
+                    onChange={handleTextChange}
                     disabled={!stream.isPlaying} />
         ) : (
           <input type="text"
                  name="text"
                  placeholder="text"
                  value={text}
-                 onChange={(e) => { setText(e.target.value); }}
+                 onChange={handleTextChange}
                  disabled={!stream.isPlaying} />
         )}
         <button type="submit"

@@ -1,5 +1,6 @@
 import {
   ENDPOINT_STREAM_GET,
+  ENDPOINT_TRACK_GET_FILES,
   ENDPOINT_STREAM_NEXT_TRACK,
   ENDPOINT_STREAM_PAUSE_TRACK,
   ENDPOINT_STREAM_PLAY_TRACK,
@@ -22,13 +23,25 @@ const fetchStreamGet = async () => {
   return await response.json();
 };
 
+
+const fetchTrackGetFiles = async(trackUuid) => {
+  const response = await fetchBackend(
+    TYPE_GET,
+    ENDPOINT_TRACK_GET_FILES,
+    { trackUuid },
+  );
+  return await response.json();
+}
+
+
 /*
  * Fetches...
  */
-const fetchNextTrack = async () => {
+const fetchNextTrack = async (nowPlayingTotalDurationMilliseconds, isPlanned) => {
   const response = await fetchBackend(
     TYPE_POST,
     ENDPOINT_STREAM_NEXT_TRACK,
+    { nowPlayingTotalDurationMilliseconds, isPlanned }
   );
   const responseJson = await response.json();
   return responseJson;
@@ -85,10 +98,11 @@ const fetchScanBackward = async () => {
 /*
  * Fetches...
  */
-const fetchScanForward = async () => {
+const fetchScanForward = async (nowPlayingTotalDurationMilliseconds) => {
   const response = await fetchBackend(
     TYPE_POST,
     ENDPOINT_STREAM_SCAN_FORWARD,
+    { nowPlayingTotalDurationMilliseconds }
   );
   const responseJson = await response.json();
   return responseJson;
@@ -102,4 +116,5 @@ export {
   fetchPrevTrack,
   fetchScanBackward,
   fetchScanForward,
+  fetchTrackGetFiles,
 }

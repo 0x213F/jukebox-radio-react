@@ -16,6 +16,8 @@ function NotableText(props) {
   /*
    * 🏗
    */
+  const textColor = props.textColor;
+
   const selectableRef = useRef(null);
 
   const [selectableIsShowable, setSelectableIsShowable] = useState(true);
@@ -132,7 +134,7 @@ function NotableText(props) {
    * 🎨
    */
   return (
-    <div className={styles.NotableText}>
+    <div className={styles.NotableText} style={{color: textColor}}>
 
       <p ref={selectableRef}>
         {renderTextComment()}

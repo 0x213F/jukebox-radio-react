@@ -1,4 +1,5 @@
 import React from "react";
+import { connect } from 'react-redux';
 import styles from './VoiceRecording.module.css';
 import { fetchDeleteVoiceRecording } from './network';
 
@@ -40,4 +41,6 @@ function VoiceRecording(props) {
 
 }
 
-export default VoiceRecording;
+const mapStateToProps = (state) => ({});
+
+export default connect(mapStateToProps)(VoiceRecording);

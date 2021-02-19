@@ -1,6 +1,13 @@
 import { useEffect, useState } from "react";
 import { connect } from 'react-redux'
-// import { CountdownCircleTimer } from 'react-countdown-circle-timer'
+import { fetchTextCommentList, fetchVoiceRecordingList } from '../Chat/network';
+import {
+  getPositionMilliseconds,
+  playbackStart,
+  playbackSeek,
+  playbackPause,
+  playbackPlay,
+} from './playback'
 // import styles from './PlaybackWrapper.module.css';
 import {
   Switch,
@@ -10,6 +17,7 @@ import {
 import Chat from '../Chat/Chat';
 import Queue from '../Queue/Queue';
 import Search from '../Search/Search';
+import SpotifySync from '../SpotifySync/SpotifySync';
 import Upload from '../Upload/Upload';
 import Player from '../Player/Player';
 import UserSettings from '../UserSettings/UserSettings';
@@ -18,11 +26,11 @@ import {
   fetchPrevTrack,
   fetchScanBackward,
   fetchScanForward,
-  // eslint-disable-next-line
+  fetchTrackGetFiles,
   fetchPauseTrack,
-  // eslint-disable-next-line
   fetchPlayTrack,
 } from '../Player/network';
+import { SERVICE_JUKEBOX_RADIO, SERVICE_SPOTIFY } from '../../config/services';
 
 
 function PlaybackWrapper(props) {
@@ -31,49 +39,45 @@ function PlaybackWrapper(props) {
    * 🏗
    */
   const stream = props.stream,
-        playback = props.playback;
+        playback = props.playback,
+        lastUpQueues = props.lastUpQueues,
+        lastUp = lastUpQueues[lastUpQueues.length - 1],
+        nextUpQueues = props.nextUpQueues,
+        nextUp = (
+                nextUpQueues.length ?
+                  (nextUpQueues[0].children.length ?
+                    nextUpQueues[0].children[0] :
+                    nextUpQueues[0]) :
+                  undefined
+              );
 
   const [messageScheduleNextTrack, setMessageScheduleNextTrack] = useState(false);
   const [plannedNextTrackTimeoutId, setPlannedNextTrackTimeoutId] = useState({});
   const [nextTrackJson, setNextTrackJson] = useState({});
 
-  /*
-   * This gets the position that the track should be at.
-   *
-   * @return [
-   *   progress: Time in milliseconds,
-   *   seekTimeout: Time in milliseconds until the next seek should happen,
-   * ]
-   */
-  const getPositionMilliseconds = function(startedAt = stream.startedAt) {
-    if(!stream.nowPlaying) {
-      return [undefined, undefined];
-    }
-
-    let progress = Date.now() - startedAt,
-        seekTimeout,
-        playbackIntervalIdx = 0,
-        cumulativeProgress = 0;
-
-    while(true) {
-      const playbackInterval = stream.nowPlaying.playbackIntervals[playbackIntervalIdx],
-            playbackIntervalDuration = playbackInterval[1] - playbackInterval[0],
-            remainingProgress = progress - cumulativeProgress;
-      if(remainingProgress < playbackIntervalDuration) {
-        progress = playbackInterval[0] + remainingProgress;
-        seekTimeout = playbackInterval[1] - progress;
-        break;
-      }
-      playbackIntervalIdx += 1;
-      cumulativeProgress += playbackIntervalDuration;
-    }
-
-    if(playbackIntervalIdx === stream.nowPlaying.playbackIntervals.length - 1) {
-      seekTimeout = undefined;
-    }
-
-    return [progress, seekTimeout];
+  const shouldPause = function(nextPlayingQueue) {
+    return (
+      stream.nowPlaying.track.service === SERVICE_JUKEBOX_RADIO ||
+      (
+        stream.nowPlaying.track.service === SERVICE_SPOTIFY &&
+        !nextPlayingQueue.track
+      ) ||
+      (
+        stream.nowPlaying.track.service === SERVICE_SPOTIFY &&
+        nextPlayingQueue.track.service !== SERVICE_SPOTIFY
+      )
+    )
   }
+
+  /*
+   * Load comments and voice recordings to update the feed.
+   */
+  const updateFeed = async function() {
+    const responseJsonTextCommentList = await fetchTextCommentList();
+    const responseJsonVoiceRecordingList = await fetchVoiceRecordingList();
+    await props.dispatch(responseJsonTextCommentList.redux);
+    await props.dispatch(responseJsonVoiceRecordingList.redux);
+  };
 
   /*
    * This starts the now playing track.
@@ -87,13 +91,7 @@ function PlaybackWrapper(props) {
     }
     props.dispatch({ type: 'playback/started' });
 
-    const arr = getPositionMilliseconds();
-    let positionMilliseconds = arr[0];
-
-    playback.spotifyApi.play({
-      uris: [stream.nowPlaying.track.externalId],
-      position_ms: positionMilliseconds,
-    });
+    playbackStart(playback, stream);
   }
 
   /*
@@ -103,10 +101,17 @@ function PlaybackWrapper(props) {
   const addToQueue = async function() {
 
     // disable the player UI
-    await props.dispatch({ type: 'player/disable' });
+    await props.dispatch({ type: 'playback/disable' });
 
     // update the back-end
-    const responseJsonNextTrack = await fetchNextTrack();
+    const responseJsonNextTrack = await fetchNextTrack(
+      stream.nowPlaying?.totalDurationMilliseconds, true
+    );
+
+    if(nextUp.track.service === SERVICE_JUKEBOX_RADIO) {
+      const responseJson = await fetchTrackGetFiles(nextUp.track.uuid);
+      await props.dispatch(responseJson.redux);
+    }
 
     // update the front-end later
     setNextTrackJson(responseJsonNextTrack);
@@ -122,28 +127,55 @@ function PlaybackWrapper(props) {
    *  Triggered by a scheduled task, this plays the next track.
    */
   const plannedNextTrack = async function() {
+    if(shouldPause(nextUp)) {
+      playbackPause(playback, stream);
+    }
     await props.dispatch({
       type: 'playback/plannedNextTrack',
       payload: { payload: nextTrackJson.redux },  // yes
     });
+    await props.dispatch({ type: 'playback/enable' });
+    await updateFeed();
   }
 
   /*
    * Triggered by human interaction, this plays the previous track.
    */
   const prevTrack = async function() {
+    await props.dispatch({ type: 'playback/disable' });
+    if(shouldPause(lastUp)) {
+      playbackPause(playback, stream);
+    }
+    if(lastUp.track.service === SERVICE_JUKEBOX_RADIO) {
+      const responseJson = await fetchTrackGetFiles(lastUp.track.uuid);
+      await props.dispatch(responseJson.redux);
+    }
     const responseJsonPrevTrack = await fetchPrevTrack();
     await props.dispatch(responseJsonPrevTrack.redux);
     await props.dispatch({ type: 'playback/start' });
+    await props.dispatch({ type: 'playback/enable' });
+    await updateFeed();
   }
 
   /*
    * Triggered by human interaction, this plays the next track.
    */
   const nextTrack = async function() {
-    const responseJsonNextTrack = await fetchNextTrack();
+    await props.dispatch({ type: 'playback/disable' });
+    if(shouldPause(nextUp)) {
+      playbackPause(playback, stream);
+    }
+    if(nextUp.track.service === SERVICE_JUKEBOX_RADIO) {
+      const responseJson = await fetchTrackGetFiles(nextUp.track.uuid);
+      await props.dispatch(responseJson.redux);
+    }
+    const responseJsonNextTrack = await fetchNextTrack(
+      stream.nowPlaying?.totalDurationMilliseconds, false
+    );
     await props.dispatch(responseJsonNextTrack.redux);
     await props.dispatch({ type: 'playback/start' });
+    await props.dispatch({ type: 'playback/enable' });
+    await updateFeed();
   }
 
   /*
@@ -155,12 +187,16 @@ function PlaybackWrapper(props) {
    *      interval).
    */
   const seek = async function(direction = undefined) {
+    await props.dispatch({ type: 'playback/disable' });
     let startedAt;
 
     if(direction === 'forward') {
-      const response = await fetchScanForward();
+      const response = await fetchScanForward(
+        stream.nowPlaying.totalDurationMilliseconds
+      );
       // Seeking forward is not allowed because the track is almost over.
       if(response.system.status === 400) {
+        await props.dispatch({ type: 'playback/enable' });
         return;
       }
       startedAt = stream.startedAt - (10000);
@@ -180,10 +216,9 @@ function PlaybackWrapper(props) {
       payload: {stream: { ...stream, startedAt: startedAt }},
     });
 
-    const arr = getPositionMilliseconds(startedAt),
-          positionMilliseconds = arr[0],
+    const arr = getPositionMilliseconds(stream, startedAt),
           seekTimeoutDuration = arr[1];
-    playback.spotifyApi.seek(positionMilliseconds);
+    playbackSeek(playback, stream, startedAt);
     await props.dispatch({ type: 'playback/addToQueueReschedule' });
 
     // schedule seek
@@ -197,34 +232,41 @@ function PlaybackWrapper(props) {
         payload: { nextSeekTimeoutId: seekTimeoutId },
       });
     }
+
+    await props.dispatch({ type: 'playback/enable' });
   }
 
   /*
    * Toggling the player from the "playing" to "paused" state.
    */
   const pause = async function() {
+    await props.dispatch({ type: 'playback/disable' });
     const jsonResponse = await fetchPauseTrack();
     await props.dispatch(jsonResponse.redux);
     await props.dispatch({ type: 'playback/addToQueueReschedule' });
-    playback.spotifyApi.pause();
+    playbackPause(playback, stream);
     clearTimeout(plannedNextTrackTimeoutId);
+    await props.dispatch({ type: 'playback/enable' });
   }
 
   /*
    * Toggling the player from the "paused" to "playing" state.
    */
   const play = async function() {
+    await props.dispatch({ type: 'playback/disable' });
     const jsonResponse = await fetchPlayTrack();
     await props.dispatch(jsonResponse.redux);
 
     // When page loads with the player in the "paused" state and then the user
     // toggles to the "playing" state.
     if(!playback.isPlaying) {
+      await props.dispatch({ type: 'playback/enable' });
       return;
     }
 
     await props.dispatch({ type: 'playback/addToQueueReschedule' });
-    playback.spotifyApi.play();
+    playbackPlay(playback, stream);
+    await props.dispatch({ type: 'playback/enable' });
   }
 
   //////////////////////////////////////////////////////////////////////////////
@@ -261,7 +303,7 @@ function PlaybackWrapper(props) {
     });
 
     // schedule seek
-    const arr = getPositionMilliseconds(),
+    const arr = getPositionMilliseconds(stream, stream.startedAt),
           seekTimeoutDuration = arr[1];
     if(seekTimeoutDuration) {
       const seekTimeoutId = setTimeout(() => {
@@ -332,6 +374,9 @@ function PlaybackWrapper(props) {
       <Route path="/upload">
         <Upload />
       </Route>
+      <Route path="/spotify">
+        <SpotifySync />
+      </Route>
     </Switch>
     </>
   );
@@ -340,6 +385,8 @@ function PlaybackWrapper(props) {
 const mapStateToProps = (state) => ({
     stream: state.stream,
     playback: state.playback,
+    lastUpQueues: state.lastUpQueues,
+    nextUpQueues: state.nextUpQueues,
 });
 
 export default connect(mapStateToProps)(PlaybackWrapper);

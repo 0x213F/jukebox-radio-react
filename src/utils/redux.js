@@ -1,4 +1,5 @@
 import { createStore } from 'redux';
+import { feedUpdate } from './reducers/feed';
 import {
   markerCreate,
   markerDelete,
@@ -12,12 +13,11 @@ import {
   playbackStarted,
   playbackAddToQueueReschedule,
   playbackAddToQueueScheduled,
-  playbackNextSeekScheduled
+  playbackNextSeekScheduled,
+  playbackDisable,
+  playbackEnable,
+  playbackLoadFiles,
 } from  './reducers/playback';
-import {
-  playerDisable,
-  playerEnable,
-} from './reducers/player';
 import { queueListSet } from './reducers/queue';
 import {
   queueIntervalCreate,
@@ -58,13 +58,14 @@ const initialState = {
   userSettings: undefined,
   trackMarkerMap: {},
   playback: {
-    controlsEnabled: true,
+    controlsEnabled: false,
     spotifyApi: undefined,
     isPlaying: false,
     queuedUp: false,
     noopNextTrack: false,
     addToQueueTimeoutId: undefined,
     isReady: false,
+    files: {},
   },
 }
 
@@ -180,10 +181,10 @@ const reducer = (state = initialState, action) => {
       return queueIntervalCreate(state, action.payload);
     case "queueInterval/delete":
       return queueIntervalDelete(state, action.payload);
-    case "player/disable":
-      return playerDisable(state);
-    case "player/enable":
-      return playerEnable(state);
+    case "playback/disable":
+      return playbackDisable(state);
+    case "playback/enable":
+      return playbackEnable(state);
     case "playback/spotify":
       return playbackSpotify(state, action.payload);
     case "playback/addToQueue":
@@ -202,6 +203,10 @@ const reducer = (state = initialState, action) => {
       return playbackNextSeekScheduled(state, action.payload);
     case "userSettings/update":
       return userSettingsUpdate(state, action.payload);
+    case "playback/loadFiles":
+      return playbackLoadFiles(state, action.payload);
+    case "feed/update":
+      return feedUpdate(state);
     default:
       return state;
   }

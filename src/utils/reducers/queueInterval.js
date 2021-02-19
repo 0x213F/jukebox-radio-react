@@ -58,7 +58,6 @@ export const queueIntervalCreate = function(state, action) {
 
   // save the state
   const nextUpQueues = [...state.nextUpQueues];
-  console.log(nextUpQueues, parentIndex, index)
   if(parentIndex !== -1) {
     nextUpQueues[parentIndex].children[index].intervals = sortedQueueIntervals;
   } else {
