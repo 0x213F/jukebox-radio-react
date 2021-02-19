@@ -250,8 +250,14 @@ export const playbackEnable = function(state) {
 export const playbackLoadFiles = function(state, payload) {
   const playback = { ...state.playback },
         files = { ...state.playback.files };
+
+  const audio = new Audio(payload.track.audioUrl);
+
+  // TODO
+  audio.addEventListener('canplaythrough', function() {});
+
   files[payload.track.uuid] = {
-    audio: payload.track.audio,
+    audio: audio,
   }
   return {
     ...state,
