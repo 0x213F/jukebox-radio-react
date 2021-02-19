@@ -26,11 +26,11 @@ import {
   fetchPrevTrack,
   fetchScanBackward,
   fetchScanForward,
-  // eslint-disable-next-line
+  fetchTrackGetFiles,
   fetchPauseTrack,
-  // eslint-disable-next-line
   fetchPlayTrack,
 } from '../Player/network';
+import { SERVICE_JUKEBOX_RADIO } from '../../config/services';
 
 
 function PlaybackWrapper(props) {
@@ -39,7 +39,15 @@ function PlaybackWrapper(props) {
    * 🏗
    */
   const stream = props.stream,
-        playback = props.playback;
+        playback = props.playback,
+        nextUpQueues = props.nextUpQueues,
+        nextUp = (
+                nextUpQueues.length ?
+                  (nextUpQueues[0].children.length ?
+                    nextUpQueues[0].children[0] :
+                    nextUpQueues[0]) :
+                  undefined
+              );
 
   const [messageScheduleNextTrack, setMessageScheduleNextTrack] = useState(false);
   const [plannedNextTrackTimeoutId, setPlannedNextTrackTimeoutId] = useState({});
@@ -83,6 +91,11 @@ function PlaybackWrapper(props) {
     const responseJsonNextTrack = await fetchNextTrack(
       stream.nowPlaying?.totalDurationMilliseconds, true
     );
+
+    if(nextUp.track.service === SERVICE_JUKEBOX_RADIO) {
+      const responseJson = await fetchTrackGetFiles(nextUp.track.uuid);
+      await props.dispatch(responseJson.redux);
+    }
 
     // update the front-end later
     setNextTrackJson(responseJsonNextTrack);
@@ -339,6 +352,7 @@ function PlaybackWrapper(props) {
 const mapStateToProps = (state) => ({
     stream: state.stream,
     playback: state.playback,
+    nextUpQueues: state.nextUpQueues,
 });
 
 export default connect(mapStateToProps)(PlaybackWrapper);

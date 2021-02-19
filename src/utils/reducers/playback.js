@@ -127,8 +127,6 @@ const playbackPlannedNextTrackHelper = function(state) {
 export const playbackPlannedNextTrack = function(state, payload) {
   let updatedState = state;
   updatedState = playbackPlannedNextTrackHelper(updatedState);
-  // TODO: stop overcorrecting
-  // TODO: add in API endpoint "autoNextTrack" or whatever.. check spec def
   const childPayload = payload.payload,  // yes
         updatedNowPlaying = updatedState.stream.nowPlaying;
   childPayload.startedAt = (
@@ -252,9 +250,6 @@ export const playbackLoadFiles = function(state, payload) {
         files = { ...state.playback.files };
 
   const audio = new Audio(payload.track.audioUrl);
-
-  // TODO
-  audio.addEventListener('canplaythrough', function() {});
 
   files[payload.track.uuid] = {
     audio: audio,
