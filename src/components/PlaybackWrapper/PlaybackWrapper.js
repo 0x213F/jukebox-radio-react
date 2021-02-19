@@ -61,6 +61,10 @@ function PlaybackWrapper(props) {
       (
         stream.nowPlaying.track.service === SERVICE_SPOTIFY &&
         nextPlayingQueue.track.service !== SERVICE_SPOTIFY
+      ) ||
+      (
+        stream.nowPlaying.track.service === SERVICE_SPOTIFY &&
+        !nextPlayingQueue.track
       )
     )
   }
