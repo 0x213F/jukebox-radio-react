@@ -4,9 +4,14 @@ import {
   fetchVoiceRecordingList,
 } from './components/Chat/network';
 import { fetchVerifyToken } from './components/Login/network'
-import { fetchStreamGet } from './components/Player/network';
+import {
+  fetchStreamGet,
+  fetchPauseTrack,
+  fetchTrackGetFiles,
+} from './components/Player/network';
 import { fetchQueueList } from './components/Queue/network'
-import { fetchGetUserSettings } from './components/UserSettings/network'
+import { fetchGetUserSettings } from './components/UserSettings/network';
+import { playbackPause } from './components/PlaybackWrapper/playback';
 import { store } from './utils/redux'
 import Login from './components/Login/Login';
 import PlaybackWrapper from './components/PlaybackWrapper/PlaybackWrapper';
@@ -16,6 +21,7 @@ import {
   BrowserRouter as Router,
   Link
 } from "react-router-dom";
+import { SERVICE_JUKEBOX_RADIO } from './config/services';
 
 const SpotifyWebApi = require('spotify-web-api-js');
 
@@ -48,6 +54,26 @@ function App() {
       responseJson = await fetchStreamGet();
       await store.dispatch(responseJson.redux);
 
+      const payload = responseJson.redux.payload,
+            nowPlayingTrack = payload.stream.nowPlaying?.track;
+      if(nowPlayingTrack?.service === SERVICE_JUKEBOX_RADIO) {
+        const trackUuid = nowPlayingTrack.uuid;
+        responseJson = await fetchTrackGetFiles(trackUuid);
+        await store.dispatch(responseJson.redux);
+        // var request = new XMLHttpRequest();
+        // request.open("GET", responseJson.redux.payload.track.audioUrl, true);
+        // request.responseType = "blob";
+        // request.onload = () => {
+        //   if(this.status !== 200) {
+        //     return;
+        //   }
+        //   const audio = new Audio(URL.createObjectURL(this.response));
+        //   responseJson.redux.payload.track.audio = audio;
+        //   store.dispatch(responseJson.redux);
+        // }
+        // request.send();
+      }
+
       // load queue
       responseJson = await fetchQueueList();
       await store.dispatch(responseJson.redux);
@@ -75,9 +101,22 @@ function App() {
         payload: { spotifyApi: spotifyApi },
       });
 
+      // enable playback controls
+      await store.dispatch({ type: 'playback/enable' });
+
       setStatus('ready');
     }
     loadData();
+
+    window.addEventListener("beforeunload", (e) => {
+      e.preventDefault();
+      const state = store.getState();
+      if(!state.stream.isPlaying) {
+        return;
+      }
+      fetchPauseTrack();
+      playbackPause(state.playback, state.stream);
+    });
   }, []);
 
   // as the page is loading, display nothing

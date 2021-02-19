@@ -1,4 +1,4 @@
-import { generateFeed } from './feed';
+import { feedGenerate } from './feed';
 
 
 /*
@@ -13,7 +13,7 @@ export const voiceRecordingListSet = function(state, payload) {
 
   return {
     ...updatedState,
-    feed: generateFeed(updatedState),
+    feed: feedGenerate(updatedState),
   };
 }
 
@@ -30,7 +30,7 @@ export const voiceRecordingCreate = function(state, action) {
 
   return {
     ...updatedState,
-    feed: generateFeed(updatedState),
+    feed: feedGenerate(updatedState),
   };
 }
 
@@ -48,6 +48,6 @@ export const voiceRecordingDelete = function(state, action) {
 
   return {
     ...updatedState,
-    feed: generateFeed(updatedState),
+    feed: feedGenerate(updatedState),
   };
 }
