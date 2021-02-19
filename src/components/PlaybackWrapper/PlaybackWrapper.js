@@ -30,7 +30,7 @@ import {
   fetchPauseTrack,
   fetchPlayTrack,
 } from '../Player/network';
-import { SERVICE_JUKEBOX_RADIO } from '../../config/services';
+import { SERVICE_JUKEBOX_RADIO, SERVICE_SPOTIFY } from '../../config/services';
 
 
 function PlaybackWrapper(props) {
