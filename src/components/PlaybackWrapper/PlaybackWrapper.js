@@ -94,7 +94,6 @@ function PlaybackWrapper(props) {
       stream.nowPlaying?.totalDurationMilliseconds, true
     );
 
-    console.log(nextUp, SERVICE_JUKEBOX_RADIO)
     if(nextUp.track.service === SERVICE_JUKEBOX_RADIO) {
       const responseJson = await fetchTrackGetFiles(nextUp.track.uuid);
       await props.dispatch(responseJson.redux);
@@ -114,6 +113,9 @@ function PlaybackWrapper(props) {
    *  Triggered by a scheduled task, this plays the next track.
    */
   const plannedNextTrack = async function() {
+    if(stream.nowPlaying.track.service === SERVICE_JUKEBOX_RADIO) {
+      playbackPause(playback, stream);
+    }
     await props.dispatch({
       type: 'playback/plannedNextTrack',
       payload: { payload: nextTrackJson.redux },  // yes
@@ -127,9 +129,10 @@ function PlaybackWrapper(props) {
    */
   const prevTrack = async function() {
     await props.dispatch({ type: 'playback/disable' });
-    console.log(lastUp, SERVICE_JUKEBOX_RADIO)
+    if(stream.nowPlaying.track.service === SERVICE_JUKEBOX_RADIO) {
+      playbackPause(playback, stream);
+    }
     if(lastUp.track.service === SERVICE_JUKEBOX_RADIO) {
-      console.log('!!!')
       const responseJson = await fetchTrackGetFiles(lastUp.track.uuid);
       await props.dispatch(responseJson.redux);
     }
@@ -145,9 +148,10 @@ function PlaybackWrapper(props) {
    */
   const nextTrack = async function() {
     await props.dispatch({ type: 'playback/disable' });
-    console.log(nextUp, SERVICE_JUKEBOX_RADIO)
+    if(stream.nowPlaying.track.service === SERVICE_JUKEBOX_RADIO) {
+      playbackPause(playback, stream);
+    }
     if(nextUp.track.service === SERVICE_JUKEBOX_RADIO) {
-      console.log('!!!')
       const responseJson = await fetchTrackGetFiles(nextUp.track.uuid);
       await props.dispatch(responseJson.redux);
     }
