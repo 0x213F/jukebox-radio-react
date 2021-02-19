@@ -40,6 +40,8 @@ function PlaybackWrapper(props) {
    */
   const stream = props.stream,
         playback = props.playback,
+        lastUpQueues = props.lastUpQueues,
+        lastUp = lastUpQueues[lastUpQueues.length - 1],
         nextUpQueues = props.nextUpQueues,
         nextUp = (
                 nextUpQueues.length ?
@@ -92,6 +94,7 @@ function PlaybackWrapper(props) {
       stream.nowPlaying?.totalDurationMilliseconds, true
     );
 
+    console.log(nextUp.track.service, SERVICE_JUKEBOX_RADIO)
     if(nextUp.track.service === SERVICE_JUKEBOX_RADIO) {
       const responseJson = await fetchTrackGetFiles(nextUp.track.uuid);
       await props.dispatch(responseJson.redux);
@@ -124,6 +127,12 @@ function PlaybackWrapper(props) {
    */
   const prevTrack = async function() {
     await props.dispatch({ type: 'playback/disable' });
+    console.log(lastUp.track.service, SERVICE_JUKEBOX_RADIO)
+    if(lastUp.track.service === SERVICE_JUKEBOX_RADIO) {
+      console.log('!!!')
+      const responseJson = await fetchTrackGetFiles(nextUp.track.uuid);
+      await props.dispatch(responseJson.redux);
+    }
     const responseJsonPrevTrack = await fetchPrevTrack();
     await props.dispatch(responseJsonPrevTrack.redux);
     await props.dispatch({ type: 'playback/start' });
@@ -136,6 +145,12 @@ function PlaybackWrapper(props) {
    */
   const nextTrack = async function() {
     await props.dispatch({ type: 'playback/disable' });
+    console.log(nextUp.track.service, SERVICE_JUKEBOX_RADIO)
+    if(nextUp.track.service === SERVICE_JUKEBOX_RADIO) {
+      console.log('!!!')
+      const responseJson = await fetchTrackGetFiles(nextUp.track.uuid);
+      await props.dispatch(responseJson.redux);
+    }
     const responseJsonNextTrack = await fetchNextTrack(
       stream.nowPlaying?.totalDurationMilliseconds, false
     );
@@ -352,6 +367,7 @@ function PlaybackWrapper(props) {
 const mapStateToProps = (state) => ({
     stream: state.stream,
     playback: state.playback,
+    lastUpQueues: state.lastUpQueues,
     nextUpQueues: state.nextUpQueues,
 });
 
