@@ -124,6 +124,12 @@ function PlaybackWrapper(props) {
    */
   const prevTrack = async function() {
     await props.dispatch({ type: 'playback/disable' });
+    console.log(nextUp.track.service, SERVICE_JUKEBOX_RADIO)
+    if(nextUp.track.service === SERVICE_JUKEBOX_RADIO) {
+      console.log('!!!')
+      const responseJson = await fetchTrackGetFiles(nextUp.track.uuid);
+      await props.dispatch(responseJson.redux);
+    }
     const responseJsonPrevTrack = await fetchPrevTrack();
     await props.dispatch(responseJsonPrevTrack.redux);
     await props.dispatch({ type: 'playback/start' });
@@ -136,6 +142,12 @@ function PlaybackWrapper(props) {
    */
   const nextTrack = async function() {
     await props.dispatch({ type: 'playback/disable' });
+    console.log(nextUp.track.service, SERVICE_JUKEBOX_RADIO)
+    if(nextUp.track.service === SERVICE_JUKEBOX_RADIO) {
+      console.log('!!!')
+      const responseJson = await fetchTrackGetFiles(nextUp.track.uuid);
+      await props.dispatch(responseJson.redux);
+    }
     const responseJsonNextTrack = await fetchNextTrack(
       stream.nowPlaying?.totalDurationMilliseconds, false
     );
