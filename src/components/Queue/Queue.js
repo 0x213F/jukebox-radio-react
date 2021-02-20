@@ -54,7 +54,7 @@ function Queue(props) {
       </div>
       <div>
         <p><i>Now playing...</i></p>
-        <p>{props.stream?.nowPlaying?.track.name}</p>
+        <p>{props.stream?.nowPlaying?.track?.name}</p>
       </div>
       <p><i>Next up...</i></p>
       <div>
