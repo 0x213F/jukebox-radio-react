@@ -58,7 +58,7 @@ function PlaybackWrapper(props) {
   const shouldPause = function(nextPlayingQueue) {
     return (
       // There must be something now playing.
-      stream.nowPlaying &&
+      stream.nowPlaying?.track &&
       (
         // Everytime a manual upload is currently playing.
         stream.nowPlaying.track.service === SERVICE_JUKEBOX_RADIO ||
