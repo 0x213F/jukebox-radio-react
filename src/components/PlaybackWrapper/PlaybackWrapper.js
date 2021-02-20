@@ -57,14 +57,22 @@ function PlaybackWrapper(props) {
 
   const shouldPause = function(nextPlayingQueue) {
     return (
-      stream.nowPlaying.track.service === SERVICE_JUKEBOX_RADIO ||
+      // There must be a track currently playing. This guards the edge case
+      // when the stream is initially "playing nothing."
+      stream.nowPlaying.track &&
       (
-        stream.nowPlaying.track.service === SERVICE_SPOTIFY &&
-        !nextPlayingQueue.track
-      ) ||
-      (
-        stream.nowPlaying.track.service === SERVICE_SPOTIFY &&
-        nextPlayingQueue.track.service !== SERVICE_SPOTIFY
+        // everytime a manual upload is currently playing
+        stream.nowPlaying.track.service === SERVICE_JUKEBOX_RADIO ||
+        // currently playing Spotify, nothing is up next
+        (
+          stream.nowPlaying.track.service === SERVICE_SPOTIFY &&
+          !nextPlayingQueue.track
+        ) ||
+        // currently playing Spotify, Spotify is not up next
+        (
+          stream.nowPlaying.track.service === SERVICE_SPOTIFY &&
+          nextPlayingQueue.track.service !== SERVICE_SPOTIFY
+        )
       )
     )
   }
