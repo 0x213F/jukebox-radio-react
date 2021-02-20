@@ -5,6 +5,8 @@ import { fetchUpdateUserSettings } from './network';
 
 function UserSettings(props) {
 
+  // TODO actually impliment the disabled behavior
+  // eslint-disable-next-line
   const [controlsEnabled, setControlsEnabled] = useState(true);
 
   if (!props.userSettings) {
