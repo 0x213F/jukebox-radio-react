@@ -153,7 +153,7 @@ function PlaybackWrapper(props) {
     if(shouldPause(lastUp)) {
       playbackPause(playback, stream);
     }
-    if(lastUp.track.service === SERVICE_JUKEBOX_RADIO) {
+    if(lastUp.track?.service === SERVICE_JUKEBOX_RADIO) {
       const responseJson = await fetchTrackGetFiles(lastUp.track.uuid);
       await props.dispatch(responseJson.redux);
     }
