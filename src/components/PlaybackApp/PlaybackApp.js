@@ -46,7 +46,7 @@ function PlaybackApp(props) {
   const shouldPauseOnTrackChange = function(nextPlayingQueue, isPlanned) {
     const nowPlaying = stream.nowPlaying,
           playbackIntervals = nowPlaying?.playbackIntervals,
-          lastPlaybackInterval = (playbackIntervals ? 
+          lastPlaybackInterval = (playbackIntervals ?
             playbackIntervals[playbackIntervals.length - 1] :
             undefined
           );
@@ -59,7 +59,7 @@ function PlaybackApp(props) {
         // Currently playing Spotify, nothing is up next.
         (
           nowPlaying.track.service === SERVICE_SPOTIFY &&
-          !nextPlayingQueue.track
+          !nextPlayingQueue?.track
         ) ||
         // Currently playing Spotify, Spotify is not up next.
         (
