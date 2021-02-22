@@ -44,21 +44,25 @@ function PlaybackApp(props) {
    * determines whether or not the currently playing item needs to be paused.
    */
   const shouldPauseOnTrackChange = function(nextPlayingQueue) {
+    const nowPlaying = stream.nowPlaying,
+          playbackIntervals = nowPlaying.playbackIntervals,
+          lastPlaybackInterval = playbackIntervals[playbackIntervals.length - 1];
     return (
       // There must be something now playing.
-      stream.nowPlaying?.track &&
+      nowPlaying?.track &&
       (
         // Everytime a manual upload is currently playing.
-        stream.nowPlaying.track.service === SERVICE_JUKEBOX_RADIO ||
+        nowPlaying.track.service === SERVICE_JUKEBOX_RADIO ||
         // Currently playing Spotify, nothing is up next.
         (
-          stream.nowPlaying.track.service === SERVICE_SPOTIFY &&
+          nowPlaying.track.service === SERVICE_SPOTIFY &&
           !nextPlayingQueue.track
         ) ||
-        // Currently playing Spotify, Spotify is not up next
+        // Currently playing Spotify, Spotify is not up next.
         (
-          stream.nowPlaying.track.service === SERVICE_SPOTIFY &&
-          nextPlayingQueue.track.service !== SERVICE_SPOTIFY
+          nowPlaying.track.service === SERVICE_SPOTIFY &&
+          nextPlayingQueue.track.service !== SERVICE_SPOTIFY &&
+          lastPlaybackInterval[1] !== nowPlaying.totalDurationMilliseconds
         )
       )
     )
@@ -150,7 +154,7 @@ function PlaybackApp(props) {
     if(shouldPauseOnTrackChange(nextUp)) {
       playbackControlPause(playback, stream);
     }
-    if(nextUp.track.service === SERVICE_JUKEBOX_RADIO) {
+    if(nextUp?.track.service === SERVICE_JUKEBOX_RADIO) {
       const responseJson = await fetchTrackGetFiles(nextUp.track.uuid);
       await props.dispatch(responseJson.redux);
     }
