@@ -45,19 +45,8 @@ function PlaybackApp(props) {
    */
   const shouldPauseOnTrackChange = function(nextPlayingQueue, isPlanned) {
     const nowPlaying = stream.nowPlaying,
-          playbackIntervals = nowPlaying.playbackIntervals,
+          playbackIntervals = nowPlaying?.playbackIntervals,
           lastPlaybackInterval = playbackIntervals[playbackIntervals.length - 1];
-    console.log(
-      nowPlaying.track.service === SERVICE_SPOTIFY,
-      nextPlayingQueue.track.service !== SERVICE_SPOTIFY,
-      (
-        !isPlanned ||
-        (
-          lastPlaybackInterval[1] !== nowPlaying.totalDurationMilliseconds &&
-          isPlanned
-        )
-      )
-    )
     return (
       // There must be something now playing.
       nowPlaying?.track &&
