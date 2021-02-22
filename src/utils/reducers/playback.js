@@ -1,25 +1,10 @@
 import { SERVICE_SPOTIFY } from '../../config/services';
+import { getNextUpQueue } from '../../components/QueueApp/utils';
 import {
-  playbackQueue,
-  playbackSkipToNext,
-} from '../../components/PlaybackWrapper/playback';
+  playbackControlQueue,
+  playbackControlSkipToNext,
+} from '../../components/PlaybackApp/controls';
 import { streamNextTrack } from './stream';
-
-
-/*
- *
- */
-const getNextUp = function(state) {
-  const nextUpQueues = state.nextUpQueues,
-        nextUp = (
-          nextUpQueues.length ?
-            (nextUpQueues[0].children.length ?
-              nextUpQueues[0].children[0] :
-              nextUpQueues[0]) :
-            undefined
-        );
-  return nextUp;
-}
 
 
 /*
@@ -43,7 +28,7 @@ export const playbackSpotify = function(state, payload) {
  *   - We are not certain that something is up next.
  */
 export const playbackAddToQueue = function(state) {
-  const nextUp = getNextUp(state);
+  const nextUp = getNextUpQueue(state.nextUpQueues);
   if(!nextUp) {
     return { ...state };
   }
@@ -57,7 +42,7 @@ export const playbackAddToQueue = function(state) {
         );
 
   if(spotifyShouldAddToQueue) {
-    playbackQueue(state.playback, state.stream, nextUp);
+    playbackControlQueue(state.playback, state.stream, nextUp);
 
     playback.queuedUp = true;
 
@@ -82,7 +67,7 @@ export const playbackAddToQueue = function(state) {
  *
  */
 const playbackPlannedNextTrackHelper = function(state) {
-  const nextUp = getNextUp(state),
+  const nextUp = getNextUpQueue(state.nextUpQueues),
         queuedUp = state.playback.queuedUp,
         noopNextTrack = state.playback.noopNextTrack,
         addToQueueTimeoutId = state.playback.addToQueueTimeoutId,
@@ -101,7 +86,7 @@ const playbackPlannedNextTrackHelper = function(state) {
   }
 
   if(queuedUp) {
-    playbackSkipToNext(state.playback, state.stream);
+    playbackControlSkipToNext(state.playback, state.stream);
     playback.addToQueueTimeoutId = undefined;
     return {
       ...state,

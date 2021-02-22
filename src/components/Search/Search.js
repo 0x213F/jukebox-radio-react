@@ -4,7 +4,7 @@ import styles from './Search.module.css';
 
 import { fetchSearchMusicLibrary, fetchCreateQueue } from './network';
 import SearchResult from '../SearchResult/SearchResult';
-import { fetchQueueList } from '../Queue/network';
+import { fetchQueueList } from '../QueueApp/network';
 
 
 function Search(props) {

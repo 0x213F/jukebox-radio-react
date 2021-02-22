@@ -1,6 +1,9 @@
 import { useState } from "react";
-import { connect } from 'react-redux'
-// import { CountdownCircleTimer } from 'react-countdown-circle-timer'
+import { connect } from 'react-redux';
+import {
+  getNextUpQueue,
+  getLastUpQueue,
+} from '../../components/QueueApp/utils';
 import styles from './Player.module.css';
 
 
@@ -12,16 +15,8 @@ function Player(props) {
   const stream = props.stream,
         playback = props.playback,
         track = stream?.nowPlaying?.track,
-        lastUpQueues = props.lastUpQueues,
-        lastUp = lastUpQueues[lastUpQueues.length - 1],
-        nextUpQueues = props.nextUpQueues,
-        nextUp = (
-          nextUpQueues.length ?
-            (nextUpQueues[0].children.length ?
-              nextUpQueues[0].children[0] :
-              nextUpQueues[0]) :
-            undefined
-        );
+        lastUp = getLastUpQueue(props.lastUpQueues),
+        nextUp = getNextUpQueue(props.nextUpQueues);
 
   // NOTE: This is a temporary mechanism to allow the user to refresh the
   //       progress value on the front-end.
@@ -131,11 +126,13 @@ function Player(props) {
   );
 }
 
+
 const mapStateToProps = (state) => ({
     stream: state.stream,
     lastUpQueues: state.lastUpQueues,
     nextUpQueues: state.nextUpQueues,
     playback: state.playback,
 });
+
 
 export default connect(mapStateToProps)(Player);
