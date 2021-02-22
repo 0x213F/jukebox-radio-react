@@ -43,7 +43,7 @@ function PlaybackApp(props) {
    * When a track is changing from one to another, this boolean logic
    * determines whether or not the currently playing item needs to be paused.
    */
-  const shouldPauseOnTrackChange = function(nextPlayingQueue) {
+  const shouldPauseOnTrackChange = function(nextPlayingQueue, isPlanned) {
     const nowPlaying = stream.nowPlaying,
           playbackIntervals = nowPlaying.playbackIntervals,
           lastPlaybackInterval = playbackIntervals[playbackIntervals.length - 1];
@@ -116,7 +116,7 @@ function PlaybackApp(props) {
    *  Triggered by a scheduled task, this plays the next track.
    */
   const plannedNextTrack = async function() {
-    if(shouldPauseOnTrackChange(nextUp)) {
+    if(shouldPauseOnTrackChange(nextUp, true)) {
       playbackControlPause(playback, stream);
     }
     await props.dispatch({
@@ -132,7 +132,7 @@ function PlaybackApp(props) {
    */
   const prevTrack = async function() {
     await props.dispatch({ type: 'playback/disable' });
-    if(shouldPauseOnTrackChange(lastUp)) {
+    if(shouldPauseOnTrackChange(lastUp, false)) {
       playbackControlPause(playback, stream);
     }
     if(lastUp.track?.service === SERVICE_JUKEBOX_RADIO) {
@@ -151,7 +151,7 @@ function PlaybackApp(props) {
    */
   const nextTrack = async function() {
     await props.dispatch({ type: 'playback/disable' });
-    if(shouldPauseOnTrackChange(nextUp)) {
+    if(shouldPauseOnTrackChange(nextUp, false)) {
       playbackControlPause(playback, stream);
     }
     if(nextUp?.track.service === SERVICE_JUKEBOX_RADIO) {
