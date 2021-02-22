@@ -62,7 +62,13 @@ function PlaybackApp(props) {
         (
           nowPlaying.track.service === SERVICE_SPOTIFY &&
           nextPlayingQueue.track.service !== SERVICE_SPOTIFY &&
-          lastPlaybackInterval[1] !== nowPlaying.totalDurationMilliseconds
+          (
+            !isPlanned ||
+            (
+              lastPlaybackInterval[1] !== nowPlaying.totalDurationMilliseconds &&
+              isPlanned
+            )
+          )
         )
       )
     )
