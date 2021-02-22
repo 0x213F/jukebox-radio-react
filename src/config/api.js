@@ -14,7 +14,6 @@ export const ENDPOINT_USER_CONNECT_SPOTIFY = '/users/user/connect-spotify/'
 
 // TEXT COMMENT
 export const ENDPOINT_TEXT_COMMENT_CREATE = '/comments/text-comment/create/'
-export const ENDPOINT_TEXT_COMMENT_UPDATE = '/comments/text-comment/update/'
 export const ENDPOINT_TEXT_COMMENT_DELETE = '/comments/text-comment/delete/'
 export const ENDPOINT_TEXT_COMMENT_LIST = '/comments/text-comment/list'
 

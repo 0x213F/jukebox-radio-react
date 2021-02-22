@@ -1,10 +1,9 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
-import Player from './Player';
-
+import PlaybackApp from './PlaybackApp';
 
 it('It should mount', () => {
   const div = document.createElement('div');
-  ReactDOM.render(<Player />, div);
+  ReactDOM.render(<PlaybackApp />, div);
   ReactDOM.unmountComponentAtNode(div);
 });
