@@ -8,6 +8,7 @@ import SpotifySync from '../SpotifySync/SpotifySync';
 import Upload from '../Upload/Upload';
 import Player from '../Player/Player';
 import UserSettings from '../UserSettings/UserSettings';
+import ProfileApp from '../ProfileApp/ProfileApp';
 
 
 function MainApp(props) {
@@ -46,6 +47,9 @@ function MainApp(props) {
       <div className="app-main">
 
         <Switch>
+        <Route path="/u/">
+            <ProfileApp />
+          </Route>
           <Route path="/settings">
             <UserSettings />
           </Route>
