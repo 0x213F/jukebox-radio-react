@@ -2,25 +2,22 @@ import './App.css';
 import {
   fetchTextCommentList,
   fetchVoiceRecordingList,
-} from './components/Chat/network';
-import { fetchVerifyToken } from './components/Login/network'
+} from './components/FeedApp/network';
+import { fetchVerifyToken } from './components/Login/network';
 import {
   fetchStreamGet,
   fetchPauseTrack,
   fetchTrackGetFiles,
 } from './components/Player/network';
-import { fetchQueueList } from './components/Queue/network'
+import { fetchQueueList } from './components/QueueApp/network'
 import { fetchGetUserSettings } from './components/UserSettings/network';
-import { playbackPause } from './components/PlaybackWrapper/playback';
+import { playbackControlPause } from './components/PlaybackApp/controls';
 import { store } from './utils/redux'
 import Login from './components/Login/Login';
-import PlaybackWrapper from './components/PlaybackWrapper/PlaybackWrapper';
+import PlaybackApp from './components/PlaybackApp/PlaybackApp';
 import { useEffect, useState } from "react";
 import { Provider } from 'react-redux';
-import {
-  BrowserRouter as Router,
-  Link
-} from "react-router-dom";
+import { BrowserRouter as Router } from "react-router-dom";
 import { SERVICE_JUKEBOX_RADIO } from './config/services';
 
 const SpotifyWebApi = require('spotify-web-api-js');
@@ -28,38 +25,45 @@ const SpotifyWebApi = require('spotify-web-api-js');
 
 function App() {
 
-  // keeps track of the status of the webpage
-  //  - initial: when the page is first loaded
-  //  - unauthenticated: the client does NOT have a valid access token
-  //  - authenticated: the client has a valid access token
-  //  - ready: all API data has been loaded
+  // Keeps track of the status of the webpage
+  //
+  //    - initial:          When the page is first loaded
+  //    - unauthenticated:  The client does NOT have a valid access token
+  //    - authenticated:    The client has a valid access token
+  //    - ready:            All API data has been loaded
   const [status, setStatus] = useState('initial');
 
+  //////////////////////
   // componentDidMount
   useEffect(() => {
     async function loadData() {
       let responseJson;
 
-      // verify authentication
+      // 1: Verify authentication.
       const authResponse = await fetchVerifyToken();
-        if (!authResponse) {
-          setStatus('unauthenticated');
-          return;
-        }
+      if (!authResponse) {
+        setStatus('unauthenticated');
+        return;
+      }
 
-      // set state
+      // Update status.
       setStatus('authenticated');
 
-      // load stream
+      // 2: Load stream.
       responseJson = await fetchStreamGet();
       await store.dispatch(responseJson.redux);
 
+      // 3: Load the track now playing (conditionally).
       const payload = responseJson.redux.payload,
             nowPlayingTrack = payload.stream.nowPlaying?.track;
       if(nowPlayingTrack?.service === SERVICE_JUKEBOX_RADIO) {
         const trackUuid = nowPlayingTrack.uuid;
         responseJson = await fetchTrackGetFiles(trackUuid);
         await store.dispatch(responseJson.redux);
+        // NOTE: the above only works in production setups. This is because of
+        // how the file is served. the below setup can be adapted for a local
+        // setup.
+        //
         // var request = new XMLHttpRequest();
         // request.open("GET", responseJson.redux.payload.track.audioUrl, true);
         // request.responseType = "blob";
@@ -74,40 +78,46 @@ function App() {
         // request.send();
       }
 
-      // load queue
+      // 4: Load the queue.
       responseJson = await fetchQueueList();
       await store.dispatch(responseJson.redux);
 
-      // load comments
+      // 5: Load relevant comments.
       const textCommentsJsonResponse = await fetchTextCommentList();
       await store.dispatch(textCommentsJsonResponse.redux);
 
-      // load voice recordings
+      // 6: Load relevant voice recordings. This will also generate the feed.
       const voiceRecordingsJsonResponse = await fetchVoiceRecordingList();
       await store.dispatch(voiceRecordingsJsonResponse.redux);
 
-      // get user settings
+      // 7: Get user settings.
       const userSettingsJsonResponse = await fetchGetUserSettings();
       await store.dispatch({
         type: 'user/get-settings',
         userSettings: userSettingsJsonResponse.data,
       });
 
-      // initialize Spotify player
-      const spotifyApi = new SpotifyWebApi();
-      spotifyApi.setAccessToken(userSettingsJsonResponse.data.spotify.accessToken);
-      await store.dispatch({
-        type: 'playback/spotify',
-        payload: { spotifyApi: spotifyApi },
-      });
+      // 8: Initialize the Spotify player (conditionally).
+      const spotifyAccessToken = userSettingsJsonResponse.data.spotify.accessToken;
+      if(spotifyAccessToken) {
+        const spotifyApi = new SpotifyWebApi();
+        spotifyApi.setAccessToken(userSettingsJsonResponse.data.spotify.accessToken);
+        await store.dispatch({
+          type: 'playback/spotify',
+          payload: { spotifyApi: spotifyApi },
+        });
+      }
 
-      // enable playback controls
-      await store.dispatch({ type: 'playback/enable' });
+      // Enable playback controls.
+      store.dispatch({ type: 'playback/enable' });
 
+      // Update status.
       setStatus('ready');
+      console.log('ready')
     }
     loadData();
 
+    // Define behavior for when the webpage is closed.
     window.addEventListener("beforeunload", (e) => {
       e.preventDefault();
       const state = store.getState();
@@ -115,22 +125,16 @@ function App() {
         return;
       }
       fetchPauseTrack();
-      playbackPause(state.playback, state.stream);
+      playbackControlPause(state.playback, state.stream);
     });
   }, []);
 
-  // as the page is loading, display nothing
+  // When the page is initially loaded, display nothing.
   if(status === 'initial') {
-    return (
-      <Router>
-        <Provider store={store}>
-          <></>
-        </Provider>
-      </Router>
-    );
+    return <></>;
   }
 
-  // if the user is not authenticated, only display the login portal
+  // If the user is NOT authenticated, display the login portal.
   if(status === 'unauthenticated') {
     return (
       <Router>
@@ -157,44 +161,18 @@ function App() {
   }
 
   // display the main UI now that everything is loaded up
+
+  /*
+   * 🎨
+   */
   return (
     <Router>
       <Provider store={store}>
-
-        {/* nav bar */}
-        <nav>
-          <ul>
-            <li>
-              <Link to="/settings">Settings</Link>
-            </li>
-            <li>
-              <Link to="/chat">Chat</Link>
-            </li>
-            <li>
-              <Link to="/player">Player</Link>
-            </li>
-            <li>
-              <Link to="/queue">Queue</Link>
-            </li>
-            <li>
-              <Link to="/search">Search</Link>
-            </li>
-            <li>
-              <Link to="/upload">Upload</Link>
-            </li>
-          </ul>
-        </nav>
-
-        {/* main section */}
-        <div className="app-main-container">
-          <div className="app-main">
-            <PlaybackWrapper />
-          </div>
-        </div>
-
+        <PlaybackApp />
       </Provider>
     </Router>
   );
 }
+
 
 export default App;

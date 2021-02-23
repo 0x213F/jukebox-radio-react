@@ -1,10 +1,10 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
-import Player from './Player';
+import Marker from './Marker';
 
 
 it('It should mount', () => {
   const div = document.createElement('div');
-  ReactDOM.render(<Player />, div);
+  ReactDOM.render(<Marker />, div);
   ReactDOM.unmountComponentAtNode(div);
 });
