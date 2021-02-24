@@ -11,6 +11,8 @@ function UserSettings(props) {
   // const [voiceControls, setVoiceControls] = useState(true);
   // const [focusControls, setFocusControls] = useState(true);
 
+  const [controlsEnabled, setControlsEnabled] = useState(true);
+
   if (!props.userSettings) {
     return <></>;
   }
