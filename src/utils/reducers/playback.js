@@ -22,6 +22,18 @@ export const playbackSpotify = function(state, payload) {
 }
 
 
+export const playbackYouTube = function(state, payload) {
+  return {
+    ...state,
+    playback: {
+      ...state.playback,
+      youTubeApi: payload.youTubeApi,
+      // TODO refactor ready flags
+    }
+  }
+}
+
+
 /*
  * Assumptions:
  *   - There is currently something playing in the stream.

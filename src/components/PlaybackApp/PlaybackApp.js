@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { connect } from 'react-redux';
+import YouTube from 'react-youtube';
 
 import {
   playbackControlStart,
@@ -349,11 +350,43 @@ function PlaybackApp(props) {
 
   const playbackControls = { nextTrack, prevTrack, seek, pause, play };
 
+  const opts = {
+          height: '135',
+          width: '240',
+          playerVars: {
+            // https://developers.google.com/youtube/player_parameters
+            autoplay: 1,  // the initial video will automatically start to play
+            controls: 0,  // hide playback controls
+            disablekb: 1,  // disable keyboard controls
+            fs: 0,  // disable full screen
+            iv_load_policy: 3,
+            modestbranding: 1,
+            origin: 'jukeboxrad.io',
+            playsinline: 1,
+          },
+        },
+        videoId = stream.nowPlaying?.track?.externalId;
+
+  const onYouTubeReady = function(e) {
+    const youTubeApi = e.target;
+    props.dispatch({
+      type: 'playback/youTube',
+      payload: { youTubeApi: youTubeApi },
+    });
+  }
+
   /*
    * 🎨
    */
   return (
-    <MainApp playbackControls={playbackControls}/>
+    <>
+      <div style={{ zIndex: -1 }}>
+        <YouTube videoId={videoId}
+                 opts={opts}
+                 onReady={onYouTubeReady} />
+      </div>
+      <MainApp playbackControls={playbackControls}/>
+    </>
   );
 }
 
