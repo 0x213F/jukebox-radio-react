@@ -7,10 +7,19 @@ function UserSettings(props) {
 
   // TODO actually impliment the disabled behavior
   // eslint-disable-next-line
-  const [controlsEnabled, setControlsEnabled] = useState(true);
+  const [idleControls, setIdleControls] = useState(true);
+  const [voiceControls, setVoiceControls] = useState(true);
+  const [focusControls, setFocusControls] = useState(true);
 
   if (!props.userSettings) {
     return <></>;
+  }
+
+  function updateUserSettings(event) {
+    props.dispatch({type: 'userSettings/update', payload:{
+      event.target.checked
+    }});
+    fetchUpdateUserSettings(, event.target.checked);
   }
 
   function updateIdleQueue(event) {
