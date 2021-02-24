@@ -1,16 +1,23 @@
-.profile {
+.mainContainer {
   display: flex;
   flex-direction: row;
 }
 
-.user {
+.userSideBar {
  display: flex;
  flex-direction: column;
  align-items: center;
+ padding: 10px;
+ margin-right: 20px;
+ border-style: solid;
 }
 
-.userName {
+.scrollContainer  {
   display: flex;
+  overflow-y: auto;
+  flex-direction: column;
+  padding: 10px;
+  border-style: solid;
 }
 
 .profilePicture {
@@ -18,15 +25,21 @@
   border-radius: 50%;
   height: 200px;
   width: 200px;
-  align-items: flex-end;
 }
 
 .description {
   display: flex;
   flex-direction: column;
+
 }
 
-.sessions{
+.sessions {
   display: flex;
   flex-direction: column;
+}
+
+.sessionImage {
+  display: flex;
+  height: 200px;
+  width: 300px;
 }

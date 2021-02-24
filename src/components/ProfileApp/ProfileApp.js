@@ -22,37 +22,51 @@ function ProfileApp(props) {
       'title': "My Session2",
       'duration': "222000",
     },
+    {
+      'image': "https://images.unsplash.com/photo-1614070501149-ce4d75b91ada?ixid=MXwxMjA3fDB8MHxlZGl0b3JpYWwtZmVlZHw5fHx8ZW58MHx8fA%3D%3D&ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=60",
+      'title': "My Session2",
+      'duration': "222000",
+    },
+    {
+      'image': "https://images.unsplash.com/photo-1614070501149-ce4d75b91ada?ixid=MXwxMjA3fDB8MHxlZGl0b3JpYWwtZmVlZHw5fHx8ZW58MHx8fA%3D%3D&ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=60",
+      'title': "My Session2",
+      'duration': "222000",
+    },
   ]
 
   return (
-    <div>
-      <div className={styles.profile}>
-        <div className={styles.user}>
-          <h1 className={styles.userName}>{username}</h1>
+    <div className={styles.mainContainer}>
+
+        <div className={styles.userSideBar}>
+          <h1>{username}</h1>
           <img src={profileImg} alt="profileImg" className={styles.profilePicture} />
-        </div>
-        <div className={styles.description}>
-          <h2>Who is {username}?</h2>
-          <p>{description}</p>
           <a href={website} target='_blank' rel='noreferrer'>{username}'s Website</a>
         </div>
-      </div>
-        <div className={styles.sessions}>
-          <h2>Sessions</h2>
-          {sessionList.length === 0 ? <h3>{username} has no sessions.</h3>
-          :
-          sessionList.map(session =>(
-            <div className="sessions">
-              <ul>
-                <li>
-                  {session.title}<br/>
-                  <img src={session.image} alt="sessionImage" style={{width:300, height:400}} /><br/>
-                  {session.duration}
-                </li>
-              </ul>
-            </div>
-          ))}
+
+        <div className={styles.scrollContainer}>
+          <div className={styles.description}>
+            <h2>Who is {username}?</h2>
+            <p>{description}</p>
+          </div>
+
+          <div className={styles.sessions}>
+            <h2>Sessions</h2>
+            {sessionList.length === 0 ? <h3>{username} has no sessions.</h3>
+            :
+            sessionList.map(session =>(
+              <div className="sessions">
+                <ul>
+                  <li>
+                    {session.title}<br/>
+                    <img src={session.image} alt="sessionImage" className={styles.sessionImage} /><br/>
+                    <p>{session.duration}</p>
+                  </li>
+                </ul>
+              </div>
+            ))}
+          </div>
         </div>
+
     </div>
   );
 }
