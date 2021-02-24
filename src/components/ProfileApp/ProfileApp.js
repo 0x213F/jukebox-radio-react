@@ -1,6 +1,6 @@
 import React from "react";
 import { connect } from 'react-redux';
-import './ProfileApp.module.css';
+import styles from './ProfileApp.module.css';
 
 function ProfileApp(props) {
   // if (!props.userProfile) {
@@ -26,25 +26,33 @@ function ProfileApp(props) {
 
   return (
     <div>
-      <h1>{username}</h1>
-      <img src={profileImg} alt="profileImg" style={{width:300, height:400}}/>'
-      <h2>Who is {username}?</h2>
-      <p>{description}</p>
-      <a href={website} target='_blank' rel='noreferrer'>{username}'s Website</a>
-      <h2>Sessions</h2>
-      {sessionList.length === 0 ? <h3>{username} has no sessions.</h3>
-      :
-      sessionList.map(session =>(
-        <div>
-          <ul>
-            <li>
-              {session.title}<br/>
-              <img src={session.image} alt="sessionImage" style={{width:300, height:400}} /><br/>
-              {session.duration}
-            </li>
-          </ul>
+      <div className={styles.profile}>
+        <div className={styles.user}>
+          <h1 className={styles.userName}>{username}</h1>
+          <img src={profileImg} alt="profileImg" className={styles.profilePicture} />
         </div>
-      ))}
+        <div className={styles.description}>
+          <h2>Who is {username}?</h2>
+          <p>{description}</p>
+          <a href={website} target='_blank' rel='noreferrer'>{username}'s Website</a>
+        </div>
+      </div>
+        <div className={styles.sessions}>
+          <h2>Sessions</h2>
+          {sessionList.length === 0 ? <h3>{username} has no sessions.</h3>
+          :
+          sessionList.map(session =>(
+            <div className="sessions">
+              <ul>
+                <li>
+                  {session.title}<br/>
+                  <img src={session.image} alt="sessionImage" style={{width:300, height:400}} /><br/>
+                  {session.duration}
+                </li>
+              </ul>
+            </div>
+          ))}
+        </div>
     </div>
   );
 }

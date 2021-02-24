@@ -1,0 +1,32 @@
+.profile {
+  display: flex;
+  flex-direction: row;
+}
+
+.user {
+ display: flex;
+ flex-direction: column;
+ align-items: center;
+}
+
+.userName {
+  display: flex;
+}
+
+.profilePicture {
+  display: flex;
+  border-radius: 50%;
+  height: 200px;
+  width: 200px;
+  align-items: flex-end;
+}
+
+.description {
+  display: flex;
+  flex-direction: column;
+}
+
+.sessions{
+  display: flex;
+  flex-direction: column;
+}
