@@ -46,6 +46,7 @@ import {
 import {
   userSettingsUpdate,
 } from './reducers/userSettings';
+import userProfileUpdate from './reducers/userProfile';
 
 
 const initialState = {
@@ -203,6 +204,8 @@ const reducer = (state = initialState, action) => {
       return playbackNextSeekScheduled(state, action.payload);
     case "userSettings/update":
       return userSettingsUpdate(state, action.payload);
+    case "userProfile/update":
+      return userProfileUpdate(state, action.payload);
     case "playback/loadFiles":
       return playbackLoadFiles(state, action.payload);
     case "feed/update":
