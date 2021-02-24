@@ -7,6 +7,7 @@ import {
 } from './reducers/marker';
 import {
   playbackSpotify,
+  playbackYouTube,
   playbackAddToQueue,
   playbackPlannedNextTrack,
   playbackStart,
@@ -187,6 +188,8 @@ const reducer = (state = initialState, action) => {
       return playbackEnable(state);
     case "playback/spotify":
       return playbackSpotify(state, action.payload);
+    case "playback/youTube":
+      return playbackYouTube(state, action.payload);
     case "playback/addToQueue":
       return playbackAddToQueue(state);
     case "playback/plannedNextTrack":

@@ -24,7 +24,8 @@ export const playbackControlStart = function(playback, stream) {
       position_ms: positionMilliseconds,
     });
   } else if(playbackService === SERVICE_YOUTUBE) {
-    // TODO
+    playback.youTubeApi.seekTo(positionMilliseconds / 1000);
+    playback.youTubeApi.playVideo();
   } else if(playbackService === SERVICE_JUKEBOX_RADIO) {
     const trackUuid = stream.nowPlaying.track.uuid,
           audio = playback.files[trackUuid].audio;
@@ -47,7 +48,7 @@ export const playbackControlPause = function(playback, stream) {
   if(playbackService === SERVICE_SPOTIFY) {
     playback.spotifyApi.pause();
   } else if(playbackService === SERVICE_YOUTUBE) {
-    // TODO
+    playback.youTubeApi.pauseVideo();
   } else if(playbackService === SERVICE_JUKEBOX_RADIO) {
     const trackUuid = stream.nowPlaying.track.uuid,
           audio = playback.files[trackUuid].audio;
@@ -67,7 +68,7 @@ export const playbackControlPlay = function(playback, stream) {
   if(playbackService === SERVICE_SPOTIFY) {
     playback.spotifyApi.play();
   } else if(playbackService === SERVICE_YOUTUBE) {
-    // TODO
+    playback.youTubeApi.playVideo();
   } else if(playbackService === SERVICE_JUKEBOX_RADIO) {
     const trackUuid = stream.nowPlaying.track.uuid,
           audio = playback.files[trackUuid].audio;
@@ -89,7 +90,8 @@ export const playbackControlSeek = function(playback, stream, startedAt) {
   if(playbackService === SERVICE_SPOTIFY) {
     playback.spotifyApi.seek(positionMilliseconds);
   } else if(playbackService === SERVICE_YOUTUBE) {
-    // TODO
+    playback.youTubeApi.seekTo(positionMilliseconds / 1000);
+    playback.youTubeApi.playVideo();
   } else if(playbackService === SERVICE_JUKEBOX_RADIO) {
     const trackUuid = stream.nowPlaying.track.uuid,
           audio = playback.files[trackUuid].audio;
@@ -108,7 +110,7 @@ export const playbackControlSkipToNext = function(playback, stream) {
   if(playbackService === SERVICE_SPOTIFY) {
     playback.spotifyApi.skipToNext();
   } else if(playbackService === SERVICE_YOUTUBE) {
-    // TODO
+    // TODO - seems to work out of the box :)
   } else if(playbackService === SERVICE_JUKEBOX_RADIO) {
     // TODO - refactor stuff to go inside of here instead
   }
@@ -126,7 +128,7 @@ export const playbackControlQueue = function(playback, stream, nextUp) {
   if(playbackService === SERVICE_SPOTIFY) {
     playback.spotifyApi.queue(nextUp.track.externalId);
   } else if(playbackService === SERVICE_YOUTUBE) {
-    // TODO
+    // TODO - there is optimization that could happen here
   } else if(playbackService === SERVICE_JUKEBOX_RADIO) {
     // TODO - refactor stuff to go inside of here instead
   }
