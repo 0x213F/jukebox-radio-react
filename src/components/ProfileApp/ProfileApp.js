@@ -1,5 +1,6 @@
 import React from "react";
 import { connect } from 'react-redux';
+import './ProfileApp.module.css';
 
 function ProfileApp(props) {
   // if (!props.userProfile) {
