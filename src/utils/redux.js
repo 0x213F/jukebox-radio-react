@@ -41,6 +41,9 @@ import {
 import {
   voiceRecordingListSet,
   voiceRecordingCreate,
+  voiceRecordingPreloadStatusPending,
+  voiceRecordingLoadFile,
+  voiceRecordingPlay,
   voiceRecordingDelete,
 } from './reducers/voiceRecording';
 import {
@@ -165,6 +168,12 @@ const reducer = (state = initialState, action) => {
       return textCommentClearModifications(state, action);
     case "voiceRecording/create":
       return voiceRecordingCreate(state, action);
+    case "voiceRecording/preloadStatusPending":
+      return voiceRecordingPreloadStatusPending(state, action.payload);
+    case "voiceRecording/loadFile":
+      return voiceRecordingLoadFile(state, action.payload);
+    case "voiceRecording/play":
+      return voiceRecordingPlay(state, action.payload);
     case "voiceRecording/listSet":
       return voiceRecordingListSet(state, action.payload);
     case "voiceRecording/delete":

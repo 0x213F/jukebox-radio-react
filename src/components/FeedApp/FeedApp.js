@@ -8,6 +8,7 @@ import { fetchCreateVoiceRecording } from './VoiceRecording/network';
 import TextComment from './TextComment/TextComment';
 import ABCNotation from './ABCNotation/ABCNotation';
 import VoiceRecording from './VoiceRecording/VoiceRecording';
+import { fetchVoiceRecordingGetFile } from './VoiceRecording/network';
 import { CLASS_TEXT_COMMENT, CLASS_VOICE_RECORDING } from '../../config/model';
 import { getPositionMilliseconds } from '../../utils/reducers/feed';
 
@@ -18,6 +19,8 @@ function FeedApp(props) {
    * 🏗
    */
   const feed = props.feed,
+        now = Date.now(),
+        filteredFeed = feed.filter(i => i.displayAt <= now),
         stream = props.stream;
 
   const [text, setText] = useState('');
@@ -27,6 +30,24 @@ function FeedApp(props) {
   const [isRecording, setIsRecording] = useState(false);
   const [recorder] = useState(new MicRecorder({ bitRate: 320 }));
   const [transcriptData] = useState([]);
+
+  const preloadVoiceRecordings = feed.filter(i => (
+    i.class === 'VoiceRecording' &&
+    i.preloadAt <= now &&
+    i.preloadStatus === 'init'
+  ));
+
+  for(let voiceRecording of preloadVoiceRecordings) {
+    const voiceRecordingUuid = voiceRecording.uuid;
+    props.dispatch({
+      type: 'voiceRecording/preloadStatusPending',
+      payload: { voiceRecordingUuid },
+    });
+    fetchVoiceRecordingGetFile(voiceRecordingUuid)
+      .then(responseJson => {
+        props.dispatch(responseJson.redux);
+      });
+  }
 
   //////////////////////////////////////////////////////////////////////////////
   // REGENERATE THE FEED
@@ -45,7 +66,7 @@ function FeedApp(props) {
 
   const handleTextChange = function(e) {
     if(!textCommentUuid) {
-      const arr = getPositionMilliseconds(stream),
+      const arr = getPositionMilliseconds(stream, [0]),
             position = arr[0];
       setTextCommentTimestamp(position);
       setTextCommentUuid(stream.nowPlaying.track.uuid);
@@ -133,15 +154,15 @@ function FeedApp(props) {
   return (
     <div className={styles.FeedApp}>
       <div>
-        {feed.map((value, index) => {
+        {filteredFeed.map((value, index) => {
           if(value.class === CLASS_TEXT_COMMENT) {
             if(value.format === 'text') {
-              return <TextComment key={index} data={value} />;
+              return <TextComment key={index} data={{...value}} />;
             } else if(value.format === 'abc_notation') {
-              return <ABCNotation key={index} data={value} />;
+              return <ABCNotation key={index} data={{...value}} />;
             }
           } else if(value.class === CLASS_VOICE_RECORDING) {
-            return <VoiceRecording key={index} data={value} />
+            return <VoiceRecording key={index} data={{...value}} />
           }
           return <></>;
         })}

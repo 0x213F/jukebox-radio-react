@@ -6,11 +6,9 @@
  *            "fresh." It is within a reasonable amount of time since its
  *            original context.
  */
-const RENDER_STATUS_HISTORY = 'history',
-      RENDER_STATUS_DISPLAY = 'display',
-      RENDER_STATUS_HIDE = 'hide',
-      DISPLAY_DURATION = 30000,
-      HISTORY_DURATION = 45000;
+const FADE_AT_THRESHOLD = 10000,
+      REMOVE_AT_THRESHOLD = FADE_AT_THRESHOLD + 10000,
+      PRELOAD_DURATION = 5000;
 
 /*
  * ...
@@ -18,39 +16,58 @@ const RENDER_STATUS_HISTORY = 'history',
 export const feedGenerate = function(state) {
 
   const stream = state.stream,
-        [progress, displayThreshold, historyThreshold] = getPositionMilliseconds(stream);
+        historicalProgresses = [0, PRELOAD_DURATION],
+        arr = getPositionMilliseconds(stream, historicalProgresses),
+        [progress, preloadAt] = arr;
 
   if(!progress) {
     return [];
   }
 
+  const now = Date.now(),
+        feed = state.feed,
+        feedUuids = feed.map(i => i.uuid),
+        feedUuidsSet = new Set(feedUuids);
+
   const textComments = [...state.textComments],
         voiceRecordings = [...state.voiceRecordings];
-  let aggregateFeed = [...textComments, ...voiceRecordings];
+  let aggregateFeed;
 
+  // console.log(feedUuidsSet)
+
+  aggregateFeed = [...textComments, ...voiceRecordings];
+  aggregateFeed = aggregateFeed.filter(i => !feedUuidsSet.has(i.uuid));
   aggregateFeed = aggregateFeed.map(el => {
-    const shouldTagHistory = (
-            el.timestampMilliseconds > historyThreshold &&
-            el.timestampMilliseconds <= displayThreshold
+    const timestamp = el.timestampMilliseconds,
+          shouldSetDisplay = (
+            timestamp <= progress &&
+            timestamp > progress - 10000 &&
+            !el.displayAt
           ),
-          shouldTagDisplay = (
-            el.timestampMilliseconds > displayThreshold &&
-            el.timestampMilliseconds <= progress
-          );
-
-    if(shouldTagHistory) {
-      el.renderStatus = RENDER_STATUS_HISTORY;
-    } else if(shouldTagDisplay) {
-      el.renderStatus = RENDER_STATUS_DISPLAY;
-    } else {
-      el.renderStatus = RENDER_STATUS_HIDE;
+          shouldSetPreLoad = (
+            timestamp <= preloadAt &&
+            timestamp > preloadAt - 10000 &&
+            !el.preloadAt
+          ),
+          duration = el.durationMilliseconds || 0;
+    if(shouldSetDisplay) {
+      el.preloadAt = now;
+      el.displayAt = now;
+      el.fadeAt = now + duration + FADE_AT_THRESHOLD;
+      el.removeAt = now + duration + REMOVE_AT_THRESHOLD;
+      el.preloadStatus = 'init';
+    } else if(shouldSetPreLoad) {
+      el.preloadAt = now;
+      el.displayAt = now + PRELOAD_DURATION + duration;
+      el.fadeAt = now + PRELOAD_DURATION + duration + FADE_AT_THRESHOLD;
+      el.removeAt = now + PRELOAD_DURATION + duration + REMOVE_AT_THRESHOLD;
+      el.preloadStatus = 'init';
     }
-
     return { ...el };
   });
-  aggregateFeed = aggregateFeed.filter(i => (
-    i.renderStatus !== RENDER_STATUS_HIDE
-  ));
+  aggregateFeed = aggregateFeed.filter(i => !!i.displayAt);
+  aggregateFeed = [...feed, ...aggregateFeed];
+  aggregateFeed = aggregateFeed.filter(i => i.removeAt > now)
   aggregateFeed = aggregateFeed.sort((a, b) => {
     return a.timestampMilliseconds - b.timestampMilliseconds;
   });
@@ -58,53 +75,55 @@ export const feedGenerate = function(state) {
 }
 
 
-export const getPositionMilliseconds = function(stream) {
+export const getPositionMilliseconds = function(stream, progressDeltas) {
 
   if(!stream?.nowPlaying?.track) {
-    return [undefined, undefined, undefined];
+    const progressMarks = new Array(progressDeltas.length).fill(undefined);
+    return progressMarks;
   }
 
-  const startedAt = stream.startedAt;
+  const startedAt = stream.startedAt,
+        progressMarks = [],
+        endOfTrack = stream.nowPlaying.totalDurationMilliseconds;
+
+  for(let delta of progressDeltas) {
+    if(delta <= 0) {
+      progressMarks.push(0);
+    } else {
+      progressMarks.push(endOfTrack);
+    }
+  }
 
   let progress = (
         stream.isPlaying ? Date.now() - startedAt : stream.pausedAt - startedAt
       ),
       playbackIntervalIdx = 0,
-      displayThreshold = 0,
-      historyThreshold = 0,
       cumulativeProgress = 0;
 
   while(true) {
-    const playbackInterval = stream.nowPlaying.playbackIntervals[playbackIntervalIdx],
+    const playbackIntervals = stream.nowPlaying.playbackIntervals;
+    if(playbackIntervalIdx >= playbackIntervals.length) {
+      break;
+    }
+
+    const playbackInterval = playbackIntervals[playbackIntervalIdx],
           playbackIntervalDuration = playbackInterval[1] - playbackInterval[0];
     let remainingProgress;
 
-    // if display threshold progress definition has been reached
-    const displayProgress = (progress - DISPLAY_DURATION);
-    remainingProgress = displayProgress - cumulativeProgress;
-    if(remainingProgress >= 0 && remainingProgress < playbackIntervalDuration) {
-      displayThreshold = playbackInterval[0] + remainingProgress;
-    }
-
-    // if history threshold progress definition has been reached
-    const historyProgress = (progress - DISPLAY_DURATION - HISTORY_DURATION);
-    remainingProgress = historyProgress - cumulativeProgress;
-    if(remainingProgress >= 0 && remainingProgress < playbackIntervalDuration) {
-      historyThreshold = playbackInterval[0] + remainingProgress;
-    }
-
-    // if the progress definition has been reached
-    remainingProgress = progress - cumulativeProgress;
-    if(remainingProgress < playbackIntervalDuration) {
-      progress = playbackInterval[0] + remainingProgress;
-      break;
+    for(let i = 0; i < progressDeltas.length; i++) {
+      const delta = progressDeltas[i],
+            relativeProgress = (progress + delta);
+      remainingProgress = relativeProgress - cumulativeProgress;
+      if(remainingProgress >= 0 && remainingProgress < playbackIntervalDuration) {
+        progressMarks[i] = playbackInterval[0] + remainingProgress;
+      }
     }
 
     playbackIntervalIdx += 1;
     cumulativeProgress += playbackIntervalDuration;
   }
 
-  return [progress, displayThreshold, historyThreshold];
+  return progressMarks;
 }
 
 

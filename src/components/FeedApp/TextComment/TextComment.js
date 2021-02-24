@@ -39,12 +39,11 @@ function TextComment(props) {
   }
 
   let textColor;
-  if(textComment.renderStatus === 'history') {
-    textColor = 'grey';
-  } else if(textComment.renderStatus === 'display') {
+  const now = Date.now();
+  if(textComment.fadeAt > now) {
     textColor = 'black';
   } else {
-    textColor = 'red';
+    textColor = 'grey';
   }
 
   /*

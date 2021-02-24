@@ -23,6 +23,7 @@ export const ENDPOINT_TEXT_COMMENT_MODIFICATION_LIST_DELETE = '/comments/text-co
 
 // VOICE RECORDING
 export const ENDPOINT_VOICE_RECORDING_CREATE = '/comments/voice-recording/create/'
+export const ENDPOINT_VOICE_RECORDING_GET_FILE = '/comments/voice-recording/get-file'
 export const ENDPOINT_VOICE_RECORDING_DELETE = '/comments/voice-recording/delete/'
 export const ENDPOINT_VOICE_RECORDING_LIST = '/comments/voice-recording/list'
 

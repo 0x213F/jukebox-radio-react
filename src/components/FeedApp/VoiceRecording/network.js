@@ -1,8 +1,9 @@
 import {
   ENDPOINT_VOICE_RECORDING_CREATE,
+  ENDPOINT_VOICE_RECORDING_GET_FILE,
   ENDPOINT_VOICE_RECORDING_DELETE,
 } from '../../../config/api';
-import { TYPE_POST } from '../../../config/global';
+import { TYPE_GET, TYPE_POST } from '../../../config/global';
 import { fetchBackend } from '../../../utils/network';
 
 
@@ -20,6 +21,16 @@ export const fetchCreateVoiceRecording = async (
   const responseJson = await response.json();
   return responseJson;
 };
+
+
+export const fetchVoiceRecordingGetFile = async(voiceRecordingUuid) => {
+  const response = await fetchBackend(
+    TYPE_GET,
+    ENDPOINT_VOICE_RECORDING_GET_FILE,
+    { voiceRecordingUuid },
+  );
+  return await response.json();
+}
 
 
 /*
