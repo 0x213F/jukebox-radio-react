@@ -1,0 +1,58 @@
+.BottomBar {
+  border-top: 1px solid black;
+  position: fixed;
+  bottom: 0px;
+  width: 100%;
+  height: 92px;
+}
+
+.Playback {
+  display: flex;
+  justify-content: center;
+
+  margin-top: 10px;
+}
+
+.PlaybackButton {
+  height: 72px;
+  width: 64px;
+  margin: 0px 16px;
+  background-color: white;
+  border: none;
+  cursor: pointer;
+}
+
+.PlaybackButton:disabled {
+  color: grey;
+}
+
+.Volume {
+  display: flex;
+  position: absolute;
+}
+
+.VolumeButton {
+  margin-top: 16px;
+  margin-left: 28px;
+  width: 62px;
+  height: 62px;
+  float: left;
+}
+
+.ExtraControl {
+  position: absolute;
+  display: inline-flex;
+  float: right;
+  margin-right: 84px;
+  margin-top: 24px;
+}
+
+.ExtraControlButton {
+  margin-left: 27px;
+  font-size: 18px;
+  padding: 8px 14px;
+  background-color: white;
+  border: 1px solid #cc0000;
+  border-radius: 4px;
+  cursor: pointer;
+}

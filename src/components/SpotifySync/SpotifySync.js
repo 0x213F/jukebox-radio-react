@@ -15,7 +15,7 @@ function SpotifySync(props) {
 
       await fetchUserConnectSpotify(code, error);
 
-      window.location.href = '../search?service=spotify'
+      window.location.href = '../app/search'
     }
     postData();
   }, []);

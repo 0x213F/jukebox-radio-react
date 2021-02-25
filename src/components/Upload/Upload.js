@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import Modal from 'react-modal';
 import styles from './Upload.module.css';
 
 import { fetchCreateTrack } from './network';
@@ -15,6 +16,9 @@ function Upload(props) {
   const [artistName, setArtistName] = useState('');
   const [albumName, setAlbumName] = useState('');
 
+  const isOpen = props.isOpen,
+        closeModal = props.closeModal;
+
   /*
    * When the user initializes a login attempt.
    */
@@ -30,63 +34,69 @@ function Upload(props) {
     setTrackName('');
     setArtistName('');
     setAlbumName('');
+    closeModal();
   }
 
   return (
-    <form className={styles.Login} onSubmit={async (e) => { await handleSubmit(e); }}>
-      <h3>Upload</h3>
+    <Modal isOpen={isOpen}
+           ariaHideApp={false}>
+      <button onClick={closeModal}>Close</button>
 
-      <label className={styles.FormBlock}>
-        Audio file
-        <input type="file"
-               name="audioFile"
-               onChange={(e) => {setAudioFile(e.target.files[0])}} />
-      </label>
+      <form className={styles.Login} onSubmit={async (e) => { await handleSubmit(e); }}>
+        <h3>Upload</h3>
 
-      <label className={styles.FormBlock}>
-        Image file
-        <input type="file"
-               name="imageFile"
-               onChange={(e) => {setImageFile(e.target.files[0])}} />
-      </label>
+        <label className={styles.FormBlock}>
+          Audio file
+          <input type="file"
+                 name="audioFile"
+                 onChange={(e) => {setAudioFile(e.target.files[0])}} />
+        </label>
 
-      <br></br>
+        <label className={styles.FormBlock}>
+          Image file
+          <input type="file"
+                 name="imageFile"
+                 onChange={(e) => {setImageFile(e.target.files[0])}} />
+        </label>
 
-      <label className={styles.FormBlock}>
-        Track name
-        <input type="text"
-               name="trackName"
-               placeholder="Track name"
-               value={trackName}
-               onChange={(e) => {setTrackName(e.target.value)}} />
-      </label>
+        <br></br>
 
-      <label className={styles.FormBlock}>
-        Artist name
-        <input type="text"
-               name="artistName"
-               placeholder="Artist name"
-               value={artistName}
-               onChange={(e) => {setArtistName(e.target.value)}} />
-      </label>
+        <label className={styles.FormBlock}>
+          Track name
+          <input type="text"
+                 name="trackName"
+                 placeholder="Track name"
+                 value={trackName}
+                 onChange={(e) => {setTrackName(e.target.value)}} />
+        </label>
 
-      <label className={styles.FormBlock}>
-        Album name
-        <input type="text"
-               name="albumName"
-               placeholder="Album name"
-               value={albumName}
-               onChange={(e) => {setAlbumName(e.target.value)}} />
-      </label>
+        <label className={styles.FormBlock}>
+          Artist name
+          <input type="text"
+                 name="artistName"
+                 placeholder="Artist name"
+                 value={artistName}
+                 onChange={(e) => {setArtistName(e.target.value)}} />
+        </label>
 
-      <br></br>
+        <label className={styles.FormBlock}>
+          Album name
+          <input type="text"
+                 name="albumName"
+                 placeholder="Album name"
+                 value={albumName}
+                 onChange={(e) => {setAlbumName(e.target.value)}} />
+        </label>
 
-      <div className={styles.FormBlock}>
-        <button type="submit">
-          Submit
-        </button>
-      </div>
-    </form>
+        <br></br>
+
+        <div className={styles.FormBlock}>
+          <button type="submit">
+            Submit
+          </button>
+        </div>
+      </form>
+    </Modal>
   );
 }
 

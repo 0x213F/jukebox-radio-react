@@ -26,10 +26,7 @@ function QueueTrack(props) {
 
   const closeModal = function() {
     setShowModal(false);
-    console.log('false close')
   }
-
-  console.log(showModal)
 
   /*
    * 🎨

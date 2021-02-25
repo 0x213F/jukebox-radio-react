@@ -1,7 +1,8 @@
 .ABCNotation {
-  max-width: 300px;
-  background-color: #d4d4d4;
+  max-width: 420px;
+  background-color: white;
   border-radius: 4px;
-  padding: 4px;
+  padding: 8px;
   margin-bottom: 8px;
+  border: 1px solid #5a5a5a;
 }
