@@ -30,16 +30,19 @@ function Login(props) {
 
     await fetchInitializeStream();
 
-    window.location.reload();
+    window.location.href = '/app/search';
   }
 
   return (
     <form className={styles.Login} onSubmit={async (e) => { await handleSubmit(e); }}>
       <h3>Sign in</h3>
-      <p>If you have not created an account yet, then please <Link to="/signup">Sign Up</Link> first.</p>
+      <p>Contact a system administrator for login information.</p>
+      <p>At this time, new registrations are on a case by case basis.</p>
+
+      <br></br>
 
       <label className={styles.FormBlock}>
-        Username
+        Username&nbsp;&nbsp;
         <input type="text"
                name="username"
                placeholder="username"
@@ -48,13 +51,15 @@ function Login(props) {
       </label>
 
       <label className={styles.FormBlock}>
-        Password
+        Password&nbsp;&nbsp;
         <input type="password"
                name="password"
                placeholder="password"
                value={password}
                onChange={(e) => {setPassword(e.target.value)}} />
       </label>
+
+      <br></br>
 
       <label className={styles.FormBlock}>
         <input type="checkbox"
@@ -64,11 +69,13 @@ function Login(props) {
         Remember Me
       </label>
 
+      <br></br>
+
       <div className={styles.FormBlock}>
         <button type="submit">
           Sign In
         </button>
-        <span><Link to="/forgotpassword">Forgot Password?</Link></span>
+        <span>&nbsp;&nbsp;<Link to="/forgotpassword">Forgot Password?</Link></span>
       </div>
     </form>
   );

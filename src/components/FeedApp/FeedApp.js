@@ -132,19 +132,21 @@ function FeedApp(props) {
    */
   return (
     <div className={styles.FeedApp}>
-      <div>
-        {feed.map((value, index) => {
-          if(value.class === CLASS_TEXT_COMMENT) {
-            if(value.format === 'text') {
-              return <TextComment key={index} data={value} />;
-            } else if(value.format === 'abc_notation') {
-              return <ABCNotation key={index} data={value} />;
+      <div className={styles.Feed}>
+        <div className={styles.FeedWrapper}>
+          {feed.map((value, index) => {
+            if(value.class === CLASS_TEXT_COMMENT) {
+              if(value.format === 'text') {
+                return <TextComment key={index} data={value} />;
+              } else if(value.format === 'abc_notation') {
+                return <ABCNotation key={index} data={value} />;
+              }
+            } else if(value.class === CLASS_VOICE_RECORDING) {
+              return <VoiceRecording key={index} data={value} />
             }
-          } else if(value.class === CLASS_VOICE_RECORDING) {
-            return <VoiceRecording key={index} data={value} />
-          }
-          return <></>;
-        })}
+            return <></>;
+          })}
+        </div>
       </div>
 
       <form className={styles.CreateTextComment} onSubmit={async (e) => { await createTextComment(e); }}>

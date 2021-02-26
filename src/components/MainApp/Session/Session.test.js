@@ -1,9 +1,10 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
-import Search from './Search';
+import SideBar from './SideBar';
+
 
 it('It should mount', () => {
   const div = document.createElement('div');
-  ReactDOM.render(<Search />, div);
+  ReactDOM.render(<SideBar />, div);
   ReactDOM.unmountComponentAtNode(div);
 });

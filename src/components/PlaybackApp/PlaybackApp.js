@@ -19,7 +19,7 @@ import {
   fetchTrackGetFiles,
   fetchPauseTrack,
   fetchPlayTrack,
-} from '../Player/network';
+} from './Player/network';
 import { updateFeed } from '../FeedApp/utils';
 import { getLastUpQueue, getNextUpQueue } from '../QueueApp/utils';
 
@@ -106,11 +106,6 @@ function PlaybackApp(props) {
     const responseJsonNextTrack = await fetchNextTrack(
       stream.nowPlaying?.totalDurationMilliseconds, true
     );
-
-    if(nextUp.track.service === SERVICE_JUKEBOX_RADIO) {
-      const responseJson = await fetchTrackGetFiles(nextUp.track.uuid);
-      await props.dispatch(responseJson.redux);
-    }
 
     // update the front-end later
     setNextTrackJson(responseJsonNextTrack);
@@ -355,7 +350,7 @@ function PlaybackApp(props) {
           width: '240',
           playerVars: {
             // https://developers.google.com/youtube/player_parameters
-            autoplay: 1,  // the initial video will automatically start to play
+            autoplay: 0,  // the initial video will automatically start to play
             controls: 0,  // hide playback controls
             disablekb: 1,  // disable keyboard controls
             fs: 0,  // disable full screen
@@ -380,7 +375,7 @@ function PlaybackApp(props) {
    */
   return (
     <>
-      <div style={{ zIndex: -1 }}>
+      <div style={{ display: 'none' }}>
         <YouTube videoId={videoId}
                  opts={opts}
                  onReady={onYouTubeReady} />

@@ -35,3 +35,17 @@ export const getPositionMilliseconds = function(stream, startedAt) {
 
   return [progress, seekTimeout];
 }
+
+
+/*
+ * Get the progress of a stream.
+ */
+export const getProgress = function(stream) {
+  if(stream?.isPaused) {
+    return stream.pausedAt - stream.startedAt;
+  } else if(stream?.isPlaying) {
+    return Date.now() - stream.startedAt;
+  } else {
+    return undefined;
+  }
+};

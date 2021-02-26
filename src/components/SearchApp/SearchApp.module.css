@@ -1,0 +1,13 @@
+.SearchApp {}
+
+.FormBlock {
+  display: block;
+  height: 1.4rem;
+}
+
+.SearchResults {
+  top: 290px;
+  bottom: 40px;
+  position: absolute;
+  overflow-y: scroll;
+}

@@ -1,0 +1,48 @@
+.Session {
+  height: 100%;
+  width: 100%;
+}
+
+.Top {
+  width: 100%;
+  /* 93px === height of BottomBar */
+  height: calc(100% - 93px);
+  position: absolute;
+}
+
+.Content {
+  position: relative;
+  top: 0px;
+  /* 189px === width of SideBar */
+  margin-left: 189px;
+  height: 100%;
+  /* I have no idea why this works but it does */
+  width: calc(100% - 29px);
+}
+
+.PrimaryContent {
+  margin-top: 40px;
+  margin-left: 40px;
+  padding: 40px;
+  height: calc(100% - 160px);
+  width: calc(100% - 420px);
+  border: 1px solid black;
+  border-radius: 12px;
+  position: relative;
+  float: left;
+}
+
+.SecondaryContent {
+  margin-top: 40px;
+  margin-left: 40px;
+  padding: 40px;
+  min-height: 300px;
+  width: 136px;
+  border: 1px solid black;
+  border-radius: 12px;
+  position: relative;
+  float: left;
+  background-color: #ededed;
+  cursor: pointer;
+  display: block;
+}

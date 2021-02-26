@@ -7,9 +7,9 @@ import {
   ENDPOINT_STREAM_PREV_TRACK,
   ENDPOINT_STREAM_SCAN_BACKWARD,
   ENDPOINT_STREAM_SCAN_FORWARD,
-} from '../../config/api'
-import { TYPE_GET, TYPE_POST } from '../../config/global'
-import { fetchBackend } from '../../utils/network'
+} from '../../../config/api'
+import { TYPE_GET, TYPE_POST } from '../../../config/global'
+import { fetchBackend } from '../../../utils/network'
 
 
 /*

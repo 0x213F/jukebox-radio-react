@@ -1,10 +1,14 @@
-import { SERVICE_SPOTIFY } from '../../config/services';
+import { SERVICE_SPOTIFY, SERVICE_JUKEBOX_RADIO } from '../../config/services';
 import { getNextUpQueue } from '../../components/QueueApp/utils';
 import {
   playbackControlQueue,
   playbackControlSkipToNext,
 } from '../../components/PlaybackApp/controls';
+import {
+  fetchTrackGetFiles,
+} from '../../components/PlaybackApp/Player/network';
 import { streamNextTrack } from './stream';
+import { store } from '../redux'
 
 
 /*
@@ -51,6 +55,9 @@ export const playbackAddToQueue = function(state) {
           nowPlaying.track.service === SERVICE_SPOTIFY &&
           nextUp.track.service === SERVICE_SPOTIFY &&
           nextUp.playbackIntervals[0][0] === 0
+        ),
+        jukeboxRadioShouldAddToQueue = (
+          nextUp.track.service === SERVICE_JUKEBOX_RADIO
         );
 
   if(spotifyShouldAddToQueue) {
@@ -58,14 +65,20 @@ export const playbackAddToQueue = function(state) {
 
     playback.queuedUp = true;
 
-    const lastInterval = (
-      nowPlaying.playbackIntervals[nowPlaying.playbackIntervals.length - 1]
-    );
+    const playbackIntervals = nowPlaying.playbackIntervals,
+          lastInterval = (
+            playbackIntervals[playbackIntervals.length - 1]
+          );
     if(lastInterval[1] === nowPlaying.track.durationMilliseconds) {
       playback.noopNextTrack = true;
     }
+  } else if(jukeboxRadioShouldAddToQueue) {
+    fetchTrackGetFiles(nextUp.track.uuid)
+      .then((responseJson) => {
+        store.dispatch(responseJson.redux);
+      });
   } else {
-    // TODO: do pre-loaded if needed
+    // noop
   }
 
   return {

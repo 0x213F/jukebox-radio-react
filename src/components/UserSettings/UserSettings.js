@@ -1,9 +1,16 @@
 import React, { useState } from "react";
+import Modal from 'react-modal';
 import { connect } from 'react-redux';
 import { fetchUpdateUserSettings } from './network';
 
 
 function UserSettings(props) {
+
+  /*
+   * 🏗
+   */
+  const isOpen = props.isOpen,
+        closeModal = props.closeModal;
 
   // TODO actually impliment the disabled behavior
   // eslint-disable-next-line
@@ -35,24 +42,33 @@ function UserSettings(props) {
   }
 
   return (
-    <div>
-      <a href={props.userSettings.spotify.authorizationUrl}>Connect Your Spotify Account</a>
+    <Modal isOpen={isOpen}
+           ariaHideApp={false}>
+      <button onClick={closeModal}>Close</button>
+
+      <br></br><br></br>
 
       <div>
-        <label>
-          <input type="checkbox" checked={props.userSettings.idleQueue} onChange={updateIdleQueue} disabled={!controlsEnabled}/>
-          Idle After Queue
-        </label><br/>
-        <label>
-          <input type="checkbox" checked={props.userSettings.speakVoice} onChange={updateSpeakVoice} disabled={!controlsEnabled}/>
-          Speak Voice Recordings
-        </label><br/>
-        <label>
-          <input type="checkbox" checked={props.userSettings.focusMode} onChange={updateFocusMode} disabled={!controlsEnabled}/>
-          Focus Mode
-        </label><br/>
+        <a href={props.userSettings.spotify.authorizationUrl}>Connect Your Spotify Account</a>
+
+        <br></br><br></br>
+
+        <div>
+          <label>
+            <input type="checkbox" checked={props.userSettings.idleQueue} onChange={updateIdleQueue} disabled={!controlsEnabled}/>
+            Idle After Queue
+          </label><br/>
+          <label>
+            <input type="checkbox" checked={props.userSettings.speakVoice} onChange={updateSpeakVoice} disabled={!controlsEnabled}/>
+            Speak Voice Recordings
+          </label><br/>
+          <label>
+            <input type="checkbox" checked={props.userSettings.focusMode} onChange={updateFocusMode} disabled={!controlsEnabled}/>
+            Focus Mode
+          </label><br/>
+        </div>
       </div>
-    </div>
+    </Modal>
   );
 }
 

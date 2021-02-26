@@ -8,7 +8,7 @@ import {
   fetchStreamGet,
   fetchPauseTrack,
   fetchTrackGetFiles,
-} from './components/Player/network';
+} from './components/PlaybackApp/Player/network';
 import { fetchQueueList } from './components/QueueApp/network'
 import { fetchGetUserSettings } from './components/UserSettings/network';
 import { playbackControlPause } from './components/PlaybackApp/controls';
@@ -113,7 +113,6 @@ function App() {
 
       // Update status.
       setStatus('ready');
-      console.log('ready')
     }
     loadData();
 
@@ -168,7 +167,9 @@ function App() {
   return (
     <Router>
       <Provider store={store}>
-        <PlaybackApp />
+        <div className="app-main-container">
+            <PlaybackApp />
+        </div>
       </Provider>
     </Router>
   );
