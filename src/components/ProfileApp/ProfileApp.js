@@ -1,5 +1,6 @@
 import React from "react";
 import { connect } from 'react-redux';
+import { fetchUpdateUserProfile } from './network';
 import styles from './ProfileApp.module.css';
 
 function ProfileApp(props) {
@@ -33,6 +34,31 @@ function ProfileApp(props) {
       'duration': "222000",
     },
   ]
+
+  // function updateUsername(event) {
+  //   props.dispatch({type: 'userProfile/update', payload:{
+  //     username: event.target.
+  //   }});
+  //   fetchUpdateUserProfile('', event.target.);
+  // }
+
+  function updateProfileImage(event) {
+    props.dispatch({type: 'userProfile/update', payload:{
+      profileImg: event.target.
+    }});
+    fetchUpdateUserProfile('', event.target.);
+  }
+
+  function updateProfileDescription(event) {
+    props.dispatch({type: 'userProfile/update', payload:{
+      description: event.target.
+    }});
+    fetchUpdateUserProfile('', event.target.);
+  }
+
+  function updateProfileWebsite(event) {
+    props.dispatch
+  }
 
   return (
     <div className={styles.mainContainer}>
