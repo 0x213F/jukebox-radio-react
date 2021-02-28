@@ -1,8 +1,8 @@
 .QueueTrack {
-  min-height: 1.4rem;
+  min-height: 30px;
   display: block;
 }
 
 .Button {
-  float: right;
+  margin-left: 8px;
 }

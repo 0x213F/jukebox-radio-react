@@ -16,7 +16,7 @@ function SearchApp(props) {
 
   const [searchResults, setSearchResults] = useState([]);
 
-  const [query, setQuery] = useState([]);
+  const [query, setQuery] = useState('');
 
   // NOTE: These could be condensed, but I prefer explicitly writing them out.
   const [serviceSpotify, setServiceSpotify] = useState(true);
@@ -41,8 +41,10 @@ function SearchApp(props) {
   /*
    * When the user initializes a login attempt.
    */
-  const handleSubmit = async function(e) {
-    e.preventDefault();
+  const handleSubmit = async function() {
+    if(!query) {
+      return;
+    }
     const responseJson = await fetchSearchMusicLibrary(
       query,
       serviceSpotify,
@@ -66,12 +68,21 @@ function SearchApp(props) {
     );
 
     const responseJsonQueueList = await fetchQueueList();
-    await props.dispatch(responseJsonQueueList.redux);
+    props.dispatch(responseJsonQueueList.redux);
   }
+
+  /*
+   *
+   */
+  const handleKeyDown = (event) => {
+   if (event.key === 'Enter') {
+     handleSubmit();
+   }
+ }
 
   return (
     <div>
-      <form className={styles.SearchApp} onSubmit={async (e) => { await handleSubmit(e); }}>
+      <div className={styles.SearchApp}>
         <h3>Search</h3>
 
         <button onClick={openModal}>Upload</button>
@@ -84,7 +95,8 @@ function SearchApp(props) {
                  name="query"
                  placeholder=""
                  value={query}
-                 onChange={(e) => {setQuery(e.target.value)}} />
+                 onChange={(e) => {setQuery(e.target.value)}}
+                 onKeyDown={handleKeyDown} />
         </label>
 
         <br></br>
@@ -146,12 +158,13 @@ function SearchApp(props) {
 
         <br></br>
 
-        <div className={styles.FormBlock}>
+        <div className={styles.FormBlock}
+             onClick={handleSubmit}>
           <button type="submit">
             Search
           </button>
         </div>
-      </form>
+      </div>
 
       <br></br>
 

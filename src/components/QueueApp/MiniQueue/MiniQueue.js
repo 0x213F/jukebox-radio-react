@@ -1,6 +1,12 @@
 import { connect } from 'react-redux'
 import styles from './MiniQueue.module.css';
 import { getQueueDuration } from '../utils';
+import ReactTimeAgo from 'react-time-ago';
+import TimeAgo from 'javascript-time-ago'
+
+import en from 'javascript-time-ago/locale/en'
+
+TimeAgo.addDefaultLocale(en)
 
 
 function MiniQueue(props) {
@@ -15,6 +21,7 @@ function MiniQueue(props) {
   const msToTime = function(ms) {
     return new Date(ms).toISOString().slice(11, -1);
   }
+  console.log(queueDuration)
 
   /*
    * 🎨
@@ -22,6 +29,18 @@ function MiniQueue(props) {
   return (
     <div className={styles.MiniQueue}>
       <h3><i>Next up...</i></h3>
+      {queueDuration ?
+        (
+          <p><i>
+            The queue will end&nbsp;
+            <ReactTimeAgo future date={endsAt} locale="en-US" />
+          </i></p>
+        ) : (
+          <p><i>
+            There is nothing in the queue.
+          </i></p>
+        )
+      }
       <div>
         {nextUpQueues.map((queue, index) => {
           return (
@@ -31,16 +50,6 @@ function MiniQueue(props) {
           );
         })}
       </div>
-
-      <br></br>
-
-      <p>
-        Total of {msToTime(queueDuration)}
-      </p>
-
-      <p>
-        Ends at {endsAt.toLocaleTimeString()}
-      </p>
     </div>
   );
 }
