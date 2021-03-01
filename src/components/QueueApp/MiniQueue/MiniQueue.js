@@ -11,8 +11,6 @@ function MiniQueue(props) {
         expandedQueues = [...flattenedQueue, ...nextUpQueues.slice(1)],
         stream = props.stream;
 
-  console.log(expandedQueues)
-
   // TODO needs to add however much is left inside now playing.
   const queueDuration = getQueueDuration(nextUpQueues, stream);
   const endsAt = new Date(Date.now() + queueDuration);

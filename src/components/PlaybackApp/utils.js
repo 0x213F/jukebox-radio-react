@@ -49,3 +49,11 @@ export const getProgress = function(stream) {
     return undefined;
   }
 };
+
+
+/*
+ *
+ */
+export const updateSpotifyPlayer = function(playback, device_id) {
+  playback.spotifyApi.transferMyPlayback([device_id])
+}
