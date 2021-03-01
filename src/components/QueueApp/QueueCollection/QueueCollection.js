@@ -15,8 +15,6 @@ function QueueCollection(props) {
         lastUp = lastUpQueues[lastUpQueues.length - 1],
         queueUuid = queue.uuid;
 
-  console.log(stream?.isPlaying && stream?.nowPlaying?.parentUuid === queueUuid)
-
   const isCurrentlyPlayingCollection = (
     // Stream is NOW playing - "now playing" belongs to same parent UUID
     (stream?.nowPlaying && stream?.nowPlaying?.parentUuid === queueUuid) ||

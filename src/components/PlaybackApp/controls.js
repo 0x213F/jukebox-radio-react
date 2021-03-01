@@ -17,7 +17,6 @@ export const playbackControlStart = function(playback, stream) {
   const arr = getPositionMilliseconds(stream, stream.startedAt),
         positionMilliseconds = arr[0],
         playbackService = stream.nowPlaying.track.service;
-
   if(playbackService === SERVICE_SPOTIFY) {
     playback.spotifyApi.play({
       uris: [stream.nowPlaying.track.externalId],

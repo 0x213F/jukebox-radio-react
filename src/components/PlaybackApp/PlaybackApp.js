@@ -8,7 +8,8 @@ import {
   playbackControlPause,
   playbackControlPlay,
 } from './controls';
-import { getPositionMilliseconds } from './utils';
+import { fetchGetUserSettings } from '../UserSettings/network';
+import { getPositionMilliseconds, updateSpotifyPlayer } from './utils';
 
 import MainApp from '../MainApp/MainApp';
 import {
@@ -25,6 +26,8 @@ import { getLastUpQueue, getNextUpQueue } from '../QueueApp/utils';
 
 import { SERVICE_JUKEBOX_RADIO, SERVICE_SPOTIFY } from '../../config/services';
 
+const SpotifyWebApi = require('spotify-web-api-js');
+
 
 function PlaybackApp(props) {
 
@@ -36,9 +39,33 @@ function PlaybackApp(props) {
         lastUp = getLastUpQueue(props.lastUpQueues),
         nextUp = getNextUpQueue(props.nextUpQueues);
 
+  const [spotifySDKReady, setSpotifySDKReady] = useState(false);
+  const [spotifySDKDeviceID, setSpotifySDKDeviceID] = useState(undefined);
+  const [spotifySDKInit, setSpotifySDKInit] = useState(false);
+
   const [messageScheduleNextTrack, setMessageScheduleNextTrack] = useState(false);
   const [plannedNextTrackTimeoutId, setPlannedNextTrackTimeoutId] = useState({});
   const [nextTrackJson, setNextTrackJson] = useState({});
+
+  /*
+   * Loads the Spotify SDK.
+   */
+  const appendSpotifySDK = function() {
+    const script = document.createElement("script");
+    script.src = "https://sdk.scdn.co/spotify-player.js";
+    script.async = true;
+    new Promise(resolve => {
+      if (window.Spotify) {
+        resolve();
+      } else {
+        window.onSpotifyWebPlaybackSDKReady = resolve;
+      }
+    })
+      .then(() => {
+        setSpotifySDKReady(true);
+      });
+    document.body.appendChild(script);
+  };
 
   /*
    * When a track is changing from one to another, this boolean logic
@@ -264,6 +291,68 @@ function PlaybackApp(props) {
   }
 
   //////////////////////////////////////////////////////////////////////////////
+  // LOAD SPOTIFY SDK
+  useEffect(() => {
+    appendSpotifySDK();
+  }, []);
+
+  //////////////////////////////////////////////////////////////////////////////
+  // SPOTIFY SDK LOADED
+  // Happens on page load
+  useEffect(() => {
+    if(!spotifySDKReady) {
+      return;
+    }
+    // 7: Get user settings.
+    const player = new window.Spotify.Player({
+      name: 'Jukebox Radio',
+      getOAuthToken: cb => {
+        fetchGetUserSettings()
+          .then(responseJson => {
+            cb(responseJson.data.spotify.accessToken);
+            props.dispatch({
+              type: 'user/get-settings',
+              userSettings: responseJson.data,
+            });
+
+            // Initialize the Spotify player (conditionally).
+            const spotifyAccessToken = responseJson.data.spotify.accessToken;
+            if(spotifyAccessToken) {
+              const spotifyApi = new SpotifyWebApi();
+              spotifyApi.setAccessToken(responseJson.data.spotify.accessToken);
+              props.dispatch({
+                type: 'playback/spotify',
+                payload: { spotifyApi: spotifyApi },
+              });
+            }
+
+            // Enable playback controls.
+            props.dispatch({ type: 'playback/enable' });
+
+            setSpotifySDKInit(true);
+          });
+      }
+    });
+    player.addListener('ready', ({ device_id }) => {
+      setSpotifySDKDeviceID(device_id);
+    });
+    player.connect();
+
+  // eslint-disable-next-line
+  }, [spotifySDKReady]);
+
+  //////////////////////////////////////////////////////////////////////////////
+  // Update player to SDK player
+  useEffect(() => {
+    if(!spotifySDKInit || !spotifySDKDeviceID) {
+      return;
+    }
+
+    updateSpotifyPlayer(playback, spotifySDKDeviceID);
+  // eslint-disable-next-line
+  }, [spotifySDKInit, spotifySDKDeviceID])
+
+  //////////////////////////////////////////////////////////////////////////////
   // SCHEDULE ADD TO QUEUE
   // Happens near the end of the currently playing track.
   useEffect(() => {
@@ -338,10 +427,15 @@ function PlaybackApp(props) {
   // eslint-disable-next-line
   }, [messageScheduleNextTrack]);
 
+  //////////////////////////////////////////////////////////////////////////////
   // Play the music.
-  if(stream.isPlaying && !playback.isPlaying && playback.isReady) {
-    start();
-  }
+  useEffect(() => {
+    if(stream.isPlaying && !playback.isPlaying && playback.isReady) {
+      start();
+    }
+  // eslint-disable-next-line
+  }, [stream, playback]);
+
 
   const playbackControls = { nextTrack, prevTrack, seek, pause, play };
 
