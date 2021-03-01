@@ -1,27 +1,21 @@
 import { connect } from 'react-redux'
 import styles from './MiniQueue.module.css';
-import { getQueueDuration } from '../utils';
+import { getQueueDuration, flattenQueues } from '../utils';
 import ReactTimeAgo from 'react-time-ago';
-import TimeAgo from 'javascript-time-ago'
-
-import en from 'javascript-time-ago/locale/en'
-
-TimeAgo.addDefaultLocale(en)
 
 
 function MiniQueue(props) {
 
   const nextUpQueues = props.nextUpQueues,
+        flattenedQueue = flattenQueues([nextUpQueues[0]]),
+        expandedQueues = [...flattenedQueue, ...nextUpQueues.slice(1)],
         stream = props.stream;
+
+  console.log(expandedQueues)
 
   // TODO needs to add however much is left inside now playing.
   const queueDuration = getQueueDuration(nextUpQueues, stream);
   const endsAt = new Date(Date.now() + queueDuration);
-
-  const msToTime = function(ms) {
-    return new Date(ms).toISOString().slice(11, -1);
-  }
-  console.log(queueDuration)
 
   /*
    * 🎨
@@ -32,7 +26,7 @@ function MiniQueue(props) {
       {queueDuration ?
         (
           <p><i>
-            The queue will end&nbsp;
+            Playback will end&nbsp;
             <ReactTimeAgo future date={endsAt} locale="en-US" />
           </i></p>
         ) : (
@@ -42,10 +36,10 @@ function MiniQueue(props) {
         )
       }
       <div>
-        {nextUpQueues.map((queue, index) => {
+        {expandedQueues.map((queue, index) => {
           return (
-            <div>
-              {queue.collection?.name || queue.track?.name}
+            <div className={styles.MiniQueueItem}>
+              {queue.track?.name || queue.collection?.name}
             </div>
           );
         })}

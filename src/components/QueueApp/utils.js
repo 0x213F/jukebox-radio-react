@@ -24,6 +24,29 @@ export const getNextUpQueue = function(nextUpQueues) {
 
 
 /*
+ *
+ */
+export const flattenQueues = function(queues) {
+  if(!queues.length) {
+    return undefined;
+  }
+
+  const flattenedQueues = [];
+  for(let queue of queues) {
+    if(queue.children.length) {
+      for(let child of queue.children) {
+        flattenedQueues.push(child);
+      }
+    } else {
+      flattenedQueues.push(queue);
+    }
+  }
+
+  return flattenedQueues;
+}
+
+
+/*
  * Returns the (track) queue item that will be played next.
  */
 export const getQueueDuration = function(queues, stream) {

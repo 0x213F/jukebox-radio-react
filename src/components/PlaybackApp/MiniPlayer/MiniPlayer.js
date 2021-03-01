@@ -5,15 +5,25 @@ import styles from './MiniPlayer.module.css';
 
 function MiniPlayer(props) {
 
-  const stream = props.stream;
+  const stream = props.stream,
+        imageUrl = stream.nowPlaying?.track?.imageUrl,
+        nowPlayingTrackName = stream?.nowPlaying?.track?.name;
 
   return (
     <div>
       <h3><i>Now playing...</i></h3>
+      {imageUrl &&
         <img alt=""
-             src={stream.nowPlaying?.track?.imageUrl}
+             src={imageUrl}
              className={styles.Image} />
-      <p>{stream.nowPlaying?.track?.name}</p>
+      }
+      {nowPlayingTrackName ?
+        (
+          <p>{nowPlayingTrackName}</p>
+        ) : (
+          <p><i>Nothing is playing...</i></p>
+        )
+      }
     </div>
   );
 }
