@@ -32,8 +32,9 @@ export const flattenQueues = function(queues) {
   }
 
   const flattenedQueues = [];
+  console.log(queues)
   for(let queue of queues) {
-    if(queue.children?.length) {
+    if(queue?.children?.length) {
       for(let child of queue.children) {
         flattenedQueues.push(child);
       }
