@@ -46,7 +46,7 @@ import {
 import {
   userSettingsUpdate,
 } from './reducers/userSettings';
-import userProfileUpdate from './reducers/userProfile';
+import { userProfileUpdate } from './reducers/userProfile';
 
 
 const initialState = {

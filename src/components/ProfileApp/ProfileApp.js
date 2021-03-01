@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import { connect } from 'react-redux';
 import { fetchUpdateUserProfile } from './network';
 import styles from './ProfileApp.module.css';
@@ -35,12 +35,7 @@ function ProfileApp(props) {
     },
   ]
 
-  // function updateUsername(event) {
-  //   props.dispatch({type: 'userProfile/update', payload:{
-  //     username: event.target.
-  //   }});
-  //   fetchUpdateUserProfile('', event.target.);
-  // }
+  const [edit, setEdit] = useState(false);
 
   function updateProfileImage(event) {
     props.dispatch({type: 'userProfile/update', payload:{
@@ -63,9 +58,25 @@ function ProfileApp(props) {
     fetchUpdateUserProfile('website', event.target.url);
   }
 
+  function handleEdit(event) {
+    event.preventDefault();
+    setEdit(true);
+  }
+
+  function handleSave(event) {
+    event.preventDefault();
+    setEdit(false);
+  }
+
   return (
     <div className={styles.mainContainer}>
-
+      {
+      edit === false ? (
+        <button onClick={handleEdit}>Edit</button>
+        ):(
+        <button onClick={handleSave}>Save</button>
+        )
+      }
         <div className={styles.userSideBar}>
           <h1>{username}</h1>
           <img src={profileImg} alt="profileImg" className={styles.profilePicture} onChange={updateProfileImage}/>
