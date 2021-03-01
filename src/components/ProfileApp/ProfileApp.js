@@ -44,20 +44,23 @@ function ProfileApp(props) {
 
   function updateProfileImage(event) {
     props.dispatch({type: 'userProfile/update', payload:{
-      profileImg: event.target.
+      profileImg: event.target.file
     }});
-    fetchUpdateUserProfile('', event.target.);
+    fetchUpdateUserProfile('profile_image', event.target.file);
   }
 
   function updateProfileDescription(event) {
     props.dispatch({type: 'userProfile/update', payload:{
-      description: event.target.
+      description: event.target.text
     }});
-    fetchUpdateUserProfile('', event.target.);
+    fetchUpdateUserProfile('description', event.target.text);
   }
 
   function updateProfileWebsite(event) {
-    props.dispatch
+    props.dispatch({type: 'userProfile/update', payload: {
+      website: event.target.url
+    }});
+    fetchUpdateUserProfile('website', event.target.url);
   }
 
   return (
@@ -65,14 +68,14 @@ function ProfileApp(props) {
 
         <div className={styles.userSideBar}>
           <h1>{username}</h1>
-          <img src={profileImg} alt="profileImg" className={styles.profilePicture} />
-          <a href={website} target='_blank' rel='noreferrer'>{username}'s Website</a>
+          <img src={profileImg} alt="profileImg" className={styles.profilePicture} onChange={updateProfileImage}/>
+          <a href={website} target='_blank' rel='noreferrer' onChange={updateProfileWebsite}>{username}'s Website</a>
         </div>
 
         <div className={styles.scrollContainer}>
           <div className={styles.description}>
             <h2>Who is {username}?</h2>
-            <p>{description}</p>
+            <p onChange={updateProfileDescription}>{description}</p>
           </div>
 
           <div className={styles.sessions}>
