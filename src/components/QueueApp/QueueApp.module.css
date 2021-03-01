@@ -1,1 +1,13 @@
-.QueueApp {}
+.QueueApp {
+  overflow-y: scroll;
+  height: 100%;
+}
+
+.AddToQueue {
+  font-size: 18px;
+  padding: 8px 14px;
+  background-color: white;
+  border: 1px solid #cc0000;
+  border-radius: 4px;
+  cursor: pointer;
+}

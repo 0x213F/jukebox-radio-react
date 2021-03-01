@@ -13,13 +13,15 @@ function QueueCollection(props) {
         stream = props.stream,
         lastUpQueues = props.lastUpQueues,
         lastUp = lastUpQueues[lastUpQueues.length - 1],
-        queueUuid = props.data.uuid;
+        queueUuid = queue.uuid;
+
+  console.log(stream?.isPlaying && stream?.nowPlaying?.parentUuid === queueUuid)
 
   const isCurrentlyPlayingCollection = (
     // Stream is NOW playing - "now playing" belongs to same parent UUID
-    (stream?.isPlaying && stream?.nowPlaying?.parentUuid === queueUuid) ||
+    (stream?.nowPlaying && stream?.nowPlaying?.parentUuid === queueUuid) ||
     // Stream is NOT playing - "last up" belongs to same parent UUID
-    (!stream?.isPlaying && lastUp?.parentUuid && lastUp?.parentUuid === queueUuid)
+    (!stream?.nowPlaying && lastUp?.parentUuid && lastUp?.parentUuid === queueUuid)
   );
 
 
@@ -39,21 +41,24 @@ function QueueCollection(props) {
     <div className={styles.QueueCollection}>
       <div className={styles.Item}>
         <span>
-          {queue.collection.name}
+          <i>
+            {queue.collection.name}
+          </i>
         </span>
-        {!isCurrentlyPlayingCollection &&
-          <button className={styles.Button} type="button" onClick={async (e) => { await props.destroy(queue); }}>
-            Delete
-          </button>
-        }
+        &nbsp;&nbsp;
         {queue.children.length > 0 && !reveal &&
           <button className={styles.Button} type="button" onClick={toggleReveal}>
             More
           </button>
-        }
+        }&nbsp;&nbsp;
         {queue.children.length > 0 && reveal &&
           <button className={styles.Button} type="button" onClick={toggleReveal}>
             Less
+          </button>
+        }&nbsp;&nbsp;
+        {!isCurrentlyPlayingCollection &&
+          <button className={styles.Button} type="button" onClick={async (e) => { await props.destroy(queue); }}>
+            Delete
           </button>
         }
       </div>

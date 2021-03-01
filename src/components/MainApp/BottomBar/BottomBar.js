@@ -84,8 +84,7 @@ function BottomBar(props) {
         )}
         {displayAddToQueue && (
           <Link to="/app/search">
-            <button className={styles.ExtraControlButton}
-                    onClick={() => { handleStartPlayback(); }}>
+            <button className={styles.ExtraControlButton}>
               Add to Queue
             </button>
           </Link>

@@ -19,6 +19,8 @@ import { useEffect, useState } from "react";
 import { Provider } from 'react-redux';
 import { BrowserRouter as Router } from "react-router-dom";
 import { SERVICE_JUKEBOX_RADIO } from './config/services';
+import TimeAgo from 'javascript-time-ago'
+import en from 'javascript-time-ago/locale/en'
 
 const SpotifyWebApi = require('spotify-web-api-js');
 
@@ -114,6 +116,7 @@ function App() {
       // Update status.
       setStatus('ready');
     }
+    TimeAgo.addDefaultLocale(en);
     loadData();
 
     // Define behavior for when the webpage is closed.

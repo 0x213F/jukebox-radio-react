@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { Link } from "react-router-dom";
 import { connect } from 'react-redux';
 import {
   getNextUpQueue,
@@ -16,6 +17,7 @@ function Player(props) {
    */
   const stream = props.stream,
         playback = props.playback,
+        imageUrl = stream.nowPlaying?.track?.imageUrl,
         track = stream?.nowPlaying?.track,
         lastUp = getLastUpQueue(props.lastUpQueues),
         nextUp = getNextUpQueue(props.nextUpQueues);
@@ -49,7 +51,7 @@ function Player(props) {
   }, []);
 
   return (
-    <>
+    <div className={styles.Player}>
       <div className={styles.Div}>
         <h4><i>Last...</i></h4>
         <p>{lastUp?.track?.name}</p>
@@ -59,6 +61,11 @@ function Player(props) {
 
       <div className={styles.Div}>
         <h2><i>Now playing...</i></h2>
+        {imageUrl &&
+          <img alt=""
+               src={imageUrl}
+               className={styles.Image} />
+        }
         {(stream?.isPlaying || stream?.isPaused) &&
           <h3>{track?.name}</h3>
         }
@@ -92,7 +99,13 @@ function Player(props) {
         <h4><i>Next...</i></h4>
         <p>{nextUp?.track.name}</p>
       </div>
-    </>
+
+      <Link to="/app/queue">
+        <button className={styles.MoreNextUp}>
+          More
+        </button>
+      </Link>
+    </div>
   );
 }
 
