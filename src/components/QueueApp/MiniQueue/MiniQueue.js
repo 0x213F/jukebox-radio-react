@@ -9,10 +9,10 @@ function MiniQueue(props) {
   const nextUpQueues = props.nextUpQueues,
         stream = props.stream;
 
-  let flattenQueues, expandedQueues;
+  let flattenedQueue, expandedQueues;
   if(nextUpQueues.length) {
-    flattenedQueue = flattenQueues([nextUpQueues[0]]),
-    expandedQueues = [...flattenedQueue, ...nextUpQueues.slice(1)]
+    flattenedQueue = flattenQueues([nextUpQueues[0]]);
+    expandedQueues = [...flattenedQueue, ...nextUpQueues.slice(1)];
   } else {
     expandedQueues = [];
   }
