@@ -134,7 +134,13 @@ export const playbackControlQueue = function(playback, stream, nextUp) {
 }
 
 
-export const playbackChangeVolume = function(playback, volumeLevel) {
+export const playbackChangeVolume = function(playback, stream, volumeLevel) {
   playback.spotifyApi.setVolume(volumeLevel * 100);
   playback.youTubeApi.setVolume(volumeLevel * 100);
+
+  const trackUuid = stream.nowPlaying?.track?.uuid,
+        audio = playback.files[trackUuid]?.audio;
+  if(audio) {
+    audio.volume = volumeLevel;
+  }
 }

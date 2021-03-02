@@ -74,7 +74,7 @@ function BottomBar(props) {
 
   const handleCycleVolumeLevel = function() {
     const nextVolumeLevel = cycleVolumeLevel(audioVolumeLevel);
-    playbackChangeVolume(playback, nextVolumeLevel);
+    playbackChangeVolume(playback, stream, nextVolumeLevel);
     props.dispatch({ type: 'playback/cycleVolumeLevelAudio' });
   }
 
