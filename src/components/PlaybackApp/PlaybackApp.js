@@ -171,7 +171,7 @@ function PlaybackApp(props) {
       const responseJson = await fetchTrackGetFiles(lastUp.track.uuid);
       await props.dispatch(responseJson.redux);
     }
-    const responseJsonPrevTrack = await fetchPrevTrack();
+    const responseJsonPrevTrack = await fetchPrevTrack(stream.nowPlaying.totalDurationMilliseconds);
     await props.dispatch(responseJsonPrevTrack.redux);
     await props.dispatch({ type: 'playback/start' });
     await props.dispatch({ type: 'playback/enable' });
@@ -222,7 +222,7 @@ function PlaybackApp(props) {
       }
       startedAt = stream.startedAt - (10000);
     } else if(direction === 'backward') {
-      await fetchScanBackward();
+      await fetchScanBackward(stream.nowPlaying.totalDurationMilliseconds);
       const date = new Date(),
             epochNow = date.getTime(),
             proposedStartedAt = stream.startedAt + 10000,
@@ -262,7 +262,7 @@ function PlaybackApp(props) {
    */
   const pause = async function() {
     await props.dispatch({ type: 'playback/disable' });
-    const jsonResponse = await fetchPauseTrack();
+    const jsonResponse = await fetchPauseTrack(stream.nowPlaying.totalDurationMilliseconds);
     await props.dispatch(jsonResponse.redux);
     await props.dispatch({ type: 'playback/addToQueueReschedule' });
     playbackControlPause(playback, stream);

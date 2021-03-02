@@ -50,10 +50,11 @@ const fetchNextTrack = async (nowPlayingTotalDurationMilliseconds, isPlanned) =>
 /*
  * Fetches...
  */
-const fetchPauseTrack = async () => {
+const fetchPauseTrack = async (nowPlayingTotalDurationMilliseconds) => {
   const response = await fetchBackend(
     TYPE_POST,
     ENDPOINT_STREAM_PAUSE_TRACK,
+    { nowPlayingTotalDurationMilliseconds },
   );
   const responseJson = await response.json();
   return responseJson;
@@ -74,10 +75,11 @@ const fetchPlayTrack = async () => {
 /*
  * Fetches...
  */
-const fetchPrevTrack = async () => {
+const fetchPrevTrack = async (nowPlayingTotalDurationMilliseconds) => {
   const response = await fetchBackend(
     TYPE_POST,
     ENDPOINT_STREAM_PREV_TRACK,
+    { nowPlayingTotalDurationMilliseconds },
   );
   const responseJson = await response.json();
   return responseJson;
@@ -86,10 +88,11 @@ const fetchPrevTrack = async () => {
 /*
  * Fetches...
  */
-const fetchScanBackward = async () => {
+const fetchScanBackward = async (nowPlayingTotalDurationMilliseconds) => {
   const response = await fetchBackend(
     TYPE_POST,
     ENDPOINT_STREAM_SCAN_BACKWARD,
+    { nowPlayingTotalDurationMilliseconds },
   );
   const responseJson = await response.json();
   return responseJson;

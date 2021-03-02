@@ -45,7 +45,7 @@ function BottomBar(props) {
    */
   const handleStartPlayback = function() {
     playbackControls.nextTrack();
-  }
+  };
 
   /*
    * Modify playback to seek in a certain diretion ('forward' or 'backward').
@@ -55,7 +55,7 @@ function BottomBar(props) {
       return;
     }
     playbackControls.seek(direction);
-  }
+  };
 
   /*
    * Modify playback to play or pause, whichever one is relevant.
