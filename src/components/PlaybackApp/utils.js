@@ -57,3 +57,20 @@ export const getProgress = function(stream) {
 export const updateSpotifyPlayer = function(playback, device_id) {
   playback.spotifyApi.transferMyPlayback([device_id])
 }
+
+
+export const cycleVolumeLevel = function(volumeLevel) {
+  const MUTED = 0.00,
+        LOW = 0.30,
+        HIGH = 0.60,
+        FULL = 1.00;
+  if(volumeLevel > HIGH) {
+    return HIGH;
+  } else if(volumeLevel > LOW) {
+    return LOW;
+  } else if(volumeLevel > MUTED) {
+    return MUTED;
+  } else {
+    return FULL;
+  }
+}

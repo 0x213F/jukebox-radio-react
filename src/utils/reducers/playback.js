@@ -4,6 +4,7 @@ import {
   playbackControlQueue,
   playbackControlSkipToNext,
 } from '../../components/PlaybackApp/controls';
+import { cycleVolumeLevel } from '../../components/PlaybackApp/utils';
 import {
   fetchTrackGetFiles,
 } from '../../components/PlaybackApp/Player/network';
@@ -271,4 +272,17 @@ export const playbackLoadFiles = function(state, payload) {
       files: files,
     }
   };
+}
+
+
+export const playbackCycleVolumeLevelAudio = function(state) {
+  const volumeLevel = { ...state.playback.volumeLevel },
+        audioLevel = volumeLevel.audio;
+
+  volumeLevel.audio = cycleVolumeLevel(audioLevel);
+
+  return {
+    ...state,
+    playback: { ...state.playback, volumeLevel },
+  }
 }

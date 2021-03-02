@@ -132,3 +132,9 @@ export const playbackControlQueue = function(playback, stream, nextUp) {
     // TODO - refactor stuff to go inside of here instead
   }
 }
+
+
+export const playbackChangeVolume = function(playback, volumeLevel) {
+  playback.spotifyApi.setVolume(volumeLevel * 100);
+  playback.youTubeApi.setVolume(volumeLevel * 100);
+}

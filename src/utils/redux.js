@@ -18,6 +18,7 @@ import {
   playbackDisable,
   playbackEnable,
   playbackLoadFiles,
+  playbackCycleVolumeLevelAudio,
 } from  './reducers/playback';
 import { queueListSet } from './reducers/queue';
 import {
@@ -61,12 +62,17 @@ const initialState = {
   playback: {
     controlsEnabled: false,
     spotifyApi: undefined,
+    youTubeApi: undefined,
     isPlaying: false,
-    queuedUp: false,
-    noopNextTrack: false,
+    // queuedUp: false,
+    // noopNextTrack: false,
     addToQueueTimeoutId: undefined,
     isReady: false,
     files: {},
+    volumeLevel: {
+      audio: 1.00,
+      voice: 1.00,
+    },
   },
 }
 
@@ -208,6 +214,8 @@ const reducer = (state = initialState, action) => {
       return userSettingsUpdate(state, action.payload);
     case "playback/loadFiles":
       return playbackLoadFiles(state, action.payload);
+    case "playback/cycleVolumeLevelAudio":
+      return playbackCycleVolumeLevelAudio(state);
     case "feed/update":
       return feedUpdate(state);
     default:

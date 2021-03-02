@@ -1,15 +1,17 @@
 import React from "react";
 import { Link } from "react-router-dom";
 import { connect } from 'react-redux';
-// import { CircularProgressbarWithChildren, buildStyles } from 'react-circular-progressbar';
-// import 'react-circular-progressbar/dist/styles.css';
+import { CircularProgressbarWithChildren, buildStyles } from 'react-circular-progressbar';
+import 'react-circular-progressbar/dist/styles.css';
+import { cycleVolumeLevel } from '../../PlaybackApp/utils';
+import { playbackChangeVolume } from '../../PlaybackApp/controls';
 import styles from './BottomBar.module.css';
 import {
   iconScanForward,
   iconScanBackward,
   iconPlayCircle,
   iconPauseCircle,
-  // iconMusic,
+  iconMusic,
   // iconMic,
 } from './icons';
 
@@ -22,6 +24,7 @@ function BottomBar(props) {
   const playbackControls = props.playbackControls,
         stream = props.stream,
         playback = props.playback,
+        audioVolumeLevel = playback.volumeLevel.audio,
         nextUpQueues = props.nextUpQueues;
 
   const scanDisabled = (
@@ -69,6 +72,12 @@ function BottomBar(props) {
     }
   }
 
+  const handleCycleVolumeLevel = function() {
+    const nextVolumeLevel = cycleVolumeLevel(audioVolumeLevel);
+    playbackChangeVolume(playback, nextVolumeLevel);
+    props.dispatch({ type: 'playback/cycleVolumeLevelAudio' });
+  }
+
   /*
    * 🎨
    */
@@ -91,11 +100,11 @@ function BottomBar(props) {
         )}
       </div>
 
-      {/*
       <div className={styles.Volume}>
-        <div className={styles.VolumeButton}>
+        <button className={styles.VolumeButton}
+                onClick={handleCycleVolumeLevel}>
           <CircularProgressbarWithChildren
-                value={100}
+                value={audioVolumeLevel * 100}
                 circleRatio={0.75}
                 styles={buildStyles({
                   rotation: 1 / 2 + 1 / 8,
@@ -104,8 +113,9 @@ function BottomBar(props) {
                 })} >
             {iconMusic}
           </CircularProgressbarWithChildren>
-        </div>
+        </button>
 
+        {/*
         <div className={styles.VolumeButton}>
           <CircularProgressbarWithChildren
                 value={100}
@@ -118,8 +128,8 @@ function BottomBar(props) {
             {iconMic}
           </CircularProgressbarWithChildren>
         </div>
+        */}
       </div>
-      */}
 
       <div className={styles.Playback}>
         <button className={styles.PlaybackButton}

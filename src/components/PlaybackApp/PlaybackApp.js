@@ -454,7 +454,7 @@ function PlaybackApp(props) {
             playsinline: 1,
           },
         },
-        videoId = stream.nowPlaying?.track?.externalId;
+        videoId = stream?.nowPlaying?.track?.externalId;
 
   const onYouTubeReady = function(e) {
     const youTubeApi = e.target;
