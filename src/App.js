@@ -82,11 +82,11 @@ function App() {
       await store.dispatch(responseJson.redux);
 
       // 5: Load relevant comments.
-      const textCommentsJsonResponse = await fetchTextCommentList();
+      const textCommentsJsonResponse = await fetchTextCommentList(payload.stream.nowPlaying?.track?.uuid);
       await store.dispatch(textCommentsJsonResponse.redux);
 
       // 6: Load relevant voice recordings. This will also generate the feed.
-      const voiceRecordingsJsonResponse = await fetchVoiceRecordingList();
+      const voiceRecordingsJsonResponse = await fetchVoiceRecordingList(payload.stream.nowPlaying?.track?.uuid);
       await store.dispatch(voiceRecordingsJsonResponse.redux);
 
       // Update status.
