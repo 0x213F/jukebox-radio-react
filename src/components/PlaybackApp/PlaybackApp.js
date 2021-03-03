@@ -156,7 +156,7 @@ function PlaybackApp(props) {
       payload: { payload: nextTrackJson.redux },  // yes
     });
     await props.dispatch({ type: 'playback/enable' });
-    await updateFeed();
+    await updateFeed(nextUp?.track.uuid);
   }
 
   /*
@@ -175,7 +175,7 @@ function PlaybackApp(props) {
     await props.dispatch(responseJsonPrevTrack.redux);
     await props.dispatch({ type: 'playback/start' });
     await props.dispatch({ type: 'playback/enable' });
-    await updateFeed();
+    await updateFeed(lastUp?.track.uuid);
   }
 
   /*
@@ -196,7 +196,7 @@ function PlaybackApp(props) {
     await props.dispatch(responseJsonNextTrack.redux);
     await props.dispatch({ type: 'playback/start' });
     await props.dispatch({ type: 'playback/enable' });
-    await updateFeed();
+    await updateFeed(nextUp?.track.uuid);
   }
 
   /*
