@@ -171,7 +171,7 @@ function PlaybackApp(props) {
       const responseJson = await fetchTrackGetFiles(lastUp.track.uuid);
       await props.dispatch(responseJson.redux);
     }
-    const responseJsonPrevTrack = await fetchPrevTrack(stream.nowPlaying.totalDurationMilliseconds);
+    const responseJsonPrevTrack = await fetchPrevTrack(stream.nowPlaying?.totalDurationMilliseconds);
     await props.dispatch(responseJsonPrevTrack.redux);
     await props.dispatch({ type: 'playback/start' });
     await props.dispatch({ type: 'playback/enable' });
