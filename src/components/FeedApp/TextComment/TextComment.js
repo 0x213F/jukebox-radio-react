@@ -20,22 +20,16 @@ function TextComment(props) {
    * Deletes a text comment.
    */
   const deleteTextComment = async function() {
-    await fetchDeleteTextComment(textCommentUuid);
-    await props.dispatch({
-      type: 'textComment/delete',
-      textCommentUuid: textCommentUuid,
-    });
+    const responseJson = await fetchDeleteTextComment(textCommentUuid);
+    props.dispatch(responseJson.redux);
   }
 
   /*
    * Clears all styled modifications on this text comment.
    */
   const clearModifications = async function() {
-    await fetchListDeleteTextCommentModifications(textCommentUuid);
-    await props.dispatch({
-      type: 'textComment/clearModifications',
-      textCommentUuid: textCommentUuid,
-    });
+    const responseJson = await fetchListDeleteTextCommentModifications(textCommentUuid);
+    await props.dispatch(responseJson.redux);
   }
 
   let textColor;

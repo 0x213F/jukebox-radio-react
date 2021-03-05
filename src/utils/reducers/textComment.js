@@ -21,8 +21,8 @@ export const textCommentListSet = function(state, payload) {
 /*
  *
  */
-export const textCommentCreate = function(state, action) {
-  const textComments = [...state.textComments, action.textComment],
+export const textCommentCreate = function(state, payload) {
+  const textComments = [...state.textComments, payload.textComment],
         updatedState = {
           ...state,
           textComments: textComments,
@@ -38,8 +38,8 @@ export const textCommentCreate = function(state, action) {
 /*
  *
  */
-export const textCommentDelete = function(state, action) {
-  const deleteByUuid = i => i.uuid !== action.textCommentUuid,
+export const textCommentDelete = function(state, payload) {
+  const deleteByUuid = i => i.uuid !== payload.textCommentUuid,
         textComments = state.textComments.filter(deleteByUuid),
         updatedState = {
           ...state,

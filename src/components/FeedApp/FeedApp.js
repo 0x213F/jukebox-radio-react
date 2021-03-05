@@ -63,11 +63,7 @@ function FeedApp(props) {
       text, format, textCommentUuid, textCommentTimestamp
     );
 
-    await props.dispatch({
-      type: 'textComment/create',
-      textComment: responseJson.data,
-    });
-
+    props.dispatch(responseJson.redux);
     setTextCommentTimestamp(undefined);
     setTextCommentUuid(undefined);
     setText('');

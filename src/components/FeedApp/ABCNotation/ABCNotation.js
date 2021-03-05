@@ -20,7 +20,8 @@ function ABCNotation(props) {
    * the hood runs inside TextComment.
    */
   const deleteAbcNotation = async function() {
-    await fetchDeleteTextComment(abcNotationUuid);
+    const responseJson = await fetchDeleteTextComment(abcNotationUuid);
+    props.dispatch(responseJson.redux);
     await props.dispatch({
       type: 'textComment/delete',
       textCommentUuid: abcNotationUuid,

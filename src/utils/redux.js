@@ -39,6 +39,7 @@ import {
 } from './reducers/textComment';
 import {
   textCommentModificationCreate,
+  textCommentClearModifications,
 } from './reducers/textCommentModification';
 import {
   voiceRecordingListSet,
@@ -119,19 +120,6 @@ function queueDeleteChildNode(state, action) {
 }
 
 
-function textCommentClearModifications(state, action) {
-  const textCommentIndex = state.textComments.findIndex(t => t.uuid === action.textCommentUuid),
-        textComments = [...state.textComments];
-
-  textComments[textCommentIndex].modifications = [];
-
-  return {
-    ...state,
-    textComments: textComments,
-  }
-}
-
-
 function userGetSettings(state, action) {
   return {
     ...state,
@@ -163,13 +151,13 @@ const reducer = (state = initialState, action) => {
     case "textComment/listSet":
       return textCommentListSet(state, action.payload);
     case "textComment/create":
-      return textCommentCreate(state, action);
+      return textCommentCreate(state, action.payload);
     case "textComment/delete":
-      return textCommentDelete(state, action);
+      return textCommentDelete(state, action.payload);
     case "textCommentModification/create":
       return textCommentModificationCreate(state, action.payload);
     case "textComment/clearModifications":
-      return textCommentClearModifications(state, action);
+      return textCommentClearModifications(state, action.payload);
     case "voiceRecording/create":
       return voiceRecordingCreate(state, action);
     case "voiceRecording/listSet":
