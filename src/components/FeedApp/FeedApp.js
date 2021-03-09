@@ -10,7 +10,7 @@ import ABCNotationDisplay from './ABCNotationDisplay/ABCNotationDisplay';
 import ABCNotationCompose from './ABCNotationCompose/ABCNotationCompose';
 import VoiceRecording from './VoiceRecording/VoiceRecording';
 import { CLASS_TEXT_COMMENT, CLASS_VOICE_RECORDING } from '../../config/model';
-import { getPositionMilliseconds } from '../../utils/reducers/feed';
+import { getPositionMilliseconds } from '../PlaybackApp/utils';
 
 
 function FeedApp(props) {

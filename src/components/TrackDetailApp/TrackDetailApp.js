@@ -30,6 +30,7 @@ function TrackDetailApp(props) {
         trackMarkerMap = props.trackMarkerMap,
         markers = trackMarkerMap[queueUuid] || [];
 
+  const [purpose, setPurpose] = useState('muted');
   const [formMarkerTimestamp, setFormMarkerTimestamp] = useState('');
   const [lowerBoundMarkerUuid, setLowerBoundMarkerUuid] = useState('null');
   const [upperBoundMarkerUuid, setUpperBoundMarkerUuid] = useState('null');
@@ -53,7 +54,7 @@ function TrackDetailApp(props) {
       queue.uuid,
       lowerBoundMarkerUuid,
       upperBoundMarkerUuid,
-      true,
+      purpose,
       null,
       parentQueueUuid,
     );
@@ -111,6 +112,13 @@ function TrackDetailApp(props) {
                        }} />
       ))}
       <div>
+        <select value={purpose} onChange={(e) => {setPurpose(e.target.value)}}>
+          <option value={'muted'}>Muted</option>
+          <option value={'solo_drums'}>Solo drums</option>
+          <option value={'solo_vocals'}>Solo vocals</option>
+          <option value={'solo_bass'}>Solo bass</option>
+          <option value={'solo_other'}>Solo other</option>
+        </select>
         <select value={lowerBoundMarkerUuid} onChange={(e) => {setLowerBoundMarkerUuid(e.target.value)}}>
           <option value={'null'}>Beginning</option>
           {markers.map((value, index) => (
@@ -123,7 +131,7 @@ function TrackDetailApp(props) {
           ))}
           <option value={'null'}>End</option>
         </select>
-        <button onClick={createQueueInterval}>Mute Interval</button>
+        <button onClick={createQueueInterval}>Create Interval</button>
       </div>
     </Modal>
   );

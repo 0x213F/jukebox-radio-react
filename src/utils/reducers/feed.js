@@ -1,4 +1,5 @@
 /*
+ * - hide:    A tag given to a feed item which should not be shown.
  * - history: A tag given to a feed item which signifies that it is no longer
  *            relevant. This is because it has been lingering on for a
  *            significant amount of time since its original context.
@@ -13,7 +14,9 @@ const RENDER_STATUS_HISTORY = 'history',
       HISTORY_DURATION = 45000;
 
 /*
- * ...
+ * Regenerates the feed. When regenerating the feed, it takes the previous
+ * feed, then adds new items and removes stale items. This is exported because
+ * other reducers need to re-generate the feed.
  */
 export const feedGenerate = function(state) {
 
@@ -58,7 +61,11 @@ export const feedGenerate = function(state) {
 }
 
 
-export const getPositionMilliseconds = function(stream) {
+/*
+ * Helper method which gets the timestamp marker thresholds to help define
+ * which comments should be displayed.
+ */
+const getPositionMilliseconds = function(stream) {
 
   if(!stream?.nowPlaying?.track) {
     return [undefined, undefined, undefined];
@@ -76,27 +83,27 @@ export const getPositionMilliseconds = function(stream) {
 
   while(true) {
     const playbackInterval = stream.nowPlaying.playbackIntervals[playbackIntervalIdx],
-          playbackIntervalDuration = playbackInterval[1] - playbackInterval[0];
+          playbackIntervalDuration = playbackInterval.endPosition - playbackInterval.startPosition;
     let remainingProgress;
 
     // if display threshold progress definition has been reached
     const displayProgress = (progress - DISPLAY_DURATION);
     remainingProgress = displayProgress - cumulativeProgress;
     if(remainingProgress >= 0 && remainingProgress < playbackIntervalDuration) {
-      displayThreshold = playbackInterval[0] + remainingProgress;
+      displayThreshold = playbackInterval.startPosition + remainingProgress;
     }
 
     // if history threshold progress definition has been reached
     const historyProgress = (progress - DISPLAY_DURATION - HISTORY_DURATION);
     remainingProgress = historyProgress - cumulativeProgress;
     if(remainingProgress >= 0 && remainingProgress < playbackIntervalDuration) {
-      historyThreshold = playbackInterval[0] + remainingProgress;
+      historyThreshold = playbackInterval.startPosition + remainingProgress;
     }
 
     // if the progress definition has been reached
     remainingProgress = progress - cumulativeProgress;
     if(remainingProgress < playbackIntervalDuration) {
-      progress = playbackInterval[0] + remainingProgress;
+      progress = playbackInterval.startPosition + remainingProgress;
       break;
     }
 
@@ -109,7 +116,7 @@ export const getPositionMilliseconds = function(stream) {
 
 
 /*
- * ...
+ * Generates the feed.
  */
 export const feedUpdate = function(state) {
   return {

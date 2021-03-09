@@ -12,17 +12,19 @@ export const getPositionMilliseconds = function(stream, startedAt) {
   }
 
   let progress = Date.now() - startedAt,
+      instrument = 'all',
       seekTimeout,
       playbackIntervalIdx = 0,
       cumulativeProgress = 0;
 
   while(true) {
     const playbackInterval = stream.nowPlaying.playbackIntervals[playbackIntervalIdx],
-          playbackIntervalDuration = playbackInterval[1] - playbackInterval[0],
+          playbackIntervalDuration = playbackInterval.endPosition - playbackInterval.startPosition,
           remainingProgress = progress - cumulativeProgress;
     if(remainingProgress < playbackIntervalDuration) {
-      progress = playbackInterval[0] + remainingProgress;
-      seekTimeout = playbackInterval[1] - progress;
+      progress = playbackInterval.startPosition + remainingProgress;
+      instrument = playbackInterval.instrument;
+      seekTimeout = playbackInterval.endPosition - progress;
       break;
     }
     playbackIntervalIdx += 1;
@@ -33,7 +35,7 @@ export const getPositionMilliseconds = function(stream, startedAt) {
     seekTimeout = undefined;
   }
 
-  return [progress, seekTimeout];
+  return [progress, seekTimeout, instrument];
 }
 
 

@@ -22,49 +22,106 @@ export const finalizeQueue = function(queue) {
         trackDurationMilliseconds = copy.track?.durationMilliseconds;
   if(!intervals.length) {
     copy.totalDurationMilliseconds = trackDurationMilliseconds;
-    copy.playbackIntervals = [[0, trackDurationMilliseconds]];
+    copy.playbackIntervals = [
+      {
+        startPosition: 0,
+        endPosition: trackDurationMilliseconds,
+        purpose: "all",
+      }
+    ];
     return copy;
   }
 
   const playbackIntervals = [];
   let lowerBound,
       upperBound;
-  // NOTE: here it is assumed that all intervals are muted.
   for(const interval of intervals) {
+
+    // muted
+    if(interval.purpose === 'muted') {
+      if(!interval.lowerBound) {
+        lowerBound = interval.upperBound.timestampMilliseconds;
+      } else if(!interval.upperBound) {
+        if(!lowerBound) {
+          lowerBound = 0;
+        }
+        upperBound = interval.lowerBound.timestampMilliseconds;
+        playbackIntervals.push(
+          {
+            startPosition: lowerBound,
+            endPosition: upperBound,
+            purpose: "all",
+          }
+        );
+        // Setting this value signifies that the playbackIntervals array is
+        // finished.
+        lowerBound = undefined;
+      } else {
+        if(!lowerBound) {
+          lowerBound = 0;
+        }
+        upperBound = interval.lowerBound.timestampMilliseconds;
+        playbackIntervals.push(
+          {
+            startPosition: lowerBound,
+            endPosition: upperBound,
+            purpose: "all",
+          }
+        );
+        lowerBound = interval.upperBound.timestampMilliseconds;
+        upperBound = undefined;
+      }
+      continue;
+    }
+
+    // stem seperation
     if(!interval.lowerBound) {
+      const endPosition = (
+        interval.upperBound.timestampMilliseconds ||
+        copy.totalDurationMilliseconds
+      );
+      playbackIntervals.push(
+        {
+          startPosition: 0,
+          endPosition: endPosition,
+          purpose: interval.purpose,
+        }
+      );
       lowerBound = interval.upperBound.timestampMilliseconds;
-      continue;
     } else if(!interval.upperBound) {
-      if(!lowerBound) {
-        lowerBound = 0;
-      }
-      upperBound = interval.lowerBound.timestampMilliseconds;
-      playbackIntervals.push([lowerBound, upperBound]);
-      // Setting this value signifies that the playbackIntervals array is
-      // finished.
-      lowerBound = undefined;
-      // This is the end of the interval array anyways. Explicitly break here
-      // just for clarity.
-      break;
+      playbackIntervals.push(
+        {
+          startPosition: interval.lowerBound.timestampMilliseconds,
+          endPosition: copy.totalDurationMilliseconds,
+          purpose: interval.purpose,
+        }
+      );
     } else {
-      if(!lowerBound) {
-        lowerBound = 0;
-      }
-      upperBound = interval.lowerBound.timestampMilliseconds;
-      playbackIntervals.push([lowerBound, upperBound]);
+      playbackIntervals.push(
+        {
+          startPosition: interval.lowerBound.timestampMilliseconds,
+          endPosition: interval.upperBound.timestampMilliseconds,
+          purpose: interval.purpose,
+        }
+      );
       lowerBound = interval.upperBound.timestampMilliseconds;
-      upperBound = undefined;
-      continue;
     }
   }
 
   if(lowerBound) {
     upperBound = trackDurationMilliseconds;
-    playbackIntervals.push([lowerBound, upperBound]);
+    playbackIntervals.push(
+      {
+        startPosition: lowerBound,
+        endPosition: upperBound,
+        purpose: "all",
+        audioUuid: copy.track?.uuid,
+      }
+    );
   }
 
   const totalDurationMilliseconds = playbackIntervals.reduce((total, i) => (
-    total + (i[1] - i[0])
+    total + (i.endPosition - i.startPosition)
   ), 0);
 
   copy.totalDurationMilliseconds = totalDurationMilliseconds;

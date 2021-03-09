@@ -16,6 +16,7 @@ export const markerCreate = function(state, action) {
   };
 }
 
+
 /*
  * Delete a marker relevant to a queue item (track).
  */
@@ -31,6 +32,7 @@ export const markerDelete = function(state, action) {
     trackMarkerMap: trackMarkerMap,
   };
 }
+
 
 /*
  * Set the markers on a queue item (track).
