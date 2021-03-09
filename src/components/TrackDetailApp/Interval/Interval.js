@@ -14,6 +14,7 @@ function Interval(props) {
     await props.dispatch(responseJson.redux);
   }
 
+  const purpose = queueInterval.purpose;
   const lowerBound = queueInterval.lowerBound ?
     queueInterval.lowerBound.timestampMilliseconds / 1000 : 'beginning';
   const upperBound = queueInterval.upperBound ?
@@ -22,9 +23,9 @@ function Interval(props) {
   return (
     <div>
       <span>
+        [{purpose}]
         {lowerBound} =>
         {upperBound}
-        ({queueInterval.isMuted ? 'muted' : 'played'})
       </span>
       <button onClick={deleteQueueInterval}>Delete</button>
     </div>

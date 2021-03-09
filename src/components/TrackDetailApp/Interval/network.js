@@ -8,11 +8,11 @@ import { fetchBackend } from '../../../utils/network';
 /*
  * Fetches...
  */
-export const fetchStreamQueueIntervalCreate = async (queueUuid, lowerBoundMarkerUuid, upperBoundMarkerUuid, isMuted, repeatCount, parentQueueUuid) => {
+export const fetchStreamQueueIntervalCreate = async (queueUuid, lowerBoundMarkerUuid, upperBoundMarkerUuid, purpose, repeatCount, parentQueueUuid) => {
   const response = await fetchBackend(
     TYPE_POST,
     ENDPOINT_QUEUE_INTERVAL_CREATE,
-    { queueUuid, lowerBoundMarkerUuid, upperBoundMarkerUuid, isMuted, repeatCount, parentQueueUuid }
+    { queueUuid, lowerBoundMarkerUuid, upperBoundMarkerUuid, purpose, repeatCount, parentQueueUuid }
   );
   return await response.json();
 };

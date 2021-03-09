@@ -43,6 +43,9 @@ function PlaybackApp(props) {
   const [spotifySDKDeviceID, setSpotifySDKDeviceID] = useState(undefined);
   const [spotifySDKInit, setSpotifySDKInit] = useState(false);
 
+  // const [spotifyIsPaused, setSpotifyIsPaused] = useState(false);
+  // const [spotifyIsPlaying, setSpotifyIsPlaying] = useState(false);
+
   const [messageScheduleNextTrack, setMessageScheduleNextTrack] = useState(false);
   const [plannedNextTrackTimeoutId, setPlannedNextTrackTimeoutId] = useState({});
   const [nextTrackJson, setNextTrackJson] = useState({});
@@ -96,7 +99,7 @@ function PlaybackApp(props) {
           (
             !isPlanned ||
             (
-              lastPlaybackInterval[1] !== nowPlaying.totalDurationMilliseconds &&
+              lastPlaybackInterval.endPosition !== nowPlaying.totalDurationMilliseconds &&
               isPlanned
             )
           )
@@ -336,6 +339,20 @@ function PlaybackApp(props) {
     player.addListener('ready', ({ device_id }) => {
       setSpotifySDKDeviceID(device_id);
     });
+    player.addListener('player_state_changed', (state) => {
+      return;
+      // if(state.duration) {
+      //   if(state.paused) {
+      //     setSpotifyIsPaused(true);
+      //   } else {
+      //     setSpotifyIsPlaying(true);
+      //   }
+      // } else {
+      //   setSpotifyIsPaused(false);
+      //   setSpotifyIsPlaying(false);
+      // }
+      // console.log(state);
+    });
     player.connect();
 
   // eslint-disable-next-line
@@ -464,6 +481,14 @@ function PlaybackApp(props) {
     });
   }
 
+  const onYouTubePause = function() {
+    pause();
+  }
+
+  const onYouTubePlay = function() {
+    play();
+  }
+
   /*
    * 🎨
    */
@@ -472,7 +497,9 @@ function PlaybackApp(props) {
       <div style={{ display: 'none' }}>
         <YouTube videoId={videoId}
                  opts={opts}
-                 onReady={onYouTubeReady} />
+                 onReady={onYouTubeReady}
+                 onPause={onYouTubePause}
+                 onPlay={onYouTubePlay} />
       </div>
       <MainApp playbackControls={playbackControls}/>
     </>

@@ -16,6 +16,7 @@ import {
 export const playbackControlStart = function(playback, stream) {
   const arr = getPositionMilliseconds(stream, stream.startedAt),
         positionMilliseconds = arr[0],
+        instrument = arr[2],
         playbackService = stream.nowPlaying.track.service;
   if(playbackService === SERVICE_SPOTIFY) {
     playback.spotifyApi.play({
@@ -27,7 +28,7 @@ export const playbackControlStart = function(playback, stream) {
     playback.youTubeApi.playVideo();
   } else if(playbackService === SERVICE_JUKEBOX_RADIO) {
     const trackUuid = stream.nowPlaying.track.uuid,
-          audio = playback.files[trackUuid].audio;
+          audio = playback.files[trackUuid][instrument];
     if(positionMilliseconds > 0) {
       audio.currentTime = positionMilliseconds / 1000;
     }
@@ -50,8 +51,13 @@ export const playbackControlPause = function(playback, stream) {
     playback.youTubeApi.pauseVideo();
   } else if(playbackService === SERVICE_JUKEBOX_RADIO) {
     const trackUuid = stream.nowPlaying.track.uuid,
-          audio = playback.files[trackUuid].audio;
-    audio.pause();
+          audios = playback.files[trackUuid];
+    // eslint-disable-next-line
+    for(const [instrument, audio] of Object.entries(audios)) {
+      if(audio.paused) {
+        audio.pause();
+      }
+    }
   }
 }
 
@@ -69,8 +75,10 @@ export const playbackControlPlay = function(playback, stream) {
   } else if(playbackService === SERVICE_YOUTUBE) {
     playback.youTubeApi.playVideo();
   } else if(playbackService === SERVICE_JUKEBOX_RADIO) {
-    const trackUuid = stream.nowPlaying.track.uuid,
-          audio = playback.files[trackUuid].audio;
+    const arr = getPositionMilliseconds(stream, stream.startedAt),
+          instrument = arr[2],
+          trackUuid = stream.nowPlaying.track.uuid,
+          audio = playback.files[trackUuid][instrument];
     audio.play();
   }
 }
@@ -84,6 +92,7 @@ export const playbackControlPlay = function(playback, stream) {
 export const playbackControlSeek = function(playback, stream, startedAt) {
   const arr = getPositionMilliseconds(stream, startedAt),
         positionMilliseconds = arr[0],
+        instrument = arr[2],
         playbackService = stream.nowPlaying.track.service;
 
   if(playbackService === SERVICE_SPOTIFY) {
@@ -93,7 +102,19 @@ export const playbackControlSeek = function(playback, stream, startedAt) {
     playback.youTubeApi.playVideo();
   } else if(playbackService === SERVICE_JUKEBOX_RADIO) {
     const trackUuid = stream.nowPlaying.track.uuid,
-          audio = playback.files[trackUuid].audio;
+          audios = playback.files[trackUuid],
+          audio = audios[instrument];
+
+    // Pause everything else so only the new stem is played
+    for(const [instr, aud] of Object.entries(audios)) {
+      if(instr === instrument) {
+        continue;
+      }
+      if(!aud.paused) {
+        aud.pause();
+      }
+    }
+
     audio.currentTime = positionMilliseconds / 1000;
     audio.play();
   }
@@ -139,8 +160,12 @@ export const playbackChangeVolume = function(playback, stream, volumeLevel) {
   playback.youTubeApi.setVolume(volumeLevel * 100);
 
   const trackUuid = stream.nowPlaying?.track?.uuid,
-        audio = playback.files[trackUuid]?.audio;
-  if(audio) {
-    audio.volume = volumeLevel;
+        audios = playback.files[trackUuid];
+  if(audios) {
+    audios.all.volume = volumeLevel;
+    audios.drums.volume = volumeLevel;
+    audios.vocals.volume = volumeLevel;
+    audios.bass.volume = volumeLevel;
+    audios.other.volume = volumeLevel;
   }
 }

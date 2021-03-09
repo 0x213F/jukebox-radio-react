@@ -9,7 +9,7 @@ import {
   fetchTrackGetFiles,
 } from '../../components/PlaybackApp/Player/network';
 import { streamNextTrack } from './stream';
-import { store } from '../redux'
+import { store } from '../redux';
 
 
 /*
@@ -55,7 +55,7 @@ export const playbackAddToQueue = function(state) {
         spotifyShouldAddToQueue = (
           nowPlaying.track.service === SERVICE_SPOTIFY &&
           nextUp.track.service === SERVICE_SPOTIFY &&
-          nextUp.playbackIntervals[0][0] === 0
+          nextUp.playbackIntervals[0].startPosition === 0
         ),
         jukeboxRadioShouldAddToQueue = (
           nextUp.track.service === SERVICE_JUKEBOX_RADIO
@@ -70,7 +70,7 @@ export const playbackAddToQueue = function(state) {
           lastInterval = (
             playbackIntervals[playbackIntervals.length - 1]
           );
-    if(lastInterval[1] === nowPlaying.track.durationMilliseconds) {
+    if(lastInterval.endPosition === nowPlaying.track.durationMilliseconds) {
       playback.noopNextTrack = true;
     }
   } else if(jukeboxRadioShouldAddToQueue) {
@@ -260,11 +260,13 @@ export const playbackLoadFiles = function(state, payload) {
   const playback = { ...state.playback },
         files = { ...state.playback.files };
 
-  const audio = new Audio(payload.track.audioUrl);
+  const audiosObj = { all: new Audio(payload.track.audioUrl) };
 
-  files[payload.track.uuid] = {
-    audio: audio,
+  for(const stem of payload.track.stems) {
+    audiosObj[stem.instrument] = new Audio(stem.audioUrl);
   }
+
+  files[payload.track.uuid] = audiosObj;
   return {
     ...state,
     playback: {
