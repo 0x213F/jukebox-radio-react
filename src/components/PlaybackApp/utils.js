@@ -23,7 +23,7 @@ export const getPositionMilliseconds = function(stream, startedAt) {
           remainingProgress = progress - cumulativeProgress;
     if(remainingProgress < playbackIntervalDuration) {
       progress = playbackInterval.startPosition + remainingProgress;
-      instrument = playbackInterval.instrument;
+      instrument = playbackInterval.purpose;
       seekTimeout = playbackInterval.endPosition - progress;
       break;
     }
