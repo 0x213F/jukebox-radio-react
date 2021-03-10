@@ -114,10 +114,10 @@ function TrackDetailApp(props) {
       <div>
         <select value={purpose} onChange={(e) => {setPurpose(e.target.value)}}>
           <option value={'muted'}>Muted</option>
-          <option value={'solo_drums'}>Solo drums</option>
-          <option value={'solo_vocals'}>Solo vocals</option>
-          <option value={'solo_bass'}>Solo bass</option>
-          <option value={'solo_other'}>Solo other</option>
+          <option value={'drums'}>Solo drums</option>
+          <option value={'vocals'}>Solo vocals</option>
+          <option value={'bass'}>Solo bass</option>
+          <option value={'other'}>Solo other</option>
         </select>
         <select value={lowerBoundMarkerUuid} onChange={(e) => {setLowerBoundMarkerUuid(e.target.value)}}>
           <option value={'null'}>Beginning</option>
