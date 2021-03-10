@@ -29,6 +29,8 @@ export const playbackControlStart = function(playback, stream) {
   } else if(playbackService === SERVICE_JUKEBOX_RADIO) {
     const trackUuid = stream.nowPlaying.track.uuid,
           audio = playback.files[trackUuid][instrument];
+    console.log(playback.files[trackUuid])
+    console.log(instrument)
     if(positionMilliseconds > 0) {
       audio.currentTime = positionMilliseconds / 1000;
     }
