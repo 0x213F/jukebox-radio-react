@@ -4,10 +4,6 @@ import { fetchUpdateUserProfile } from './network';
 import styles from './ProfileApp.module.css';
 
 function ProfileApp(props) {
-  // if (!props.userProfile) {
-  //   return <></>;
-  // }
-
   const username = 'Olivia Park';
   const profileImg = 'https://images.unsplash.com/photo-1614038276039-667c23bc32fa?ixid=MXwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHw%3D&ixlib=rb-1.2.1&auto=format&fit=crop&w=3000&q=80';
   const description = 'The bomb';
