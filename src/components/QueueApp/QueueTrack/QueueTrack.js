@@ -26,10 +26,7 @@ function QueueTrack(props) {
 
   const closeModal = function() {
     setShowModal(false);
-    console.log('false close')
   }
-
-  console.log(showModal)
 
   /*
    * 🎨
@@ -45,11 +42,11 @@ function QueueTrack(props) {
       </span>
       {isNextUp &&
         <>
-          <button className={styles.Button} type="button" onClick={async (e) => { await props.destroy(queue); }}>
-            Delete
-          </button>
           <button className={styles.Button} type="button" onClick={initializeModal}>
             Edit
+          </button>
+          <button className={styles.Button} type="button" onClick={async (e) => { await props.destroy(queue); }}>
+            Delete
           </button>
         </>
       }

@@ -1,10 +1,15 @@
-import { SERVICE_SPOTIFY } from '../../config/services';
+import { SERVICE_SPOTIFY, SERVICE_JUKEBOX_RADIO } from '../../config/services';
 import { getNextUpQueue } from '../../components/QueueApp/utils';
 import {
   playbackControlQueue,
   playbackControlSkipToNext,
 } from '../../components/PlaybackApp/controls';
+import { cycleVolumeLevel } from '../../components/PlaybackApp/utils';
+import {
+  fetchTrackGetFiles,
+} from '../../components/PlaybackApp/Player/network';
 import { streamNextTrack } from './stream';
+import { store } from '../redux';
 
 
 /*
@@ -17,6 +22,18 @@ export const playbackSpotify = function(state, payload) {
       ...state.playback,
       spotifyApi: payload.spotifyApi,
       isReady: true,
+    }
+  }
+}
+
+
+export const playbackYouTube = function(state, payload) {
+  return {
+    ...state,
+    playback: {
+      ...state.playback,
+      youTubeApi: payload.youTubeApi,
+      // TODO refactor ready flags
     }
   }
 }
@@ -38,7 +55,10 @@ export const playbackAddToQueue = function(state) {
         spotifyShouldAddToQueue = (
           nowPlaying.track.service === SERVICE_SPOTIFY &&
           nextUp.track.service === SERVICE_SPOTIFY &&
-          nextUp.playbackIntervals[0][0] === 0
+          nextUp.playbackIntervals[0].startPosition === 0
+        ),
+        jukeboxRadioShouldAddToQueue = (
+          nextUp.track.service === SERVICE_JUKEBOX_RADIO
         );
 
   if(spotifyShouldAddToQueue) {
@@ -46,14 +66,20 @@ export const playbackAddToQueue = function(state) {
 
     playback.queuedUp = true;
 
-    const lastInterval = (
-      nowPlaying.playbackIntervals[nowPlaying.playbackIntervals.length - 1]
-    );
-    if(lastInterval[1] === nowPlaying.track.durationMilliseconds) {
+    const playbackIntervals = nowPlaying.playbackIntervals,
+          lastInterval = (
+            playbackIntervals[playbackIntervals.length - 1]
+          );
+    if(lastInterval.endPosition === nowPlaying.track.durationMilliseconds) {
       playback.noopNextTrack = true;
     }
+  } else if(jukeboxRadioShouldAddToQueue) {
+    fetchTrackGetFiles(nextUp.track.uuid)
+      .then((responseJson) => {
+        store.dispatch(responseJson.redux);
+      });
   } else {
-    // TODO: do pre-loaded if needed
+    // noop
   }
 
   return {
@@ -234,11 +260,13 @@ export const playbackLoadFiles = function(state, payload) {
   const playback = { ...state.playback },
         files = { ...state.playback.files };
 
-  const audio = new Audio(payload.track.audioUrl);
+  const audiosObj = { all: new Audio(payload.track.audioUrl) };
 
-  files[payload.track.uuid] = {
-    audio: audio,
+  for(const stem of payload.track.stems) {
+    audiosObj[stem.instrument] = new Audio(stem.audioUrl);
   }
+
+  files[payload.track.uuid] = audiosObj;
   return {
     ...state,
     playback: {
@@ -246,4 +274,17 @@ export const playbackLoadFiles = function(state, payload) {
       files: files,
     }
   };
+}
+
+
+export const playbackCycleVolumeLevelAudio = function(state) {
+  const volumeLevel = { ...state.playback.volumeLevel },
+        audioLevel = volumeLevel.audio;
+
+  volumeLevel.audio = cycleVolumeLevel(audioLevel);
+
+  return {
+    ...state,
+    playback: { ...state.playback, volumeLevel },
+  }
 }

@@ -6,10 +6,11 @@ import styles from './FeedApp.module.css';
 import { fetchTextCommentCreate } from './network';
 import { fetchCreateVoiceRecording } from './VoiceRecording/network';
 import TextComment from './TextComment/TextComment';
-import ABCNotation from './ABCNotation/ABCNotation';
+import ABCNotationDisplay from './ABCNotationDisplay/ABCNotationDisplay';
+import ABCNotationCompose from './ABCNotationCompose/ABCNotationCompose';
 import VoiceRecording from './VoiceRecording/VoiceRecording';
 import { CLASS_TEXT_COMMENT, CLASS_VOICE_RECORDING } from '../../config/model';
-import { getPositionMilliseconds } from '../../utils/reducers/feed';
+import { getPositionMilliseconds } from '../PlaybackApp/utils';
 
 
 function FeedApp(props) {
@@ -21,12 +22,25 @@ function FeedApp(props) {
         stream = props.stream;
 
   const [text, setText] = useState('');
-  const [textCommentUuid, setTextCommentUuid] = useState(undefined);
+  const [trackUuid, setTrackUuid] = useState(undefined);
   const [textCommentTimestamp, setTextCommentTimestamp] = useState(undefined);
-  const [isAbc, setIsAbc] = useState('');
   const [isRecording, setIsRecording] = useState(false);
   const [recorder] = useState(new MicRecorder({ bitRate: 320 }));
   const [transcriptData] = useState([]);
+
+  const [showModal, setShowModal] = useState(false);
+
+  const openModal = function() {
+    const arr = getPositionMilliseconds(stream),
+          position = arr[0];
+    setTextCommentTimestamp(position);
+    setTrackUuid(stream.nowPlaying.track.uuid);
+    setShowModal(true);
+  }
+
+  const closeModal = function() {
+    setShowModal(false);
+  }
 
   //////////////////////////////////////////////////////////////////////////////
   // REGENERATE THE FEED
@@ -44,11 +58,11 @@ function FeedApp(props) {
   }, []);
 
   const handleTextChange = function(e) {
-    if(!textCommentUuid) {
+    if(!trackUuid) {
       const arr = getPositionMilliseconds(stream),
             position = arr[0];
       setTextCommentTimestamp(position);
-      setTextCommentUuid(stream.nowPlaying.track.uuid);
+      setTrackUuid(stream.nowPlaying.track.uuid);
     }
     setText(e.target.value);
   }
@@ -58,18 +72,14 @@ function FeedApp(props) {
    */
   const createTextComment = async function(e) {
     e.preventDefault();
-    const format = isAbc ? 'abc_notation' : 'text';
+    const format = 'text';
     const responseJson = await fetchTextCommentCreate(
-      text, format, textCommentUuid, textCommentTimestamp
+      text, format, trackUuid, textCommentTimestamp
     );
 
-    await props.dispatch({
-      type: 'textComment/create',
-      textComment: responseJson.data,
-    });
-
+    props.dispatch(responseJson.redux);
     setTextCommentTimestamp(undefined);
-    setTextCommentUuid(undefined);
+    setTrackUuid(undefined);
     setText('');
   }
 
@@ -132,45 +142,45 @@ function FeedApp(props) {
    */
   return (
     <div className={styles.FeedApp}>
-      <div>
-        {feed.map((value, index) => {
-          if(value.class === CLASS_TEXT_COMMENT) {
-            if(value.format === 'text') {
-              return <TextComment key={index} data={value} />;
-            } else if(value.format === 'abc_notation') {
-              return <ABCNotation key={index} data={value} />;
+      <div className={styles.Feed}>
+        <div className={styles.FeedWrapper}>
+          {feed.map((value, index) => {
+            if(value.class === CLASS_TEXT_COMMENT) {
+              if(value.format === 'text') {
+                return <TextComment key={index} data={value} />;
+              } else if(value.format === 'abc_notation') {
+                return <ABCNotationDisplay key={index} data={value} />;
+              }
+            } else if(value.class === CLASS_VOICE_RECORDING) {
+              return <VoiceRecording key={index} data={value} />
             }
-          } else if(value.class === CLASS_VOICE_RECORDING) {
-            return <VoiceRecording key={index} data={value} />
-          }
-          return <></>;
-        })}
+            return <></>;
+          })}
+        </div>
       </div>
 
       <form className={styles.CreateTextComment} onSubmit={async (e) => { await createTextComment(e); }}>
-        <input type="checkbox"
-               value={isAbc}
-               onChange={(e) => { setIsAbc(e.target.checked); }} />
+        <button type="button"
+                onClick={openModal}
+                disabled={!stream.isPlaying} >
+          Notation
+        </button>
+
+        <ABCNotationCompose trackUuid={trackUuid}
+                            textCommentTimestamp={textCommentTimestamp}
+                            isOpen={showModal}
+                            closeModal={closeModal} />
         <button type="button"
                 onClick={handleRecord}
                 disabled={!stream.isPlaying} >
           Record
         </button>
-        {isAbc ? (
-          <textarea type="text"
-                    name="text"
-                    placeholder="text"
-                    value={text}
-                    onChange={handleTextChange}
-                    disabled={!stream.isPlaying} />
-        ) : (
-          <input type="text"
-                 name="text"
-                 placeholder="text"
-                 value={text}
-                 onChange={handleTextChange}
-                 disabled={!stream.isPlaying} />
-        )}
+        <input type="text"
+               name="text"
+               placeholder="text"
+               value={text}
+               onChange={handleTextChange}
+               disabled={!stream.isPlaying} />
         <button type="submit"
                 disabled={!stream.isPlaying} >
           Send

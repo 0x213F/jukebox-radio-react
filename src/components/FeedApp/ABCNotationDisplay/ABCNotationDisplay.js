@@ -1,11 +1,11 @@
 import React from "react";
 import { connect } from 'react-redux';
 import { Notation } from 'react-abc';
-import styles from './ABCNotation.module.css';
+import styles from './ABCNotationDisplay.module.css';
 import { fetchDeleteTextComment } from '../TextComment/network';
 
 
-function ABCNotation(props) {
+function ABCNotationDisplay(props) {
 
   /*
    * 🏗
@@ -20,18 +20,15 @@ function ABCNotation(props) {
    * the hood runs inside TextComment.
    */
   const deleteAbcNotation = async function() {
-    await fetchDeleteTextComment(abcNotationUuid);
-    await props.dispatch({
-      type: 'textComment/delete',
-      textCommentUuid: abcNotationUuid,
-    });
+    const responseJson = await fetchDeleteTextComment(abcNotationUuid);
+    props.dispatch(responseJson.redux);
   }
 
   /*
    * 🎨
    */
   return (
-    <div className={styles.ABCNotation}>
+    <div className={styles.ABCNotationDisplay}>
 
       <Notation notation={abcNotation.text}
                 engraverParams={{ staffwidth: 278 }}/>
@@ -47,4 +44,4 @@ function ABCNotation(props) {
 const mapStateToProps = (state) => ({});
 
 
-export default connect(mapStateToProps)(ABCNotation);
+export default connect(mapStateToProps)(ABCNotationDisplay);

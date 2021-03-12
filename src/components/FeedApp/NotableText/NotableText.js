@@ -6,6 +6,7 @@ import {
   STYLE_BOLD,
   STYLE_ITALICIZE,
   STYLE_STRIKETHROUGH,
+  STYLE_HIGHLIGHT,
   STYLE_CHOICES,
 } from './constants';
 import { fetchCreateTextCommentModification } from './network';
@@ -45,20 +46,21 @@ function NotableText(props) {
   const onTextSelect = async function() {
     const selection = window.getSelection();
 
-    // Invalid text selection
-    if(selection.anchorNode !== selection.focusNode) {
-      setSelectableIsShowable(false);
-      setAnchorOffset(null);
-      setFocusOffset(null);
-      return;
-    }
+    // // Invalid text selection
+    // if(selection.anchorNode !== selection.focusNode) {
+    //   setSelectableIsShowable(false);
+    //   setAnchorOffset(null);
+    //   setFocusOffset(null);
+    //   return;
+    // }
 
     // NOTE: anchor is where the user starts selecting text, focus is the end
     //       of the selection.
-    const offset = parseInt(selection.anchorNode.parentNode.getAttribute('offset'));
+    const anchorValue = parseInt(selection.anchorNode.parentNode.getAttribute('offset')) - 1;
+    const focusValue = parseInt(selection.focusNode.parentNode.getAttribute('offset'));
     setSelectableIsShowable(true);
-    setAnchorOffset(offset + selection.anchorOffset);
-    setFocusOffset(offset + selection.focusOffset);
+    setAnchorOffset(anchorValue);
+    setFocusOffset(focusValue);
   }
 
   /*
@@ -77,57 +79,55 @@ function NotableText(props) {
    * Notation is used to display the underline, strike-through, or highlight.
    */
   const renderTextComment = function() {
-    const textComment = props.data;
-    const textCommentText = textComment.text;
-    const modifications = textComment.modifications;
+    const textComment = props.data,
+          textCommentText = textComment.text,
+          modifications = textComment.modifications;
 
-    let startOffset = 0,
-        textCommentHtml = <></>;
-    for(let i = 0; i < modifications.length; i++) {
-        let modification = modifications[i];
-
-        const regSubString = textCommentText.substring(
-          startOffset,
-          modification.startPtr
-        )
-        const styledSubString = textCommentText.substring(
-          modification.startPtr,
-          modification.endPtr
-        )
-
-        // BUG: https://github.com/linkstrifer/react-rough-notation/issues/17
-        textCommentHtml = (
-          <>
-            {textCommentHtml}
-            <span offset={startOffset}>{regSubString}</span>
-            {modification.type === STYLE_BOLD &&
-              <b><span>{styledSubString}</span></b>
-            }
-            {modification.type === STYLE_ITALICIZE &&
-              <i><span>{styledSubString}</span></i>
-            }
-            {modification.type === STYLE_STRIKETHROUGH &&
-              <strike><span>{styledSubString}</span></strike>
-            }
-          </>
-        )
-
-        startOffset = modification.endPtr;
+    // Initializes an array of empty sets.
+    const styles = [];
+    for(let i=0; i< textCommentText.length; i++) {
+      styles[i] = new Set();
     }
 
-    const regSubString = textCommentText.substring(
-      startOffset,
-      textCommentText.length
-    )
+    // Adds styles to each set.
+    for(let i=0; i < modifications.length; i++) {
+      const modification = modifications[i];
 
-    textCommentHtml = (
-      <>
+      for(let j=modification.startPtr; j < modification.endPtr; j++) {
+        styles[j].add(modification.style);
+      }
+    }
+
+    // Generate the comment
+    let textCommentHtml = <></>
+    for(let i=0; i < styles.length; i++) {
+      const char = textCommentText[i],
+            style = styles[i];
+
+      const stylesObj = {};
+      if(style.has(STYLE_BOLD)) {
+        stylesObj['fontWeight'] = 'bold';
+      }
+      if(style.has(STYLE_ITALICIZE)) {
+        stylesObj['fontStyle'] = 'italic';
+      }
+      if(style.has(STYLE_STRIKETHROUGH)) {
+        stylesObj['textDecoration'] = 'line-through';
+      }
+      if(style.has(STYLE_HIGHLIGHT)) {
+        stylesObj['backgroundColor'] = 'yellow';
+      }
+
+      textCommentHtml = <>
         {textCommentHtml}
-        <span offset={startOffset}>{regSubString}</span>
+        <span offset={i} style={stylesObj}>
+          {char}
+        </span>
       </>
-    )
+    }
 
     return textCommentHtml;
+
   }
 
   /*

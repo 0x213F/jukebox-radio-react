@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import Modal from 'react-modal';
 import styles from './Upload.module.css';
 
 import { fetchCreateTrack } from './network';
@@ -9,17 +10,25 @@ function Upload(props) {
   /*
    * 🏗
    */
+  const [inputKey, setInputKey] = useState(0);
+
+  const [isDisabled, setIsDisabled] = useState(false);
   const [audioFile, setAudioFile] = useState('');
   const [imageFile, setImageFile] = useState('');
   const [trackName, setTrackName] = useState('');
   const [artistName, setArtistName] = useState('');
   const [albumName, setAlbumName] = useState('');
 
+  const isOpen = props.isOpen,
+        closeModal = props.closeModal;
+
   /*
    * When the user initializes a login attempt.
    */
-  const handleSubmit = async function(e) {
-    e.preventDefault();
+  const handleSubmit = async function() {
+
+    // Hit the server.
+    setIsDisabled(true);
     await fetchCreateTrack(
       audioFile,
       imageFile,
@@ -27,66 +36,88 @@ function Upload(props) {
       artistName,
       albumName,
     );
+
+    // Reset the form.
+    setIsDisabled(false);
+    setInputKey(prev => prev + 2);
     setTrackName('');
     setArtistName('');
     setAlbumName('');
+
+    // Close the modal.
+    closeModal();
   }
 
   return (
-    <form className={styles.Login} onSubmit={async (e) => { await handleSubmit(e); }}>
-      <h3>Upload</h3>
+    <Modal isOpen={isOpen}
+           ariaHideApp={false}>
+      <button onClick={closeModal}
+              disabled={isDisabled}>Close</button>
 
-      <label className={styles.FormBlock}>
-        Audio file
-        <input type="file"
-               name="audioFile"
-               onChange={(e) => {setAudioFile(e.target.files[0])}} />
-      </label>
+      <div className={styles.Login}>
+        <h3>Upload</h3>
 
-      <label className={styles.FormBlock}>
-        Image file
-        <input type="file"
-               name="imageFile"
-               onChange={(e) => {setImageFile(e.target.files[0])}} />
-      </label>
+        <label className={styles.FormBlock}>
+          Audio file
+          <input type="file"
+                 name="audioFile"
+                 onChange={(e) => {setAudioFile(e.target.files[0])}}
+                 disabled={isDisabled}
+                 key={inputKey} />
+        </label>
 
-      <br></br>
+        <label className={styles.FormBlock}>
+          Image file
+          <input type="file"
+                 name="imageFile"
+                 onChange={(e) => {setImageFile(e.target.files[0])}}
+                 disabled={isDisabled}
+                 key={inputKey + 1} />
+        </label>
 
-      <label className={styles.FormBlock}>
-        Track name
-        <input type="text"
-               name="trackName"
-               placeholder="Track name"
-               value={trackName}
-               onChange={(e) => {setTrackName(e.target.value)}} />
-      </label>
+        <br></br>
 
-      <label className={styles.FormBlock}>
-        Artist name
-        <input type="text"
-               name="artistName"
-               placeholder="Artist name"
-               value={artistName}
-               onChange={(e) => {setArtistName(e.target.value)}} />
-      </label>
+        <label className={styles.FormBlock}>
+          Track name
+          <input type="text"
+                 name="trackName"
+                 placeholder="Track name"
+                 value={trackName}
+                 onChange={(e) => {setTrackName(e.target.value)}}
+                 disabled={isDisabled} />
+        </label>
 
-      <label className={styles.FormBlock}>
-        Album name
-        <input type="text"
-               name="albumName"
-               placeholder="Album name"
-               value={albumName}
-               onChange={(e) => {setAlbumName(e.target.value)}} />
-      </label>
+        <label className={styles.FormBlock}>
+          Artist name
+          <input type="text"
+                 name="artistName"
+                 placeholder="Artist name"
+                 value={artistName}
+                 onChange={(e) => {setArtistName(e.target.value)}}
+                 disabled={isDisabled} />
+        </label>
 
-      <br></br>
+        <label className={styles.FormBlock}>
+          Album name
+          <input type="text"
+                 name="albumName"
+                 placeholder="Album name"
+                 value={albumName}
+                 onChange={(e) => {setAlbumName(e.target.value)}}
+                 disabled={isDisabled} />
+        </label>
 
-      <div className={styles.FormBlock}>
-        <button type="submit">
-          Submit
-        </button>
+        <br></br>
+
+        <div className={styles.FormBlock}>
+          <button type="submit"
+                  onClick={handleSubmit}
+                  disabled={isDisabled}>
+            Submit
+          </button>
+        </div>
       </div>
-    </form>
+    </Modal>
   );
 }
 

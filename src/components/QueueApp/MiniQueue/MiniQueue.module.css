@@ -1,0 +1,8 @@
+.MiniQueue {
+  overflow-y: hidden;
+  max-height: 400px;
+}
+
+.MiniQueueItem {
+  padding-bottom: 8px;
+}

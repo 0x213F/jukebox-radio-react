@@ -8,9 +8,8 @@ import {
   fetchStreamGet,
   fetchPauseTrack,
   fetchTrackGetFiles,
-} from './components/Player/network';
+} from './components/PlaybackApp/Player/network';
 import { fetchQueueList } from './components/QueueApp/network'
-import { fetchGetUserSettings } from './components/UserSettings/network';
 import { playbackControlPause } from './components/PlaybackApp/controls';
 import { store } from './utils/redux'
 import Login from './components/Login/Login';
@@ -19,8 +18,8 @@ import { useEffect, useState } from "react";
 import { Provider } from 'react-redux';
 import { BrowserRouter as Router } from "react-router-dom";
 import { SERVICE_JUKEBOX_RADIO } from './config/services';
-
-const SpotifyWebApi = require('spotify-web-api-js');
+import TimeAgo from 'javascript-time-ago'
+import en from 'javascript-time-ago/locale/en'
 
 
 function App() {
@@ -83,38 +82,17 @@ function App() {
       await store.dispatch(responseJson.redux);
 
       // 5: Load relevant comments.
-      const textCommentsJsonResponse = await fetchTextCommentList();
+      const textCommentsJsonResponse = await fetchTextCommentList(payload.stream.nowPlaying?.track?.uuid);
       await store.dispatch(textCommentsJsonResponse.redux);
 
       // 6: Load relevant voice recordings. This will also generate the feed.
-      const voiceRecordingsJsonResponse = await fetchVoiceRecordingList();
+      const voiceRecordingsJsonResponse = await fetchVoiceRecordingList(payload.stream.nowPlaying?.track?.uuid);
       await store.dispatch(voiceRecordingsJsonResponse.redux);
-
-      // 7: Get user settings.
-      const userSettingsJsonResponse = await fetchGetUserSettings();
-      await store.dispatch({
-        type: 'user/get-settings',
-        userSettings: userSettingsJsonResponse.data,
-      });
-
-      // 8: Initialize the Spotify player (conditionally).
-      const spotifyAccessToken = userSettingsJsonResponse.data.spotify.accessToken;
-      if(spotifyAccessToken) {
-        const spotifyApi = new SpotifyWebApi();
-        spotifyApi.setAccessToken(userSettingsJsonResponse.data.spotify.accessToken);
-        await store.dispatch({
-          type: 'playback/spotify',
-          payload: { spotifyApi: spotifyApi },
-        });
-      }
-
-      // Enable playback controls.
-      store.dispatch({ type: 'playback/enable' });
 
       // Update status.
       setStatus('ready');
-      console.log('ready')
     }
+    TimeAgo.addDefaultLocale(en);
     loadData();
 
     // Define behavior for when the webpage is closed.
@@ -168,7 +146,9 @@ function App() {
   return (
     <Router>
       <Provider store={store}>
-        <PlaybackApp />
+        <div className="app-main-container">
+            <PlaybackApp />
+        </div>
       </Provider>
     </Router>
   );

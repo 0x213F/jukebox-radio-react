@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { connect } from 'react-redux';
+import YouTube from 'react-youtube';
 
 import {
   playbackControlStart,
@@ -7,7 +8,8 @@ import {
   playbackControlPause,
   playbackControlPlay,
 } from './controls';
-import { getPositionMilliseconds } from './utils';
+import { fetchGetUserSettings } from '../UserSettings/network';
+import { getPositionMilliseconds, updateSpotifyPlayer } from './utils';
 
 import MainApp from '../MainApp/MainApp';
 import {
@@ -18,11 +20,13 @@ import {
   fetchTrackGetFiles,
   fetchPauseTrack,
   fetchPlayTrack,
-} from '../Player/network';
+} from './Player/network';
 import { updateFeed } from '../FeedApp/utils';
 import { getLastUpQueue, getNextUpQueue } from '../QueueApp/utils';
 
 import { SERVICE_JUKEBOX_RADIO, SERVICE_SPOTIFY } from '../../config/services';
+
+const SpotifyWebApi = require('spotify-web-api-js');
 
 
 function PlaybackApp(props) {
@@ -35,9 +39,36 @@ function PlaybackApp(props) {
         lastUp = getLastUpQueue(props.lastUpQueues),
         nextUp = getNextUpQueue(props.nextUpQueues);
 
+  const [spotifySDKReady, setSpotifySDKReady] = useState(false);
+  const [spotifySDKDeviceID, setSpotifySDKDeviceID] = useState(undefined);
+  const [spotifySDKInit, setSpotifySDKInit] = useState(false);
+
+  // const [spotifyIsPaused, setSpotifyIsPaused] = useState(false);
+  // const [spotifyIsPlaying, setSpotifyIsPlaying] = useState(false);
+
   const [messageScheduleNextTrack, setMessageScheduleNextTrack] = useState(false);
   const [plannedNextTrackTimeoutId, setPlannedNextTrackTimeoutId] = useState({});
   const [nextTrackJson, setNextTrackJson] = useState({});
+
+  /*
+   * Loads the Spotify SDK.
+   */
+  const appendSpotifySDK = function() {
+    const script = document.createElement("script");
+    script.src = "https://sdk.scdn.co/spotify-player.js";
+    script.async = true;
+    new Promise(resolve => {
+      if (window.Spotify) {
+        resolve();
+      } else {
+        window.onSpotifyWebPlaybackSDKReady = resolve;
+      }
+    })
+      .then(() => {
+        setSpotifySDKReady(true);
+      });
+    document.body.appendChild(script);
+  };
 
   /*
    * When a track is changing from one to another, this boolean logic
@@ -68,7 +99,7 @@ function PlaybackApp(props) {
           (
             !isPlanned ||
             (
-              lastPlaybackInterval[1] !== nowPlaying.totalDurationMilliseconds &&
+              lastPlaybackInterval.endPosition !== nowPlaying.totalDurationMilliseconds &&
               isPlanned
             )
           )
@@ -106,11 +137,6 @@ function PlaybackApp(props) {
       stream.nowPlaying?.totalDurationMilliseconds, true
     );
 
-    if(nextUp.track.service === SERVICE_JUKEBOX_RADIO) {
-      const responseJson = await fetchTrackGetFiles(nextUp.track.uuid);
-      await props.dispatch(responseJson.redux);
-    }
-
     // update the front-end later
     setNextTrackJson(responseJsonNextTrack);
 
@@ -133,7 +159,7 @@ function PlaybackApp(props) {
       payload: { payload: nextTrackJson.redux },  // yes
     });
     await props.dispatch({ type: 'playback/enable' });
-    await updateFeed();
+    await updateFeed(nextUp?.track?.uuid);
   }
 
   /*
@@ -148,11 +174,11 @@ function PlaybackApp(props) {
       const responseJson = await fetchTrackGetFiles(lastUp.track.uuid);
       await props.dispatch(responseJson.redux);
     }
-    const responseJsonPrevTrack = await fetchPrevTrack();
+    const responseJsonPrevTrack = await fetchPrevTrack(stream.nowPlaying?.totalDurationMilliseconds);
     await props.dispatch(responseJsonPrevTrack.redux);
     await props.dispatch({ type: 'playback/start' });
     await props.dispatch({ type: 'playback/enable' });
-    await updateFeed();
+    await updateFeed(lastUp?.track?.uuid);
   }
 
   /*
@@ -173,7 +199,7 @@ function PlaybackApp(props) {
     await props.dispatch(responseJsonNextTrack.redux);
     await props.dispatch({ type: 'playback/start' });
     await props.dispatch({ type: 'playback/enable' });
-    await updateFeed();
+    await updateFeed(nextUp?.track?.uuid);
   }
 
   /*
@@ -199,7 +225,7 @@ function PlaybackApp(props) {
       }
       startedAt = stream.startedAt - (10000);
     } else if(direction === 'backward') {
-      await fetchScanBackward();
+      await fetchScanBackward(stream.nowPlaying.totalDurationMilliseconds);
       const date = new Date(),
             epochNow = date.getTime(),
             proposedStartedAt = stream.startedAt + 10000,
@@ -239,7 +265,7 @@ function PlaybackApp(props) {
    */
   const pause = async function() {
     await props.dispatch({ type: 'playback/disable' });
-    const jsonResponse = await fetchPauseTrack();
+    const jsonResponse = await fetchPauseTrack(stream.nowPlaying.totalDurationMilliseconds);
     await props.dispatch(jsonResponse.redux);
     await props.dispatch({ type: 'playback/addToQueueReschedule' });
     playbackControlPause(playback, stream);
@@ -266,6 +292,82 @@ function PlaybackApp(props) {
     playbackControlPlay(playback, stream);
     await props.dispatch({ type: 'playback/enable' });
   }
+
+  //////////////////////////////////////////////////////////////////////////////
+  // LOAD SPOTIFY SDK
+  useEffect(() => {
+    appendSpotifySDK();
+  }, []);
+
+  //////////////////////////////////////////////////////////////////////////////
+  // SPOTIFY SDK LOADED
+  // Happens on page load
+  useEffect(() => {
+    if(!spotifySDKReady) {
+      return;
+    }
+    // 7: Get user settings.
+    const player = new window.Spotify.Player({
+      name: 'Jukebox Radio',
+      getOAuthToken: cb => {
+        fetchGetUserSettings()
+          .then(responseJson => {
+            cb(responseJson.data.spotify.accessToken);
+            props.dispatch({
+              type: 'user/get-settings',
+              userSettings: responseJson.data,
+            });
+
+            // Initialize the Spotify player (conditionally).
+            const spotifyAccessToken = responseJson.data.spotify.accessToken;
+            if(spotifyAccessToken) {
+              const spotifyApi = new SpotifyWebApi();
+              spotifyApi.setAccessToken(responseJson.data.spotify.accessToken);
+              props.dispatch({
+                type: 'playback/spotify',
+                payload: { spotifyApi: spotifyApi },
+              });
+            }
+
+            // Enable playback controls.
+            props.dispatch({ type: 'playback/enable' });
+
+            setSpotifySDKInit(true);
+          });
+      }
+    });
+    player.addListener('ready', ({ device_id }) => {
+      setSpotifySDKDeviceID(device_id);
+    });
+    player.addListener('player_state_changed', (state) => {
+      return;
+      // if(state.duration) {
+      //   if(state.paused) {
+      //     setSpotifyIsPaused(true);
+      //   } else {
+      //     setSpotifyIsPlaying(true);
+      //   }
+      // } else {
+      //   setSpotifyIsPaused(false);
+      //   setSpotifyIsPlaying(false);
+      // }
+      // console.log(state);
+    });
+    player.connect();
+
+  // eslint-disable-next-line
+  }, [spotifySDKReady]);
+
+  //////////////////////////////////////////////////////////////////////////////
+  // Update player to SDK player
+  useEffect(() => {
+    if(!spotifySDKInit || !spotifySDKDeviceID) {
+      return;
+    }
+
+    updateSpotifyPlayer(playback, spotifySDKDeviceID);
+  // eslint-disable-next-line
+  }, [spotifySDKInit, spotifySDKDeviceID])
 
   //////////////////////////////////////////////////////////////////////////////
   // SCHEDULE ADD TO QUEUE
@@ -342,18 +444,65 @@ function PlaybackApp(props) {
   // eslint-disable-next-line
   }, [messageScheduleNextTrack]);
 
+  //////////////////////////////////////////////////////////////////////////////
   // Play the music.
-  if(stream.isPlaying && !playback.isPlaying && playback.isReady) {
-    start();
-  }
+  useEffect(() => {
+    if(stream.isPlaying && !playback.isPlaying && playback.isReady) {
+      start();
+    }
+  // eslint-disable-next-line
+  }, [stream, playback]);
+
 
   const playbackControls = { nextTrack, prevTrack, seek, pause, play };
+
+  const opts = {
+          height: '135',
+          width: '240',
+          playerVars: {
+            // https://developers.google.com/youtube/player_parameters
+            autoplay: 0,  // the initial video will automatically start to play
+            controls: 0,  // hide playback controls
+            disablekb: 1,  // disable keyboard controls
+            fs: 0,  // disable full screen
+            iv_load_policy: 3,
+            modestbranding: 1,
+            origin: 'jukeboxrad.io',
+            playsinline: 1,
+          },
+        },
+        videoId = stream?.nowPlaying?.track?.externalId;
+
+  const onYouTubeReady = function(e) {
+    const youTubeApi = e.target;
+    props.dispatch({
+      type: 'playback/youTube',
+      payload: { youTubeApi: youTubeApi },
+    });
+  }
+
+  const onYouTubePause = function() {
+    pause();
+  }
+
+  const onYouTubePlay = function() {
+    play();
+  }
 
   /*
    * 🎨
    */
   return (
-    <MainApp playbackControls={playbackControls}/>
+    <>
+      <div style={{ display: 'none' }}>
+        <YouTube videoId={videoId}
+                 opts={opts}
+                 onReady={onYouTubeReady}
+                 onPause={onYouTubePause}
+                 onPlay={onYouTubePlay} />
+      </div>
+      <MainApp playbackControls={playbackControls}/>
+    </>
   );
 }
 

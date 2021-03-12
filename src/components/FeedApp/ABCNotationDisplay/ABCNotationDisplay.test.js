@@ -1,10 +1,10 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
-import ABCNotation from './ABCNotation';
+import ABCNotationDisplay from './ABCNotationDisplay';
 
 
 it('It should mount', () => {
   const div = document.createElement('div');
-  ReactDOM.render(<ABCNotation />, div);
+  ReactDOM.render(<ABCNotationDisplay />, div);
   ReactDOM.unmountComponentAtNode(div);
 });

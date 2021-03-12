@@ -10,11 +10,11 @@ import { fetchBackend } from '../../utils/network'
 /*
  * Fetches...
  */
-export const fetchTextCommentCreate = async (text, format, textCommentUuid, textCommentTimestamp) => {
+export const fetchTextCommentCreate = async (text, format, trackUuid, textCommentTimestamp) => {
   const response = await fetchBackend(
     TYPE_POST,
     ENDPOINT_TEXT_COMMENT_CREATE,
-    { text, format, textCommentUuid, textCommentTimestamp },
+    { text, format, trackUuid, textCommentTimestamp },
   );
   const responseJson = await response.json();
   return responseJson;
@@ -23,10 +23,11 @@ export const fetchTextCommentCreate = async (text, format, textCommentUuid, text
 /*
  * Fetches...
  */
-export const fetchTextCommentList = async () => {
+export const fetchTextCommentList = async (trackUuid) => {
   const response = await fetchBackend(
     TYPE_GET,
-    ENDPOINT_TEXT_COMMENT_LIST
+    ENDPOINT_TEXT_COMMENT_LIST,
+    { trackUuid },
   );
   const responseJson = await response.json();
   return responseJson;
@@ -35,10 +36,11 @@ export const fetchTextCommentList = async () => {
 /*
  * Fetches...
  */
-export const fetchVoiceRecordingList = async () => {
+export const fetchVoiceRecordingList = async (trackUuid) => {
   const response = await fetchBackend(
     TYPE_GET,
-    ENDPOINT_VOICE_RECORDING_LIST
+    ENDPOINT_VOICE_RECORDING_LIST,
+    { trackUuid },
   );
   const responseJson = await response.json();
   return responseJson;

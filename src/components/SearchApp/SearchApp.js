@@ -1,13 +1,14 @@
 import React, { useState } from "react";
 import { connect } from 'react-redux';
-import styles from './Search.module.css';
+import styles from './SearchApp.module.css';
 
 import { fetchSearchMusicLibrary, fetchCreateQueue } from './network';
-import SearchResult from '../SearchResult/SearchResult';
+import SearchResult from './SearchResult/SearchResult';
+import Upload from '../Upload/Upload';
 import { fetchQueueList } from '../QueueApp/network';
 
 
-function Search(props) {
+function SearchApp(props) {
 
   /*
    * 🏗
@@ -15,7 +16,7 @@ function Search(props) {
 
   const [searchResults, setSearchResults] = useState([]);
 
-  const [query, setQuery] = useState([]);
+  const [query, setQuery] = useState('');
 
   // NOTE: These could be condensed, but I prefer explicitly writing them out.
   const [serviceSpotify, setServiceSpotify] = useState(true);
@@ -27,11 +28,23 @@ function Search(props) {
   const [formatPlaylist, setFormatPlaylist] = useState(true);
   const [formatVideo, setFormatVideo] = useState(true);
 
+  const [showModal, setShowModal] = useState(false);
+
+  const openModal = function() {
+    setShowModal(true);
+  }
+
+  const closeModal = function() {
+    setShowModal(false);
+  }
+
   /*
    * When the user initializes a login attempt.
    */
-  const handleSubmit = async function(e) {
-    e.preventDefault();
+  const handleSubmit = async function() {
+    if(!query) {
+      return;
+    }
     const responseJson = await fetchSearchMusicLibrary(
       query,
       serviceSpotify,
@@ -54,16 +67,27 @@ function Search(props) {
       genericUuid,
     );
 
-    setSearchResults([]);
-
     const responseJsonQueueList = await fetchQueueList();
-    await props.dispatch(responseJsonQueueList.redux);
+    props.dispatch(responseJsonQueueList.redux);
   }
+
+  /*
+   *
+   */
+  const handleKeyDown = (event) => {
+   if (event.key === 'Enter') {
+     handleSubmit();
+   }
+ }
 
   return (
     <div>
-      <form className={styles.Login} onSubmit={async (e) => { await handleSubmit(e); }}>
+      <div className={styles.SearchApp}>
         <h3>Search</h3>
+
+        <button onClick={openModal}>Upload</button>
+
+        <br></br><br></br>
 
         <label className={styles.FormBlock}>
           Query &nbsp;
@@ -71,7 +95,8 @@ function Search(props) {
                  name="query"
                  placeholder=""
                  value={query}
-                 onChange={(e) => {setQuery(e.target.value)}} />
+                 onChange={(e) => {setQuery(e.target.value)}}
+                 onKeyDown={handleKeyDown} />
         </label>
 
         <br></br>
@@ -133,24 +158,30 @@ function Search(props) {
 
         <br></br>
 
-        <div className={styles.FormBlock}>
+        <div className={styles.FormBlock}
+             onClick={handleSubmit}>
           <button type="submit">
             Search
           </button>
         </div>
-      </form>
+      </div>
 
       <br></br>
 
-      <div>
+      <div className={styles.SearchResults}>
         {searchResults.map((value, index) => (
           <SearchResult key={index} data={value} addToQueue={addToQueue}></SearchResult>
         ))}
       </div>
+
+      <Upload isOpen={showModal}
+              closeModal={closeModal} />
     </div>
   );
 }
 
+
 const mapStateToProps = (state) => ({});
 
-export default connect(mapStateToProps)(Search);
+
+export default connect(mapStateToProps)(SearchApp);

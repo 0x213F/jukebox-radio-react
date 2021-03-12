@@ -7,6 +7,7 @@ import {
 } from './reducers/marker';
 import {
   playbackSpotify,
+  playbackYouTube,
   playbackAddToQueue,
   playbackPlannedNextTrack,
   playbackStart,
@@ -17,6 +18,7 @@ import {
   playbackDisable,
   playbackEnable,
   playbackLoadFiles,
+  playbackCycleVolumeLevelAudio,
 } from  './reducers/playback';
 import { queueListSet } from './reducers/queue';
 import {
@@ -37,6 +39,7 @@ import {
 } from './reducers/textComment';
 import {
   textCommentModificationCreate,
+  textCommentClearModifications,
 } from './reducers/textCommentModification';
 import {
   voiceRecordingListSet,
@@ -61,12 +64,17 @@ const initialState = {
   playback: {
     controlsEnabled: false,
     spotifyApi: undefined,
+    youTubeApi: undefined,
     isPlaying: false,
-    queuedUp: false,
-    noopNextTrack: false,
+    // queuedUp: false,
+    // noopNextTrack: false,
     addToQueueTimeoutId: undefined,
     isReady: false,
     files: {},
+    volumeLevel: {
+      audio: 1.00,
+      voice: 1.00,
+    },
   },
 }
 
@@ -113,19 +121,6 @@ function queueDeleteChildNode(state, action) {
 }
 
 
-function textCommentClearModifications(state, action) {
-  const textCommentIndex = state.textComments.findIndex(t => t.uuid === action.textCommentUuid),
-        textComments = [...state.textComments];
-
-  textComments[textCommentIndex].modifications = [];
-
-  return {
-    ...state,
-    textComments: textComments,
-  }
-}
-
-
 function userGetSettings(state, action) {
   return {
     ...state,
@@ -157,13 +152,13 @@ const reducer = (state = initialState, action) => {
     case "textComment/listSet":
       return textCommentListSet(state, action.payload);
     case "textComment/create":
-      return textCommentCreate(state, action);
+      return textCommentCreate(state, action.payload);
     case "textComment/delete":
-      return textCommentDelete(state, action);
+      return textCommentDelete(state, action.payload);
     case "textCommentModification/create":
       return textCommentModificationCreate(state, action.payload);
     case "textComment/clearModifications":
-      return textCommentClearModifications(state, action);
+      return textCommentClearModifications(state, action.payload);
     case "voiceRecording/create":
       return voiceRecordingCreate(state, action);
     case "voiceRecording/listSet":
@@ -188,6 +183,8 @@ const reducer = (state = initialState, action) => {
       return playbackEnable(state);
     case "playback/spotify":
       return playbackSpotify(state, action.payload);
+    case "playback/youTube":
+      return playbackYouTube(state, action.payload);
     case "playback/addToQueue":
       return playbackAddToQueue(state);
     case "playback/plannedNextTrack":
@@ -208,6 +205,8 @@ const reducer = (state = initialState, action) => {
       return userProfileUpdate(state, action.payload);
     case "playback/loadFiles":
       return playbackLoadFiles(state, action.payload);
+    case "playback/cycleVolumeLevelAudio":
+      return playbackCycleVolumeLevelAudio(state);
     case "feed/update":
       return feedUpdate(state);
     default:

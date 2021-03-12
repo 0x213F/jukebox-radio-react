@@ -3,12 +3,10 @@
 }
 
 .Item {
-  height: 1.4rem;
+  height: 30px;
 }
 
-.Button {
-  float: right;
-}
+.Button {}
 
 .Children {
   display: block;

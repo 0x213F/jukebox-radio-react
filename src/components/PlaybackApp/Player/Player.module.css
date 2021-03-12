@@ -1,0 +1,25 @@
+.Player {
+  overflow-y: scroll;
+  height: 100%;
+}
+
+.Div {
+  display: block;
+}
+
+.Button {
+  width: 80px;
+}
+
+.Image {
+  height: 300px;
+}
+
+.MoreNextUp {
+  font-size: 18px;
+  padding: 8px 14px;
+  background-color: white;
+  border: 1px solid #cc0000;
+  border-radius: 4px;
+  cursor: pointer;
+}
