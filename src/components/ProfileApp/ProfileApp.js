@@ -32,26 +32,20 @@ function ProfileApp(props) {
   ]
 
   const [edit, setEdit] = useState(false);
+  const [profileImg, setProfileImg] = useState();
+  const [description, setDescription] = useState();
+  const [website, setWebsite] = useState();
 
   function updateProfileImage(event) {
-    props.dispatch({type: 'userProfile/update', payload:{
-      profileImg: event.target.file
-    }});
-    fetchUpdateUserProfile('profile_image', event.target.file);
+    setProfileImg(event.target.file);
   }
 
   function updateProfileDescription(event) {
-    props.dispatch({type: 'userProfile/update', payload:{
-      description: event.target.text
-    }});
-    fetchUpdateUserProfile('description', event.target.text);
+    setDescription(event.target.text)
   }
 
   function updateProfileWebsite(event) {
-    props.dispatch({type: 'userProfile/update', payload: {
-      website: event.target.url
-    }});
-    fetchUpdateUserProfile('website', event.target.url);
+    setWebsite(event.target.url);
   }
 
   function handleEdit(event) {
