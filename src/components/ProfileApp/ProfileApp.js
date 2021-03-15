@@ -32,20 +32,41 @@ function ProfileApp(props) {
   ]
 
   const [edit, setEdit] = useState(false);
-  const [profileImg, setProfileImg] = useState();
-  const [description, setDescription] = useState();
-  const [website, setWebsite] = useState();
+  // const [profileImg, setProfileImg] = useState();
+  // const [description, setDescription] = useState();
+  // const [website, setWebsite] = useState();
+
+  // function updateProfileImage(event) {
+  //   setProfileImg(event.target.file);
+  // }
+
+  // function updateProfileDescription(event) {
+  //   setDescription(event.target.text)
+  // }
+
+  // function updateProfileWebsite(event) {
+  //   setWebsite(event.target.url);
+  // }
 
   function updateProfileImage(event) {
-    setProfileImg(event.target.file);
-  }
-
-  function updateProfileDescription(event) {
-    setDescription(event.target.text)
+    props.dispatch({type: 'userProfile/update', payload:{
+      profileImg: event.target.file
+    }});
+    fetchUpdateUserProfile('profile_image', event.target.file)
   }
 
   function updateProfileWebsite(event) {
-    setWebsite(event.target.url);
+    props.dispatch({type: 'userProfile/update', payload: {
+      website: event.target.href
+    }})
+    fetchUpdateUserProfile('website', event.target.href)
+  }
+
+  function updateProfileDescription(event) {
+    props.dispatch({type: 'userProfile/update', payload: {
+      description: event.target.text
+    }})
+    fetchUpdateUserProfile('description', event.target.text)
   }
 
   function handleEdit(event) {
@@ -60,6 +81,7 @@ function ProfileApp(props) {
 
   return (
     <div className={styles.mainContainer}>
+      <div className={styles.edit}>
       {
       edit === false ? (
         <button onClick={handleEdit}>Edit</button>
@@ -67,35 +89,37 @@ function ProfileApp(props) {
         <button onClick={handleSave}>Save</button>
         )
       }
-        <div className={styles.userSideBar}>
-          <h1>{username}</h1>
-          <img src={profileImg} alt="profileImg" className={styles.profilePicture} onChange={updateProfileImage}/>
-          <a href={website} target='_blank' rel='noreferrer' onChange={updateProfileWebsite}>{username}'s Website</a>
+      </div>
+
+      <div className={styles.userSideBar}>
+        <h1>{username}</h1>
+        <img src={profileImg} alt="profileImg" className={styles.profilePicture} onChange={updateProfileImage}/>
+        <a href={website} target='_blank' rel='noreferrer' onChange={updateProfileWebsite}>{username}'s Website</a>
+      </div>
+
+      <div className={styles.scrollContainer}>
+        <div className={styles.description}>
+          <h2>Who is {username}?</h2>
+          <p onChange={updateProfileDescription}>{description}</p>
         </div>
 
-        <div className={styles.scrollContainer}>
-          <div className={styles.description}>
-            <h2>Who is {username}?</h2>
-            <p onChange={updateProfileDescription}>{description}</p>
-          </div>
-
-          <div className={styles.sessions}>
-            <h2>Sessions</h2>
-            {sessionList.length === 0 ? <h3>{username} has no sessions.</h3>
-            :
-            sessionList.map(session =>(
-              <div className="sessions">
-                <ul>
-                  <li>
-                    {session.title}<br/>
-                    <img src={session.image} alt="sessionImage" className={styles.sessionImage} /><br/>
-                    <p>{session.duration}</p>
-                  </li>
-                </ul>
-              </div>
-            ))}
-          </div>
+        <div className={styles.sessions}>
+          <h2>Sessions</h2>
+          {sessionList.length === 0 ? <h3>{username} has no sessions.</h3>
+          :
+          sessionList.map(session =>(
+            <div className="sessions">
+              <ul>
+                <li>
+                  {session.title}<br/>
+                  <img src={session.image} alt="sessionImage" className={styles.sessionImage} /><br/>
+                  <p>{session.duration}</p>
+                </li>
+              </ul>
+            </div>
+          ))}
         </div>
+      </div>
 
     </div>
   );

@@ -1,15 +1,22 @@
 .mainContainer {
+  border-color: red;
   display: flex;
   flex-direction: row;
+  height: 100%;
+}
+
+.edit {
+  border-color: red;
 }
 
 .userSideBar {
- display: flex;
- flex-direction: column;
- align-items: center;
- padding: 10px;
- margin-right: 20px;
- border-style: solid;
+  border-color: red;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 10px;
+  margin-right: 20px;
+  border-style: solid;
 }
 
 .scrollContainer  {
@@ -30,7 +37,6 @@
 .description {
   display: flex;
   flex-direction: column;
-
 }
 
 .sessions {
