@@ -42,7 +42,7 @@ function MiniQueue(props) {
       <div>
         {expandedQueues.map((queue, index) => {
           return (
-            <div className={styles.MiniQueueItem}>
+            <div key={index} className={styles.MiniQueueItem}>
               {queue.track?.name || queue.collection?.name}
             </div>
           );

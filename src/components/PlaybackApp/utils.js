@@ -16,7 +16,6 @@ export const getPositionMilliseconds = function(stream, startedAt) {
       seekTimeout,
       playbackIntervalIdx = 0,
       cumulativeProgress = 0;
-
   while(true) {
     const playbackInterval = stream.nowPlaying.playbackIntervals[playbackIntervalIdx],
           playbackIntervalDuration = playbackInterval.endPosition - playbackInterval.startPosition,

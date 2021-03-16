@@ -49,7 +49,8 @@ function QueueApp(props) {
     <div className={styles.QueueApp}>
       <h4><i>Last up...</i></h4>
       <div>
-        {props.lastUpQueues.map((value, index) => {
+        {  // eslint-disable-next-line
+        props.lastUpQueues.map((value, index) => {
           if(value.track) {
             return (
               <QueueTrack key={index}
@@ -57,8 +58,6 @@ function QueueApp(props) {
                           destroy={() => {}}>
               </QueueTrack>
             );
-          } else {
-            return <></>;
           }
         })}
       </div>
@@ -74,7 +73,8 @@ function QueueApp(props) {
       </div>
       <h2><i>Next up...</i></h2>
       <div>
-        {nextUpQueues.map((value, index) => {
+        {  // eslint-disable-next-line
+        nextUpQueues.map((value, index) => {
           if(value.collection) {
             return (
               <QueueCollection key={value.uuid}
@@ -89,8 +89,6 @@ function QueueApp(props) {
                           destroy={destroyQueueItem}>
               </QueueTrack>
             );
-          } else {
-            return <></>;
           }
         })}
         {queueDuration ?

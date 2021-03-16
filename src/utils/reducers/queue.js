@@ -1,3 +1,5 @@
+import { SERVICE_APPLE_MUSIC } from './../../config/services';
+
 /*
  * A queue object is returned from the server with an assortment of
  * intervals. These intervals must be interpreted on the front-end
@@ -16,6 +18,11 @@ export const finalizeQueue = function(queue) {
     copy.children = editedChildren;
     copy.totalDurationMilliseconds = totalDurationMilliseconds;
     return copy;
+  }
+
+  if(copy.track?.service === SERVICE_APPLE_MUSIC) {
+    copy.track.imageUrl = copy.track.imageUrl.replace("{w}", "300");
+    copy.track.imageUrl = copy.track.imageUrl.replace("{h}", "300");
   }
 
   const intervals = copy.intervals,

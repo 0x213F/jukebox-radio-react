@@ -147,7 +147,7 @@ function App() {
     <Router>
       <Provider store={store}>
         <div className="app-main-container">
-            <PlaybackApp />
+          <PlaybackApp />
         </div>
       </Provider>
     </Router>
