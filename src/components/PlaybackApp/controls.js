@@ -1,11 +1,15 @@
 import { getPositionMilliseconds } from './utils';
 
 import {
+  SERVICE_APPLE_MUSIC,
   SERVICE_SPOTIFY,
   SERVICE_YOUTUBE,
   SERVICE_JUKEBOX_RADIO,
 } from '../../config/services';
-// import { store } from '../../utils/redux';
+import {
+  fetchTrackGetFiles,
+} from './Player/network';
+import { store } from '../../utils/redux';
 
 
 /*
@@ -18,7 +22,30 @@ export const playbackControlStart = function(playback, stream) {
         positionMilliseconds = arr[0],
         instrument = arr[2],
         playbackService = stream.nowPlaying.track.service;
-  if(playbackService === SERVICE_SPOTIFY) {
+  if(playbackService === SERVICE_APPLE_MUSIC) {
+    const music = window.MusicKit.getInstance();
+    music.setQueue({ song: stream.nowPlaying.track.externalId })
+      .then(() => {
+        music.player.play()
+          .then(() => {
+            music.player.pause()
+              .then(() => {
+                setTimeout(() => {
+                  const delayArr = getPositionMilliseconds(stream, stream.startedAt),
+                        delayPositionMilliseconds = delayArr[0];
+                  music.player.seekToTime(delayPositionMilliseconds / 1000)
+                    .then(() => {
+                      music.player.play();
+                    });
+                }, 250);
+              });
+          });
+      });
+    playback.appleMusic.api.play({
+      uris: [stream.nowPlaying.track.externalId],
+      position_ms: positionMilliseconds,
+    });
+  } else if(playbackService === SERVICE_SPOTIFY) {
     playback.spotifyApi.play({
       uris: [stream.nowPlaying.track.externalId],
       position_ms: positionMilliseconds,
@@ -45,7 +72,10 @@ export const playbackControlStart = function(playback, stream) {
 export const playbackControlPause = function(playback, stream) {
   const playbackService = stream.nowPlaying.track.service;
 
-  if(playbackService === SERVICE_SPOTIFY) {
+  if(playbackService === SERVICE_APPLE_MUSIC) {
+    const player = playback.appleMusic.api;
+    player.player.pause();
+  } else if(playbackService === SERVICE_SPOTIFY) {
     playback.spotifyApi.pause();
   } else if(playbackService === SERVICE_YOUTUBE) {
     playback.youTubeApi.pauseVideo();
@@ -70,7 +100,10 @@ export const playbackControlPause = function(playback, stream) {
 export const playbackControlPlay = function(playback, stream) {
   const playbackService = stream.nowPlaying.track.service;
 
-  if(playbackService === SERVICE_SPOTIFY) {
+  if(playbackService === SERVICE_APPLE_MUSIC) {
+    const player = playback.appleMusic.api;
+    player.player.play();
+  } else if(playbackService === SERVICE_SPOTIFY) {
     playback.spotifyApi.play();
   } else if(playbackService === SERVICE_YOUTUBE) {
     playback.youTubeApi.playVideo();
@@ -95,7 +128,10 @@ export const playbackControlSeek = function(playback, stream, startedAt) {
         instrument = arr[2],
         playbackService = stream.nowPlaying.track.service;
 
-  if(playbackService === SERVICE_SPOTIFY) {
+  if(playbackService === SERVICE_APPLE_MUSIC) {
+    const player = playback.appleMusic.api;
+    player.player.seekToTime(positionMilliseconds / 1000);
+  } else if(playbackService === SERVICE_SPOTIFY) {
     playback.spotifyApi.seek(positionMilliseconds);
   } else if(playbackService === SERVICE_YOUTUBE) {
     playback.youTubeApi.seekTo(positionMilliseconds / 1000);
@@ -127,7 +163,10 @@ export const playbackControlSeek = function(playback, stream, startedAt) {
 export const playbackControlSkipToNext = function(playback, stream) {
   const playbackService = stream.nowPlaying.track.service;
 
-  if(playbackService === SERVICE_SPOTIFY) {
+  if(playbackService === SERVICE_APPLE_MUSIC) {
+    const player = playback.appleMusic.api;
+    player.player.skipToNextItem();
+  } else if(playbackService === SERVICE_SPOTIFY) {
     playback.spotifyApi.skipToNext();
   } else if(playbackService === SERVICE_YOUTUBE) {
     // TODO - seems to work out of the box :)
@@ -141,21 +180,62 @@ export const playbackControlSkipToNext = function(playback, stream) {
  * "Queues" the (track) queue item up next given:
  *     - playback (singleton instance in the React application)
  *     - stream
+ *     - nextUp
+ *
+ * In this context, queuing up the track means doing as much pre-loading as
+ * possible.
  */
 export const playbackControlQueue = function(playback, stream, nextUp) {
-  const playbackService = stream.nowPlaying.track.service;
+  if(!nextUp) {
+    return;
+  }
 
-  if(playbackService === SERVICE_SPOTIFY) {
+  const nowPlaying = stream.nowPlaying,
+        playbackService = nowPlaying.track.service,
+        nextPlaybackService = nextUp.track.service;
+  let shouldAddToQueue;
+
+  // Apple Music
+  shouldAddToQueue = nextPlaybackService === SERVICE_APPLE_MUSIC;
+  if(shouldAddToQueue) {
+    const player = playback.appleMusic.api;
+    player.player.prepareToPlay(nextUp.track.externalId);
+
+    const canPlayNext = (
+      playbackService === SERVICE_APPLE_MUSIC &&
+      nextUp.playbackIntervals[0].startPosition === 0
+    );
+    if(canPlayNext) {
+      player.playNext({ song: nextUp.track.externalId });
+    }
+  }
+
+  // Spotify
+  shouldAddToQueue = (
+    playbackService === SERVICE_SPOTIFY &&
+    nextPlaybackService === SERVICE_SPOTIFY &&
+    nextUp.playbackIntervals[0].startPosition === 0
+  );
+  if(shouldAddToQueue) {
     playback.spotifyApi.queue(nextUp.track.externalId);
-  } else if(playbackService === SERVICE_YOUTUBE) {
-    // TODO - there is optimization that could happen here
-  } else if(playbackService === SERVICE_JUKEBOX_RADIO) {
-    // TODO - refactor stuff to go inside of here instead
+  }
+
+  // YouTube
+  // TODO
+
+  // Jukebox Radio
+  shouldAddToQueue = nextPlaybackService === SERVICE_JUKEBOX_RADIO;
+  if(shouldAddToQueue) {
+    fetchTrackGetFiles(nextUp.track.uuid)
+      .then((responseJson) => {
+        store.dispatch(responseJson.redux);
+      });
   }
 }
 
 
 export const playbackChangeVolume = function(playback, stream, volumeLevel) {
+  playback.appleMusic.api.player.volume = volumeLevel;
   playback.spotifyApi.setVolume(volumeLevel * 100);
   playback.youTubeApi.setVolume(volumeLevel * 100);
 

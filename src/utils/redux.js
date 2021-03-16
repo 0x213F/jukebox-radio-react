@@ -6,6 +6,7 @@ import {
   markerList,
 } from './reducers/marker';
 import {
+  playbackAppleMusic,
   playbackSpotify,
   playbackYouTube,
   playbackAddToQueue,
@@ -64,6 +65,7 @@ const initialState = {
     controlsEnabled: false,
     spotifyApi: undefined,
     youTubeApi: undefined,
+    appleMusic: {},
     isPlaying: false,
     // queuedUp: false,
     // noopNextTrack: false,
@@ -180,6 +182,8 @@ const reducer = (state = initialState, action) => {
       return playbackDisable(state);
     case "playback/enable":
       return playbackEnable(state);
+    case "playback/appleMusic":
+      return playbackAppleMusic(state, action.payload);
     case "playback/spotify":
       return playbackSpotify(state, action.payload);
     case "playback/youTube":

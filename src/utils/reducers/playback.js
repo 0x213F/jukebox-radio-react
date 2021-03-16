@@ -1,15 +1,24 @@
-import { SERVICE_SPOTIFY, SERVICE_JUKEBOX_RADIO } from '../../config/services';
+import {
+  SERVICE_APPLE_MUSIC,
+  SERVICE_SPOTIFY,
+} from '../../config/services';
 import { getNextUpQueue } from '../../components/QueueApp/utils';
-import {
-  playbackControlQueue,
-  playbackControlSkipToNext,
-} from '../../components/PlaybackApp/controls';
 import { cycleVolumeLevel } from '../../components/PlaybackApp/utils';
-import {
-  fetchTrackGetFiles,
-} from '../../components/PlaybackApp/Player/network';
 import { streamNextTrack } from './stream';
-import { store } from '../redux';
+
+
+export const playbackAppleMusic = function(state, payload) {
+  return {
+    ...state,
+    playback: {
+      ...state.playback,
+      appleMusic: {
+        api: payload.appleMusicApi,
+      },
+      isReady: true,
+    }
+  }
+}
 
 
 /*
@@ -52,18 +61,18 @@ export const playbackAddToQueue = function(state) {
 
   const playback = { ...state.playback },
         nowPlaying = state.stream.nowPlaying,
+        appleMusicShouldAddToQueue = (
+          nowPlaying.track.service === SERVICE_APPLE_MUSIC &&
+          nextUp.track.service === SERVICE_APPLE_MUSIC &&
+          nextUp.playbackIntervals[0].startPosition === 0
+        ),
         spotifyShouldAddToQueue = (
           nowPlaying.track.service === SERVICE_SPOTIFY &&
           nextUp.track.service === SERVICE_SPOTIFY &&
           nextUp.playbackIntervals[0].startPosition === 0
-        ),
-        jukeboxRadioShouldAddToQueue = (
-          nextUp.track.service === SERVICE_JUKEBOX_RADIO
         );
 
-  if(spotifyShouldAddToQueue) {
-    playbackControlQueue(state.playback, state.stream, nextUp);
-
+  if(appleMusicShouldAddToQueue) {
     playback.queuedUp = true;
 
     const playbackIntervals = nowPlaying.playbackIntervals,
@@ -73,13 +82,18 @@ export const playbackAddToQueue = function(state) {
     if(lastInterval.endPosition === nowPlaying.track.durationMilliseconds) {
       playback.noopNextTrack = true;
     }
-  } else if(jukeboxRadioShouldAddToQueue) {
-    fetchTrackGetFiles(nextUp.track.uuid)
-      .then((responseJson) => {
-        store.dispatch(responseJson.redux);
-      });
-  } else {
-    // noop
+  }
+
+  if(spotifyShouldAddToQueue) {
+    playback.queuedUp = true;
+
+    const playbackIntervals = nowPlaying.playbackIntervals,
+          lastInterval = (
+            playbackIntervals[playbackIntervals.length - 1]
+          );
+    if(lastInterval.endPosition === nowPlaying.track.durationMilliseconds) {
+      playback.noopNextTrack = true;
+    }
   }
 
   return {
@@ -112,7 +126,6 @@ const playbackPlannedNextTrackHelper = function(state) {
   }
 
   if(queuedUp) {
-    playbackControlSkipToNext(state.playback, state.stream);
     playback.addToQueueTimeoutId = undefined;
     return {
       ...state,

@@ -7,6 +7,8 @@ import {
   playbackControlSeek,
   playbackControlPause,
   playbackControlPlay,
+  playbackControlSkipToNext,
+  playbackControlQueue,
 } from './controls';
 import { fetchGetUserSettings } from '../UserSettings/network';
 import { getPositionMilliseconds, updateSpotifyPlayer } from './utils';
@@ -24,7 +26,12 @@ import {
 import { updateFeed } from '../FeedApp/utils';
 import { getLastUpQueue, getNextUpQueue } from '../QueueApp/utils';
 
-import { SERVICE_JUKEBOX_RADIO, SERVICE_SPOTIFY } from '../../config/services';
+import {
+  SERVICE_JUKEBOX_RADIO,
+  SERVICE_SPOTIFY,
+  SERVICE_APPLE_MUSIC,
+  SERVICE_YOUTUBE,
+} from '../../config/services';
 
 const SpotifyWebApi = require('spotify-web-api-js');
 
@@ -38,6 +45,8 @@ function PlaybackApp(props) {
         playback = props.playback,
         lastUp = getLastUpQueue(props.lastUpQueues),
         nextUp = getNextUpQueue(props.nextUpQueues);
+
+  const [appleMusicSDKReady, setAppleMusicSDKReady] = useState(false);
 
   const [spotifySDKReady, setSpotifySDKReady] = useState(false);
   const [spotifySDKDeviceID, setSpotifySDKDeviceID] = useState(undefined);
@@ -71,6 +80,22 @@ function PlaybackApp(props) {
   };
 
   /*
+   * Loads the Spotify SDK.
+   */
+  const appendAppleMusicSDK = function() {
+    new Promise(resolve => {
+      const script = document.createElement("script");
+      script.src = "https://js-cdn.music.apple.com/musickit/v1/musickit.js";
+      script.async = true;
+      script.onload = () => { resolve(); };
+      document.body.appendChild(script);
+    })
+      .then(() => {
+        setAppleMusicSDKReady(true);
+      });
+  };
+
+  /*
    * When a track is changing from one to another, this boolean logic
    * determines whether or not the currently playing item needs to be paused.
    */
@@ -96,6 +121,35 @@ function PlaybackApp(props) {
         (
           nowPlaying.track.service === SERVICE_SPOTIFY &&
           nextPlayingQueue.track.service !== SERVICE_SPOTIFY &&
+          (
+            !isPlanned ||
+            (
+              lastPlaybackInterval.endPosition !== nowPlaying.totalDurationMilliseconds &&
+              isPlanned
+            )
+          )
+        ) ||
+        // Currently playing Apple Music, nothing is up next.
+        (
+          nowPlaying.track.service === SERVICE_APPLE_MUSIC &&
+          !nextPlayingQueue?.track
+        ) ||
+        // Currently playing Apple Music, Apple Music is not up next.
+        (
+          nowPlaying.track.service === SERVICE_APPLE_MUSIC &&
+          nextPlayingQueue.track.service !== SERVICE_APPLE_MUSIC &&
+          (
+            !isPlanned ||
+            (
+              lastPlaybackInterval.endPosition !== nowPlaying.totalDurationMilliseconds &&
+              isPlanned
+            )
+          )
+        ) ||
+        // Currently playing YouTube, YouTube is not up next.
+        (
+          nowPlaying.track.service === SERVICE_YOUTUBE &&
+          nextPlayingQueue.track.service !== SERVICE_YOUTUBE &&
           (
             !isPlanned ||
             (
@@ -143,6 +197,8 @@ function PlaybackApp(props) {
     // add to queue
     await props.dispatch({ type: 'playback/addToQueue' });
 
+    playbackControlQueue(playback, stream, nextUp);
+
     // schedule "next track"
     setMessageScheduleNextTrack(true);
   }
@@ -153,6 +209,10 @@ function PlaybackApp(props) {
   const plannedNextTrack = async function() {
     if(shouldPauseOnTrackChange(nextUp, true)) {
       playbackControlPause(playback, stream);
+    }
+    const queuedUp = playback.queuedUp;
+    if(queuedUp) {
+      playbackControlSkipToNext(playback, stream);
     }
     await props.dispatch({
       type: 'playback/plannedNextTrack',
@@ -297,7 +357,41 @@ function PlaybackApp(props) {
   // LOAD SPOTIFY SDK
   useEffect(() => {
     appendSpotifySDK();
+    appendAppleMusicSDK();
   }, []);
+
+  useEffect(() => {
+    if(!appleMusicSDKReady) {
+      return;
+    }
+
+    fetchGetUserSettings()
+      .then(responseJson => {
+        const player = window.MusicKit.configure({
+          developerToken: responseJson.data.appleMusic.token,
+          app: {
+            name: 'Jukebox Radio',
+            build: '0.0.1',
+          },
+        });
+
+        player.addEventListener('mediaPlaybackError', function(e) {
+          console.log("mediaPlaybackError");
+          console.log(e)
+        });
+
+        player.addEventListener("playbackStateDidChange", function(e) {
+          console.log("playbackStateDidChange")
+          console.log(e)
+        })
+
+        props.dispatch({
+          type: 'playback/appleMusic',
+          payload: { appleMusicApi: player },
+        });
+      });
+  // eslint-disable-next-line
+  }, [appleMusicSDKReady])
 
   //////////////////////////////////////////////////////////////////////////////
   // SPOTIFY SDK LOADED
@@ -482,11 +576,15 @@ function PlaybackApp(props) {
   }
 
   const onYouTubePause = function() {
-    pause();
+    if(!stream.isPaused) {
+      pause();
+    }
   }
 
   const onYouTubePlay = function() {
-    play();
+    if(!stream.isPlaying) {
+      play();
+    }
   }
 
   /*
@@ -511,6 +609,7 @@ const mapStateToProps = (state) => ({
     playback: state.playback,
     lastUpQueues: state.lastUpQueues,
     nextUpQueues: state.nextUpQueues,
+    userSettings: state.userSettings,
 });
 
 export default connect(mapStateToProps)(PlaybackApp);

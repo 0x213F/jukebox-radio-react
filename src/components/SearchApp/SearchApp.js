@@ -19,6 +19,7 @@ function SearchApp(props) {
   const [query, setQuery] = useState('');
 
   // NOTE: These could be condensed, but I prefer explicitly writing them out.
+  const [serviceAppleMusic, setServiceAppleMusic] = useState(true);
   const [serviceSpotify, setServiceSpotify] = useState(true);
   const [serviceYouTube, setServiceYouTube] = useState(true);
   const [serviceJukeboxRadio, setServiceJukeboxRadio] = useState(true);
@@ -47,6 +48,7 @@ function SearchApp(props) {
     }
     const responseJson = await fetchSearchMusicLibrary(
       query,
+      serviceAppleMusic,
       serviceSpotify,
       serviceYouTube,
       serviceJukeboxRadio,
@@ -102,6 +104,13 @@ function SearchApp(props) {
         <br></br>
 
         <div className={styles.FormBlock}>
+          <label>
+            <input type="checkbox"
+                   checked={serviceAppleMusic}
+                   onChange={(e) => {setServiceAppleMusic(e.target.checked)}} />
+            Apple Music
+          </label>
+
           <label>
             <input type="checkbox"
                    checked={serviceSpotify}

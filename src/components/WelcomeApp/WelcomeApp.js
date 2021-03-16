@@ -10,10 +10,20 @@ function WelcomeApp(props) {
 
   const history = useHistory();
 
-  const userSettings = props.userSettings;
+  const userSettings = props.userSettings,
+        playback = props.playback;
 
   const isOpen = props.isOpen,
         closeModal = props.closeModal;
+
+  const handleAppleMusic = function() {
+    if(playback.appleMusic.api.musicUserToken) {
+      playback.appleMusic.api.authorize();
+    } else {
+      history.push("/app/search");
+    }
+    closeModal();
+  }
 
   const handleSpotify = function () {
     if(userSettings && !userSettings.spotify.accessToken) {
@@ -48,6 +58,14 @@ function WelcomeApp(props) {
         <p>Where do you want to start?</p>
 
         <button className={styles.Button}
+                onClick={handleAppleMusic}
+                disabled={!playback.appleMusic.api}>
+          {playback.appleMusic.api && !playback.appleMusic.api?.musicUserToken && iconPlug}
+          Apple Music
+        </button>
+        &nbsp;&nbsp;&nbsp;&nbsp;
+
+        <button className={styles.Button}
                 onClick={handleSpotify}
                 disabled={!userSettings}>
           {userSettings && !userSettings.spotify.accessToken && iconPlug}
@@ -72,7 +90,8 @@ function WelcomeApp(props) {
 
 
 const mapStateToProps = (state) => ({
-  userSettings: state.userSettings
+  userSettings: state.userSettings,
+  playback: state.playback,
 });
 
 

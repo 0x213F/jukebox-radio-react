@@ -23,6 +23,9 @@ function MainApp(props) {
       <Route path="/spotify">
         <SpotifySync />
       </Route>
+      <Route>
+        <Session playbackControls={props.playbackControls} />
+      </Route>
     </Switch>
   );
 }
