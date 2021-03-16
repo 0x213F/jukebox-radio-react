@@ -23,7 +23,6 @@ export const finalizeQueue = function(queue) {
   if(copy.track?.service === SERVICE_APPLE_MUSIC) {
     copy.track.imageUrl = copy.track.imageUrl.replace("{w}", "300");
     copy.track.imageUrl = copy.track.imageUrl.replace("{h}", "300");
-    console.log(copy.track.imageUrl)
   }
 
   const intervals = copy.intervals,

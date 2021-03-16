@@ -41,10 +41,6 @@ export const playbackControlStart = function(playback, stream) {
               });
           });
       });
-    playback.appleMusic.api.play({
-      uris: [stream.nowPlaying.track.externalId],
-      position_ms: positionMilliseconds,
-    });
   } else if(playbackService === SERVICE_SPOTIFY) {
     playback.spotifyApi.play({
       uris: [stream.nowPlaying.track.externalId],
@@ -73,8 +69,8 @@ export const playbackControlPause = function(playback, stream) {
   const playbackService = stream.nowPlaying.track.service;
 
   if(playbackService === SERVICE_APPLE_MUSIC) {
-    const player = playback.appleMusic.api;
-    player.player.pause();
+    const music = window.MusicKit.getInstance();
+    music.player.pause();
   } else if(playbackService === SERVICE_SPOTIFY) {
     playback.spotifyApi.pause();
   } else if(playbackService === SERVICE_YOUTUBE) {
@@ -101,8 +97,8 @@ export const playbackControlPlay = function(playback, stream) {
   const playbackService = stream.nowPlaying.track.service;
 
   if(playbackService === SERVICE_APPLE_MUSIC) {
-    const player = playback.appleMusic.api;
-    player.player.play();
+    const music = window.MusicKit.getInstance();
+    music.player.play();
   } else if(playbackService === SERVICE_SPOTIFY) {
     playback.spotifyApi.play();
   } else if(playbackService === SERVICE_YOUTUBE) {
@@ -129,8 +125,8 @@ export const playbackControlSeek = function(playback, stream, startedAt) {
         playbackService = stream.nowPlaying.track.service;
 
   if(playbackService === SERVICE_APPLE_MUSIC) {
-    const player = playback.appleMusic.api;
-    player.player.seekToTime(positionMilliseconds / 1000);
+    const music = window.MusicKit.getInstance();
+    music.player.seekToTime(positionMilliseconds / 1000);
   } else if(playbackService === SERVICE_SPOTIFY) {
     playback.spotifyApi.seek(positionMilliseconds);
   } else if(playbackService === SERVICE_YOUTUBE) {
@@ -164,8 +160,8 @@ export const playbackControlSkipToNext = function(playback, stream) {
   const playbackService = stream.nowPlaying.track.service;
 
   if(playbackService === SERVICE_APPLE_MUSIC) {
-    const player = playback.appleMusic.api;
-    player.player.skipToNextItem();
+    const music = window.MusicKit.getInstance();
+    music.player.skipToNextItem();
   } else if(playbackService === SERVICE_SPOTIFY) {
     playback.spotifyApi.skipToNext();
   } else if(playbackService === SERVICE_YOUTUBE) {
@@ -198,15 +194,15 @@ export const playbackControlQueue = function(playback, stream, nextUp) {
   // Apple Music
   shouldAddToQueue = nextPlaybackService === SERVICE_APPLE_MUSIC;
   if(shouldAddToQueue) {
-    const player = playback.appleMusic.api;
-    player.player.prepareToPlay(nextUp.track.externalId);
+    const music = window.MusicKit.getInstance();
+    music.player.prepareToPlay(nextUp.track.externalId);
 
     const canPlayNext = (
       playbackService === SERVICE_APPLE_MUSIC &&
       nextUp.playbackIntervals[0].startPosition === 0
     );
     if(canPlayNext) {
-      player.playNext({ song: nextUp.track.externalId });
+      music.playNext({ song: nextUp.track.externalId });
     }
   }
 
@@ -235,8 +231,11 @@ export const playbackControlQueue = function(playback, stream, nextUp) {
 
 
 export const playbackChangeVolume = function(playback, stream, volumeLevel) {
-  playback.appleMusic.api.player.volume = volumeLevel;
+  const music = window.MusicKit.getInstance();
+  music.player.volume = volumeLevel;
+
   playback.spotifyApi.setVolume(volumeLevel * 100);
+  
   playback.youTubeApi.setVolume(volumeLevel * 100);
 
   const trackUuid = stream.nowPlaying?.track?.uuid,
