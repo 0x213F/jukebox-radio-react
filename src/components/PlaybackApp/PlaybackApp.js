@@ -137,7 +137,7 @@ function PlaybackApp(props) {
         // Currently playing Apple Music, Apple Music is not up next.
         (
           nowPlaying.track.service === SERVICE_APPLE_MUSIC &&
-          nextPlayingQueue.track.service !== SERVICE_APPLE_MUSIC &&
+          nextPlayingQueue?.track.service !== SERVICE_APPLE_MUSIC &&
           (
             !isPlanned ||
             (
@@ -145,6 +145,11 @@ function PlaybackApp(props) {
               isPlanned
             )
           )
+        ) ||
+        // Currently playing YouTube, nothing is up next.
+        (
+          nowPlaying.track.service === SERVICE_YOUTUBE &&
+          !nextPlayingQueue?.track
         ) ||
         // Currently playing YouTube, YouTube is not up next.
         (
@@ -324,6 +329,9 @@ function PlaybackApp(props) {
    * Toggling the player from the "playing" to "paused" state.
    */
   const pause = async function() {
+    if(!stream.nowPlaying) {
+      return;
+    }
     await props.dispatch({ type: 'playback/disable' });
     const jsonResponse = await fetchPauseTrack(stream.nowPlaying.totalDurationMilliseconds);
     await props.dispatch(jsonResponse.redux);

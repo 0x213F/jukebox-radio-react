@@ -31,7 +31,7 @@ function FeedApp(props) {
   const [showModal, setShowModal] = useState(false);
 
   const openModal = function() {
-    const arr = getPositionMilliseconds(stream),
+    const arr = getPositionMilliseconds(stream, stream.startedAt),
           position = arr[0];
     setTextCommentTimestamp(position);
     setTrackUuid(stream.nowPlaying.track.uuid);
@@ -59,7 +59,7 @@ function FeedApp(props) {
 
   const handleTextChange = function(e) {
     if(!trackUuid) {
-      const arr = getPositionMilliseconds(stream),
+      const arr = getPositionMilliseconds(stream, stream.startedAt),
             position = arr[0];
       setTextCommentTimestamp(position);
       setTrackUuid(stream.nowPlaying.track.uuid);
