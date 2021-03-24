@@ -85,17 +85,13 @@ function SearchApp(props) {
   return (
     <div>
       <div className={styles.SearchApp}>
-        <h3>Search</h3>
 
-        <button onClick={openModal}>Upload</button>
-
-        <br></br><br></br>
-
-        <label className={styles.FormBlock}>
-          Query &nbsp;
+        <label>
+          &nbsp;
           <input type="text"
                  name="query"
                  placeholder=""
+                 className={styles.SearchBar}
                  value={query}
                  onChange={(e) => {setQuery(e.target.value)}}
                  onKeyDown={handleKeyDown} />

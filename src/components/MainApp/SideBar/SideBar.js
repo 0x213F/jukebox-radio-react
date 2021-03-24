@@ -28,26 +28,29 @@ function SideBar(props) {
 
       <br></br>
 
-      <div className={styles.Center}>
+      <div className={styles.Logo}>
         {iconProfile}
       </div>
+      <div className={styles.Jb}>
+        Jukebox Radio
+      </div>
 
-      <ul>
-        <li>
-          <Link to="/app/feed">Feed</Link>
+      <ul className={styles.Menu}>
+        <li className={styles.Search}>
+          <Link to="/app/search">Search</Link>
         </li>
-        <li>
-          <Link to="/app/player">Player</Link>
-        </li>
-        <li>
+        <li className={styles.Queue}>
           <Link to="/app/queue">Queue</Link>
         </li>
-        <li>
-          <Link to="/app/search">Search</Link>
+        <li className={styles.Player}>
+          <Link to="/app/player">Player</Link>
+        </li>
+        <li className={styles.Feed}>
+          <Link to="/app/feed">Feed</Link>
         </li>
       </ul>
 
-      <div className={styles.Center}>
+      <div className={styles.Settings}>
         <button onClick={openModal}>
           {iconMore}
         </button>

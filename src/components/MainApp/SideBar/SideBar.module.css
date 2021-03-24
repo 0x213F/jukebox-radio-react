@@ -4,17 +4,76 @@
   position: relative;
   float: left;
   left: 0px;
-  border-right: 1px solid black;
+  font-family: Raleway;
+  font-style: normal;
+  font-weight: 500;
+  font-size: 20px;
+  line-height: 23px;
 }
 
-.Center {
-  text-align: center;
+.Logo {
+  position: absolute;
+  width: 29px;
+  height: 29px;
+  left: 48px;
+  top: 41px;
 }
 
-.SideBar > ul {
+.Jb {
+  position: absolute;
+  width: 160px;
+  height: 41px;
+  left: 87px;
+  top: 44px;
+}
+
+.Menu{
+  font-size: 20px;
   list-style-type: none;
+  text-decoration: none;
 }
 
-.SideBar > ul > li {
-  line-height: 2.2rem;
+.Search {
+  position: absolute;
+  width: 187px;
+  height: 41px;
+  left: 48px;
+  top: 422px;
+}
+
+.Queue {
+  position: absolute;
+  width: 187px;
+  height: 41px;
+  left: 48px;
+  top: 448px;
+}
+
+.Player {
+  position: absolute;
+  width: 187px;
+  height: 41px;
+  left: 48px;
+  top: 525px;
+}
+
+.Feed {
+  position: absolute;
+  width: 187px;
+  height: 41px;
+  left: 48px;
+  top: 602px;
+}
+
+.Settings {
+  position: absolute;
+  left: 3.33%;
+  right: 95.14%;
+  top: 93.33%;
+  bottom: 4.22%;
+}
+
+a:visited {
+  text-decoration: none;
+  color: black;
 }
