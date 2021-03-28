@@ -6,12 +6,13 @@ import { TYPE_GET, TYPE_POST } from '../../config/global'
 import { fetchBackend } from '../../utils/network'
 
 /*
- * Fetches an user settings from the server.
+ * Fetches user settings from the server.
  */
-export const fetchGetUserSettings = async () => {
+export const fetchGetUserSettings = async (username) => {
   const response = await fetchBackend(
     TYPE_GET,
     ENDPOINT_USER_GET_SETTINGS,
+    { username }
   );
   const responseJson = await response.json();
   return responseJson;

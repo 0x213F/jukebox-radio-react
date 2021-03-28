@@ -11,6 +11,8 @@ export const ENDPOINT_VERIFY_TOKEN = '/auth/verify-token/'
 export const ENDPOINT_USER_GET_SETTINGS = '/users/user/get-settings'
 export const ENDPOINT_USER_UPDATE_SETTINGS = '/users/user/update-settings/'
 export const ENDPOINT_USER_CONNECT_SPOTIFY = '/users/user/connect-spotify/'
+export const ENDPOINT_USER_GET_PROFILE = '/users/user/get-profile'
+export const ENDPOINT_USER_UPDATE_PROFILE = '/users/user/update-profile/'
 
 // TEXT COMMENT
 export const ENDPOINT_TEXT_COMMENT_CREATE = '/comments/text-comment/create/'

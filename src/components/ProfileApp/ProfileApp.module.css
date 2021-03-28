@@ -1,0 +1,51 @@
+.mainContainer {
+  border-color: red;
+  display: flex;
+  flex-direction: row;
+  height: 100%;
+}
+
+.edit {
+  border-color: red;
+}
+
+.userSideBar {
+  border-color: red;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 10px;
+  margin-right: 20px;
+  border-style: solid;
+}
+
+.scrollContainer  {
+  display: flex;
+  overflow-y: auto;
+  flex-direction: column;
+  padding: 10px;
+  border-style: solid;
+}
+
+.profilePicture {
+  display: flex;
+  border-radius: 50%;
+  height: 200px;
+  width: 200px;
+}
+
+.description {
+  display: flex;
+  flex-direction: column;
+}
+
+.sessions {
+  display: flex;
+  flex-direction: column;
+}
+
+.sessionImage {
+  display: flex;
+  height: 200px;
+  width: 300px;
+}
