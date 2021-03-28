@@ -179,7 +179,7 @@ function SearchApp(props) {
 
       <div className={styles.SearchResults}>
         {searchResults.map((value, index) => (
-          <SearchResult key={index} data={value} addToQueue={addToQueue}></SearchResult>
+          <SearchResult key={value.uuid} data={value} addToQueue={addToQueue}></SearchResult>
         ))}
       </div>
 
