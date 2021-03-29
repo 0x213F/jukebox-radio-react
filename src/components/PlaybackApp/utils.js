@@ -11,8 +11,14 @@ export const getPositionMilliseconds = function(stream, startedAt) {
     return [undefined, undefined];
   }
 
-  let progress = Date.now() - startedAt,
-      instrument = 'all',
+  let progress;
+  if(stream.isPaused) {
+    progress = stream.pausedAt - startedAt;
+  } else {
+    progress = Date.now() - startedAt;
+  }
+
+  let instrument = 'all',
       seekTimeout,
       playbackIntervalIdx = 0,
       cumulativeProgress = 0;

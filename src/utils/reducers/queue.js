@@ -181,3 +181,33 @@ export const queueListSet = function(state, payload) {
     nextUpQueues: nextUpQueues,
   }
 }
+
+
+export const queueDeleteNode = function(state, action) {
+  const queues = state.nextUpQueues,
+        filteredQueues = queues.filter(i => i.uuid !== action.queueUuid);
+
+  return {
+    ...state,
+    nextUpQueues: filteredQueues,
+  }
+}
+
+
+export const queueDeleteChildNode = function(state, action) {
+  let queues = [...state.nextUpQueues];
+  const parentIndex = queues.findIndex(i => i.uuid === action.parentUuid),
+        children = queues[parentIndex].children,
+        filteredChildren = children.filter(i => i.uuid !== action.queueUuid);
+
+  queues[parentIndex].children = filteredChildren;
+
+  if(!filteredChildren.length) {
+    queues = queues.filter(i => i.uuid !== action.parentUuid);
+  }
+
+  return {
+    ...state,
+    nextUpQueues: queues,
+  }
+}

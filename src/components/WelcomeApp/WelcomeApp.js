@@ -17,12 +17,13 @@ function WelcomeApp(props) {
         closeModal = props.closeModal;
 
   const handleAppleMusic = function() {
-    if(playback.appleMusic.api.musicUserToken) {
+    const music = window.MusicKit.getInstance();
+    if(!music.musicUserToken) {
       playback.appleMusic.api.authorize();
     } else {
       history.push("/app/search");
+      closeModal();
     }
-    closeModal();
   }
 
   const handleSpotify = function () {

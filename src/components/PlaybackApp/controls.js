@@ -30,14 +30,12 @@ export const playbackControlStart = function(playback, stream) {
           .then(() => {
             music.player.pause()
               .then(() => {
-                setTimeout(() => {
-                  const delayArr = getPositionMilliseconds(stream, stream.startedAt),
-                        delayPositionMilliseconds = delayArr[0];
-                  music.player.seekToTime(delayPositionMilliseconds / 1000)
-                    .then(() => {
-                      music.player.play();
-                    });
-                }, 250);
+                const delayArr = getPositionMilliseconds(stream, stream.startedAt),
+                      delayPositionMilliseconds = delayArr[0];
+                music.player.seekToTime(delayPositionMilliseconds / 1000)
+                  .then(() => {
+                    music.player.play();
+                  });
               });
           });
       });
@@ -235,7 +233,7 @@ export const playbackChangeVolume = function(playback, stream, volumeLevel) {
   music.player.volume = volumeLevel;
 
   playback.spotifyApi.setVolume(volumeLevel * 100);
-  
+
   playback.youTubeApi.setVolume(volumeLevel * 100);
 
   const trackUuid = stream.nowPlaying?.track?.uuid,

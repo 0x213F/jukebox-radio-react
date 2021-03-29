@@ -1,0 +1,10 @@
+.ProgressBar {
+  display: block;
+  position: relative;
+  left: 11px;
+}
+
+.ProgressPointer {
+  position: relative;
+  display: block;
+}
