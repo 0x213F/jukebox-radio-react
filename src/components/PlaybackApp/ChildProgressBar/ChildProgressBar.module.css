@@ -1,0 +1,34 @@
+.FirstInterval {
+  border-top-left-radius: 8px;
+  border-bottom-left-radius: 8px;
+}
+
+.LastInterval {
+  border-top-right-radius: 8px;
+  border-bottom-right-radius: 8px;
+}
+
+.ProgressParentBare {
+  display: inline-block;
+  height: 16px;
+}
+
+.ProgressParentMuted {
+  background-color: #EEEEEE;
+  display: inline-block;
+  height: 16px;
+}
+
+.ProgressAll {
+  background-color: #5BC9EC;
+  position: relative;
+  height: 16px;
+  float: left;
+  border-radius: 8px;
+}
+
+.ProgressMute {
+  background-color: #EEEEEE;
+  height: 16px;
+  float: left;
+}

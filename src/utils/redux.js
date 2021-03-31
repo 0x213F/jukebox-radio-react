@@ -21,7 +21,11 @@ import {
   playbackLoadFiles,
   playbackCycleVolumeLevelAudio,
 } from  './reducers/playback';
-import { queueListSet } from './reducers/queue';
+import {
+  queueListSet,
+  queueDeleteNode,
+  queueDeleteChildNode,
+} from './reducers/queue';
 import {
   queueIntervalCreate,
   queueIntervalDelete,
@@ -49,6 +53,7 @@ import {
 } from './reducers/voiceRecording';
 import {
   userSettingsUpdate,
+  userGetSettings,
 } from './reducers/userSettings';
 
 
@@ -67,8 +72,8 @@ const initialState = {
     youTubeApi: undefined,
     appleMusic: {},
     isPlaying: false,
-    // queuedUp: false,
-    // noopNextTrack: false,
+    queuedUp: false,
+    noopNextTrack: false,
     addToQueueTimeoutId: undefined,
     isReady: false,
     files: {},
@@ -80,58 +85,10 @@ const initialState = {
 }
 
 
-function streamExpire(state, action) {
-  const stream = { ...state.stream },
-        _lastPlayed = stream.nowPlaying;
-
-  stream.isPlaying = false;
-  stream.isPaused = false;
-  stream.nowPlaying = undefined;
-
-  return { ...state, stream: stream, _lastPlayed: _lastPlayed };
-}
-
-
-function queueDeleteNode(state, action) {
-  const queues = state.nextUpQueues,
-        filteredQueues = queues.filter(i => i.uuid !== action.queueUuid);
-
-  return {
-    ...state,
-    nextUpQueues: filteredQueues,
-  }
-}
-
-
-function queueDeleteChildNode(state, action) {
-  let queues = [...state.nextUpQueues];
-  const parentIndex = queues.findIndex(i => i.uuid === action.parentUuid),
-        children = queues[parentIndex].children,
-        filteredChildren = children.filter(i => i.uuid !== action.queueUuid);
-
-  queues[parentIndex].children = filteredChildren;
-
-  if(!filteredChildren.length) {
-    queues = queues.filter(i => i.uuid !== action.parentUuid);
-  }
-
-  return {
-    ...state,
-    nextUpQueues: queues,
-  }
-}
-
-
-function userGetSettings(state, action) {
-  return {
-    ...state,
-    userSettings: action.userSettings,
-  }
-}
-
-
 const reducer = (state = initialState, action) => {
   switch (action.type) {
+    ////////////////////////////////////////////////////////////////////////////
+    // STREAM
     case "stream/set":
       return streamSet(state, action.payload);
     case "stream/play":
@@ -142,8 +99,8 @@ const reducer = (state = initialState, action) => {
       return streamPrevTrack(state, action.payload);
     case "stream/nextTrack":
       return streamNextTrack(state, action.payload);
-    case "stream/expire":
-      return streamExpire(state, action);
+    ////////////////////////////////////////////////////////////////////////////
+    // QUEUE
     case "queue/listSet":
       return queueListSet(state, action.payload);
     case "queue/deleteNode":
@@ -151,6 +108,8 @@ const reducer = (state = initialState, action) => {
     case "queue/deleteChildNode":
       return queueDeleteChildNode(state, action);
     case "textComment/listSet":
+    ////////////////////////////////////////////////////////////////////////////
+    // TEXT COMMENT
       return textCommentListSet(state, action.payload);
     case "textComment/create":
       return textCommentCreate(state, action.payload);
@@ -160,24 +119,40 @@ const reducer = (state = initialState, action) => {
       return textCommentModificationCreate(state, action.payload);
     case "textComment/clearModifications":
       return textCommentClearModifications(state, action.payload);
+    ////////////////////////////////////////////////////////////////////////////
+    // VOICE RECORDING
     case "voiceRecording/create":
       return voiceRecordingCreate(state, action);
     case "voiceRecording/listSet":
       return voiceRecordingListSet(state, action.payload);
     case "voiceRecording/delete":
       return voiceRecordingDelete(state, action);
+    ////////////////////////////////////////////////////////////////////////////
+    // FEED
+    case "feed/update":
+      return feedUpdate(state);
+    ////////////////////////////////////////////////////////////////////////////
+    // USER
     case "user/get-settings":
       return userGetSettings(state, action);
+    case "userSettings/update":
+      return userSettingsUpdate(state, action.payload);
+    ////////////////////////////////////////////////////////////////////////////
+    // MARKER
     case "marker/create":
       return markerCreate(state, action.payload);
     case "marker/delete":
       return markerDelete(state, action.payload);
     case "marker/list":
       return markerList(state, action.payload);
+    ////////////////////////////////////////////////////////////////////////////
+    // QUEUE INTERVAL
     case "queueInterval/create":
       return queueIntervalCreate(state, action.payload);
     case "queueInterval/delete":
       return queueIntervalDelete(state, action.payload);
+    ////////////////////////////////////////////////////////////////////////////
+    // PLAYBACK
     case "playback/disable":
       return playbackDisable(state);
     case "playback/enable":
@@ -202,16 +177,15 @@ const reducer = (state = initialState, action) => {
       return playbackAddToQueueScheduled(state, action.payload);
     case "playback/nextSeekScheduled":
       return playbackNextSeekScheduled(state, action.payload);
-    case "userSettings/update":
-      return userSettingsUpdate(state, action.payload);
     case "playback/loadFiles":
       return playbackLoadFiles(state, action.payload);
     case "playback/cycleVolumeLevelAudio":
       return playbackCycleVolumeLevelAudio(state);
-    case "feed/update":
-      return feedUpdate(state);
+    // case "@redux/INIT":
+    //   return state;
     default:
       return state;
+      // throw new Error(`Unregistered Redux event: ${action.type}`);
   }
 }
 

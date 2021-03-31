@@ -5,7 +5,7 @@ import {
   getNextUpQueue,
   getLastUpQueue,
 } from '../../../components/QueueApp/utils';
-import { getProgress } from '../utils';
+import ParentProgressBar from '../ParentProgressBar/ParentProgressBar';
 import { iconNextTrack, iconPrevTrack } from '../icons';
 import styles from './Player.module.css';
 
@@ -75,9 +75,7 @@ function Player(props) {
       </div>
 
       <div className={styles.Div}>
-        <progress value={getProgress(stream)}
-                  max={stream?.nowPlaying?.totalDurationMilliseconds}>
-        </progress>
+        <ParentProgressBar queue={stream?.nowPlaying}></ParentProgressBar>
       </div>
 
       <div className={styles.Div}>

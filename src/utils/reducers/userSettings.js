@@ -7,3 +7,11 @@ export const userSettingsUpdate = function(state, payload) {
     }
   }
 }
+
+
+export const userGetSettings = function(state, action) {
+  return {
+    ...state,
+    userSettings: action.userSettings,
+  }
+}
