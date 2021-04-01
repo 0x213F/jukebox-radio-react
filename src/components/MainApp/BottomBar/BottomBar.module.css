@@ -1,9 +1,9 @@
 .BottomBar {
-  border-top: 1px solid black;
   position: fixed;
   bottom: 0px;
   width: 100%;
   height: 92px;
+  background: #DFF7FF;
 }
 
 .Playback {
@@ -17,7 +17,7 @@
   height: 72px;
   width: 64px;
   margin: 0px 16px;
-  background-color: white;
+  background-color: #DFF7FF;
   border: none;
   cursor: pointer;
 }
@@ -51,7 +51,7 @@
   margin-left: 27px;
   font-size: 18px;
   padding: 8px 14px;
-  background-color: white;
+  background-color: #DFF7FF;
   border: 1px solid #cc0000;
   border-radius: 4px;
   cursor: pointer;

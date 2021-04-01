@@ -20,14 +20,13 @@
   width: calc(100% - 29px);
 }
 
+
 .PrimaryContent {
   margin-top: 40px;
   margin-left: 40px;
   padding: 40px;
   height: calc(100% - 160px);
   width: calc(100% - 420px);
-  border: 1px solid black;
-  border-radius: 12px;
   position: relative;
   float: left;
 }
@@ -39,10 +38,8 @@
   min-height: 300px;
   width: 136px;
   border: 1px solid black;
-  border-radius: 12px;
   position: relative;
   float: left;
-  background-color: #ededed;
   cursor: pointer;
   display: block;
 }

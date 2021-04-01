@@ -1,8 +1,23 @@
 .SearchApp {}
 
+.SearchBar {
+  position: absolute;
+  width: 670px;
+  height: 70px;
+  left: 365px;
+  top: 95px;
+
+  border: 1px solid #000000;
+  box-sizing: border-box;
+  border-radius: 35px;
+
+  caret-color: #5BC9EC;
+  font-size: 20px;
+  outline: none;
+}
+
 .FormBlock {
-  display: block;
-  height: 1.4rem;
+
 }
 
 .SearchResults {
