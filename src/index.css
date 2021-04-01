@@ -9,3 +9,8 @@ code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
     monospace;
 }
+
+/* TailWind base styles are removed for now. Maybe they could be added? */
+/* @tailwind base; */
+@tailwind components;
+@tailwind utilities;
