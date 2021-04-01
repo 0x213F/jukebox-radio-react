@@ -31,9 +31,9 @@ function SearchApp(props) {
 
   const [showModal, setShowModal] = useState(false);
 
-  const openModal = function() {
-    setShowModal(true);
-  }
+  //const openModal = function() {
+    //setShowModal(true);
+  //}
 
   const closeModal = function() {
     setShowModal(false);
