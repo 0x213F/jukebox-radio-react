@@ -10,7 +10,6 @@ code {
     monospace;
 }
 
-/* TailWind base styles are removed for now. Maybe they could be added? */
-/* @tailwind base; */
+@tailwind base;
 @tailwind components;
 @tailwind utilities;
