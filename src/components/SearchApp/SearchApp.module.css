@@ -1,12 +1,9 @@
-.SearchApp {}
+.SearchApp {
+ display: flex;
+ flex-direction: column;
+}
 
 .SearchBar {
-  position: absolute;
-  width: 670px;
-  height: 70px;
-  left: 365px;
-  top: 95px;
-
   border: 1px solid #000000;
   box-sizing: border-box;
   border-radius: 35px;
@@ -16,7 +13,7 @@
   outline: none;
 }
 
-.FormBlock {
+.OptionsBlock {
 
 }
 

@@ -99,7 +99,7 @@ function SearchApp(props) {
 
         <br></br>
 
-        <div className={styles.FormBlock}>
+        <div className={styles.OptionsBlock}>
           <label>
             <input type="checkbox"
                    checked={serviceAppleMusic}
@@ -161,15 +161,13 @@ function SearchApp(props) {
           </label>
         </div>
 
-        <br></br>
-
-        <div className={styles.FormBlock}
+        {/* <div className={styles.FormBlock}
              onClick={handleSubmit}>
           <button type="submit">
             Search
           </button>
-        </div>
-      </div>
+        </div> */}
+
 
       <br></br>
 
@@ -181,6 +179,8 @@ function SearchApp(props) {
 
       <Upload isOpen={showModal}
               closeModal={closeModal} />
+    </div>
+
     </div>
   );
 }
