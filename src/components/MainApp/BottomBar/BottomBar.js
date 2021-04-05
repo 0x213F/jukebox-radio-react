@@ -1,5 +1,5 @@
 import React from "react";
-import { Link } from "react-router-dom";
+//import { Link } from "react-router-dom";
 import { connect } from 'react-redux';
 import { CircularProgressbarWithChildren, buildStyles } from 'react-circular-progressbar';
 import 'react-circular-progressbar/dist/styles.css';
@@ -37,8 +37,9 @@ function BottomBar(props) {
           !playback.controlsEnabled
         );
 
-  const displayStartPlayback = !stream.nowPlaying && !!nextUpQueues.length,
-        displayAddToQueue = !stream.nowPlaying && !nextUpQueues.length;
+  const displayStartPlayback = !stream.nowPlaying && !!nextUpQueues.length
+  //,
+        //displayAddToQueue = !stream.nowPlaying && !nextUpQueues.length;
 
   /*
    * Modify playback to play whatever is next in the queue.
