@@ -9,6 +9,8 @@
   font-weight: 500;
   font-size: 20px;
   line-height: 23px;
+  display: grid;
+  grid-template-columns: 1fr;
 }
 
 .Logo {

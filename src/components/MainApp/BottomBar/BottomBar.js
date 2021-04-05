@@ -91,13 +91,13 @@ function BottomBar(props) {
             Start Playback
           </button>
         )}
-        {displayAddToQueue && (
+        {/* {displayAddToQueue && (
           <Link to="/app/search">
             <button className={styles.ExtraControlButton}>
               Add to Queue
             </button>
           </Link>
-        )}
+        )} */}
       </div>
 
       <div className={styles.Volume}>
