@@ -25,6 +25,11 @@
   overflow-y: scroll;
 }
 
+.OptionsBlock {
+  display: flex;
+  flex-direction: column;
+}
+
 input[type="checkbox"]::before {
   content:"";
   display: inline-block;
@@ -43,6 +48,6 @@ input[type="checkbox"]:checked::before {
   background: #5BC9EC;
 }
 
-input[type="checkbox"]:checked {
+label > input[type="checkbox"]:checked {
   color: #5BC9EC;
 }
