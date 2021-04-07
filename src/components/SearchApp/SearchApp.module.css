@@ -18,13 +18,31 @@
   outline: none;
 }
 
-.OptionsBlock {
-
-}
-
 .SearchResults {
   top: 290px;
   bottom: 40px;
   position: absolute;
   overflow-y: scroll;
+}
+
+input[type="checkbox"]::before {
+  content:"";
+  display: inline-block;
+  vertical-align: bottom;
+  width: 26px;
+  height: 26px;
+  border-style: solid;
+  border-width: 1px;
+  border-color: black;
+}
+
+input[type="checkbox"]:checked::before {
+  color: white;
+  text-align: center;
+  border-color: black;
+  background: #5BC9EC;
+}
+
+input[type="checkbox"]:checked {
+  color: #5BC9EC;
 }
