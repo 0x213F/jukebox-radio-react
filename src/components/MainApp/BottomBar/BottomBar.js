@@ -1,5 +1,4 @@
 import React from "react";
-import { Link } from "react-router-dom";
 import { connect } from 'react-redux';
 import { CircularProgressbarWithChildren, buildStyles } from 'react-circular-progressbar';
 import 'react-circular-progressbar/dist/styles.css';
@@ -24,8 +23,7 @@ function BottomBar(props) {
   const playbackControls = props.playbackControls,
         stream = props.stream,
         playback = props.playback,
-        audioVolumeLevel = playback.volumeLevel.audio,
-        nextUpQueues = props.nextUpQueues;
+        audioVolumeLevel = playback.volumeLevel.audio;
 
   const scanDisabled = (
           !stream.nowPlaying ||
@@ -36,16 +34,6 @@ function BottomBar(props) {
           !stream.nowPlaying ||
           !playback.controlsEnabled
         );
-
-  const displayStartPlayback = !stream.nowPlaying && !!nextUpQueues.length,
-        displayAddToQueue = !stream.nowPlaying && !nextUpQueues.length;
-
-  /*
-   * Modify playback to play whatever is next in the queue.
-   */
-  const handleStartPlayback = function() {
-    playbackControls.nextTrack();
-  };
 
   /*
    * Modify playback to seek in a certain diretion ('forward' or 'backward').
@@ -84,22 +72,6 @@ function BottomBar(props) {
   return (
     <div className={styles.BottomBar}>
 
-      <div className={styles.ExtraControl}>
-        {displayStartPlayback && (
-          <button className={styles.ExtraControlButton}
-                  onClick={() => { handleStartPlayback(); }}>
-            Start Playback
-          </button>
-        )}
-        {displayAddToQueue && (
-          <Link to="/app/search">
-            <button className={styles.ExtraControlButton}>
-              Add to Queue
-            </button>
-          </Link>
-        )}
-      </div>
-
       <div className={styles.Volume}>
         <button className={styles.VolumeButton}
                 onClick={handleCycleVolumeLevel}>
@@ -114,21 +86,6 @@ function BottomBar(props) {
             {iconMusic}
           </CircularProgressbarWithChildren>
         </button>
-
-        {/*
-        <div className={styles.VolumeButton}>
-          <CircularProgressbarWithChildren
-                value={100}
-                circleRatio={0.75}
-                styles={buildStyles({
-                  rotation: 1 / 2 + 1 / 8,
-                  strokeLinecap: "butt",
-                  trailColor: "#eee",
-                })} >
-            {iconMic}
-          </CircularProgressbarWithChildren>
-        </div>
-        */}
       </div>
 
       <div className={styles.Playback}>
@@ -159,7 +116,6 @@ function BottomBar(props) {
 const mapStateToProps = (state) => ({
     stream: state.stream,
     playback: state.playback,
-    nextUpQueues: state.nextUpQueues,
 });
 
 

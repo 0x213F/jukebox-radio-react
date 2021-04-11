@@ -74,9 +74,14 @@ function Player(props) {
         }
       </div>
 
-      <div className={styles.Div}>
-        <ParentProgressBar queue={stream?.nowPlaying}></ParentProgressBar>
-      </div>
+      {stream?.nowPlaying &&
+        <div className={styles.Div}>
+          <ParentProgressBar queue={stream?.nowPlaying}
+                             stream={stream}
+                             mode={"player"}>
+          </ParentProgressBar>
+        </div>
+      }
 
       <div className={styles.Div}>
         <button className={styles.Button}

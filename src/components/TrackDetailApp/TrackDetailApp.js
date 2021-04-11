@@ -5,11 +5,12 @@ import {
   fetchStreamMarkerCreate,
   fetchStreamMarkerList,
 } from './Marker/network';
-import Interval from './Interval/Interval';
 import {
   fetchStreamQueueIntervalCreate,
 } from './Interval/network';
-import Marker from './Marker/Marker'
+import styles from './TrackDetailApp.module.css';
+import { iconForward1000, iconForward100, iconBackward100, iconBackward1000, iconPlay, iconBack } from './icons';
+import ParentProgressBar from '../PlaybackApp/ParentProgressBar/ParentProgressBar';
 
 
 function TrackDetailApp(props) {
@@ -30,8 +31,11 @@ function TrackDetailApp(props) {
         trackMarkerMap = props.trackMarkerMap,
         markers = trackMarkerMap[queueUuid] || [];
 
+  const [tab, setTab] = useState('markers'),
+        [formMarkerTimestamp, setFormMarkerTimestamp] = useState(''),
+        [formMarkerName, setFormMarkerName] = useState('');
+
   const [purpose, setPurpose] = useState('muted');
-  const [formMarkerTimestamp, setFormMarkerTimestamp] = useState('');
   const [lowerBoundMarkerUuid, setLowerBoundMarkerUuid] = useState('null');
   const [upperBoundMarkerUuid, setUpperBoundMarkerUuid] = useState('null');
 
@@ -44,6 +48,7 @@ function TrackDetailApp(props) {
     );
     await props.dispatch(responseJson.redux);
     setFormMarkerTimestamp('');
+    setFormMarkerName('');
   }
 
   /*
@@ -80,65 +85,138 @@ function TrackDetailApp(props) {
   }, [shouldOpenModal])
 
   /*
+   * Tab button: show markers UI
+   */
+  const showMarkers = function() {
+    setTab('markers');
+  }
+
+  /*
+   * Tab button: show markers UI
+   */
+  const showIntervals = function() {
+    setTab('intervals');
+  }
+
+  /*
    * 🎨
    */
   return (
     <Modal isOpen={isOpen}
            ariaHideApp={false}>
-      <button onClick={closeModal}>Close</button>
-      <p>Markers</p>
-      {markers.map((value, index) => (
-        <Marker key={index}
-                     data={{
-                       trackMarker: value,
-                       queueUuid: queueUuid,
-                     }} />
-      ))}
-      <div>
-        <input type="text"
-               name="timestampMilliseconds"
-               placeholder="timestamp"
-               value={formMarkerTimestamp}
-               onChange={(e) => {setFormMarkerTimestamp(e.target.value)}} />
-        <button onClick={createTrackMarker}>Create Marker</button>
+
+      <button className={styles.CloseModal}
+              onClick={closeModal}>
+        {iconBack}
+      </button>
+
+      <div className={styles.Preview}>
+        <img className={styles.PreviewImg}
+             src={queue.track.imageUrl}
+             alt={"Album Art"} />
+        <div className={styles.PreviewControlContainer}>
+          <button className={styles.PreviewControl}>{iconBackward1000}</button>
+          <button className={styles.PreviewControl}>{iconBackward100}</button>
+          <button className={styles.PreviewControl}>{iconPlay}</button>
+          <button className={styles.PreviewControl}>{iconForward100}</button>
+          <button className={styles.PreviewControl}>{iconForward1000}</button>
+        </div>
       </div>
-      <p>Intervals</p>
-      {queue.intervals.map((value, index) => (
-        <Interval key={index}
-                       data={{
-                         queueInterval: value,
-                         queueUuid: queueUuid,
-                         parentQueueUuid: parentQueueUuid,
-                       }} />
-      ))}
-      <div>
-        <select value={purpose} onChange={(e) => {setPurpose(e.target.value)}}>
-          <option value={'muted'}>Muted</option>
-          <option value={'drums'}>Solo drums</option>
-          <option value={'vocals'}>Solo vocals</option>
-          <option value={'bass'}>Solo bass</option>
-          <option value={'other'}>Solo other</option>
-        </select>
-        <select value={lowerBoundMarkerUuid} onChange={(e) => {setLowerBoundMarkerUuid(e.target.value)}}>
-          <option value={'null'}>Beginning</option>
-          {markers.map((value, index) => (
-            <option key={index} value={value.uuid}>@ {value.timestampMilliseconds}</option>
-          ))}
-        </select>
-        <select value={upperBoundMarkerUuid} onChange={(e) => {setUpperBoundMarkerUuid(e.target.value)}}>
-          {markers.map((value, index) => (
-            <option key={index} value={value.uuid}>@ {value.timestampMilliseconds}</option>
-          ))}
-          <option value={'null'}>End</option>
-        </select>
-        <button onClick={createQueueInterval}>Create Interval</button>
+
+      <div className={styles.TabButtonContainer}>
+        <button className={styles.TabButton}
+                onClick={showMarkers}>
+          Markers
+        </button>
+        <button className={styles.TabButton}
+                onClick={showIntervals}>
+          Intervals
+        </button>
       </div>
+
+      {tab === "markers" &&
+        <div className={styles.CreateMarkerForm}>
+          <label className={styles.CreateMarkerFormLabel}>
+            Marker Timestamp
+            <input className={styles.CreateMarkerFormInput}
+                   type="text"
+                   value={formMarkerTimestamp}
+                   onChange={(e) => {setFormMarkerTimestamp(e.target.value)}} />
+          </label>
+
+          <label className={styles.CreateMarkerFormLabel}>
+            Marker Name
+            <input className={styles.CreateMarkerFormInput}
+                   type="text"
+                   value={formMarkerName}
+                   onChange={(e) => {setFormMarkerName(e.target.value)}} />
+          </label>
+
+          <button className={styles.CreateMarkerFormSubmit}
+                  disabled={!(formMarkerTimestamp && formMarkerName)}
+                  onClick={createTrackMarker}>
+            Save
+          </button>
+        </div>
+      }
+
+      {tab === "intervals" &&
+        <div className={styles.CreateIntervalForm}>
+          <label className={styles.CreateIntervalFormLabel}>
+            Modification
+            <select className={styles.CreateIntervalFormSelect}
+                    value={purpose}
+                    onChange={(e) => {setPurpose(e.target.value)}}>
+              <option value={'muted'}>Trim</option>
+              <option value={'drums'}>Solo drums</option>
+              <option value={'vocals'}>Solo vocals</option>
+              <option value={'bass'}>Solo bass</option>
+              <option value={'other'}>Solo other</option>
+            </select>
+          </label>
+
+          <label className={styles.CreateIntervalFormLabel}>
+            Start Marker
+            <select className={styles.CreateIntervalFormSelect}
+                    value={lowerBoundMarkerUuid}
+                    onChange={(e) => {setLowerBoundMarkerUuid(e.target.value)}}>
+              <option value={'null'}>Beginning</option>
+              {markers.map((value, index) => (
+                <option key={index} value={value.uuid}>@ {value.timestampMilliseconds}</option>
+              ))}
+            </select>
+          </label>
+
+          <label className={styles.CreateIntervalFormLabel}>
+            End Marker
+            <select className={styles.CreateIntervalFormSelect}
+                    value={upperBoundMarkerUuid}
+                    onChange={(e) => {setUpperBoundMarkerUuid(e.target.value)}}>
+              {markers.map((value, index) => (
+                <option key={index} value={value.uuid}>@ {value.timestampMilliseconds}</option>
+              ))}
+              <option value={'null'}>End</option>
+            </select>
+          </label>
+
+          <button className={styles.CreateIntervalFormSubmit}
+                  onClick={createQueueInterval}>
+            Create Interval
+          </button>
+        </div>
+      }
+
+      <ParentProgressBar queue={queue}
+                         stream={props.stream}
+                         mode={tab}>
+      </ParentProgressBar>
     </Modal>
   );
 }
 
 const mapStateToProps = (state) => ({
   trackMarkerMap: state.trackMarkerMap,
+  stream: state.stream,
 });
 
 export default connect(mapStateToProps)(TrackDetailApp);

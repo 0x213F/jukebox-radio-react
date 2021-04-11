@@ -1,40 +1,84 @@
-import React from "react";
+import React, { useState } from "react";
+import { connect } from 'react-redux';
 import styles from './ChildProgressBar.module.css';
+import { iconUpTriangle, iconTrash } from '../icons';
+import { fetchStreamQueueIntervalDelete } from '../../TrackDetailApp/Interval/network';
 
 
 function ChildProgressBar(props) {
 
+  /*
+   * 🏗
+   */
   const interval = props.interval,
-        // TODO: for now, everything inside here will be either all or mute.
-        //       in the future, we need to add more styles for the other purposes.
-        purpose = interval.purpose === 'mute' ? 'mute' : 'all';
+        duration = props.duration,
+        queue = props.queue,
+        editable = props.editable;
 
-  const duration = props.duration,
-        intervalWidthDuration = interval.endPosition - interval.startPosition,
-        intervalWidthStyle = (
-          intervalWidthDuration / duration * 400 + "px"
-        );
+  const intervalWidthDuration = interval.endPosition - interval.startPosition,
+        intervalWidth = intervalWidthDuration / duration * 400;
 
-  const cleanedPurpose = purpose.charAt(0).toUpperCase() + purpose.slice(1),
-        progressClass = "Progress" + cleanedPurpose,
-        classNames = [];
+  let cleanedPurpose;
+  cleanedPurpose = interval.purpose.includes('solo') ? 'solo' : interval.purpose;
+  cleanedPurpose = cleanedPurpose.charAt(0).toUpperCase() + cleanedPurpose.slice(1);
 
-  classNames.push(styles[progressClass]);
-  if(interval.startPosition === 0) {
-    classNames.push(styles.FirstInterval);
+  const progressClass = "Progress" + cleanedPurpose;
+
+  /*
+   * Hovering logic
+   */
+  const [hovering, setHovering] = useState(false);
+
+  const onMouseEnter = function() {
+    setHovering(true);
   }
-  if(interval.endPosition === duration) {
-    classNames.push(styles.LastInterval);
+
+  const onMouseLeave = function() {
+    setHovering(false);
   }
 
+  /*
+   *
+   */
+  const deleteTrackInterval = async function() {
+    const responseJson = await fetchStreamQueueIntervalDelete(
+      interval.uuid, queue.uuid, queue.parentUuid
+    );
+    await props.dispatch(responseJson.redux);
+  }
+
+  /*
+   * 🎨
+   */
   return (
-    <div className={purpose === "all" ? styles.ProgressParentMuted : styles.ProgressParentBare}>
-      <div className={classNames.join(' ')}
-           style={{width: intervalWidthStyle}}>
-      </div>
+    <div className={styles[progressClass]}
+         style={{width: `${intervalWidth}px`}}
+         onMouseEnter={onMouseEnter}
+         onMouseLeave={onMouseLeave}>
+      {editable && hovering &&
+        <div className={styles.ProgressHoverContainer}>
+          <div className={styles.ProgressHoverPointer}
+               style={{marginLeft: `${(intervalWidth / 2) - 11}px`}}>
+            {iconUpTriangle}
+          </div>
+          <div className={styles.ProgressHoverPurpose}
+               style={{marginLeft: `${(intervalWidth / 2) - 11}px`}}>
+            {interval.purpose}
+          </div>
+          {interval.uuid &&
+            <button className={styles.ProgressHoverDelete}
+                    onClick={deleteTrackInterval}>
+              {iconTrash}
+            </button>
+          }
+        </div>
+      }
     </div>
   );
 }
 
 
-export default ChildProgressBar;
+const mapStateToProps = (state) => ({});
+
+
+export default connect(mapStateToProps)(ChildProgressBar);

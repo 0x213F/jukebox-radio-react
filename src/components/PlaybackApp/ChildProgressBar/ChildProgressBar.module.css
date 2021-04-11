@@ -1,34 +1,36 @@
-.FirstInterval {
-  border-top-left-radius: 8px;
-  border-bottom-left-radius: 8px;
-}
-
-.LastInterval {
-  border-top-right-radius: 8px;
-  border-bottom-right-radius: 8px;
-}
-
-.ProgressParentBare {
-  display: inline-block;
-  height: 16px;
-}
-
-.ProgressParentMuted {
-  background-color: #EEEEEE;
-  display: inline-block;
-  height: 16px;
-}
-
 .ProgressAll {
-  background-color: #5BC9EC;
+  display: inline-block;
   position: relative;
-  height: 16px;
   float: left;
-  border-radius: 8px;
+  height: 16px;
+  background-color: #5BC9EC;
 }
 
-.ProgressMute {
-  background-color: #EEEEEE;
-  height: 16px;
+.ProgressSolo {
+  display: inline-block;
+  position: relative;
   float: left;
+  height: 16px;
+  background-color: #a0e0f4;
+}
+
+.ProgressMuted {
+  display: inline-block;
+  position: relative;
+  float: left;
+  height: 16px;
+  background-color: #EEEEEE;
+}
+
+.ProgressHoverContainer {
+  position: absolute;
+  display: inline-block;
+}
+
+.ProgressHoverPointer {
+  margin-top: 20px;
+}
+
+.ProgressHoverDelete {
+  background-color: #E9E9E9;
 }

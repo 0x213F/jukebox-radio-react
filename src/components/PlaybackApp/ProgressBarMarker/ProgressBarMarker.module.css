@@ -1,0 +1,17 @@
+.ProgressBarMarker {
+  float: left;
+  position: relative;
+  display: block;
+}
+
+.ProgressBarMarkerPointer {
+
+}
+
+.ProgressBarMarkerName {
+
+}
+
+.ProgressBarMarkerDelete {
+  background-color: #E9E9E9;
+}
