@@ -1,13 +1,28 @@
 .QueueApp {
+  font-family: Raleway;
   overflow-y: scroll;
   height: 100%;
 }
 
+.QueueApp::-webkit-scrollbar {
+  display: none;
+}
+
+.PlaybackDuration {
+  font-size: 20px;
+  margin-top: 32px;
+}
+
 .AddToQueue {
-  font-size: 18px;
-  padding: 8px 14px;
-  background-color: white;
-  border: 1px solid #cc0000;
-  border-radius: 4px;
+  width: 157px;
+  height: 48px;
+  margin-top: 104px;
+
+  border: 1px solid #5BC9EC;
+  border-radius: 9px;
+
+  color: #5BC9EC;
+  font-size: 16px;
+  font-weight: bold;
   cursor: pointer;
 }

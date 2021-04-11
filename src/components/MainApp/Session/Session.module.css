@@ -22,24 +22,23 @@
 
 
 .PrimaryContent {
-  margin-top: 40px;
   margin-left: 40px;
-  padding: 40px;
   height: calc(100% - 160px);
   width: calc(100% - 420px);
   position: relative;
   float: left;
+  margin-top: 95px;
 }
 
 .SecondaryContent {
-  margin-top: 40px;
   margin-left: 40px;
   padding: 40px;
   min-height: 300px;
-  width: 136px;
+  width: 300px;
   border: 1px solid black;
   position: relative;
   float: left;
   cursor: pointer;
   display: block;
+  margin-top: 95px;
 }

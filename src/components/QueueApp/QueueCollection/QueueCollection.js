@@ -1,7 +1,8 @@
 import React, { useState } from "react";
 import { connect } from 'react-redux'
 import styles from './QueueCollection.module.css';
-import QueueTrack from '../QueueTrack/QueueTrack'
+import QueueTrack from '../QueueTrack/QueueTrack';
+import { iconExpand, iconCollapse, iconRemove } from '../icons';
 
 
 function QueueCollection(props) {
@@ -37,29 +38,30 @@ function QueueCollection(props) {
    */
   return (
     <div className={styles.QueueCollection}>
-      <div className={styles.Item}>
-        <span>
-          <i>
+
+      <div className={styles.QueueCollectionMain}>
+        <div className={styles.AlbumArtContainer}>
+          <img src={queue.collection.imageUrl} alt={"Album Art"} />
+        </div>
+
+        <div className={styles.CollectionInfoContainer}>
+          <div className={styles.CollectionInfoName}>
             {queue.collection.name}
-          </i>
-        </span>
-        &nbsp;&nbsp;
-        {queue.children.length > 0 && !reveal &&
+          </div>
+          <div className={styles.CollectionInfoArtistName}>
+            {queue.collection.artistName}
+          </div>
+        </div>
+        <div className={styles.ButtonContainer}>
           <button className={styles.Button} type="button" onClick={toggleReveal}>
-            More
+            {reveal ? iconCollapse: iconExpand}
           </button>
-        }&nbsp;&nbsp;
-        {queue.children.length > 0 && reveal &&
-          <button className={styles.Button} type="button" onClick={toggleReveal}>
-            Less
-          </button>
-        }&nbsp;&nbsp;
-        {!isCurrentlyPlayingCollection &&
           <button className={styles.Button} type="button" onClick={async (e) => { await props.destroy(queue); }}>
-            Delete
+            {iconRemove}
           </button>
-        }
+        </div>
       </div>
+
       {queue.children.length > 0 && reveal &&
         <div className={styles.Children}>
           {queue.children.map((value, index) => (

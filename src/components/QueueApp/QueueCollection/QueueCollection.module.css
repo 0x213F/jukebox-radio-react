@@ -1,13 +1,78 @@
 .QueueCollection {
-  height: auto;
+  border: 1px solid #000000;
+  margin-bottom: 14px;
 }
 
-.Item {
-  height: 30px;
-}
-
-.Button {}
-
-.Children {
+.QueueCollectionMain {
+  width: 100%;
   display: block;
+  height: 84px;
+}
+
+.AlbumArtContainer {
+  height: 48px;
+  width: 74px;
+
+  display: inline-block;
+  float: left;
+
+  margin-top: 17px;
+  margin-left: 26px;
+
+  background-color: #D2F0D7;
+}
+
+.AlbumArtContainer > img {
+  height: 40px;
+  margin: auto;
+  margin-top: 4px;
+}
+
+.AlbumArtContainer.Spotify {
+  background-color: #D2F0D7;
+}
+
+.AlbumArtContainer.YouTube {
+  background-color: #FFD7D7;
+}
+
+.AlbumArtContainer.Audius {
+  background-color: #E2E0FE;
+}
+
+.AlbumArtContainer.Upload {
+  background-color: #DFF7FF;
+}
+
+.CollectionInfoContainer {
+  display: inline-block;
+  float: left;
+
+  margin-top: 17px;
+  margin-left: 34px;
+}
+
+.CollectionInfoName {
+  margin-top: 4px;
+  font-size: 18px;
+  line-height: 18px;
+}
+
+.CollectionInfoArtistName {
+  font-size: 14px;
+  line-height: 14px;
+  margin-top: 8px;
+}
+
+.ButtonContainer {
+  display: inline-block;
+  float: right;
+  margin-right: 26px;
+}
+
+.Button {
+  padding: 6px;
+  margin: 23.5px;
+  margin-left: 26px;
+  margin-right: 0px;
 }

@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { connect } from 'react-redux'
 import TrackDetailApp from '../../TrackDetailApp/TrackDetailApp'
 import styles from './QueueTrack.module.css';
+import { iconEdit, iconRemove } from '../icons';
 
 
 function QueueTrack(props) {
@@ -9,9 +10,7 @@ function QueueTrack(props) {
   /*
    * 🏗
    */
-  const queue = props.data,
-        stream = props.stream,
-        lastUp = props.lastUp;
+  const queue = props.data;
 
   const [showModal, setShowModal] = useState(false);
   const [shouldOpenModal, setShouldOpenModal] = useState(false);
@@ -28,28 +27,37 @@ function QueueTrack(props) {
     setShowModal(false);
   }
 
+  const mainClass = queue.parentUuid ? "QueueTrackChild" : "QueueTrackHead",
+        buttonClass = queue.parentUuid ? "ButtonChild" : "ButtonHead";
+
   /*
    * 🎨
    */
-  const currentIndex = stream?.nowPlaying?.index || lastUp?.index,
-        isNextUp = !currentIndex || currentIndex < queue.index,
-        indent = queue.parentUuid && isNextUp ? '-' : '';
   return (
-    <div className={styles.QueueTrack}>
-      <span>
-        {indent}
-        {queue.track.name}
-      </span>
-      {isNextUp &&
-        <>
-          <button className={styles.Button} type="button" onClick={initializeModal}>
-            Edit
-          </button>
-          <button className={styles.Button} type="button" onClick={async (e) => { await props.destroy(queue); }}>
-            Delete
-          </button>
-        </>
+    <div className={styles[mainClass]}>
+      {!queue.parentUuid &&
+        <div className={styles.AlbumArtContainer}>
+          <img src={queue.track.imageUrl} alt={"Album Art"} />
+        </div>
       }
+      <div className={styles.TrackInfoContainer}>
+        <div className={styles.TrackInfoName}>
+          {queue.track.name}
+        </div>
+        {!queue.parentUuid &&
+          <div className={styles.TrackInfoArtistName}>
+            {queue.track.artistName}
+          </div>
+        }
+      </div>
+      <div className={styles.ButtonContainer}>
+        <button className={styles[buttonClass]} type="button" onClick={initializeModal}>
+          {iconEdit}
+        </button>
+        <button className={styles[buttonClass]} type="button" onClick={async (e) => { await props.destroy(queue); }}>
+          {iconRemove}
+        </button>
+      </div>
       <TrackDetailApp data={queue}
                  isOpen={showModal}
                  shouldOpenModal={shouldOpenModal}
@@ -60,9 +68,6 @@ function QueueTrack(props) {
   );
 }
 
-const mapStateToProps = (state) => ({
-  stream: state.stream,
-  lastUp: state.lastUp,
-});
+const mapStateToProps = (state) => ({});
 
 export default connect(mapStateToProps)(QueueTrack);
