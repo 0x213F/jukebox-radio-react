@@ -2,6 +2,7 @@
   display: block;
   position: relative;
   left: 11px;
+  height: 20px;
 }
 
 .ProgressPointer {

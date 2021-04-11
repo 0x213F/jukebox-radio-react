@@ -1,8 +1,73 @@
 .TrackDetailApp {
-  min-height: 1.4rem;
-  display: block;
+
 }
 
-.Button {
-  float: right;
+/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
+/* CLOSE BUTTON */
+.CloseModal {
+
+}
+
+/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
+/* TRACK PLAYBACK CONTROLS */
+.Preview {
+
+}
+
+.PreviewImg {
+
+}
+
+.PreviewControlContainer {
+
+}
+
+.PreviewControl {
+
+}
+
+/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
+/* TABS */
+.TabButtonContainer {
+
+}
+
+.TabButton {
+
+}
+
+/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
+/* MARKER FORM */
+.CreateMarkerForm {
+
+}
+
+.CreateMarkerFormLabel {
+
+}
+
+.CreateMarkerFormInput {
+
+}
+
+.CreateMarkerFormSubmit {
+
+}
+
+/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
+/* INTERVAL FORM */
+.CreateIntervalForm {
+
+}
+
+.CreateIntervalFormLabel {
+
+}
+
+.CreateIntervalFormSelect {
+
+}
+
+.CreateIntervalFormSubmit {
+
 }

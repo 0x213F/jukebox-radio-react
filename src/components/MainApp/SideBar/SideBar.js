@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { Link } from "react-router-dom";
 import UserSettings from '../../UserSettings/UserSettings'
 import styles from './SideBar.module.css';
-import { iconProfile, iconMore } from './icons';
+import { iconLogo, iconMore } from './icons';
 
 
 function SideBar(props) {
@@ -26,12 +26,10 @@ function SideBar(props) {
   return (
     <div className={styles.SideBar}>
 
-      <br></br>
-
       <div className={styles.Logo}>
-        {iconProfile}
+        {iconLogo}
       </div>
-      <div className={styles.Jb}>
+      <div className={styles.SiteTitle}>
         Jukebox Radio
       </div>
 

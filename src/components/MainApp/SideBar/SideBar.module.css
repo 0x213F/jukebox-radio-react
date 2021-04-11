@@ -19,12 +19,13 @@
   top: 41px;
 }
 
-.Jb {
+.SiteTitle {
   position: absolute;
   width: 160px;
   height: 41px;
   left: 87px;
   top: 44px;
+  font-size: 12px;
 }
 
 .Menu{

@@ -20,6 +20,7 @@ export const finalizeQueue = function(queue) {
     return copy;
   }
 
+  // Some data cleaning that probably shouldn't happen here.
   if(copy.track?.service === SERVICE_APPLE_MUSIC) {
     copy.track.imageUrl = copy.track.imageUrl.replace("{w}", "300");
     copy.track.imageUrl = copy.track.imageUrl.replace("{h}", "300");
@@ -27,6 +28,8 @@ export const finalizeQueue = function(queue) {
 
   const intervals = copy.intervals,
         trackDurationMilliseconds = copy.track?.durationMilliseconds;
+
+  // Base case: no configured intervals
   if(!intervals.length) {
     copy.totalDurationMilliseconds = trackDurationMilliseconds;
     copy.playbackIntervals = [
@@ -34,98 +37,141 @@ export const finalizeQueue = function(queue) {
         startPosition: 0,
         endPosition: trackDurationMilliseconds,
         purpose: "all",
+        uuid: null,
+      }
+    ];
+    copy.allIntervals = [
+      {
+        startPosition: 0,
+        endPosition: trackDurationMilliseconds,
+        purpose: "all",
+        uuid: null,
       }
     ];
     return copy;
   }
 
-  const playbackIntervals = [];
-  let lowerBound,
-      upperBound;
+  const allIntervals = [];
+  let lastBound;
   for(const interval of intervals) {
+    const lowerBound = interval.lowerBound?.timestampMilliseconds,
+          upperBound = interval.upperBound?.timestampMilliseconds;
 
-    // muted
+    ////////////////////////////////////////////////////////////////////////////
+    // TRIMMED
     if(interval.purpose === 'muted') {
+
+
+
+      // Trimmed && No LOWER bound
+      // Meaning, the beginning of the track is trimmed.
       if(!interval.lowerBound) {
-        lowerBound = interval.upperBound.timestampMilliseconds;
-      } else if(!interval.upperBound) {
-        if(!lowerBound) {
-          lowerBound = 0;
-        }
-        upperBound = interval.lowerBound.timestampMilliseconds;
-        playbackIntervals.push(
-          {
-            startPosition: lowerBound,
-            endPosition: upperBound,
-            purpose: "all",
-          }
-        );
-        // Setting this value signifies that the playbackIntervals array is
-        // finished.
-        lowerBound = undefined;
-      } else {
-        if(!lowerBound) {
-          lowerBound = 0;
-        }
-        upperBound = interval.lowerBound.timestampMilliseconds;
-        playbackIntervals.push(
-          {
-            startPosition: lowerBound,
-            endPosition: upperBound,
-            purpose: "all",
-          }
-        );
-        lowerBound = interval.upperBound.timestampMilliseconds;
-        upperBound = undefined;
+        allIntervals.push({
+          startPosition: 0,
+          endPosition: interval.upperBound.timestampMilliseconds,
+          purpose: "muted",
+          uuid: interval.uuid,
+        });
+        lastBound = interval.upperBound.timestampMilliseconds;
+        continue;
       }
+
+      // Base case: need to add playback window upfront.
+      if(!allIntervals.length) {
+        allIntervals.push({
+          startPosition: 0,
+          endPosition: lowerBound,
+          purpose: "all",
+          uuid: undefined,
+        });
+      }
+
+      // Trimmed && No UPPER bound
+      // Meaning, the end of the track is trimmed.
+      if(!interval.upperBound) {
+
+        // One more case to consider here...
+        // Same concept as the ** below
+        if(lastBound && lastBound !== lowerBound) {
+          allIntervals.push({
+            startPosition: lastBound,
+            endPosition: lowerBound,
+            purpose: "all",
+            uuid: undefined,
+          });
+        }
+
+        allIntervals.push({
+          startPosition: lowerBound || 0,
+          endPosition: trackDurationMilliseconds,
+          purpose: "muted",
+          uuid: interval.uuid,
+        });
+        lastBound = undefined;
+        continue;
+      }
+
+      // Trimmed && Mismatched last bound **
+      // Meaning, there is an implicit normal playback interval.
+      if(lastBound && lastBound !== lowerBound) {
+        allIntervals.push({
+          startPosition: lastBound,
+          endPosition: lowerBound,
+          purpose: "all",
+          uuid: undefined,
+        });
+        // NO CONTINUE
+      }
+
+      allIntervals.push({
+        startPosition: lowerBound,
+        endPosition: upperBound,
+        purpose: interval.purpose,
+        uuid: interval.uuid,
+      });
+
+      lastBound = upperBound;
       continue;
     }
 
-    // stem seperation
-    if(!interval.lowerBound) {
-      const endPosition = (
-        interval.upperBound.timestampMilliseconds ||
-        copy.totalDurationMilliseconds
-      );
-      playbackIntervals.push(
-        {
-          startPosition: 0,
-          endPosition: endPosition,
-          purpose: interval.purpose,
-        }
-      );
-      lowerBound = interval.upperBound.timestampMilliseconds;
-    } else if(!interval.upperBound) {
-      playbackIntervals.push(
-        {
-          startPosition: interval.lowerBound.timestampMilliseconds,
-          endPosition: copy.totalDurationMilliseconds,
-          purpose: interval.purpose,
-        }
-      );
-    } else {
-      playbackIntervals.push(
-        {
-          startPosition: interval.lowerBound.timestampMilliseconds,
-          endPosition: interval.upperBound.timestampMilliseconds,
-          purpose: interval.purpose,
-        }
-      );
-      lowerBound = interval.upperBound.timestampMilliseconds;
+    ////////////////////////////////////////////////////////////////////////////
+    // STEM SEPERATION
+
+    // No LOWER bound
+    // Meaning, the beginning of the track is an implicit normal playback
+    // interval.
+    if(interval.lowerBound && lowerBound !== 0) {
+      allIntervals.push({
+        startPosition: 0,
+        endPosition: lowerBound,
+        purpose: "all",
+        uuid: undefined,
+      });
     }
+
+    allIntervals.push({
+      startPosition: lowerBound || 0,
+      endPosition: upperBound || trackDurationMilliseconds,
+      purpose: interval.purpose,
+      uuid: interval.uuid,
+    });
+
+    lastBound = upperBound;
+    continue;
   }
 
-  if(lowerBound) {
-    upperBound = trackDurationMilliseconds;
-    playbackIntervals.push(
-      {
-        startPosition: lowerBound,
-        endPosition: upperBound,
-        purpose: "all",
-        audioUuid: copy.track?.uuid,
-      }
-    );
+  //////////////////////////////////////////////////////////////////////////////
+  // LAST BUT NOT LEAST...
+  if(lastBound && lastBound !== trackDurationMilliseconds) {
+    allIntervals.push({
+      startPosition: lastBound,
+      endPosition: trackDurationMilliseconds,
+      purpose: "all",
+      uuid: undefined,
+    });
   }
+
+  const playbackIntervals = allIntervals.filter(i => i.purpose !== "muted");
 
   const totalDurationMilliseconds = playbackIntervals.reduce((total, i) => (
     total + (i.endPosition - i.startPosition)
@@ -133,6 +179,7 @@ export const finalizeQueue = function(queue) {
 
   copy.totalDurationMilliseconds = totalDurationMilliseconds;
   copy.playbackIntervals = playbackIntervals;
+  copy.allIntervals = allIntervals;
 
   return copy;
 }

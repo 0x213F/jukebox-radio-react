@@ -3,21 +3,35 @@ import { connect } from 'react-redux';
 import styles from './ParentProgressBar.module.css';
 import { getPositionMilliseconds } from '../utils';
 import ChildProgressBar from '../ChildProgressBar/ChildProgressBar';
-import { getAllIntervals } from './utils';
+import ProgressBarMarker from '../ProgressBarMarker/ProgressBarMarker';
 import { iconDownTriangle } from '../icons';
 
 
 function ParentProgressBar(props) {
 
   const queue = props.queue,
-        allIntervals = getAllIntervals(queue);
+        mode = props.mode,
+        allIntervals = queue.allIntervals,
+        duration = queue?.track?.durationMilliseconds || 0;
 
-  const stream = props.stream,
-        duration = stream.nowPlaying?.track?.durationMilliseconds || 0,
-        arr = getPositionMilliseconds(stream, stream.startedAt),
-        position = arr[0];
+  let position, pointerLeftDistance;
+  if(mode === "player") {
+    const stream = props.stream,
+          arr = getPositionMilliseconds(stream, stream.startedAt);
+    position = arr[0];
+    pointerLeftDistance = (position / duration) * 400 + "px";
+  }
 
-  const pointerLeftDistance = (position / duration) * 400 + "px";
+  const trackMarkerMap = props.trackMarkerMap,
+        markers = trackMarkerMap[queue.uuid] || [];
+
+  let prevStyleLeft = 0;
+  for(let i=0; i < markers.length; i++) {
+    let pix = markers[i].timestampMilliseconds / duration * 400;
+    pix -= prevStyleLeft;
+    prevStyleLeft += 22;
+    markers[i].styleLeft = pix + "px";
+  }
 
   //////////////////////////////////////////////////////////////////////////////
   // REGENERATE THE FEED
@@ -38,26 +52,40 @@ function ParentProgressBar(props) {
 
   return (
     <div className={styles.ParentProgressBar}>
-      <div className={styles.ProgressPointer}
-           style={{left: pointerLeftDistance}}>
-        {iconDownTriangle}
-      </div>
+      {mode === "player" &&
+        <div className={styles.ProgressPointer}
+             style={{left: pointerLeftDistance}}>
+          {iconDownTriangle}
+        </div>
+      }
       <div className={styles.ProgressBar}>
         {  // eslint-disable-next-line
         allIntervals.map((interval, index) => {
-          return <ChildProgressBar key={index}
+          return <ChildProgressBar key={interval.uuid || index}
                                    interval={interval}
-                                   duration={duration}>
+                                   duration={duration}
+                                   queue={queue}
+                                   editable={mode === "intervals"}>
                  </ChildProgressBar>;
         })}
       </div>
+      {mode === "markers" &&
+        <div className={styles.ProgressMarkerContainer}>
+          {  // eslint-disable-next-line
+          markers.map((marker, index) => {
+            return <ProgressBarMarker key={marker.uuid}
+                                      marker={marker}
+                                      queueUuid={queue.uuid}
+                                      editable={true} />;
+          })}
+        </div>
+      }
     </div>
   );
 }
 
-
 const mapStateToProps = (state) => ({
-    stream: state.stream,
+  trackMarkerMap: state.trackMarkerMap,
 });
 
 
