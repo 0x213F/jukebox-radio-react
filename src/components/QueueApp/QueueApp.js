@@ -11,8 +11,7 @@ import ReactTimeAgo from 'react-time-ago';
 function QueueApp(props) {
 
   const nextUpQueues = props.nextUpQueues,
-        stream = props.stream,
-        nowPlayingTrackName = stream?.nowPlaying?.track?.name;
+        stream = props.stream;
 
   const queueDuration = getQueueDuration(nextUpQueues, stream);
   const endsAt = new Date(Date.now() + queueDuration);
@@ -47,31 +46,6 @@ function QueueApp(props) {
    */
   return (
     <div className={styles.QueueApp}>
-      <h4><i>Last up...</i></h4>
-      <div>
-        {  // eslint-disable-next-line
-        props.lastUpQueues.map((value, index) => {
-          if(value.track) {
-            return (
-              <QueueTrack key={index}
-                          data={value}
-                          destroy={() => {}}>
-              </QueueTrack>
-            );
-          }
-        })}
-      </div>
-      <div>
-        <h4><i>Now playing...</i></h4>
-        {nowPlayingTrackName ?
-          (
-            <p>{nowPlayingTrackName}</p>
-          ) : (
-            <p><i>Nothing is playing...</i></p>
-          )
-        }
-      </div>
-      <h2><i>Next up...</i></h2>
       <div>
         {  // eslint-disable-next-line
         nextUpQueues.map((value, index) => {
@@ -91,21 +65,23 @@ function QueueApp(props) {
             );
           }
         })}
-        {queueDuration ?
-          (
-            <p><i>
-              Playback will end&nbsp;
-              <ReactTimeAgo future date={endsAt} locale="en-US" />
-            </i></p>
-          ) : (
-            <p><i>
-              There is nothing in the queue.
-            </i></p>
-          )
-        }
+        <div className={styles.PlaybackDuration}>
+          {queueDuration ?
+            (
+              <p>
+                Playback will end&nbsp;
+                <ReactTimeAgo future date={endsAt} locale="en-US" />
+              </p>
+            ) : (
+              <p>
+                There is nothing in the queue.
+              </p>
+            )
+          }
+        </div>
         <Link to="/app/search">
           <button className={styles.AddToQueue}>
-            Add to Queue
+            Add To Queue
           </button>
         </Link>
       </div>

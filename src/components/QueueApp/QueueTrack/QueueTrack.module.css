@@ -1,8 +1,71 @@
-.QueueTrack {
-  min-height: 30px;
-  display: block;
+.QueueTrackHead {
+  height: 84px;
+  border: 1px solid #000000;
+  margin-bottom: 14px;
 }
 
-.Button {
-  margin-left: 8px;
+.QueueTrackChild {
+  height: 53px;
+  display: block;
+  width: 100%;
+  padding-left: 100px;
+}
+
+.AlbumArtContainer {
+  height: 48px;
+  width: 74px;
+
+  display: inline-block;
+  float: left;
+
+  margin-top: 17px;
+  margin-left: 26px;
+
+  background-color: #D2F0D7;
+}
+
+.AlbumArtContainer > img {
+  height: 40px;
+  margin: auto;
+  margin-top: 4px;
+}
+
+.TrackInfoContainer {
+  display: inline-block;
+  float: left;
+
+  margin-top: 17px;
+  margin-left: 34px;
+}
+
+.TrackInfoName {
+  margin-top: 4px;
+  font-size: 18px;
+  line-height: 18px;
+}
+
+.TrackInfoArtistName {
+  font-size: 14px;
+  line-height: 14px;
+  margin-top: 8px;
+}
+
+.ButtonContainer {
+  display: inline-block;
+  float: right;
+  margin-right: 26px;
+}
+
+.ButtonHead {
+  padding: 6px;
+  margin: 23.5px;
+  margin-left: 26px;
+  margin-right: 0px;
+}
+
+.ButtonChild {
+  padding: 6px;
+  margin: 9px;
+  margin-left: 26px;
+  margin-right: 0px;
 }
