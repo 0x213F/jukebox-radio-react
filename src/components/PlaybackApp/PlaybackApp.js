@@ -407,22 +407,6 @@ function PlaybackApp(props) {
       return;
     }
 
-    const SoundCloudAudio = require('soundcloud-audio');
-    const scPlayer = new SoundCloudAudio('sBsbgNTdaqhwPNN5npZXiLAalFrvSI1S');  // a3fedf600df9b639fd309e41522ebf4e // A8ywy8LehtsQQZkh63juM7sDXSeqIccl
-    scPlayer.resolve('https://soundcloud.com/willforbes/fd35', function(
-      track
-    ) {
-      // do smth with track object
-      // e.g. display data in a view etc.
-      console.log(track);
-
-      // once track is loaded it can be played
-      scPlayer.play();
-
-      // stop playing track and keep silence
-      // scPlayer.pause();
-    });
-
     // 7: Get user settings.
     const player = new window.Spotify.Player({
       name: 'Jukebox Radio',
