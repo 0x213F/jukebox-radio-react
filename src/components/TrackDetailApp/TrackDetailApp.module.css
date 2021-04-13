@@ -1,5 +1,5 @@
 .TrackDetailApp {
-  font-family: Raleway;
+
 }
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
@@ -131,7 +131,6 @@
 
   background-color: white;
   outline: none;
-  font-family: Raleway;
 }
 
 .ModalOverlay {

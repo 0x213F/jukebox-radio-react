@@ -43,6 +43,7 @@ function PlaybackApp(props) {
    */
   const stream = props.stream,
         playback = props.playback,
+        userSettings = props.userSettings,
         lastUp = getLastUpQueue(props.lastUpQueues),
         nextUp = getNextUpQueue(props.nextUpQueues);
 
@@ -373,31 +374,28 @@ function PlaybackApp(props) {
       return;
     }
 
-    fetchGetUserSettings()
-      .then(responseJson => {
-        const player = window.MusicKit.configure({
-          developerToken: responseJson.data.appleMusic.token,
-          app: {
-            name: 'Jukebox Radio',
-            build: '0.0.1',
-          },
-        });
+    const player = window.MusicKit.configure({
+      developerToken: userSettings.appleMusic.token,
+      app: {
+        name: 'Jukebox Radio',
+        build: '0.0.1',
+      },
+    });
 
-        player.addEventListener('mediaPlaybackError', function(e) {
-          console.log("mediaPlaybackError");
-          console.log(e)
-        });
+    player.addEventListener('mediaPlaybackError', function(e) {
+      console.log("mediaPlaybackError");
+      console.log(e)
+    });
 
-        player.addEventListener("playbackStateDidChange", function(e) {
-          console.log("playbackStateDidChange")
-          console.log(e)
-        })
+    player.addEventListener("playbackStateDidChange", function(e) {
+      console.log("playbackStateDidChange")
+      console.log(e)
+    })
 
-        props.dispatch({
-          type: 'playback/appleMusic',
-          payload: { appleMusicApi: player },
-        });
-      });
+    props.dispatch({
+      type: 'playback/appleMusic',
+      payload: { appleMusicApi: player },
+    });
   // eslint-disable-next-line
   }, [appleMusicSDKReady])
 
@@ -408,6 +406,23 @@ function PlaybackApp(props) {
     if(!spotifySDKReady) {
       return;
     }
+
+    const SoundCloudAudio = require('soundcloud-audio');
+    const scPlayer = new SoundCloudAudio('sBsbgNTdaqhwPNN5npZXiLAalFrvSI1S');  // a3fedf600df9b639fd309e41522ebf4e // A8ywy8LehtsQQZkh63juM7sDXSeqIccl
+    scPlayer.resolve('https://soundcloud.com/willforbes/fd35', function(
+      track
+    ) {
+      // do smth with track object
+      // e.g. display data in a view etc.
+      console.log(track);
+
+      // once track is loaded it can be played
+      scPlayer.play();
+
+      // stop playing track and keep silence
+      // scPlayer.pause();
+    });
+
     // 7: Get user settings.
     const player = new window.Spotify.Player({
       name: 'Jukebox Radio',

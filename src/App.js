@@ -9,6 +9,7 @@ import {
   fetchPauseTrack,
   fetchTrackGetFiles,
 } from './components/PlaybackApp/Player/network';
+import { fetchGetUserSettings } from './components/UserSettings/network';
 import { fetchQueueList } from './components/QueueApp/network'
 import { playbackControlPause } from './components/PlaybackApp/controls';
 import { store } from './utils/redux'
@@ -47,6 +48,13 @@ function App() {
 
       // Update status.
       setStatus('authenticated');
+
+      // 1B: Fetch user settings!
+      responseJson = await fetchGetUserSettings();
+      await store.dispatch({
+        type: 'user/get-settings',
+        userSettings: responseJson.data,
+      });
 
       // 2: Load stream.
       responseJson = await fetchStreamGet();

@@ -17,6 +17,12 @@ export const finalizeQueue = function(queue) {
           ), 0);
     copy.children = editedChildren;
     copy.totalDurationMilliseconds = totalDurationMilliseconds;
+
+    if(copy.collection?.service === SERVICE_APPLE_MUSIC) {
+      copy.collection.imageUrl = copy.collection.imageUrl.replace("{w}", "300");
+      copy.collection.imageUrl = copy.collection.imageUrl.replace("{h}", "300");
+    }
+
     return copy;
   }
 
