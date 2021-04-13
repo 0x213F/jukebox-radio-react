@@ -44,18 +44,20 @@ function ProgressBarMarker(props) {
         {iconUpTriangle}
       </div>
 
-      {hovering &&
-        <div className={styles.ProgressBarMarkerName}>
-          {hovering && marker.name}
-        </div>
-      }
+      <div className={styles.HoverContainer}>
+        {hovering &&
+          <div className={styles.ProgressBarMarkerName}>
+            {hovering && marker.name}
+          </div>
+        }
 
-      {hovering && editable &&
-        <button className={styles.ProgressBarMarkerDelete}
-                onClick={deleteTrackMarker}>
-          {iconTrash}
-        </button>
-      }
+        {hovering && editable &&
+          <button className={styles.ProgressBarMarkerDelete}
+                  onClick={deleteTrackMarker}>
+            {iconTrash}
+          </button>
+        }
+      </div>
     </div>
   );
 }

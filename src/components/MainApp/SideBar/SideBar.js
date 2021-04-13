@@ -29,9 +29,6 @@ function SideBar(props) {
       <div className={styles.Logo}>
         {iconLogo}
       </div>
-      <div className={styles.SiteTitle}>
-        Jukebox Radio
-      </div>
 
       <ul className={styles.Menu}>
         <li className={styles.Search}>
