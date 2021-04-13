@@ -3,6 +3,9 @@ module.exports = {
   darkMode: false, // or 'media' or 'class'
   theme: {
     extend: {},
+    fontFamily: {
+      'sans': ['Raleway', 'Arial', 'sans-serif'],
+    },
   },
   variants: {
     extend: {},

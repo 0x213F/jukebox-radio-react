@@ -16,7 +16,7 @@ function ChildProgressBar(props) {
         editable = props.editable;
 
   const intervalWidthDuration = interval.endPosition - interval.startPosition,
-        intervalWidth = intervalWidthDuration / duration * 400;
+        intervalWidth = intervalWidthDuration / duration * 100;
 
   let cleanedPurpose;
   cleanedPurpose = interval.purpose.includes('solo') ? 'solo' : interval.purpose;
@@ -52,25 +52,26 @@ function ChildProgressBar(props) {
    */
   return (
     <div className={styles[progressClass]}
-         style={{width: `${intervalWidth}px`}}
+         style={{width: `${intervalWidth}%`}}
          onMouseEnter={onMouseEnter}
          onMouseLeave={onMouseLeave}>
       {editable && hovering &&
         <div className={styles.ProgressHoverContainer}>
-          <div className={styles.ProgressHoverPointer}
-               style={{marginLeft: `${(intervalWidth / 2) - 11}px`}}>
+          <div className={styles.ProgressHoverPointer}>
             {iconUpTriangle}
           </div>
-          <div className={styles.ProgressHoverPurpose}
-               style={{marginLeft: `${(intervalWidth / 2) - 11}px`}}>
-            {interval.purpose}
+
+          <div className={styles.HoverContainer}>
+            <div className={styles.ProgressHoverPurpose}>
+              {interval.purpose}
+            </div>
+            {interval.uuid &&
+              <button className={styles.ProgressHoverDelete}
+                      onClick={deleteTrackInterval}>
+                {iconTrash}
+              </button>
+            }
           </div>
-          {interval.uuid &&
-            <button className={styles.ProgressHoverDelete}
-                    onClick={deleteTrackInterval}>
-              {iconTrash}
-            </button>
-          }
         </div>
       }
     </div>

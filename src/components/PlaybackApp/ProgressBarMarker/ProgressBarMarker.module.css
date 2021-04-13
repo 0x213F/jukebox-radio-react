@@ -1,17 +1,39 @@
 .ProgressBarMarker {
   float: left;
   position: relative;
-  display: block;
 }
 
 .ProgressBarMarkerPointer {
-
+  margin-top: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .ProgressBarMarkerName {
-
+  display: inline-block;
+  float: left;
+  margin-top: 4px;
+  margin-left: 4px;
 }
 
 .ProgressBarMarkerDelete {
   background-color: #E9E9E9;
+  width: 24px;
+  height: 24px;
+  border-radius: 4px;
+
+  margin-top: 4px;
+  margin-left: 8px;
+
+  display: inline-flex;
+  float: left;
+  align-items: center;
+  justify-content: center;
+}
+
+.HoverContainer {
+  position: absolute;
+  display: block;
+  width: max-content;
 }

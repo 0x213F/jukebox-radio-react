@@ -1,8 +1,8 @@
 .ProgressBar {
   display: block;
   position: relative;
-  left: 11px;
-  height: 20px;
+  height: 18px;
+  width: 100%;
 }
 
 .ProgressPointer {

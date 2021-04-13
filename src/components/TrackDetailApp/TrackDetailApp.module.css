@@ -5,69 +5,163 @@
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 /* CLOSE BUTTON */
 .CloseModal {
-
+  margin: 29px;
+  position: absolute;
 }
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 /* TRACK PLAYBACK CONTROLS */
 .Preview {
+  display: inline-block;
+  float: right;
+}
 
+.PreviewImgContainer {
+  background-color: #FFD7D7;
+  width: 315px;
+  height: 191px;
+  padding: 20px;
 }
 
 .PreviewImg {
-
+  height: 100%;
+  margin: auto;
 }
 
 .PreviewControlContainer {
-
+  margin: auto;
+  margin-top: 15px;
+  width: 260px;
+  display: flex;
+  justify-content: space-around;
 }
 
 .PreviewControl {
-
+  width: 24px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 /* TABS */
 .TabButtonContainer {
-
+  margin-top: 50px;
 }
 
 .TabButton {
-
+  width: 206px;
+  height: 35px;
+  border: 2px solid #5BC9EC;
+  border-radius: 35px;
+  color: #5BC9EC;
+  font-size: 18px;
+  font-weight: bold;
+  margin-right: 25px;
 }
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 /* MARKER FORM */
 .CreateMarkerForm {
-
+  margin-top: 32px;
 }
 
 .CreateMarkerFormLabel {
-
+  display: block;
+  font-size: 16px;
+  margin-bottom: 8px;
 }
 
 .CreateMarkerFormInput {
-
+  margin-left: 16px;
+  border-bottom: 1px solid #5BC9EC;
 }
 
 .CreateMarkerFormSubmit {
-
+  width: 86px;
+  height: 25px;
+  font-weight: bold;
+  font-size: 13px;
+  background-color: #5BC9EC;
+  border-radius: 25px;
+  color: white;
+  margin-top: 16px;
 }
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 /* INTERVAL FORM */
 .CreateIntervalForm {
-
+  margin-top: 32px;
 }
 
 .CreateIntervalFormLabel {
-
+  display: block;
+  font-size: 16px;
+  margin-bottom: 8px;
 }
 
 .CreateIntervalFormSelect {
-
+  margin-left: 16px;
+  border-bottom: 1px solid #5BC9EC;
+  padding-right: 6px;
 }
 
 .CreateIntervalFormSubmit {
+  width: 86px;
+  height: 25px;
+  font-weight: bold;
+  font-size: 13px;
+  background-color: #5BC9EC;
+  border-radius: 25px;
+  color: white;
+  margin-top: 16px;
+}
 
+/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
+/* MODAL */
+.Modal {
+  position: absolute;
+
+  width: calc(100% - 408px);
+  height: calc(100% - 363px);
+  min-width: 1032px;
+  min-height: 537px;
+
+  margin: auto;
+
+  background-color: white;
+  outline: none;
+}
+
+.ModalOverlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(11, 29, 45, 0.53);
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.ModalContent {
+  padding: 108px 84px;
+
+  height: 100%;
+  width: 100%;
+
+  max-width: 1400px;
+  margin: auto;
+}
+
+.QueueName {
+  font-size: 22px;
+  padding-left: 8px;
+}
+
+.ProgressBar {
+  margin-top: 60px;
+  width: 100%;
 }
