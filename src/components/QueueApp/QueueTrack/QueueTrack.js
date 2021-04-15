@@ -36,7 +36,7 @@ function QueueTrack(props) {
   return (
     <div className={styles[mainClass]}>
       {!queue.parentUuid &&
-        <div className={styles.AlbumArtContainer}>
+        <div className={[styles.AlbumArtContainer, styles[queue.track.service]].join(' ')}>
           <img src={queue.track.imageUrl} alt={"Album Art"} />
         </div>
       }

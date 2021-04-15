@@ -30,10 +30,7 @@ function BottomBar(props) {
           stream.isPaused ||
           !playback.controlsEnabled
         ),
-        playPauseDisabled = (
-          !stream.nowPlaying ||
-          !playback.controlsEnabled
-        );
+        playPauseDisabled = !playback.controlsEnabled;
 
   /*
    * Modify playback to seek in a certain diretion ('forward' or 'backward').
@@ -54,9 +51,10 @@ function BottomBar(props) {
     }
     if(stream.isPlaying) {
       playbackControls.pause();
-    }
-    if(stream.isPaused) {
+    } else if(stream.isPaused) {
       playbackControls.play();
+    } else {
+      playbackControls.nextTrack();
     }
   }
 

@@ -28,22 +28,6 @@
   margin-top: 4px;
 }
 
-.AlbumArtContainer.Spotify {
-  background-color: #D2F0D7;
-}
-
-.AlbumArtContainer.YouTube {
-  background-color: #FFD7D7;
-}
-
-.AlbumArtContainer.Audius {
-  background-color: #E2E0FE;
-}
-
-.AlbumArtContainer.Upload {
-  background-color: #DFF7FF;
-}
-
 .CollectionInfoContainer {
   display: inline-block;
   float: left;
@@ -75,4 +59,25 @@
   margin: 23.5px;
   margin-left: 26px;
   margin-right: 0px;
+}
+
+/* COLORS */
+.spotify {
+  background-color: #D2F0D7;
+}
+
+.apple_music {
+  background-color: #FFEFEF;
+}
+
+.youtube {
+  background-color: #FFD7D7;
+}
+
+.audius {
+  background-color: #E2E0FE;
+}
+
+.jukebox_radio {
+  background-color: #DFF7FF;
 }

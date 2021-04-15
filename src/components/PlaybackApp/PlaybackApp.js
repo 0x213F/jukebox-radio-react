@@ -583,13 +583,14 @@ function PlaybackApp(props) {
   }
 
   const onYouTubePause = function() {
-    if(!stream.isPaused) {
+
+    if(!stream.isPaused && stream.nowPlaying?.track.service === SERVICE_YOUTUBE) {
       pause();
     }
   }
 
   const onYouTubePlay = function() {
-    if(!stream.isPlaying) {
+    if(!stream.isPlaying && stream.nowPlaying?.track.service === SERVICE_YOUTUBE) {
       play();
     }
   }

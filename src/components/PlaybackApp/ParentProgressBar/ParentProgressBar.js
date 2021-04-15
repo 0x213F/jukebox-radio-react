@@ -19,7 +19,7 @@ function ParentProgressBar(props) {
     const stream = props.stream,
           arr = getPositionMilliseconds(stream, stream.startedAt);
     position = arr[0];
-    pointerLeftDistance = (position / duration) * 400 + "px";
+    pointerLeftDistance = (position / duration) * 100;
   }
 
   const trackMarkerMap = props.trackMarkerMap,
@@ -54,7 +54,7 @@ function ParentProgressBar(props) {
     <div className={styles.ParentProgressBar}>
       {mode === "player" &&
         <div className={styles.ProgressPointer}
-             style={{left: pointerLeftDistance}}>
+             style={{left: `calc(${pointerLeftDistance}% - 11px)`}}>
           {iconDownTriangle}
         </div>
       }

@@ -20,8 +20,6 @@
 
   margin-top: 17px;
   margin-left: 26px;
-
-  background-color: #D2F0D7;
 }
 
 .AlbumArtContainer > img {
@@ -68,4 +66,26 @@
   margin: 9px;
   margin-left: 26px;
   margin-right: 0px;
+}
+
+
+/* COLORS */
+.spotify {
+  background-color: #D2F0D7;
+}
+
+.apple_music {
+  background-color: #FFEFEF;
+}
+
+.youtube {
+  background-color: #FFD7D7;
+}
+
+.audius {
+  background-color: #E2E0FE;
+}
+
+.jukebox_radio {
+  background-color: #DFF7FF;
 }

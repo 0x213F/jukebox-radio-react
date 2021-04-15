@@ -40,12 +40,13 @@ export const playbackControlStart = function(playback, stream) {
           });
       });
   } else if(playbackService === SERVICE_SPOTIFY) {
+    console.log('PLAY')
     playback.spotifyApi.play({
       uris: [stream.nowPlaying.track.externalId],
       position_ms: positionMilliseconds,
     });
   } else if(playbackService === SERVICE_YOUTUBE) {
-    playback.youTubeApi.seekTo(positionMilliseconds / 1000);
+    playback.youTubeApi.seekTo(Math.floor(positionMilliseconds / 1000));
     playback.youTubeApi.playVideo();
   } else if(playbackService === SERVICE_JUKEBOX_RADIO) {
     const trackUuid = stream.nowPlaying.track.uuid,

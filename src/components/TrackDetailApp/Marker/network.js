@@ -11,11 +11,11 @@ import { fetchBackend } from '../../../utils/network';
  * Creates a marker. The queue context is passed so the Redux state may be
  * updated.
  */
-export const fetchStreamMarkerCreate = async (trackUuid, timestampMilliseconds, queueUuid) => {
+export const fetchStreamMarkerCreate = async (trackUuid, timestampMilliseconds, queueUuid, name) => {
   const response = await fetchBackend(
     TYPE_POST,
     ENDPOINT_MARKER_CREATE,
-    { trackUuid, timestampMilliseconds, queueUuid }
+    { trackUuid, timestampMilliseconds, queueUuid, name }
   );
   return await response.json();
 };

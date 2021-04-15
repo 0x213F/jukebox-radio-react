@@ -40,7 +40,7 @@ function QueueCollection(props) {
     <div className={styles.QueueCollection}>
 
       <div className={styles.QueueCollectionMain}>
-        <div className={styles.AlbumArtContainer}>
+        <div className={[styles.AlbumArtContainer, styles[queue.collection.service]].join(' ')}>
           <img src={queue.collection.imageUrl} alt={"Album Art"} />
         </div>
 

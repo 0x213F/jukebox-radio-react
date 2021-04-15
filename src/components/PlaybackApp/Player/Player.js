@@ -74,8 +74,8 @@ function Player(props) {
         }
       </div>
 
-      {stream?.nowPlaying &&
-        <div className={styles.Div}>
+      {stream?.nowPlaying && stream?.nowPlaying.track &&
+        <div className={styles.ProgressBarContainer}>
           <ParentProgressBar queue={stream?.nowPlaying}
                              stream={stream}
                              mode={"player"}>

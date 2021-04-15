@@ -44,7 +44,7 @@ function TrackDetailApp(props) {
    */
   const createTrackMarker = async function() {
     const responseJson = await fetchStreamMarkerCreate(
-      queue.track.uuid, formMarkerTimestamp, queueUuid
+      queue.track.uuid, formMarkerTimestamp, queueUuid, formMarkerName
     );
     await props.dispatch(responseJson.redux);
     setFormMarkerTimestamp('');
