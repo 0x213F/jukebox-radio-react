@@ -3,6 +3,7 @@ import { connect } from 'react-redux'
 import TrackDetailApp from '../../TrackDetailApp/TrackDetailApp'
 import styles from './QueueTrack.module.css';
 import { iconEdit, iconRemove } from '../icons';
+import { durationPretty } from '../utils';
 
 
 function QueueTrack(props) {
@@ -28,7 +29,10 @@ function QueueTrack(props) {
   }
 
   const mainClass = queue.parentUuid ? "QueueTrackChild" : "QueueTrackHead",
-        buttonClass = queue.parentUuid ? "ButtonChild" : "ButtonHead";
+        buttonClass = queue.parentUuid ? "ButtonChild" : "ButtonHead",
+        infoClass = queue.parentUuid ? "TrackInfoContainerChild" : "TrackInfoContainerHead";
+
+
 
   /*
    * 🎨
@@ -40,7 +44,10 @@ function QueueTrack(props) {
           <img src={queue.track.imageUrl} alt={"Album Art"} />
         </div>
       }
-      <div className={styles.TrackInfoContainer}>
+      <div className={styles[infoClass]}>
+        <div className={styles.TrackInfoDuration}>
+          {durationPretty(queue.track.durationMilliseconds)}
+        </div>
         <div className={styles.TrackInfoName}>
           {queue.track.name}
         </div>
