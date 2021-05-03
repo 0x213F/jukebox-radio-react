@@ -25,8 +25,7 @@ function ParentProgressBar(props) {
   const trackMarkerMap = props.trackMarkerMap,
         markers = trackMarkerMap[queue.uuid] || [];
 
-  let runningPix = 0,
-      runningMark = 11;
+  let runningMark = 11;
   for(let i=0; i < markers.length; i++) {
     let pix = markers[i].timestampMilliseconds / duration * 100;
     markers[i].styleLeft = `calc(${pix}% - ${runningMark}px)`;

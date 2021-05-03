@@ -1,6 +1,109 @@
-.Login {}
+.LoginContainer {
+  width: 100%;
+  height: 100vh;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  font-family: 'Roboto', sans-serif;
+}
+
+.Logo {
+  display: block;
+  position: absolute;
+  width: 38px;
+  height: 38px;
+  left: 43px;
+  top: 38px;
+}
+
+.LoginHeader {
+  margin-bottom: 52px;
+}
+
+.LoginHeader > h3 {
+  font-weight: bold;
+  font-size: 40px;
+  margin-bottom: 19px;
+  margin-top: 0;
+}
+
+.LoginHeader > p {
+  font-size: 18px;
+  margin: 0;
+}
+
+.LoginHeader > p > a {
+  text-decoration: none;
+  font-weight: bold;
+  color: #0047FF!important;
+}
 
 .FormBlock {
+  margin-bottom: 30px;
   display: block;
-  text-align: center;
+}
+
+.FormBlock > span {
+  display: block;
+  font-size: 18px;
+  font-weight: 500;
+}
+
+.FormBlockInline {
+  display: inline-block!important;
+  margin-left: 12px;
+  line-height: 25px;
+  top: -6px;
+  position: relative;
+  cursor: pointer;
+}
+
+.FormBlock > input {
+  width: 422px;
+  height: 68px;
+  border: 2px solid #0047FF;
+  caret-color: #0047FF;
+  border-radius: 6px;
+  margin-top: 14px;
+  font-size: 20px;
+  padding-left: 20px;
+  display: inline;
+}
+
+.FormBlock > input:focus {
+  background-color: rgba(0, 71, 255, 0.12);
+}
+
+.Checkbox {
+  background: none;
+  border: none;
+  height: 25px;
+  padding: 0;
+  cursor: pointer;
+}
+
+.Submit {
+  width: 218px;
+  height: 45px;
+  border-radius: 22.5px;
+  font-size: 20px;
+  font-weight: bold;
+  background-color: #0047FF;
+  border: none;
+  color: white;
+  display: inline-block;
+  cursor: pointer;
+}
+
+.ForgotPassword {
+  display: inline-block!important;
+  margin-left: 30px;
+}
+
+.ForgotPassword > a {
+  text-decoration: none;
+  font-weight: 500;
+  color: #0047FF!important;
 }

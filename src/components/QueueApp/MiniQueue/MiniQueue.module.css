@@ -3,6 +3,21 @@
   max-height: 400px;
 }
 
+.MiniQueue > p {
+  margin: 0;
+}
+
 .MiniQueueItem {
   padding-bottom: 8px;
+  font-size: 14px;
+  line-height: 16px;
+}
+
+.MiniQueue > h3 {
+  font-style: normal;
+  font-weight: bold;
+  font-size: 20px;
+  line-height: 23px;
+  text-decoration: none;
+  margin: 0;
 }

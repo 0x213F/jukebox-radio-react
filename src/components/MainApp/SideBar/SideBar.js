@@ -11,6 +11,8 @@ function SideBar(props) {
    * 🏗
    */
   const [showModal, setShowModal] = useState(false);
+  // eslint-disable-next-line
+  const [counter, setCounter] = useState(0);
 
   const openModal = function() {
     setShowModal(true);
@@ -18,6 +20,17 @@ function SideBar(props) {
 
   const closeModal = function() {
     setShowModal(false);
+  }
+
+  let marginBottom;
+  if (window.location.pathname.includes("search")) {
+    marginBottom = "196px";
+  } else if (window.location.pathname.includes("queue")) {
+    marginBottom = "66px";
+  } else if (window.location.pathname.includes("player")) {
+    marginBottom = "-66px";
+  } else if (window.location.pathname.includes("feed")) {
+    marginBottom = "-196px";
   }
 
    /*
@@ -30,20 +43,28 @@ function SideBar(props) {
         {iconLogo}
       </div>
 
-      <ul className={styles.Menu}>
-        <li className={styles.Search}>
-          <Link to="/app/search">Search</Link>
-        </li>
-        <li className={styles.Queue}>
-          <Link to="/app/queue">Queue</Link>
-        </li>
-        <li className={styles.Player}>
-          <Link to="/app/player">Player</Link>
-        </li>
-        <li className={styles.Feed}>
-          <Link to="/app/feed">Feed</Link>
-        </li>
-      </ul>
+      <div className={styles.MenuContainer}>
+        <div className={styles.Line}>
+        </div>
+        <div className={styles.Block}
+             style={{marginBottom: marginBottom}}>
+        </div>
+        <ul className={styles.Menu}
+            onClick={(e) => { setCounter(prev => prev + 1); }}>
+          <li className={window.location.pathname.includes("search") && styles.LiSelected}>
+            <Link to="/app/search">Search</Link>
+          </li>
+          <li className={window.location.pathname.includes("queue") && styles.LiSelected}>
+            <Link to="/app/queue">Queue</Link>
+          </li>
+          <li className={window.location.pathname.includes("player") && styles.LiSelected}>
+            <Link to="/app/player">Player</Link>
+          </li>
+          <li className={window.location.pathname.includes("feed") && styles.LiSelected}>
+            <Link to="/app/feed">Feed</Link>
+          </li>
+        </ul>
+      </div>
 
       <div className={styles.Settings}>
         <button onClick={openModal}>

@@ -125,11 +125,7 @@ function App() {
     return (
       <Router>
         <Provider store={store}>
-          <div className="app-main-container">
-            <div className="app-main">
-              <Login />
-            </div>
-          </div>
+          <Login />
         </Provider>
       </Router>
     )

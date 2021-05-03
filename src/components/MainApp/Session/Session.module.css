@@ -13,32 +13,33 @@
 .Content {
   position: relative;
   top: 0px;
-  /* 189px === width of SideBar */
-  margin-left: 189px;
+  margin-left: 268px;
   height: 100%;
-  /* I have no idea why this works but it does */
-  width: calc(100% - 29px);
+  width: calc(100% - 108px);
 }
 
 
 .PrimaryContent {
-  margin-left: 40px;
+  margin-left: 104px;
   height: calc(100% - 160px);
-  width: calc(100% - 420px);
+  width: calc(100% - 509px);
   position: relative;
   float: left;
   margin-top: 95px;
 }
 
 .SecondaryContent {
-  margin-left: 40px;
+  margin-left: 50px;
+  margin-right: 57px;
   padding: 40px;
-  min-height: 300px;
-  width: 300px;
-  border: 1px solid black;
+  min-width: 298px;
+  max-width: 298px;
+  border: 1px solid #BCBCBC;
   position: relative;
   float: left;
   cursor: pointer;
   display: block;
-  margin-top: 95px;
+  top: 95px;
+  box-sizing: border-box;
+  /* height: calc(100% - 307px); */
 }
