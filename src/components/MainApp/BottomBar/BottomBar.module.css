@@ -27,16 +27,19 @@
 }
 
 .Volume {
-  position: absolute;
-  right: 0px;
 }
 
 .VolumeButton {
-  margin-top: 16px;
-  margin-right: 28px;
-  width: 62px;
-  height: 62px;
+  width: 42px;
+  height: 42px;
   float: right;
+  background-color: #FFF;
+  border: 0;
+  padding: 0;
+  cursor: pointer;
+  position: absolute;
+  right: 48px;
+  bottom: 38px;
 }
 
 .ExtraControl {

@@ -32,9 +32,9 @@ function SearchApp(props) {
 
   const [showModal, setShowModal] = useState(false);
 
-  //const openModal = function() {
-    //setShowModal(true);
-  //}
+  const openModal = function() {
+    setShowModal(true);
+  }
 
   const closeModal = function() {
     setShowModal(false);
@@ -100,7 +100,8 @@ function SearchApp(props) {
             {iconSearch}
           </div>
           */}
-          <button className={styles.Upload}>
+          <button className={styles.Upload}
+                  onClick={openModal}>
             {iconUpload}
           </button>
         </div>
