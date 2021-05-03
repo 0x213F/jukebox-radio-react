@@ -26,28 +26,29 @@ function MiniQueue(props) {
    */
   return (
     <div className={styles.MiniQueue}>
-      <h3><i>Next up...</i></h3>
-      {queueDuration ?
-        (
-          <p><i>
-            Playback will end&nbsp;
-            <ReactTimeAgo future date={endsAt} locale="en-US" />
-          </i></p>
-        ) : (
-          <p><i>
-            There is nothing in the queue.
-          </i></p>
-        )
-      }
-      <div>
+      <h3>Queue</h3>
+      <ol style={{padding: "13px", margin: "4px 0"}}>
         {expandedQueues.map((queue, index) => {
           return (
-            <div key={index} className={styles.MiniQueueItem}>
+            <li key={index} className={styles.MiniQueueItem}>
               {queue.track?.name || queue.collection?.name}
-            </div>
+            </li>
           );
         })}
-      </div>
+      </ol>
+
+      {queueDuration ?
+        (
+          <p>
+            Playback will end&nbsp;
+            <ReactTimeAgo future date={endsAt} locale="en-US" />
+          </p>
+        ) : (
+          <p>
+            There is nothing in the queue.
+          </p>
+        )
+      }
     </div>
   );
 }

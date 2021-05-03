@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import styles from './SearchResult.module.css';
-import { iconCheck } from './icons';
+// import { iconCheck } from './icons';
+import { SERVICE_APPLE_MUSIC } from './../../../config/services';
 
 
 function SearchResult(props) {
@@ -16,17 +17,28 @@ function SearchResult(props) {
     setIsSubmitted(true);
   }
 
+  let imgUrl = searchResult.img_url;
+  if(searchResult.provider === SERVICE_APPLE_MUSIC) {
+    imgUrl = imgUrl.replace("{w}", "300");
+    imgUrl = imgUrl.replace("{h}", "300");
+  }
+
   return (
-    <div className={styles.SearchResult}>
-      <span>
-        {searchResult.provider} {searchResult.format} {searchResult.name}
-        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-      </span>
+    <div className={!isSubmitted ? styles.SearchResult : styles.SearchResultSubmitted}>
+
+      <div className={styles.ImageParent}>
+        <img src={imgUrl} alt={"Album Art"} />
+      </div>
+
+      <div className={styles.ResultInformation}>
+        <h5>{searchResult.name}</h5>
+        <h6>{searchResult.artist_name}</h6>
+      </div>
 
       { /* Initial state: button has not been clicked. */
       !isSubmitting && !isSubmitted &&
         <button type="button"
-                className={styles.Button}
+                className={styles.AddButton}
                 onClick={handleAddToQueue}
                 disabled={false}>
           Add
@@ -36,7 +48,8 @@ function SearchResult(props) {
       { /* Immediately after being clicked, disable and display spinner. */
       isSubmitting && !isSubmitted &&
         <button type="button"
-                className={styles.Button}
+                className={styles.AddButton}
+                style={{cursor: "wait"}}
                 disabled={true}>
           <i className={styles.ggSpinner}></i>
         </button>
@@ -45,9 +58,9 @@ function SearchResult(props) {
       { /* Once loaded, stay disabled but display a check */
       isSubmitted &&
         <button type="button"
-                className={styles.Button}
+                className={styles.AddButtonInverted}
                 disabled={true}>
-          {iconCheck}
+          Added
         </button>
       }
     </div>

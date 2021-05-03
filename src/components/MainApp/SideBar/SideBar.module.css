@@ -1,79 +1,95 @@
 .SideBar {
-  height: 100%;
-  width: 188px;
+  height: 100vh;
+  width: 268px;
   position: relative;
   float: left;
   left: 0px;
-  font-style: normal;
-  font-weight: 500;
-  font-size: 20px;
-  line-height: 23px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  z-index: 2;
 }
 
 .Logo {
   position: absolute;
-  width: 29px;
-  height: 29px;
-  left: 48px;
-  top: 41px;
+  width: 38px;
+  height: 38px;
+  left: 43px;
+  top: 38px;
 }
 
-.SiteTitle {
-  position: absolute;
-  width: 160px;
-  height: 41px;
-  left: 87px;
-  top: 44px;
-  font-size: 12px;
+.MenuContainer {
+  height: 573px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
-.Menu{
+.Menu {
   font-size: 20px;
   list-style-type: none;
   text-decoration: none;
 }
 
-.Search {
-  position: absolute;
-  width: 187px;
-  height: 41px;
-  left: 48px;
-  top: 422px;
+.Menu > li {
+  font-size: 20px;
+  margin: 40px;
+  margin-right: 100px;
+  width: 120px;
 }
 
-.Queue {
-  position: absolute;
-  width: 187px;
-  height: 41px;
-  left: 48px;
-  top: 448px;
+.LiSelected > a {
+  font-family: Raleway;
+  font-style: normal;
+  font-weight: bold;
+  font-size: 30px;
+  line-height: 35px;
+  color: #0047FF!important;
 }
 
-.Player {
-  position: absolute;
-  width: 187px;
-  height: 41px;
-  left: 48px;
-  top: 525px;
-}
-
-.Feed {
-  position: absolute;
-  width: 187px;
-  height: 41px;
-  left: 48px;
-  top: 602px;
+.Menu > li > a {
+  text-decoration: none;
 }
 
 .Settings {
   position: absolute;
-  left: 3.33%;
-  right: 95.14%;
-  top: 93.33%;
-  bottom: 4.22%;
+  left: 48px;
+  bottom: 38px;
+}
+
+.Settings > button {
+  border: none;
+  background-color: #FFF;
+  padding: 0;
+  width: 24px;
+  height: 24px;
+  cursor: pointer;
 }
 
 a:visited {
   text-decoration: none;
   color: black;
+}
+
+.Line {
+  height: 573px;
+  width: 1px;
+  background-color: #000;
+
+  position: fixed;
+  margin-left: 251px;
+}
+
+.Block {
+  height: 52px;
+  width: 8px;
+  background-color: #0047FF;
+
+  position: fixed;
+  margin-left: 260px;
+
+  transition: margin cubic-bezier(0.25, 0.1, 0.25, 1) 0.15s;
 }

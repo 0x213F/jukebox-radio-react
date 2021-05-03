@@ -10,7 +10,6 @@ import {
   iconScanBackward,
   iconPlayCircle,
   iconPauseCircle,
-  iconMusic,
   // iconMic,
 } from './icons';
 
@@ -79,9 +78,9 @@ function BottomBar(props) {
                 styles={buildStyles({
                   rotation: 1 / 2 + 1 / 8,
                   strokeLinecap: "butt",
-                  trailColor: "#eee",
+                  pathColor: "#0047FF",
+                  trailColor: "#EAEAEA",
                 })} >
-            {iconMusic}
           </CircularProgressbarWithChildren>
         </button>
       </div>

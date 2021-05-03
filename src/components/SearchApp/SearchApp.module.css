@@ -1,28 +1,112 @@
-.SearchApp {}
+.SearchApp {
+}
+
+.SearchBarContainer {
+  display: flex;
+  justify-content: center;
+}
+
+.SearchBarIcon {
+  position: relative;
+  left: 660px;
+  top: 19px;
+  z-index: 1;
+  cursor: pointer;
+}
 
 .SearchBar {
-  position: absolute;
-  width: 670px;
-  height: 70px;
-  left: 365px;
-  top: 95px;
+  width: calc(100% - 84px);
+  height: 64px;
 
-  border: 1px solid #000000;
-  box-sizing: border-box;
+  border: 2px solid #0047FF;
   border-radius: 35px;
 
-  caret-color: #5BC9EC;
+  caret-color: #0047FF;
   font-size: 20px;
   outline: none;
+
+  position: relative;
+
+  font-family: "Raleway";
+  font-weight: 500;
+
+  padding-left: 37px;
+}
+
+.Upload {
+  height: 70px;
+  min-width: 70px;
+  background-color: #FFF;
+
+  padding: 0;
+  border: 2px solid #0047FF;
+  border-radius: 35px;
+
+  margin-left: 14px;
+  cursor: pointer;
 }
 
 .FormBlock {
+  display: flex;
+  justify-content: center;
+  margin-top: 34px;
+}
 
+.ServiceCheckboxContainer {
+  height: 26px;
+  cursor: pointer;
+  user-select: none;
+}
+
+.ServiceCheckboxContainer > button {
+  background: none;
+  border: none;
+  height: 26px;
+  padding: 0;
+  margin-left: 26px;
+}
+
+.ServiceCheckboxContainer:first-child > button {
+  margin-left: 0;
+}
+
+.ServiceCheckboxContainer > span {
+  font-size: 20px;
+  font-weight: 500;
+  top: -6.5px;
+  padding-left: 8px;
+  position: relative;
+}
+
+.SearchResultsContainer {
+  width: calc(100% + 12px);
+}
+
+.SearchResultsContainer::-webkit-scrollbar {
+  display: none;
 }
 
 .SearchResults {
-  top: 290px;
-  bottom: 40px;
-  position: absolute;
   overflow-y: scroll;
+  margin-top: 34px;
+  height: calc(100vh - 385px);
+}
+
+.SearchResults::-webkit-scrollbar {
+  display: none;
+}
+
+.SearchResults:after {
+  content  : "";
+  position : absolute;
+  z-index  : 1;
+  bottom   : 0;
+  left     : 0;
+  pointer-events   : none;
+  background-image : linear-gradient(to bottom,
+                    rgba(255,255,255, 0),
+                    rgba(255,255,255, 1) 95%);
+  width: calc(100% + 12px);
+  height   : 42px;
+  bottom: -32px;
 }
