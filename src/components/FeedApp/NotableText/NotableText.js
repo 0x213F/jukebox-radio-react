@@ -56,8 +56,13 @@ function NotableText(props) {
 
     // NOTE: anchor is where the user starts selecting text, focus is the end
     //       of the selection.
-    const anchorValue = parseInt(selection.anchorNode.parentNode.getAttribute('offset')) - 1;
-    const focusValue = parseInt(selection.focusNode.parentNode.getAttribute('offset'));
+    let anchorValue = parseInt(selection.anchorNode.parentNode.getAttribute('offset'));
+    let focusValue = parseInt(selection.focusNode.parentNode.getAttribute('offset'));
+    if(anchorValue < focusValue) {
+      focusValue += 1;
+    } else {
+      anchorValue += 1;
+    }
     setSelectableIsShowable(true);
     setAnchorOffset(anchorValue);
     setFocusOffset(focusValue);

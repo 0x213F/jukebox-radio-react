@@ -52,62 +52,60 @@ function Player(props) {
 
   return (
     <div className={styles.Player}>
-      <div className={styles.Div}>
-        <h4><i>Last...</i></h4>
-        <p>{lastUp?.track?.name}</p>
-      </div>
+      <div style={{width: "100%"}}>
 
-      <br></br>
+        <div className={styles.QueueItemContainer}>
+          <div className={styles.QueueItemLast}>
+            <div>
+              <img alt="" src={lastUp?.track?.imageUrl} />
+            </div>
+            <h5>
+              {lastUp?.track?.name || "Nothing..."}
+            </h5>
+          </div>
 
-      <div className={styles.Div}>
-        <h2><i>Now playing...</i></h2>
-        {imageUrl &&
-          <img alt=""
-               src={imageUrl}
-               className={styles.Image} />
-        }
-        {(stream?.isPlaying || stream?.isPaused) &&
-          <h3>{track?.name}</h3>
-        }
-        {(!stream?.isPlaying && !stream?.isPaused) &&
-          <h3><i>Waiting...</i></h3>
-        }
-      </div>
+          <div className={styles.QueueItemCurrent}>
+            <div>
+              <img alt="" src={imageUrl} />
+            </div>
+            <h5>
+              {track?.name}
+            </h5>
+            <h6>
+              {track?.artistName}
+            </h6>
+          </div>
 
-      {stream?.nowPlaying && stream?.nowPlaying.track &&
-        <div className={styles.ProgressBarContainer}>
-          <ParentProgressBar queue={stream?.nowPlaying}
-                             stream={stream}
-                             mode={"player"}>
-          </ParentProgressBar>
+          <div className={styles.QueueItemNext}>
+            <div>
+              <img alt="" src={nextUp?.track?.imageUrl} />
+            </div>
+            <h5>
+              {nextUp?.track.name || "Nothing..."}
+            </h5>
+          </div>
         </div>
-      }
 
-      <div className={styles.Div}>
-        <button className={styles.Button}
-                onClick={props.prevTrack}
-                disabled={!playback.controlsEnabled}>
-          {iconPrevTrack}
-        </button>
-        <button className={styles.Button}
-                onClick={props.nextTrack}
-                disabled={!playback.controlsEnabled}>
-          {iconNextTrack}
-        </button>
+        <div className={styles.PlaybackControls}>
+          <button onClick={props.prevTrack}
+                  disabled={!playback.controlsEnabled}>
+            {iconPrevTrack}
+          </button>
+          <button onClick={props.nextTrack}
+                  disabled={!playback.controlsEnabled}>
+            {iconNextTrack}
+          </button>
+        </div>
+
+        {stream?.nowPlaying && stream?.nowPlaying.track &&
+          <div className={styles.ProgressBarContainer}>
+            <ParentProgressBar queue={stream?.nowPlaying}
+                               stream={stream}
+                               mode={"player"}>
+            </ParentProgressBar>
+          </div>
+        }
       </div>
-
-      <br></br>
-
-      <div className={styles.Div}>
-        <h4><i>Next...</i></h4>
-        <p>{nextUp?.track.name}</p>
-      </div>
-
-      <Link to="/app/queue">
-        <button className={styles.MoreNextUp}>
-          More
-        </button>
-      </Link>
     </div>
   );
 }

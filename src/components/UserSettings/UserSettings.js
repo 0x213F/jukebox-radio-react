@@ -2,6 +2,8 @@ import React, { useState } from "react";
 import Modal from 'react-modal';
 import { connect } from 'react-redux';
 import { fetchUpdateUserSettings } from './network';
+import styles from './UserSettings.module.css';
+import { iconBack } from './../../icons';
 
 
 function UserSettings(props) {
@@ -18,6 +20,13 @@ function UserSettings(props) {
 
   if (!props.userSettings) {
     return <></>;
+  }
+
+  const handleAppleMusic = function() {
+    const music = window.MusicKit.getInstance();
+    if(!music.musicUserToken) {
+      music.authorize();
+    }
   }
 
   function updateIdleQueue(event) {
@@ -43,29 +52,37 @@ function UserSettings(props) {
 
   return (
     <Modal isOpen={isOpen}
-           ariaHideApp={false}>
-      <button onClick={closeModal}>Close</button>
+           ariaHideApp={false}
+           className={styles.Modal}
+           overlayClassName={styles.ModalOverlay}>
 
-      <br></br><br></br>
+      <button className={styles.CloseModal}
+              onClick={closeModal}>
+        {iconBack}
+      </button>
 
-      <div>
-        <a href={props.userSettings.spotify.authorizationUrl}>Connect Your Spotify Account</a>
+      <div className={styles.Body}>
+        <h3>
+          Settings
+        </h3>
 
-        <br></br><br></br>
+        <a href={props.userSettings.spotify.authorizationUrl}>Connect your Spotify Premium account.</a>
+
+        <a href={"#apple-music"} onClick={handleAppleMusic}>Connect your Apple Music account.</a>
 
         <div>
           <label>
             <input type="checkbox" checked={props.userSettings.idleQueue} onChange={updateIdleQueue} disabled={!controlsEnabled}/>
             Idle After Queue
-          </label><br/>
+          </label>
           <label>
             <input type="checkbox" checked={props.userSettings.speakVoice} onChange={updateSpeakVoice} disabled={!controlsEnabled}/>
             Speak Voice Recordings
-          </label><br/>
+          </label>
           <label>
             <input type="checkbox" checked={props.userSettings.focusMode} onChange={updateFocusMode} disabled={!controlsEnabled}/>
             Focus Mode
-          </label><br/>
+          </label>
         </div>
       </div>
     </Modal>

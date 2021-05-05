@@ -1,22 +1,113 @@
 .FeedApp {
-  display: flex;
-  justify-content: center;
   width: 100%;
   height: 100%;
 }
 
-.Feed {
-  position: relative;
-  bottom: 30px;
-  width: 420px;
+.ContentContainer {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  margin-left: 117px;
+  width: calc(100% - 819px);
+}
+
+.ContentContainer > h5 {
+  font-family: Raleway;
+  font-style: normal;
+  font-weight: 500;
+  font-size: 14px;
+  line-height: 16px;
+
+  margin: 0;
+  margin-top: 16px;
+
+  padding: 0;
+}
+
+.ImageContainer {
+  width: calc(100% - 30px);
+  background-color: #EAEAEA;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.ImageContainer > img {
+  max-height: calc(100% - 20px);
+  max-width: calc(100% - 20px);
+  display: block;
+  width: auto;
+  height: auto;
 }
 
 .FeedWrapper {
-  position: absolute;
-  bottom: 0;
+  display: inline-block;
+  width: 597px;
+  height: 100%;
+  float: right;
 }
 
-.CreateTextComment {
+.Feed {
+  position: absolute;
+  bottom: 74px;
+}
+
+.ComposeBar {
   position: absolute;
   bottom: 40px;
+  caret-color: #0047FF;
+}
+
+.ComposeBar > input {
+  width: 309px;
+  height: 22px;
+  padding: 16px;
+
+  border: 1px solid #000000;
+  box-sizing: border-box;
+  border-radius: 26.5px;
+
+  outline: none;
+
+  font-family: Raleway;
+  font-style: normal;
+  font-weight: 500;
+}
+
+.ComposeBar > button {
+  padding: 0;
+  margin: 0;
+  border: 0;
+  background-color: #FFF;
+  cursor: pointer;
+  margin-right: 16px;
+
+  width: 34px;
+  height: 34px;
+  border: 1px solid #000000;
+  border-radius: 17px;
+  box-sizing: border-box;
+
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.NotationButton > div {
+  width: 10px;
+  height: 10px;
+  border-radius: 5px;
+  background-color: #C4C4C4;
+}
+
+.RecordButton > div {
+  width: 10px;
+  height: 10px;
+  border-radius: 5px;
+  background-color: #FF0000;
+}
+
+.SubmitButton {
+  visibility: hidden;
 }

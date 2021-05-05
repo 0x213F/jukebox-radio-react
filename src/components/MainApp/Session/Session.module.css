@@ -18,10 +18,18 @@
   width: calc(100% - 108px);
 }
 
+.MainContent {
+  margin-left: 104px;
+  height: calc(100% - 104px);
+  width: calc(100% - 476px);
+  position: relative;
+  float: left;
+  margin-top: 95px;
+}
 
 .PrimaryContent {
   margin-left: 104px;
-  height: calc(100% - 160px);
+  height: calc(100% - 104px);
   width: calc(100% - 509px);
   position: relative;
   float: left;

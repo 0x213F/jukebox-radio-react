@@ -10,16 +10,19 @@
   display: flex;
   justify-content: center;
 
-  margin-top: 10px;
+  margin-top: 15px;
 }
 
 .PlaybackButton {
   height: 72px;
-  width: 64px;
   margin: 0px 16px;
   background-color: #FFF;
   border: none;
   cursor: pointer;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .PlaybackButton:disabled {
@@ -30,16 +33,16 @@
 }
 
 .VolumeButton {
-  width: 42px;
-  height: 42px;
+  width: 36px;
+  height: 36px;
   float: right;
   background-color: #FFF;
   border: 0;
   padding: 0;
   cursor: pointer;
   position: absolute;
-  right: 48px;
-  bottom: 38px;
+  right: 42px;
+  bottom: 32px;
 }
 
 .ExtraControl {

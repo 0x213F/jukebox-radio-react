@@ -17,14 +17,14 @@ export const iconPrevTrack = (
 
 export const iconUpTriangle = (
   <svg width="22" height="18" viewBox="0 0 22 18" fill="none" xmlns="http://www.w3.org/2000/svg">
-  <path d="M11 1.04907e-06L21.3923 17.25L0.607694 17.25L11 1.04907e-06Z" fill="#5BC9EC"/>
+  <path d="M11 1.04907e-06L21.3923 17.25L0.607694 17.25L11 1.04907e-06Z" fill="#0047FF"/>
   </svg>
 )
 
 
 export const iconDownTriangle = (
   <svg width="22" height="18" viewBox="0 0 22 18" fill="none" xmlns="http://www.w3.org/2000/svg">
-  <path d="M11 18L21.3923 0.75L0.607696 0.749998L11 18Z" fill="#5BC9EC"/>
+  <path d="M11 18L21.3923 0.75L0.607696 0.749998L11 18Z" fill="#0047FF"/>
   </svg>
 )
 

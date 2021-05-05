@@ -1,3 +1,7 @@
 .NotableText {
   max-width: 300px;
 }
+
+.NotableText > p {
+  line-height: 21px;
+}

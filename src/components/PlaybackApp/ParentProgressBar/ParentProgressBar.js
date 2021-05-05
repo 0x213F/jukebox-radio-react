@@ -68,14 +68,14 @@ function ParentProgressBar(props) {
                  </ChildProgressBar>;
         })}
       </div>
-      {mode === "markers" &&
+      {(mode === "markers" || mode === "player") &&
         <div className={styles.ProgressMarkerContainer}>
           {  // eslint-disable-next-line
           markers.map((marker, index) => {
             return <ProgressBarMarker key={marker.uuid}
                                       marker={marker}
                                       queueUuid={queue.uuid}
-                                      editable={true} />;
+                                      editable={mode === "markers"} />;
           })}
         </div>
       }

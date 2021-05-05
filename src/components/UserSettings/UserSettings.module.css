@@ -1,0 +1,66 @@
+/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
+/* MODAL */
+.Modal {
+  position: absolute;
+
+  width: calc(100% - 408px);
+  height: calc(100% - 363px);
+  min-width: 1032px;
+  min-height: 537px;
+
+  margin: auto;
+
+  background-color: white;
+  outline: none;
+}
+
+.ModalOverlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(11, 29, 45, 0.53);
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* * * * * * * * * * * * */
+/* STYLES */
+.CloseModal {
+  margin-top: 29px;
+  margin-left: 29px;
+  background-color: #FFF;
+  border: 0;
+  padding: 0;
+  cursor: pointer;
+}
+
+.Body {
+  margin-top: 65px;
+  margin-left: 82px;
+}
+
+.Body > h3 {
+  font-family: Raleway;
+  font-style: normal;
+  font-weight: 500;
+  font-size: 20px;
+  line-height: 23px;
+}
+
+.Body > a, .Body > div > label {
+  font-family: Raleway;
+  font-style: normal;
+  font-weight: 500;
+  font-size: 16px;
+  line-height: 19px;
+
+  margin-left: 42px;
+  margin-top: 42px;
+  display: block;
+  text-decoration: none;
+  cursor: pointer;
+}

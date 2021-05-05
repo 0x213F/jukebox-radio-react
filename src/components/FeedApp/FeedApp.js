@@ -142,8 +142,23 @@ function FeedApp(props) {
    */
   return (
     <div className={styles.FeedApp}>
-      <div className={styles.Feed}>
-        <div className={styles.FeedWrapper}>
+
+      <ABCNotationCompose trackUuid={trackUuid}
+                          textCommentTimestamp={textCommentTimestamp}
+                          isOpen={showModal}
+                          closeModal={closeModal} />
+
+      <div className={styles.ContentContainer}>
+        <div className={styles.ImageContainer}>
+          <img alt="" src={stream.nowPlaying?.track?.imageUrl} />
+        </div>
+        <h5>
+          {stream.nowPlaying?.track?.name}
+        </h5>
+      </div>
+
+      <div className={styles.FeedWrapper}>
+        <div className={styles.Feed}>
           {feed.map((value, index) => {
             if(value.class === CLASS_TEXT_COMMENT) {
               if(value.format === 'text') {
@@ -157,35 +172,34 @@ function FeedApp(props) {
             return <></>;
           })}
         </div>
+
+        <form className={styles.ComposeBar} onSubmit={async (e) => { await createTextComment(e); }}>
+          <button className={styles.NotationButton}
+                  type="button"
+                  onClick={openModal}
+                  disabled={!stream.isPlaying} >
+            <div></div>
+          </button>
+          <button className={styles.RecordButton}
+                  type="button"
+                  onClick={handleRecord}
+                  disabled={!stream.isPlaying} >
+            <div></div>
+          </button>
+          <input type="text"
+                 name="text"
+                 value={text}
+                 onChange={handleTextChange}
+                 autocomplete={"off"}
+                 disabled={!stream.isPlaying} />
+          <button className={styles.SubmitButton}
+                  type="submit"
+                  disabled={!stream.isPlaying} >
+            Send
+          </button>
+        </form>
       </div>
 
-      <form className={styles.CreateTextComment} onSubmit={async (e) => { await createTextComment(e); }}>
-        <button type="button"
-                onClick={openModal}
-                disabled={!stream.isPlaying} >
-          Notation
-        </button>
-
-        <ABCNotationCompose trackUuid={trackUuid}
-                            textCommentTimestamp={textCommentTimestamp}
-                            isOpen={showModal}
-                            closeModal={closeModal} />
-        <button type="button"
-                onClick={handleRecord}
-                disabled={!stream.isPlaying} >
-          Record
-        </button>
-        <input type="text"
-               name="text"
-               placeholder="text"
-               value={text}
-               onChange={handleTextChange}
-               disabled={!stream.isPlaying} />
-        <button type="submit"
-                disabled={!stream.isPlaying} >
-          Send
-        </button>
-      </form>
     </div>
   );
 }

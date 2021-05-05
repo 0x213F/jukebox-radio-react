@@ -44,19 +44,16 @@ function QueueCollection(props) {
           <img src={queue.collection.imageUrl} alt={"Album Art"} />
         </div>
 
-        <div className={styles.CollectionInfoContainer}>
-          <div className={styles.CollectionInfoName}>
-            {queue.collection.name}
-          </div>
-          <div className={styles.CollectionInfoArtistName}>
-            {queue.collection.artistName}
-          </div>
+        <div className={styles.QueueInformation}>
+          <h5>{queue.collection.name}</h5>
+          <h6>{queue.collection.artistName}</h6>
         </div>
+
         <div className={styles.ButtonContainer}>
-          <button className={styles.Button} type="button" onClick={toggleReveal}>
+          <button type="button" onClick={toggleReveal}>
             {reveal ? iconCollapse: iconExpand}
           </button>
-          <button className={styles.Button} type="button" onClick={async (e) => { await props.destroy(queue); }}>
+          <button type="button" onClick={async (e) => { await props.destroy(queue); }}>
             {iconRemove}
           </button>
         </div>

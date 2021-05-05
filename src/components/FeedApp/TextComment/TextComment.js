@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import { connect } from 'react-redux';
 import NotableText from '../NotableText/NotableText';
 import styles from './TextComment.module.css';
@@ -6,6 +6,7 @@ import {
   fetchDeleteTextComment,
   fetchListDeleteTextCommentModifications,
 } from './network';
+import { iconTrash, iconErase } from '../icons';
 
 
 function TextComment(props) {
@@ -15,6 +16,16 @@ function TextComment(props) {
    */
   const textComment = props.data,
         textCommentUuid = textComment.uuid;
+
+  const [hovering, setHovering] = useState(false);
+
+  const onMouseEnter = function() {
+    setHovering(true);
+  }
+
+  const onMouseLeave = function() {
+    setHovering(false);
+  }
 
   /*
    * Deletes a text comment.
@@ -45,16 +56,28 @@ function TextComment(props) {
    * 🎨
    */
   return (
-    <div className={styles.TextComment}>
-      <NotableText data={textComment} textColor={textColor}></NotableText>
+    <div className={styles.TextCommentContainer}
+         onMouseEnter={onMouseEnter}
+         onMouseLeave={onMouseLeave}>
 
-      <button type="button" onClick={clearModifications}>
-        Clear modifications
-      </button>
+      <div className={styles.HoverBuffer}>
+      </div>
 
-      <button type="button" onClick={deleteTextComment}>
-        Delete
-      </button>
+      <div className={styles.TextComment}>
+        <NotableText data={textComment} textColor={textColor}></NotableText>
+
+        {hovering &&
+          <div className={styles.HoverContainer}>
+            <button type="button" onClick={deleteTextComment}>
+              {iconTrash}
+            </button>
+
+            <button type="button" onClick={clearModifications}>
+              {iconErase}
+            </button>
+          </div>
+        }
+      </div>
     </div>
   );
 }

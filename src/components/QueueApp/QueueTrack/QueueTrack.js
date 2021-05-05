@@ -44,19 +44,12 @@ function QueueTrack(props) {
           <img src={queue.track.imageUrl} alt={"Album Art"} />
         </div>
       }
-      <div className={styles[infoClass]}>
-        <div className={styles.TrackInfoDuration}>
-          {durationPretty(queue.track.durationMilliseconds)}
-        </div>
-        <div className={styles.TrackInfoName}>
-          {queue.track.name}
-        </div>
-        {!queue.parentUuid &&
-          <div className={styles.TrackInfoArtistName}>
-            {queue.track.artistName}
-          </div>
-        }
+
+      <div className={styles.QueueInformation}>
+        <h5>{queue.track.name}</h5>
+        {!queue.parentUuid && <h6>{queue.track.artistName}</h6>}
       </div>
+
       <div className={styles.ButtonContainer}>
         <button className={styles[buttonClass]} type="button" onClick={initializeModal}>
           {iconEdit}

@@ -1,8 +1,9 @@
-import React from "react";
+import React, { useState } from "react";
 import { connect } from 'react-redux';
 import { Notation } from 'react-abc';
 import styles from './ABCNotationDisplay.module.css';
 import { fetchDeleteTextComment } from '../TextComment/network';
+import { iconTrash } from '../icons';
 
 
 function ABCNotationDisplay(props) {
@@ -12,6 +13,16 @@ function ABCNotationDisplay(props) {
    */
   const abcNotation = props.data,
         abcNotationUuid = abcNotation.uuid;
+
+  const [hovering, setHovering] = useState(false);
+
+  const onMouseEnter = function() {
+    setHovering(true);
+  }
+
+  const onMouseLeave = function() {
+    setHovering(false);
+  }
 
   /*
    * Deletes a music notation graphic.
@@ -28,14 +39,25 @@ function ABCNotationDisplay(props) {
    * 🎨
    */
   return (
-    <div className={styles.ABCNotationDisplay}>
+    <div className={styles.ABCNotationDisplayContainer}
+         onMouseEnter={onMouseEnter}
+         onMouseLeave={onMouseLeave}>
 
-      <Notation notation={abcNotation.text}
-                engraverParams={{ staffwidth: 278 }}/>
+      <div className={styles.HoverBuffer}>
+      </div>
 
-      <button type="button" onClick={deleteAbcNotation}>
-        Delete
-      </button>
+      <div className={styles.ABCNotationDisplay}>
+        <Notation notation={abcNotation.text}
+                  engraverParams={{ staffwidth: 278 }} />
+
+        {hovering &&
+          <div className={styles.HoverContainer}>
+            <button type="button" onClick={deleteAbcNotation}>
+              {iconTrash}
+            </button>
+          </div>
+        }
+      </div>
     </div>
   );
 }

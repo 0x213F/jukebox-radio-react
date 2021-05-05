@@ -10,8 +10,8 @@
 const RENDER_STATUS_HISTORY = 'history',
       RENDER_STATUS_DISPLAY = 'display',
       RENDER_STATUS_HIDE = 'hide',
-      DISPLAY_DURATION = 30000,
-      HISTORY_DURATION = 45000;
+      DISPLAY_DURATION = 60000,
+      HISTORY_DURATION = 60000;
 
 /*
  * Regenerates the feed. When regenerating the feed, it takes the previous

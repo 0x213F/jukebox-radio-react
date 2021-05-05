@@ -1,8 +1,51 @@
+.ABCNotationDisplayContainer {
+  width: 512px;
+  position: relative;
+}
+
 .ABCNotationDisplay {
-  max-width: 420px;
-  background-color: white;
-  border-radius: 4px;
-  padding: 8px;
-  margin-bottom: 8px;
-  border: 1px solid #5a5a5a;
+  width: 355px;
+  min-height: 62px;
+  border: 1px solid #EAEAEA;
+  padding: 22px 28px;
+  margin-bottom: 19px;
+}
+
+.HoverBuffer {
+  height: 68px;
+  width: 99px;
+  content  : "";
+  position : absolute;
+  right: 0;
+  top: 0;
+  z-index: -1;
+  display: block;
+}
+
+.HoverContainer {
+  position: absolute;
+  left: calc(100% - 77px);
+  top: 0;
+  margin-top: 22px;
+  margin-right: -99px;
+  width: 62px
+}
+
+.HoverContainer > button {
+  margin: 0;
+  border: 0;
+  padding: 0;
+
+  background-color: #E9E9E9;
+  cursor: pointer;
+
+  width: 24px;
+  height: 24px;
+  margin-right: 7px;
+  border-radius: 2px;
+
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
 }

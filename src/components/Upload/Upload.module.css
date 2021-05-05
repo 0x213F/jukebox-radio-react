@@ -1,8 +1,63 @@
-.Upload {
-  text-align: center;
+/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
+/* MODAL */
+.Modal {
+  position: absolute;
+
+  width: calc(100% - 408px);
+  height: calc(100% - 363px);
+  min-width: 1032px;
+  min-height: 537px;
+
+  margin: auto;
+
+  background-color: white;
+  outline: none;
+}
+
+.ModalOverlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(11, 29, 45, 0.53);
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* * * * * * * * * * * * */
+/* STYLES */
+.CloseModal {
+  margin-top: 29px;
+  margin-left: 29px;
+  background-color: #FFF;
+  border: 0;
+  padding: 0;
+  cursor: pointer;
+}
+
+.Login {
+  margin-top: 65px;
+  margin-left: 82px;
+}
+
+.Login > h3 {
+  font-family: Raleway;
+  font-style: normal;
+  font-weight: 500;
+  font-size: 20px;
+  line-height: 23px;
+  margin-bottom: 32px;
 }
 
 .FormBlock {
   display: block;
-  height: 1.4rem;
+  margin-left: 42px;
+  margin-top: 22px;
+}
+
+.FormBlock > input {
+  margin-left: 12px;
 }

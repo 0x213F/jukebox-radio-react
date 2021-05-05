@@ -1,5 +1,6 @@
 .QueueCollection {
-  border: 1px solid #000000;
+  box-shadow: 4px 4px 12px rgba(0, 0, 0, 0.15), inset 0px 0px 0px 1px #EAEAEA;
+  width: calc(100% - 12px);
   margin-bottom: 14px;
 }
 
@@ -10,55 +11,80 @@
 }
 
 .AlbumArtContainer {
-  height: 48px;
   width: 74px;
+  height: 48px;
 
   display: inline-block;
   float: left;
-
-  margin-top: 17px;
+  margin-top: 18px;
   margin-left: 26px;
 
-  background-color: #D2F0D7;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  background-color: #EAEAEA;
 }
 
 .AlbumArtContainer > img {
   height: 40px;
-  margin: auto;
-  margin-top: 4px;
 }
 
-.CollectionInfoContainer {
+.QueueInformation {
   display: inline-block;
   float: left;
-
-  margin-top: 17px;
+  height: 48px;
   margin-left: 34px;
+  margin-top: 19px;
+  width: calc(100% - 400px);
 }
 
-.CollectionInfoName {
-  margin-top: 4px;
+.QueueInformation > h5 {
+  margin: 0;
+  font-style: normal;
+  font-weight: 500;
   font-size: 18px;
-  line-height: 18px;
+  line-height: 21px;
+  padding-top: 1px;
+  white-space: nowrap;
+  overflow: hidden;
+  display: block;
+  text-overflow: ellipsis;
 }
 
-.CollectionInfoArtistName {
+.QueueInformation > h6 {
+  margin: 0;
+  font-style: normal;
+  font-weight: 500;
   font-size: 14px;
-  line-height: 14px;
-  margin-top: 8px;
+  line-height: 16px;
+  padding-top: 8px;
+  white-space: nowrap;
+  overflow: hidden;
+  display: block;
+  text-overflow: ellipsis;
 }
 
 .ButtonContainer {
   display: inline-block;
   float: right;
+  margin-top: 26px;
   margin-right: 26px;
 }
 
-.Button {
-  padding: 6px;
-  margin: 23.5px;
-  margin-left: 26px;
-  margin-right: 0px;
+.ButtonContainer > button {
+  background-color: #FFF;
+  border: 0;
+  padding: 0;
+  height: 30px;
+  width: 30px;
+  margin-left: 27px;
+
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  cursor: pointer;
 }
 
 /* COLORS */

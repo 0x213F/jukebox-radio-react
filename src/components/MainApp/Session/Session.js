@@ -62,23 +62,16 @@ function Session(props) {
         <Switch>
           {/* FEED */}
           <Route path="/app/feed">
-            <div className={styles.PrimaryContent}>
-              <FeedApp />
-            </div>
+            <FeedApp />
           </Route>
           {/* PLAYER */}
           <Route path="/app/player">
-            <div className={styles.PrimaryContent}>
+            <div className={styles.MainContent}>
               <Player nextTrack={props.playbackControls.nextTrack}
                       prevTrack={props.playbackControls.prevTrack}
                       seek={props.playbackControls.seek}
                       pause={props.playbackControls.pause}
                       play={props.playbackControls.play} />
-            </div>
-            <div className={styles.SecondaryContent}>
-              <Link to="/app/feed">
-                <MiniFeed />
-              </Link>
             </div>
           </Route>
           {/* QUEUE */}

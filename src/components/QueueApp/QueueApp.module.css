@@ -1,27 +1,78 @@
 .QueueApp {
   overflow-y: scroll;
   height: 100%;
+  padding-top: 42px;
+  top: -42px;
+  position: relative;
+  width: calc(100% + 12px);
 }
 
 .QueueApp::-webkit-scrollbar {
   display: none;
 }
 
+.QueueApp:before {
+  content  : "";
+  position : fixed;
+  z-index  : 1;
+  bottom   : 0;
+  left     : 0;
+  pointer-events   : none;
+  background-image : linear-gradient(to bottom,
+                    rgba(255,255,255, 1),
+                    rgba(255,255,255, 0) 95%);
+  width: calc(100% + 12px);
+  height   : 42px;
+  top: 52px;
+}
+
+.QueueApp:after {
+  content  : "";
+  position : fixed;
+  z-index  : 1;
+  bottom   : 0;
+  left     : 0;
+  pointer-events   : none;
+  background-image : linear-gradient(to bottom,
+                    rgba(255,255,255, 0),
+                    rgba(255,255,255, 1) 95%);
+  width: calc(100% + 12px);
+  height   : 42px;
+  bottom: 101px;
+}
+
 .PlaybackDuration {
-  font-size: 20px;
-  margin-top: 32px;
+  display: inline-block;
+
+  font-family: Raleway;
+  font-style: normal;
+  font-weight: 500;
+  font-size: 14px;
+  line-height: 16px;
+
+  margin-top: 59px;
+  margin-bottom: 42px;
 }
 
 .AddToQueue {
-  width: 157px;
+  display: inline-block;
+  float: right;
+  margin-top: 33px;
+  margin-right: 12px;
+
+  border: 2px solid #0047FF;
+  box-sizing: border-box;
+  border-radius: 24px;
+  width: 174px;
   height: 48px;
-  margin-top: 104px;
 
-  border: 1px solid #5BC9EC;
-  border-radius: 9px;
+  background-color: #FFF;
 
-  color: #5BC9EC;
-  font-size: 16px;
+  font-family: Raleway;
+  font-style: normal;
   font-weight: bold;
+  font-size: 16px;
+  line-height: 19px;
+  color: #0047FF;
   cursor: pointer;
 }

@@ -5,8 +5,12 @@
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 /* CLOSE BUTTON */
 .CloseModal {
-  margin: 29px;
-  position: absolute;
+  margin-top: 29px;
+  margin-left: 29px;
+  background-color: #FFF;
+  border: 0;
+  padding: 0;
+  cursor: pointer;
 }
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
@@ -52,12 +56,15 @@
 .TabButton {
   width: 206px;
   height: 35px;
-  border: 2px solid #5BC9EC;
+  border: 2px solid #0047FF;
   border-radius: 35px;
-  color: #5BC9EC;
+  color: #0047FF;
   font-size: 18px;
   font-weight: bold;
   margin-right: 25px;
+  background-color: #FFF;
+  font-family: Raleway;
+  cursor: pointer;
 }
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
@@ -74,7 +81,14 @@
 
 .CreateMarkerFormInput {
   margin-left: 16px;
-  border-bottom: 1px solid #5BC9EC;
+  border: 0;
+  border-bottom: 1px solid #0047FF;
+  outline: none;
+  font-family: Raleway;
+  font-style: normal;
+  font-weight: 500;
+  font-size: 16px;
+  outline: none;
 }
 
 .CreateMarkerFormSubmit {
@@ -82,10 +96,13 @@
   height: 25px;
   font-weight: bold;
   font-size: 13px;
-  background-color: #5BC9EC;
+  background-color: #0047FF;
+  border: 0;
   border-radius: 25px;
   color: white;
   margin-top: 16px;
+  font-family: Raleway;
+  cursor: pointer;
 }
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
@@ -102,8 +119,15 @@
 
 .CreateIntervalFormSelect {
   margin-left: 16px;
-  border-bottom: 1px solid #5BC9EC;
+  border: 0;
+  border-bottom: 1px solid #0047FF;
   padding-right: 6px;
+  background-color: #FFF;
+  font-family: Raleway;
+  font-style: normal;
+  font-weight: 500;
+  font-size: 16px;
+  outline: none;
 }
 
 .CreateIntervalFormSubmit {
@@ -111,10 +135,12 @@
   height: 25px;
   font-weight: bold;
   font-size: 13px;
-  background-color: #5BC9EC;
+  background-color: #0047FF;
+  border: 0;
   border-radius: 25px;
   color: white;
   margin-top: 16px;
+  cursor: pointer;
 }
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
@@ -127,6 +153,7 @@
   min-width: 1032px;
   min-height: 537px;
 
+  border-radius: 14px;
   margin: auto;
 
   background-color: white;
@@ -150,7 +177,7 @@
   padding: 108px 84px;
 
   height: 100%;
-  width: 100%;
+  width: calc(100% - 168px);
 
   max-width: 1400px;
   margin: auto;

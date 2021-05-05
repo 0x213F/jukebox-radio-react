@@ -4,6 +4,8 @@ import styles from './Upload.module.css';
 
 import { fetchCreateTrack } from './network';
 
+import { iconBack } from './../../icons';
+
 
 function Upload(props) {
 
@@ -50,9 +52,14 @@ function Upload(props) {
 
   return (
     <Modal isOpen={isOpen}
-           ariaHideApp={false}>
-      <button onClick={closeModal}
-              disabled={isDisabled}>Close</button>
+           ariaHideApp={false}
+           className={styles.Modal}
+           overlayClassName={styles.ModalOverlay}>
+
+      <button className={styles.CloseModal}
+              onClick={closeModal}>
+        {iconBack}
+      </button>
 
       <div className={styles.Login}>
         <h3>Upload</h3>
@@ -74,8 +81,6 @@ function Upload(props) {
                  disabled={isDisabled}
                  key={inputKey + 1} />
         </label>
-
-        <br></br>
 
         <label className={styles.FormBlock}>
           Track name

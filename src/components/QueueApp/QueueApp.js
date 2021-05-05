@@ -46,45 +46,43 @@ function QueueApp(props) {
    */
   return (
     <div className={styles.QueueApp}>
-      <div>
-        {  // eslint-disable-next-line
-        nextUpQueues.map((value, index) => {
-          if(value.collection) {
-            return (
-              <QueueCollection key={value.uuid}
-                               data={value}
-                               destroy={destroyQueueItem}>
-              </QueueCollection>
-            );
-          } else if(value.track) {
-            return (
-              <QueueTrack key={value.uuid}
-                          data={value}
-                          destroy={destroyQueueItem}>
-              </QueueTrack>
-            );
-          }
-        })}
-        <div className={styles.PlaybackDuration}>
-          {queueDuration ?
-            (
-              <p>
-                Playback will end&nbsp;
-                <ReactTimeAgo future date={endsAt} locale="en-US" />
-              </p>
-            ) : (
-              <p>
-                There is nothing in the queue.
-              </p>
-            )
-          }
-        </div>
-        <Link to="/app/search">
-          <button className={styles.AddToQueue}>
-            Add To Queue
-          </button>
-        </Link>
+      {  // eslint-disable-next-line
+      nextUpQueues.map((value, index) => {
+        if(value.collection) {
+          return (
+            <QueueCollection key={value.uuid}
+                             data={value}
+                             destroy={destroyQueueItem}>
+            </QueueCollection>
+          );
+        } else if(value.track) {
+          return (
+            <QueueTrack key={value.uuid}
+                        data={value}
+                        destroy={destroyQueueItem}>
+            </QueueTrack>
+          );
+        }
+      })}
+      <div className={styles.PlaybackDuration}>
+        {queueDuration ?
+          (
+            <>
+              Playback will end&nbsp;
+              <ReactTimeAgo future date={endsAt} locale="en-US" />
+            </>
+          ) : (
+            <>
+              There is nothing in the queue.
+            </>
+          )
+        }
       </div>
+      <Link to="/app/search">
+        <button className={styles.AddToQueue}>
+          Add To Queue
+        </button>
+      </Link>
     </div>
   );
 }

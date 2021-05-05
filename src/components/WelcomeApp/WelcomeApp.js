@@ -22,6 +22,10 @@ function WelcomeApp(props) {
     if(!music.musicUserToken) {
       playback.appleMusic.api.authorize();
     } else {
+      props.dispatch({
+        type: 'search/toggleServiceOff',
+        payload: { serviceAppleMusic: true },
+      });
       history.push("/app/search");
       closeModal();
     }
@@ -31,17 +35,29 @@ function WelcomeApp(props) {
     if(userSettings && !userSettings.spotify.accessToken) {
       window.location.href = props.userSettings.spotify.authorizationUrl;
     } else {
+      props.dispatch({
+        type: 'search/toggleServiceOff',
+        payload: { serviceSpotify: true },
+      });
       history.push("/app/search");
+      closeModal();
     }
-    closeModal();
   }
 
   const handleYouTube = function () {
+    props.dispatch({
+      type: 'search/toggleServiceOff',
+      payload: { serviceYouTube: true },
+    });
     history.push("/app/search");
     closeModal();
   }
 
   const handleLibrary = function () {
+    props.dispatch({
+      type: 'search/toggleServiceOff',
+      payload: { serviceJukeboxRadio: true },
+    });
     history.push("/app/search");
     closeModal();
   }

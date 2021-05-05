@@ -82,6 +82,35 @@ const initialState = {
       voice: 1.00,
     },
   },
+  search: {
+    serviceSpotify: true,
+    serviceYouTube: true,
+    serviceAppleMusic: true,
+    serviceJukeboxRadio: true,
+  },
+}
+
+
+const searchToggleServiceOff = function(state, payload) {
+  return {
+    ...state,
+    search : {
+      serviceSpotify: false,
+      serviceYouTube: false,
+      serviceAppleMusic: false,
+      serviceJukeboxRadio: false,
+      ...payload
+    }
+  }
+}
+
+const searchToggleService = function(state, payload) {
+  const newState = { ...state },
+        newSearch = { ...state.search };
+
+  newSearch[payload.serviceName] = !newSearch[payload.serviceName]
+  newState.search = newSearch;
+  return newState;
 }
 
 
@@ -181,6 +210,10 @@ const reducer = (state = initialState, action) => {
       return playbackLoadFiles(state, action.payload);
     case "playback/cycleVolumeLevelAudio":
       return playbackCycleVolumeLevelAudio(state);
+    case "search/toggleServiceOff":
+      return searchToggleServiceOff(state, action.payload);
+    case "search/toggleService":
+      return searchToggleService(state, action.payload);
     // case "@redux/INIT":
     //   return state;
     default:

@@ -9,7 +9,8 @@ import {
   fetchStreamQueueIntervalCreate,
 } from './Interval/network';
 import styles from './TrackDetailApp.module.css';
-import { iconForward1000, iconForward100, iconBackward100, iconBackward1000, iconPlay, iconBack } from './icons';
+import { iconForward1000, iconForward100, iconBackward100, iconBackward1000, iconPlay } from './icons';
+import { iconBack } from './../../icons';
 import ParentProgressBar from '../PlaybackApp/ParentProgressBar/ParentProgressBar';
 
 
@@ -165,7 +166,7 @@ function TrackDetailApp(props) {
             <button className={styles.CreateMarkerFormSubmit}
                     disabled={!(formMarkerTimestamp && formMarkerName)}
                     onClick={createTrackMarker}>
-              Save
+              Create
             </button>
           </div>
         }

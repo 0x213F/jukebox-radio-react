@@ -77,9 +77,10 @@ function BottomBar(props) {
                 circleRatio={0.75}
                 styles={buildStyles({
                   rotation: 1 / 2 + 1 / 8,
-                  strokeLinecap: "butt",
+                  strokeLinecap: "round",
                   pathColor: "#0047FF",
                   trailColor: "#EAEAEA",
+                  pathTransitionDuration: 0.3,
                 })} >
           </CircularProgressbarWithChildren>
         </button>

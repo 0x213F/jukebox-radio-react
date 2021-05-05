@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { connect } from 'react-redux';
 import styles from './SearchApp.module.css';
 
@@ -15,15 +15,11 @@ function SearchApp(props) {
    * 🏗
    */
 
+  const search = props.search;
+
   const [searchResults, setSearchResults] = useState([]);
 
   const [query, setQuery] = useState('');
-
-  // NOTE: These could be condensed, but I prefer explicitly writing them out.
-  const [serviceAppleMusic, setServiceAppleMusic] = useState(true);
-  const [serviceSpotify, setServiceSpotify] = useState(true);
-  const [serviceYouTube, setServiceYouTube] = useState(true);
-  const [serviceJukeboxRadio, setServiceJukeboxRadio] = useState(true);
 
   const formatTrack = true,
         formatAlbum = true,
@@ -40,6 +36,34 @@ function SearchApp(props) {
     setShowModal(false);
   }
 
+  const handleSpotify = function() {
+    props.dispatch({
+      type: 'search/toggleService',
+      payload: { serviceName: "serviceSpotify" },
+    });
+  }
+
+  const handleYouTube = function() {
+    props.dispatch({
+      type: 'search/toggleService',
+      payload: { serviceName: "serviceYouTube" },
+    });
+  }
+
+  const handleAppleMusic = function() {
+    props.dispatch({
+      type: 'search/toggleService',
+      payload: { serviceName: "serviceAppleMusic" },
+    });
+  }
+
+  const handleJukeboxRadio = function() {
+    props.dispatch({
+      type: 'search/toggleService',
+      payload: { serviceName: "serviceJukeboxRadio" },
+    });
+  }
+
   /*
    * When the user initializes a login attempt.
    */
@@ -49,10 +73,10 @@ function SearchApp(props) {
     }
     const responseJson = await fetchSearchMusicLibrary(
       query,
-      serviceAppleMusic,
-      serviceSpotify,
-      serviceYouTube,
-      serviceJukeboxRadio,
+      search.serviceAppleMusic,
+      search.serviceSpotify,
+      search.serviceYouTube,
+      search.serviceJukeboxRadio,
       formatTrack,
       formatAlbum,
       formatPlaylist,
@@ -108,37 +132,37 @@ function SearchApp(props) {
 
         <div className={styles.FormBlock}>
           <label className={styles.ServiceCheckboxContainer}>
-            <button onClick={(e) => {setServiceSpotify(prev => !prev)}}>
-              {serviceSpotify ? iconCheckboxChecked : iconCheckboxUnchecked}
+            <button onClick={handleSpotify}>
+              {search.serviceSpotify ? iconCheckboxChecked : iconCheckboxUnchecked}
             </button>
-            <span>
+            <span style={!search.serviceSpotify && {color: "#ABABAB"} || {}}>
               Spotify
             </span>
           </label>
 
           <label className={styles.ServiceCheckboxContainer}>
-            <button onClick={(e) => {setServiceYouTube(prev => !prev)}}>
-              {serviceYouTube ? iconCheckboxChecked : iconCheckboxUnchecked}
+            <button onClick={handleYouTube}>
+              {search.serviceYouTube ? iconCheckboxChecked : iconCheckboxUnchecked}
             </button>
-            <span>
+            <span style={!search.serviceYouTube && {color: "#ABABAB"} || {}}>
               YouTube
             </span>
           </label>
 
           <label className={styles.ServiceCheckboxContainer}>
-            <button onClick={(e) => {setServiceAppleMusic(prev => !prev)}}>
-              {serviceAppleMusic ? iconCheckboxChecked : iconCheckboxUnchecked}
+            <button onClick={handleAppleMusic}>
+              {search.serviceAppleMusic ? iconCheckboxChecked : iconCheckboxUnchecked}
             </button>
-            <span>
+            <span style={!search.serviceAppleMusic && {color: "#ABABAB"} || {}}>
               Apple Music
             </span>
           </label>
 
           <label className={styles.ServiceCheckboxContainer}>
-            <button onClick={(e) => {setServiceJukeboxRadio(prev => !prev)}}>
-              {serviceJukeboxRadio ? iconCheckboxChecked : iconCheckboxUnchecked}
+            <button onClick={handleJukeboxRadio}>
+              {search.serviceJukeboxRadio ? iconCheckboxChecked : iconCheckboxUnchecked}
             </button>
-            <span>
+            <span style={!search.serviceJukeboxRadio && {color: "#ABABAB"} || {}}>
               Jukebox Radio
             </span>
           </label>
@@ -161,7 +185,9 @@ function SearchApp(props) {
 }
 
 
-const mapStateToProps = (state) => ({});
+const mapStateToProps = (state) => ({
+  search: state.search,
+});
 
 
 export default connect(mapStateToProps)(SearchApp);

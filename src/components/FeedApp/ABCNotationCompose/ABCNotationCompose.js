@@ -3,6 +3,8 @@ import Modal from 'react-modal';
 import { Notation } from 'react-abc';
 import { connect } from 'react-redux';
 import { fetchTextCommentCreate } from './../network';
+import styles from './ABCNotationCompose.module.css';
+import { iconBack } from './../../../icons';
 
 
 function ABCNotationCompose(props) {
@@ -40,30 +42,44 @@ function ABCNotationCompose(props) {
 
   return (
     <Modal isOpen={isOpen}
-           ariaHideApp={false}>
-      <button onClick={closeModal}
+           ariaHideApp={false}
+           className={styles.Modal}
+           overlayClassName={styles.ModalOverlay}>
+      <button className={styles.CloseModal}
+              onClick={closeModal}
               disabled={isDisabled}>
-        Close
+        {iconBack}
       </button>
 
-      <br></br><br></br>
+      <div className={styles.ContentContainer}>
+        <div className={styles.NotationContainer}>
+          <h4>
+            Notation
+          </h4>
+          <textarea type="text"
+                    name="text"
+                    placeholder="text"
+                    value={text}
+                    spellcheck="false"
+                    onChange={handleTextChange}
+                    disabled={isDisabled} />
+        </div>
 
-      <div>
-        <textarea type="text"
-                  name="text"
-                  placeholder="text"
-                  value={text}
-                  onChange={handleTextChange}
-                  disabled={isDisabled} />
-
-        <Notation notation={text}
-                  engraverParams={{ staffwidth: 278 }}/>
+        <div className={styles.RenderingContainer}>
+          <h4>
+            Rendering
+          </h4>
+          <div className={styles.RenderingWrapper}>
+            <Notation notation={text}
+                      engraverParams={{ staffwidth: 278 }}/>
+          </div>
+          <button onClick={createABCNotation}
+                  disabled={isDisabled}>
+            Post
+          </button>
+        </div>
       </div>
 
-      <button onClick={createABCNotation}
-              disabled={isDisabled}>
-        Post
-      </button>
     </Modal>
   );
 }

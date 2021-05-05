@@ -35,11 +35,3 @@ export const iconPlay = (
     <path d="M1 1L16 11.5L1 22V1Z" stroke="#AFACAC" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
   </svg>
 );
-
-export const iconBack = (
-  <svg width="27" height="27" viewBox="0 0 27 27" fill="none" xmlns="http://www.w3.org/2000/svg">
-    <path d="M13.5 26C20.4036 26 26 20.4036 26 13.5C26 6.59644 20.4036 1 13.5 1C6.59644 1 1 6.59644 1 13.5C1 20.4036 6.59644 26 13.5 26Z" stroke="black" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-    <path d="M13.5 8.5L8.5 13.5L13.5 18.5" stroke="black" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-    <path d="M18.793 13.1133H8.79297" stroke="black" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-  </svg>
-);
