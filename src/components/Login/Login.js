@@ -1,8 +1,10 @@
 import React, { useState } from "react";
+
 import { Link } from "react-router-dom";
-import styles from './Login.module.css';
+
 import { iconLogo, iconCheckboxChecked, iconCheckboxUnchecked } from '../../icons';
 
+import styles from './Login.module.css';
 import { fetchAuthToken, fetchInitializeStream } from './network';
 
 
@@ -23,8 +25,6 @@ function Login(props) {
    * When the user initializes a login attempt.
    */
   const handleSubmit = async function(e) {
-    e.preventDefault();
-
     const responseJson = await fetchAuthToken(username, password);
     if(!responseJson.access || !responseJson.refresh) {
       return;
@@ -38,6 +38,9 @@ function Login(props) {
     window.location.href = '/app/search';
   }
 
+  /*
+   * 🎨
+   */
   return (
     <div className={styles.LoginContainer}>
       <div className={styles.Logo}>
@@ -77,7 +80,6 @@ function Login(props) {
                  onChange={(e) => {setPassword(e.target.value)}} />
         </label>
 
-
         <label className={styles.FormBlock}
                style={{height: "25px"}}>
           <button className={styles.Checkbox}
@@ -88,7 +90,6 @@ function Login(props) {
             Remember Me
           </span>
         </label>
-
 
         <div className={styles.FormBlock}
              style={{marginBottom: "6px;"}}>
@@ -104,5 +105,6 @@ function Login(props) {
     </div>
   );
 }
+
 
 export default Login;

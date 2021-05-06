@@ -6,6 +6,7 @@
   background: #FFF;
 }
 
+/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 .Playback {
   display: flex;
   justify-content: center;
@@ -13,7 +14,7 @@
   margin-top: 15px;
 }
 
-.PlaybackButton {
+.Playback > button {
   height: 72px;
   margin: 0px 16px;
   background-color: #FFF;
@@ -25,14 +26,14 @@
   justify-content: center;
 }
 
-.PlaybackButton:disabled {
+.Playback > button:disabled {
   color: grey;
 }
 
-.Volume {
-}
+/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
+.Volume {}
 
-.VolumeButton {
+.Volume > button {
   width: 36px;
   height: 36px;
   float: right;
@@ -43,22 +44,4 @@
   position: absolute;
   right: 42px;
   bottom: 32px;
-}
-
-.ExtraControl {
-  position: absolute;
-  display: inline-flex;
-  float: right;
-  margin-right: 84px;
-  margin-top: 24px;
-}
-
-.ExtraControlButton {
-  margin-left: 27px;
-  font-size: 18px;
-  padding: 8px 14px;
-  background-color: #DFF7FF;
-  border: 1px solid #cc0000;
-  border-radius: 4px;
-  cursor: pointer;
 }

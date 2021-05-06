@@ -1,16 +1,18 @@
 import React from "react";
+
 import { connect } from 'react-redux';
 import { CircularProgressbarWithChildren, buildStyles } from 'react-circular-progressbar';
 import 'react-circular-progressbar/dist/styles.css';
+
 import { cycleVolumeLevel } from '../../PlaybackApp/utils';
 import { playbackChangeVolume } from '../../PlaybackApp/controls';
+
 import styles from './BottomBar.module.css';
 import {
   iconScanForward,
   iconScanBackward,
   iconPlayCircle,
   iconPauseCircle,
-  // iconMic,
 } from './icons';
 
 
@@ -43,6 +45,8 @@ function BottomBar(props) {
 
   /*
    * Modify playback to play or pause, whichever one is relevant.
+   * NOTE: If no song is currently playing, then the "play button" will
+   *       actually perform the "nextTrack" action.
    */
   const handlePlayPause = function() {
     if(playPauseDisabled) {
@@ -57,6 +61,10 @@ function BottomBar(props) {
     }
   }
 
+  /*
+   * When a user toggles volume level. It cycles through predefined volume
+   * levels.
+   */
   const handleCycleVolumeLevel = function() {
     const nextVolumeLevel = cycleVolumeLevel(audioVolumeLevel);
     playbackChangeVolume(playback, stream, nextVolumeLevel);
@@ -70,8 +78,7 @@ function BottomBar(props) {
     <div className={styles.BottomBar}>
 
       <div className={styles.Volume}>
-        <button className={styles.VolumeButton}
-                onClick={handleCycleVolumeLevel}>
+        <button onClick={handleCycleVolumeLevel}>
           <CircularProgressbarWithChildren
                 value={audioVolumeLevel * 100}
                 circleRatio={0.75}
@@ -87,20 +94,17 @@ function BottomBar(props) {
       </div>
 
       <div className={styles.Playback}>
-        <button className={styles.PlaybackButton}
-                onClick={() => { handleSeek('backward'); }}
+        <button onClick={() => { handleSeek('backward'); }}
                 disabled={scanDisabled} >
           {iconScanBackward}
         </button>
-        <button className={styles.PlaybackButton}
-                onClick={() => { handlePlayPause(); }}
+        <button onClick={() => { handlePlayPause(); }}
                 disabled={playPauseDisabled} >
           {stream.nowPlaying && stream.isPlaying ?
             iconPauseCircle : iconPlayCircle
           }
         </button>
-        <button className={styles.PlaybackButton}
-                onClick={() => { handleSeek('forward'); }}
+        <button onClick={() => { handleSeek('forward'); }}
                 disabled={scanDisabled} >
           {iconScanForward}
         </button>

@@ -6,7 +6,7 @@ import { fetchBackend } from '../../../utils/network';
 
 
 /*
- * POST creates a style modification for a text comment.
+ * Creates a style modification for a text comment.
  */
 export const fetchCreateTextCommentModification = async (
   textCommentUuid, style, anchorOffset, focusOffset

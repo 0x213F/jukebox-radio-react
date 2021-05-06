@@ -1,27 +1,34 @@
 import React from "react";
+
 import { connect } from 'react-redux';
+
 import styles from './MiniPlayer.module.css';
 
 
 function MiniPlayer(props) {
 
+  /*
+   * 🏗
+   */
   const stream = props.stream,
         imageUrl = stream.nowPlaying?.track?.imageUrl,
         nowPlayingTrackName = stream?.nowPlaying?.track?.name;
 
+  /*
+   * 🎨
+   */
   return (
-    <div>
-      <h3><i>Now playing...</i></h3>
+    <div className={styles.MiniPlayer}>
+      <h3>Player</h3>
       {imageUrl &&
         <img alt=""
-             src={imageUrl}
-             className={styles.Image} />
+             src={imageUrl} />
       }
       {nowPlayingTrackName ?
         (
           <p>{nowPlayingTrackName}</p>
         ) : (
-          <p><i>Nothing is playing...</i></p>
+          <p>Nothing is playing...</p>
         )
       }
     </div>

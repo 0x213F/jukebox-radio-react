@@ -1,7 +1,23 @@
-.MiniPlayer {
-  text-align: center;
+.MiniPlayer > h3 {
+  font-family: Raleway;
+  font-style: normal;
+  font-weight: bold;
+  font-size: 20px;
+  line-height: 23px;
+  margin: 0;
+  margin-bottom: 21px;
 }
 
-.Image {
+.MiniPlayer > p {
+  font-family: Raleway;
+  font-style: normal;
+  font-weight: 500;
+  font-size: 18px;
+  line-height: 21px;
+  margin: 0;
+  margin-top: 14px;
+}
+
+.MiniPlayer > img {
   width: 100%;
 }

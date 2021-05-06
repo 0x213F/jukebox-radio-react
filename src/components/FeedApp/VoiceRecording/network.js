@@ -7,7 +7,7 @@ import { fetchBackend } from '../../../utils/network';
 
 
 /*
- * POST creates a voice recording.
+ * Creates a voice recording.
  */
 export const fetchCreateVoiceRecording = async (
   audioFile, transcriptData, transcriptFinal
@@ -23,7 +23,7 @@ export const fetchCreateVoiceRecording = async (
 
 
 /*
- * POST deletes a voice recording.
+ * Deletes (archives on the DB level) a voice recording.
  */
 export const fetchDeleteVoiceRecording = async (voiceRecordingUuid) => {
   const response = await fetchBackend(

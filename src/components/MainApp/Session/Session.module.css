@@ -3,13 +3,14 @@
   width: 100%;
 }
 
+/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 .Top {
   width: 100%;
-  /* 93px === height of BottomBar */
   height: calc(100% - 93px);
   position: absolute;
 }
 
+/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 .Content {
   position: relative;
   top: 0px;
@@ -18,6 +19,7 @@
   width: calc(100% - 108px);
 }
 
+/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 .MainContent {
   margin-left: 104px;
   height: calc(100% - 104px);
@@ -27,6 +29,7 @@
   margin-top: 95px;
 }
 
+/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 .PrimaryContent {
   margin-left: 104px;
   height: calc(100% - 104px);
@@ -36,6 +39,7 @@
   margin-top: 95px;
 }
 
+/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 .SecondaryContent {
   margin-left: 50px;
   margin-right: 57px;
@@ -49,5 +53,4 @@
   display: block;
   top: 95px;
   box-sizing: border-box;
-  /* height: calc(100% - 307px); */
 }

@@ -1,12 +1,15 @@
 import React, { useState } from "react";
+
 import { connect } from 'react-redux';
+
 import NotableText from '../NotableText/NotableText';
+import { iconTrash, iconErase } from '../icons';
+
 import styles from './TextComment.module.css';
 import {
   fetchDeleteTextComment,
   fetchListDeleteTextCommentModifications,
 } from './network';
-import { iconTrash, iconErase } from '../icons';
 
 
 function TextComment(props) {
@@ -19,10 +22,16 @@ function TextComment(props) {
 
   const [hovering, setHovering] = useState(false);
 
+  /*
+   * When the mouse enters the area, show the contextual buttons.
+   */
   const onMouseEnter = function() {
     setHovering(true);
   }
 
+  /*
+   * When the mouse leaves the area, hide the contextual buttons.
+   */
   const onMouseLeave = function() {
     setHovering(false);
   }
@@ -43,6 +52,7 @@ function TextComment(props) {
     await props.dispatch(responseJson.redux);
   }
 
+  // TODO: change styles with a class instead of injecting CSS
   let textColor;
   if(textComment.renderStatus === 'history') {
     textColor = 'grey';

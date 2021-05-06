@@ -1,6 +1,8 @@
 import React, { useRef, useState } from "react";
+
 import { connect } from 'react-redux';
 import Popover from 'react-text-selection-popover';
+
 import styles from './NotableText.module.css';
 import {
   STYLE_BOLD,
@@ -41,35 +43,30 @@ function NotableText(props) {
   }
 
   /*
-   * ...
+   * Called everytime the text selection changes.
    */
   const onTextSelect = async function() {
     const selection = window.getSelection();
-
-    // // Invalid text selection
-    // if(selection.anchorNode !== selection.focusNode) {
-    //   setSelectableIsShowable(false);
-    //   setAnchorOffset(null);
-    //   setFocusOffset(null);
-    //   return;
-    // }
 
     // NOTE: anchor is where the user starts selecting text, focus is the end
     //       of the selection.
     let anchorValue = parseInt(selection.anchorNode.parentNode.getAttribute('offset'));
     let focusValue = parseInt(selection.focusNode.parentNode.getAttribute('offset'));
+
+    // NOTE: there needs to be a slight adjustment of these values.
     if(anchorValue < focusValue) {
       focusValue += 1;
     } else {
       anchorValue += 1;
     }
+
     setSelectableIsShowable(true);
     setAnchorOffset(anchorValue);
     setFocusOffset(focusValue);
   }
 
   /*
-   * ...
+   * Called when there is no more text being selected.
    */
   const onTextUnselect = async function() {
     setSelectableIsShowable(false);
@@ -132,7 +129,6 @@ function NotableText(props) {
     }
 
     return textCommentHtml;
-
   }
 
   /*
@@ -140,7 +136,6 @@ function NotableText(props) {
    */
   return (
     <div className={styles.NotableText} style={{color: textColor}}>
-
       <p ref={selectableRef}>
         {renderTextComment()}
       </p>
@@ -156,7 +151,6 @@ function NotableText(props) {
           );
         })}
       </Popover>
-
     </div>
   );
 }

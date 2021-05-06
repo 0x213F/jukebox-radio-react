@@ -1,13 +1,13 @@
 import {
   ENDPOINT_TEXT_COMMENT_DELETE,
   ENDPOINT_TEXT_COMMENT_MODIFICATION_LIST_DELETE,
-} from '../../../config/api'
-import { TYPE_POST } from '../../../config/global'
-import { fetchBackend } from '../../../utils/network'
+} from '../../../config/api';
+import { TYPE_POST } from '../../../config/global';
+import { fetchBackend } from '../../../utils/network';
 
 
 /*
- * POST delete a text comment.
+ * Deletes a text comment along with all of its modifications.
  */
 export const fetchDeleteTextComment = async (textCommentUuid) => {
   const response = await fetchBackend(
@@ -21,7 +21,7 @@ export const fetchDeleteTextComment = async (textCommentUuid) => {
 
 
 /*
- * POST deletes all modifcations that belong to a text comment.
+ * Deletes all modifcations that belong to a text comment.
  */
 export const fetchListDeleteTextCommentModifications = async (
   textCommentUuid

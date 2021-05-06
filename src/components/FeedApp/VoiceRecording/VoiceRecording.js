@@ -1,8 +1,11 @@
 import React, { useState } from "react";
+
 import { connect } from 'react-redux';
+
+import { iconTrash } from '../icons';
+
 import styles from './VoiceRecording.module.css';
 import { fetchDeleteVoiceRecording } from './network';
-import { iconTrash } from '../icons';
 
 
 function VoiceRecording(props) {
@@ -15,10 +18,16 @@ function VoiceRecording(props) {
 
   const [hovering, setHovering] = useState(false);
 
+  /*
+   * When the mouse enters the area, show the contextual buttons.
+   */
   const onMouseEnter = function() {
     setHovering(true);
   }
 
+  /*
+   * When the mouse leaves the area, hide the contextual buttons.
+   */
   const onMouseLeave = function() {
     setHovering(false);
   }
@@ -47,13 +56,11 @@ function VoiceRecording(props) {
 
       <div className={styles.VoiceRecording}>
         <p>
-          <i>
-            {
-              voiceRecording.transcriptFinal === 'null' ?
-                '<transcript not available>' :
-                voiceRecording.transcriptFinal
-            }
-          </i>
+          {
+            voiceRecording.transcriptFinal === 'null' ?
+              '<transcript not available>' :
+              voiceRecording.transcriptFinal
+          }
         </p>
 
         {hovering &&

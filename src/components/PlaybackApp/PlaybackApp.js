@@ -1,17 +1,7 @@
 import { useEffect, useState } from "react";
+
 import { connect } from 'react-redux';
 import YouTube from 'react-youtube';
-
-import {
-  playbackControlStart,
-  playbackControlSeek,
-  playbackControlPause,
-  playbackControlPlay,
-  playbackControlSkipToNext,
-  playbackControlQueue,
-} from './controls';
-import { fetchGetUserSettings } from '../UserSettings/network';
-import { getPositionMilliseconds, updateSpotifyPlayer } from './utils';
 
 import MainApp from '../MainApp/MainApp';
 import {
@@ -23,15 +13,26 @@ import {
   fetchPauseTrack,
   fetchPlayTrack,
 } from './Player/network';
-import { updateFeed } from '../FeedApp/utils';
+import { fetchUpdateFeed } from '../FeedApp/utils';
 import { getLastUpQueue, getNextUpQueue } from '../QueueApp/utils';
-
+import { fetchGetUserSettings } from '../UserSettings/network';
 import {
   SERVICE_JUKEBOX_RADIO,
   SERVICE_SPOTIFY,
   SERVICE_APPLE_MUSIC,
   SERVICE_YOUTUBE,
 } from '../../config/services';
+
+import {
+  playbackControlStart,
+  playbackControlSeek,
+  playbackControlPause,
+  playbackControlPlay,
+  playbackControlSkipToNext,
+  playbackControlQueue,
+} from './controls';
+import { getPositionMilliseconds, updateSpotifyPlayer } from './utils';
+
 
 const SpotifyWebApi = require('spotify-web-api-js');
 
@@ -225,7 +226,7 @@ function PlaybackApp(props) {
       payload: { payload: nextTrackJson.redux },  // yes
     });
     await props.dispatch({ type: 'playback/enable' });
-    await updateFeed(nextUp?.track?.uuid);
+    await fetchUpdateFeed(nextUp?.track?.uuid);
   }
 
   /*
@@ -244,7 +245,7 @@ function PlaybackApp(props) {
     await props.dispatch(responseJsonPrevTrack.redux);
     await props.dispatch({ type: 'playback/start' });
     await props.dispatch({ type: 'playback/enable' });
-    await updateFeed(lastUp?.track?.uuid);
+    await fetchUpdateFeed(lastUp?.track?.uuid);
   }
 
   /*
@@ -265,7 +266,7 @@ function PlaybackApp(props) {
     await props.dispatch(responseJsonNextTrack.redux);
     await props.dispatch({ type: 'playback/start' });
     await props.dispatch({ type: 'playback/enable' });
-    await updateFeed(nextUp?.track?.uuid);
+    await fetchUpdateFeed(nextUp?.track?.uuid);
   }
 
   /*
@@ -562,12 +563,12 @@ function PlaybackApp(props) {
           width: '240',
           playerVars: {
             // https://developers.google.com/youtube/player_parameters
-            autoplay: 0,  // the initial video will automatically start to play
-            controls: 0,  // hide playback controls
+            autoplay: 0,   // the initial video will automatically start to play
+            controls: 0,   // hide playback controls
             disablekb: 1,  // disable keyboard controls
-            fs: 0,  // disable full screen
+            fs: 0,         // disable full screen
             iv_load_policy: 3,
-            modestbranding: 1,
+            modestbranding: 1,  // minimal YT branding
             origin: 'jukeboxrad.io',
             playsinline: 1,
           },
@@ -612,6 +613,7 @@ function PlaybackApp(props) {
   );
 }
 
+
 const mapStateToProps = (state) => ({
     stream: state.stream,
     playback: state.playback,
@@ -619,5 +621,6 @@ const mapStateToProps = (state) => ({
     nextUpQueues: state.nextUpQueues,
     userSettings: state.userSettings,
 });
+
 
 export default connect(mapStateToProps)(PlaybackApp);

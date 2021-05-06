@@ -3,6 +3,7 @@
   height: 100%;
 }
 
+/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 .ContentContainer {
   display: inline-flex;
   align-items: center;
@@ -25,6 +26,7 @@
   padding: 0;
 }
 
+/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 .ImageContainer {
   width: calc(100% - 30px);
   background-color: #EAEAEA;
@@ -41,6 +43,7 @@
   height: auto;
 }
 
+/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 .FeedWrapper {
   display: inline-block;
   width: 597px;
@@ -53,6 +56,7 @@
   bottom: 118px;
 }
 
+/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 .ComposeBar {
   position: absolute;
   bottom: 84px;
@@ -95,6 +99,7 @@
   justify-content: center;
 }
 
+/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 .NotationButton > div {
   width: 10px;
   height: 10px;
@@ -102,6 +107,7 @@
   background-color: #C4C4C4;
 }
 
+/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 .RecordButton > div {
   width: 10px;
   height: 10px;
@@ -109,6 +115,7 @@
   background-color: #FF0000;
 }
 
+/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 .SubmitButton {
   visibility: hidden;
 }

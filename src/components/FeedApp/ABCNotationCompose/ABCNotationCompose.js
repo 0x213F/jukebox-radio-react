@@ -1,10 +1,14 @@
 import React, { useState } from "react";
 import Modal from 'react-modal';
+
 import { Notation } from 'react-abc';
 import { connect } from 'react-redux';
+
 import { fetchTextCommentCreate } from './../network';
-import styles from './ABCNotationCompose.module.css';
 import { iconBack } from './../../../icons';
+import { FORMAT_ABC_NOTATION } from '../constants';
+
+import styles from './ABCNotationCompose.module.css';
 
 
 function ABCNotationCompose(props) {
@@ -12,9 +16,8 @@ function ABCNotationCompose(props) {
   /*
    * 🏗
    */
-  const trackUuid = props.trackUuid,
+  const textCommentTrackUuid = props.textCommentTrackUuid,
         textCommentTimestamp = props.textCommentTimestamp,
-        format = 'abc_notation',
         isOpen = props.isOpen,
         closeModal = props.closeModal;
 
@@ -26,16 +29,21 @@ function ABCNotationCompose(props) {
    */
   const createABCNotation = async function() {
     setIsDisabled(true);
-    const responseJson = await fetchTextCommentCreate(
-      text, format, trackUuid, textCommentTimestamp
-    );
 
+    const responseJson = await fetchTextCommentCreate(
+      text, FORMAT_ABC_NOTATION, textCommentTrackUuid, textCommentTimestamp
+    );
     props.dispatch(responseJson.redux);
+
     closeModal();
     setText('');
     setIsDisabled(false);
   }
 
+  /*
+   * Update the text on text change so the ABC Notation rendering can
+   * re-render.
+   */
   const handleTextChange = function(e) {
     setText(e.target.value);
   }
@@ -84,6 +92,8 @@ function ABCNotationCompose(props) {
   );
 }
 
+
 const mapStateToProps = (state) => ({});
+
 
 export default connect(mapStateToProps)(ABCNotationCompose);

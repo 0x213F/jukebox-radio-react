@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
+
 import { Switch, Route, Link } from "react-router-dom";
 import { connect } from 'react-redux';
-import styles from './Session.module.css';
 
 import FeedApp from '../../FeedApp/FeedApp';
 import QueueApp from '../../QueueApp/QueueApp';
@@ -13,6 +13,8 @@ import MiniPlayer from '../../PlaybackApp/MiniPlayer/MiniPlayer';
 
 import BottomBar from '../BottomBar/BottomBar';
 import SideBar from '../SideBar/SideBar';
+
+import styles from './Session.module.css';
 
 
 function Session(props) {
@@ -54,51 +56,58 @@ function Session(props) {
                   closeModal={closeModal} />
 
       <div className={styles.Top}>
+
+        {/* SIDE BAR */}
         <SideBar />
 
         <div className={styles.Content}>
+          <Switch>
 
-        <Switch>
-          {/* FEED */}
-          <Route path="/app/feed">
-            <FeedApp />
-          </Route>
-          {/* PLAYER */}
-          <Route path="/app/player">
-            <div className={styles.MainContent}>
-              <Player nextTrack={props.playbackControls.nextTrack}
-                      prevTrack={props.playbackControls.prevTrack}
-                      seek={props.playbackControls.seek}
-                      pause={props.playbackControls.pause}
-                      play={props.playbackControls.play} />
-            </div>
-          </Route>
-          {/* QUEUE */}
-          <Route path="/app/queue">
-            <div className={styles.PrimaryContent}>
-              <QueueApp />
-            </div>
-            <div className={styles.SecondaryContent}>
-              <Link to="/app/player">
-                <MiniPlayer />
+            {/* FEED */}
+            <Route path="/app/feed">
+              <FeedApp />
+            </Route>
+
+            {/* PLAYER */}
+            <Route path="/app/player">
+              <div className={styles.MainContent}>
+                <Player nextTrack={props.playbackControls.nextTrack}
+                        prevTrack={props.playbackControls.prevTrack}
+                        seek={props.playbackControls.seek}
+                        pause={props.playbackControls.pause}
+                        play={props.playbackControls.play} />
+              </div>
+            </Route>
+
+            {/* QUEUE */}
+            <Route path="/app/queue">
+              <div className={styles.PrimaryContent}>
+                <QueueApp />
+              </div>
+              <div className={styles.SecondaryContent}>
+                <Link to="/app/player">
+                  <MiniPlayer />
+                </Link>
+              </div>
+            </Route>
+
+            {/* SEARCH */}
+            <Route path="/app/search">
+              <div className={styles.PrimaryContent}>
+                <SearchApp />
+              </div>
+              <div className={styles.SecondaryContent}>
+              <Link to="/app/queue">
+                <MiniQueue />
               </Link>
-            </div>
-          </Route>
-          {/* SEARCH */}
-          <Route path="/app/search">
-            <div className={styles.PrimaryContent}>
-              <SearchApp />
-            </div>
-            <div className={styles.SecondaryContent}>
-            <Link to="/app/queue">
-              <MiniQueue />
-            </Link>
-            </div>
-          </Route>
-        </Switch>
+              </div>
+            </Route>
 
+          </Switch>
         </div>
       </div>
+
+      {/* BOTTOM BAR */}
       <BottomBar playbackControls={props.playbackControls} />
 
     </div>

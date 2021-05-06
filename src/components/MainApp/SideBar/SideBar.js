@@ -1,8 +1,11 @@
 import React, { useState } from "react";
+
 import { Link } from "react-router-dom";
+
 import UserSettings from '../../UserSettings/UserSettings'
+
 import styles from './SideBar.module.css';
-import { iconLogo, iconMore } from './icons';
+import { iconLogo, iconGear } from './icons';
 
 
 function SideBar(props) {
@@ -14,14 +17,21 @@ function SideBar(props) {
   // eslint-disable-next-line
   const [counter, setCounter] = useState(0);
 
+  /*
+   * Opens the "User Settings" modal.
+   */
   const openModal = function() {
     setShowModal(true);
   }
 
+  /*
+   * Closes the "User Settings" modal.
+   */
   const closeModal = function() {
     setShowModal(false);
   }
 
+  // TODO: refactor these inline CSS styles into classes.
   let marginBottom;
   if (window.location.pathname.includes("search")) {
     marginBottom = "196px";
@@ -49,6 +59,7 @@ function SideBar(props) {
         <div className={styles.Block}
              style={{marginBottom: marginBottom}}>
         </div>
+
         <ul className={styles.Menu}
             onClick={(e) => { setCounter(prev => prev + 1); }}>
           <li className={window.location.pathname.includes("search") && styles.LiSelected}>
@@ -68,15 +79,14 @@ function SideBar(props) {
 
       <div className={styles.Settings}>
         <button onClick={openModal}>
-          {iconMore}
+          {iconGear}
         </button>
       </div>
-
       <UserSettings isOpen={showModal}
                     closeModal={closeModal} />
-
     </div>
   );
 }
+
 
 export default SideBar;

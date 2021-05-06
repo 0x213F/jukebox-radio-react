@@ -1,9 +1,12 @@
 import React, { useState } from "react";
+
 import { connect } from 'react-redux';
 import { Notation } from 'react-abc';
-import styles from './ABCNotationDisplay.module.css';
+
 import { fetchDeleteTextComment } from '../TextComment/network';
 import { iconTrash } from '../icons';
+
+import styles from './ABCNotationDisplay.module.css';
 
 
 function ABCNotationDisplay(props) {
@@ -16,10 +19,16 @@ function ABCNotationDisplay(props) {
 
   const [hovering, setHovering] = useState(false);
 
+  /*
+   * When the mouse enters the area, show the contextual buttons.
+   */
   const onMouseEnter = function() {
     setHovering(true);
   }
 
+  /*
+   * When the mouse leaves the area, hide the contextual buttons.
+   */
   const onMouseLeave = function() {
     setHovering(false);
   }

@@ -3,6 +3,7 @@
   position: relative;
 }
 
+/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 .TextComment {
   width: 357px;
   min-height: 62px;
@@ -11,6 +12,7 @@
   margin-bottom: 19px;
 }
 
+/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 .HoverBuffer {
   height: 68px;
   width: 99px;
@@ -22,6 +24,7 @@
   display: block;
 }
 
+/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 .HoverContainer {
   position: absolute;
   left: calc(100% - 77px);
