@@ -79,15 +79,30 @@ export const streamPrevTrack = function(state, payload) {
         nextNowPlaying = lastUpQueues[lastUpQueues.length - 1];
 
   const isTrackInCollection = (
-    lastNowPlaying?.parentUuid &&
-    nextUpQueue?.uuid &&
-    lastNowPlaying?.parentUuid === nextUpQueue?.uuid
-  );
+          lastNowPlaying?.parentUuid &&
+          nextUpQueue?.uuid &&
+          lastNowPlaying?.parentUuid === nextUpQueue?.uuid
+        );
   if(lastNowPlaying) {
     if(isTrackInCollection) {
       nextUpQueue.children.unshift(lastNowPlaying);
     } else {
-      nextUpQueues.unshift(lastNowPlaying);
+      if(lastNowPlaying.parentUuid) {
+        // Here we need to first create the "parent queue."
+        const parentQueue = { ...lastNowPlaying };
+        parentQueue.uuid = parentQueue.parentUuid;
+        parentQueue.parentUuid = null;
+        parentQueue.track = null;
+        parentQueue.isAbstract = true;
+        parentQueue.playbackIntervals = [];
+        parentQueue.allIntervals = [];
+        parentQueue.intervals = [];
+        // Then, it goes into the queue along with the track as its first child.
+        parentQueue.children.unshift(lastNowPlaying);
+        nextUpQueues.unshift(parentQueue);
+      } else {
+        nextUpQueues.unshift(lastNowPlaying);
+      }
     }
   }
 

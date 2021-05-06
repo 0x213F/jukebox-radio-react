@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { connect } from 'react-redux';
 import styles from './SearchApp.module.css';
 
@@ -135,7 +135,7 @@ function SearchApp(props) {
             <button onClick={handleSpotify}>
               {search.serviceSpotify ? iconCheckboxChecked : iconCheckboxUnchecked}
             </button>
-            <span style={!search.serviceSpotify && {color: "#ABABAB"} || {}}>
+            <span style={(!search.serviceSpotify && {color: "#ABABAB"}) || {}}>
               Spotify
             </span>
           </label>
@@ -144,7 +144,7 @@ function SearchApp(props) {
             <button onClick={handleYouTube}>
               {search.serviceYouTube ? iconCheckboxChecked : iconCheckboxUnchecked}
             </button>
-            <span style={!search.serviceYouTube && {color: "#ABABAB"} || {}}>
+            <span style={(!search.serviceYouTube && {color: "#ABABAB"}) || {}}>
               YouTube
             </span>
           </label>
@@ -153,7 +153,7 @@ function SearchApp(props) {
             <button onClick={handleAppleMusic}>
               {search.serviceAppleMusic ? iconCheckboxChecked : iconCheckboxUnchecked}
             </button>
-            <span style={!search.serviceAppleMusic && {color: "#ABABAB"} || {}}>
+            <span style={(!search.serviceAppleMusic && {color: "#ABABAB"}) || {}}>
               Apple Music
             </span>
           </label>
@@ -162,7 +162,7 @@ function SearchApp(props) {
             <button onClick={handleJukeboxRadio}>
               {search.serviceJukeboxRadio ? iconCheckboxChecked : iconCheckboxUnchecked}
             </button>
-            <span style={!search.serviceJukeboxRadio && {color: "#ABABAB"} || {}}>
+            <span style={(!search.serviceJukeboxRadio && {color: "#ABABAB"}) || {}}>
               Jukebox Radio
             </span>
           </label>

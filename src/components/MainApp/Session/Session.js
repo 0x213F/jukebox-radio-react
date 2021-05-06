@@ -4,7 +4,6 @@ import { connect } from 'react-redux';
 import styles from './Session.module.css';
 
 import FeedApp from '../../FeedApp/FeedApp';
-import MiniFeed from '../../FeedApp/MiniFeed/MiniFeed';
 import QueueApp from '../../QueueApp/QueueApp';
 import MiniQueue from '../../QueueApp/MiniQueue/MiniQueue';
 import SearchApp from '../../SearchApp/SearchApp';
