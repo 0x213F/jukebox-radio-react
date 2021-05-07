@@ -105,7 +105,7 @@ function App() {
 
     // Start PWA
     if ('serviceWorker' in navigator) {
-      navigator.serviceWorker.register('worker.js').then(function(registration) {
+      navigator.serviceWorker.register('worker.js', {scope: '.'}).then(function(registration) {
         console.log('Worker registration successful', registration.scope);
       });
     }
