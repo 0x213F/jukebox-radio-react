@@ -103,6 +103,14 @@ function App() {
     TimeAgo.addDefaultLocale(en);
     loadData();
 
+    // Start PWA
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.register('worker.js').then(function(registration) {
+        console.log('Worker registration successful', registration.scope);
+      });
+    }
+    // End PWA
+
     // Define behavior for when the webpage is closed.
     window.addEventListener("beforeunload", (e) => {
       e.preventDefault();
