@@ -14,9 +14,9 @@
 .Content {
   position: relative;
   top: 0px;
-  margin-left: 268px;
+  margin-left: 264px;
   height: 100%;
-  width: calc(100% - 268px);
+  width: calc(100% - 264px);
 }
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
@@ -24,7 +24,7 @@
   margin-left: 77px;
   margin-right: 77px;
   height: calc(100% - 104px);
-  width: calc(100% - 154px);
+  width: calc(100% - 149px);
   position: relative;
   float: left;
   margin-top: 95px;

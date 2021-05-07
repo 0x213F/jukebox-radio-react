@@ -1,13 +1,12 @@
 .SideBar {
   height: 100vh;
-  width: 268px;
+  width: 263px;
   position: relative;
   float: left;
   left: 0px;
 
   display: flex;
   align-items: center;
-  justify-content: center;
 
   z-index: 2;
 }
@@ -23,10 +22,9 @@
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 .MenuContainer {
   height: 573px;
-
+  position: relative;
   display: flex;
   align-items: center;
-  justify-content: center;
 }
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
@@ -34,13 +32,19 @@
   font-size: 20px;
   list-style-type: none;
   text-decoration: none;
+  padding-left: 0;
+  border-right: 1px solid #000;
+  height: 573px;
+
+  display: flex;
+  justify-content: center;
+  flex-direction: column;
 }
 
 .Menu > li {
   font-size: 20px;
-  margin: 40px;
-  margin-right: 100px;
-  width: 120px;
+  margin: 20px 77px;
+  width: 101px;
 }
 
 .LiSelected > a {
@@ -80,22 +84,13 @@ a:visited {
 }
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
-.Line {
-  height: 573px;
-  width: 1px;
-  background-color: #000;
-
-  position: fixed;
-  left: 0;
-  margin-left: 251px;
-}
-
 .Block {
   height: 52px;
   width: 8px;
   background-color: #0047FF;
 
-  position: relative;
+  position: absolute;
+  left: 256px;
 
-  transition: margin cubic-bezier(0.25, 0.1, 0.25, 1) 0.15s;
+  transition: top cubic-bezier(0.25, 0.1, 0.25, 1) 0.15s;
 }

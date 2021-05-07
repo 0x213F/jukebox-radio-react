@@ -15,7 +15,6 @@
   content  : "";
   position : fixed;
   z-index  : 1;
-  bottom   : 0;
   left     : 0;
   pointer-events   : none;
   background-image : linear-gradient(to bottom,
@@ -23,14 +22,13 @@
                     rgba(255,255,255, 0) 95%);
   width: calc(100% + 12px);
   height   : 42px;
-  top: 52px;
+  top: 53px;
 }
 
 .QueueApp:after {
   content  : "";
   position : fixed;
   z-index  : 1;
-  bottom   : 0;
   left     : 0;
   pointer-events   : none;
   background-image : linear-gradient(to bottom,
@@ -38,7 +36,7 @@
                     rgba(255,255,255, 1) 95%);
   width: calc(100% + 12px);
   height   : 42px;
-  bottom: 101px;
+  bottom: 111px;
 }
 
 .PlaybackDuration {
