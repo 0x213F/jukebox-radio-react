@@ -33,7 +33,7 @@
   list-style-type: none;
   text-decoration: none;
   padding-left: 0;
-  border-right: 1px solid #000;
+  border-right: 1px solid #BCBCBC;
   height: 573px;
 
   display: flex;
@@ -64,7 +64,7 @@
 .Settings {
   position: absolute;
   height: 24px;
-  left: 48px;
+  left: 81.5px;
   bottom: 38px;
 }
 
@@ -92,5 +92,7 @@ a:visited {
   position: absolute;
   left: 256px;
 
-  transition: top cubic-bezier(0.25, 0.1, 0.25, 1) 0.15s;
+  transition-property: top;
+  transform-style: cubic-bezier(0.25, 0.1, 0.25, 1);
+  transition-duration: 0.15s;
 }

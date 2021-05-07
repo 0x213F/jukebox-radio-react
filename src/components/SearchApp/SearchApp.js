@@ -114,6 +114,7 @@ function SearchApp(props) {
         <div className={styles.SearchBarContainer}>
           <input type="text"
                  name="query"
+                 autocomplete="off"
                  placeholder=""
                  className={styles.SearchBar}
                  value={query}
@@ -135,7 +136,7 @@ function SearchApp(props) {
             <button onClick={handleSpotify}>
               {search.serviceSpotify ? iconCheckboxChecked : iconCheckboxUnchecked}
             </button>
-            <span style={(!search.serviceSpotify && {color: "#ABABAB"}) || {}}>
+            <span style={(!search.serviceSpotify && {color: "#BCBCBC"}) || {}}>
               Spotify
             </span>
           </label>
@@ -144,7 +145,7 @@ function SearchApp(props) {
             <button onClick={handleYouTube}>
               {search.serviceYouTube ? iconCheckboxChecked : iconCheckboxUnchecked}
             </button>
-            <span style={(!search.serviceYouTube && {color: "#ABABAB"}) || {}}>
+            <span style={(!search.serviceYouTube && {color: "#BCBCBC"}) || {}}>
               YouTube
             </span>
           </label>
@@ -153,7 +154,7 @@ function SearchApp(props) {
             <button onClick={handleAppleMusic}>
               {search.serviceAppleMusic ? iconCheckboxChecked : iconCheckboxUnchecked}
             </button>
-            <span style={(!search.serviceAppleMusic && {color: "#ABABAB"}) || {}}>
+            <span style={(!search.serviceAppleMusic && {color: "#BCBCBC"}) || {}}>
               Apple Music
             </span>
           </label>
@@ -162,7 +163,7 @@ function SearchApp(props) {
             <button onClick={handleJukeboxRadio}>
               {search.serviceJukeboxRadio ? iconCheckboxChecked : iconCheckboxUnchecked}
             </button>
-            <span style={(!search.serviceJukeboxRadio && {color: "#ABABAB"}) || {}}>
+            <span style={(!search.serviceJukeboxRadio && {color: "#BCBCBC"}) || {}}>
               Uploads
             </span>
           </label>

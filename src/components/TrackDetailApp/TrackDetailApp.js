@@ -117,7 +117,7 @@ function TrackDetailApp(props) {
 
         <div className={styles.Preview}>
           <div className={styles.PreviewImgContainer}>
-            <img className={[styles.PreviewImg, styles[queue.track.provider]].join(' ')}
+            <img className={[styles.PreviewImg, styles[queue.track.service]].join(' ')}
                  src={queue.track.imageUrl}
                  alt={"Album Art"} />
           </div>

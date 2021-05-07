@@ -34,14 +34,24 @@
 .Volume {}
 
 .Volume > button {
-  width: 36px;
-  height: 36px;
+  width: 65px;
+  height: 65px;
   float: right;
   background-color: #FFF;
   border: 0;
   padding: 0;
   cursor: pointer;
   position: absolute;
-  right: 42px;
-  bottom: 32px;
+  right: 61px;
+  bottom: 18.5px;
+}
+
+/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
+.IconContainer {
+  height: 24px;
+  width: 24px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }

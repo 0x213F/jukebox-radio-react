@@ -23,7 +23,7 @@
   width: calc(100% - 12px);
 
   transition-property: box-shadow;
-  transition-duration: 0.45s;
+  transition-duration: 0.15s;
   transition-timing-function: ease-in-out;
 }
 

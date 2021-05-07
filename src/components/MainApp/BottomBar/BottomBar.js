@@ -6,6 +6,8 @@ import 'react-circular-progressbar/dist/styles.css';
 
 import { cycleVolumeLevel } from '../../PlaybackApp/utils';
 import { playbackChangeVolume } from '../../PlaybackApp/controls';
+import { iconSpotify, iconYouTube, iconAppleMusic, iconLogo } from '../../../icons';
+import { SERVICE_SPOTIFY, SERVICE_YOUTUBE, SERVICE_APPLE_MUSIC, SERVICE_JUKEBOX_RADIO } from '../../../config/services';
 
 import styles from './BottomBar.module.css';
 import {
@@ -31,7 +33,19 @@ function BottomBar(props) {
           stream.isPaused ||
           !playback.controlsEnabled
         ),
-        playPauseDisabled = !playback.controlsEnabled;
+        playPauseDisabled = !playback.controlsEnabled,
+        nowPlayingTrackService = stream.nowPlaying?.track?.service;
+
+  let serviceSvg;
+  if(nowPlayingTrackService === SERVICE_SPOTIFY) {
+    serviceSvg = iconSpotify;
+  } else if(nowPlayingTrackService === SERVICE_YOUTUBE) {
+    serviceSvg = iconYouTube;
+  } else if(nowPlayingTrackService === SERVICE_APPLE_MUSIC) {
+    serviceSvg = iconAppleMusic;
+  } else if(nowPlayingTrackService === SERVICE_JUKEBOX_RADIO) {
+    serviceSvg = iconLogo;
+ }
 
   /*
    * Modify playback to seek in a certain diretion ('forward' or 'backward').
@@ -82,13 +96,17 @@ function BottomBar(props) {
           <CircularProgressbarWithChildren
                 value={audioVolumeLevel * 100}
                 circleRatio={0.75}
+                strokeWidth={3}
                 styles={buildStyles({
                   rotation: 1 / 2 + 1 / 8,
-                  strokeLinecap: "round",
+                  strokeLinecap: "butt",
                   pathColor: "#0047FF",
                   trailColor: "#EAEAEA",
-                  pathTransitionDuration: 0.3,
+                  pathTransitionDuration: 0.15,
                 })} >
+            <div className={styles.IconContainer}>
+              {serviceSvg}
+            </div>
           </CircularProgressbarWithChildren>
         </button>
       </div>

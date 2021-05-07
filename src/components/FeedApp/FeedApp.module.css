@@ -69,7 +69,7 @@
   height: 22px;
   padding: 16px;
 
-  border: 1px solid #000000;
+  border: 1px solid #BCBCBC;
   box-sizing: border-box;
   border-radius: 26.5px;
 
@@ -90,13 +90,19 @@
 
   width: 34px;
   height: 34px;
-  border: 1px solid #000000;
+  border: 1px solid #BCBCBC;
   border-radius: 17px;
   box-sizing: border-box;
 
   display: inline-flex;
   align-items: center;
   justify-content: center;
+}
+
+.ComposeBar > input:disabled,
+.ComposeBar > button:disabled {
+  background-color: rgba(239, 239, 239, 0.3);
+  cursor: not-allowed;
 }
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
