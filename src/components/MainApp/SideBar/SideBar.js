@@ -32,15 +32,15 @@ function SideBar(props) {
   }
 
   // TODO: refactor these inline CSS styles into classes.
-  let marginBottom;
+  let marginTop;
   if (window.location.pathname.includes("search")) {
-    marginBottom = "196px";
+    marginTop = "162px";
   } else if (window.location.pathname.includes("queue")) {
-    marginBottom = "66px";
+    marginTop = "228px";
   } else if (window.location.pathname.includes("player")) {
-    marginBottom = "-66px";
+    marginTop = "294px";
   } else if (window.location.pathname.includes("feed")) {
-    marginBottom = "-196px";
+    marginTop = "360px";
   }
 
    /*
@@ -55,9 +55,9 @@ function SideBar(props) {
 
       <div className={styles.MenuContainer}>
         <div className={styles.Line}>
-        </div>
-        <div className={styles.Block}
-             style={{marginBottom: marginBottom}}>
+          <div className={styles.Block}
+               style={{marginTop: marginTop}}>
+          </div>
         </div>
 
         <ul className={styles.Menu}

@@ -27,16 +27,6 @@ function MiniQueue(props) {
   return (
     <div className={styles.MiniQueue}>
       <h3>Queue</h3>
-      <ol style={{padding: "13px", margin: "4px 0"}}>
-        {expandedQueues.map((queue, index) => {
-          return (
-            <li key={index} className={styles.MiniQueueItem}>
-              {queue.track?.name || queue.collection?.name}
-            </li>
-          );
-        })}
-      </ol>
-
       {queueDuration ?
         (
           <p>
@@ -49,6 +39,15 @@ function MiniQueue(props) {
           </p>
         )
       }
+      <ol>
+        {expandedQueues.map((queue, index) => {
+          return (
+            <li key={index} className={styles.MiniQueueItem}>
+              {queue.track?.name || queue.collection?.name}
+            </li>
+          );
+        })}
+      </ol>
     </div>
   );
 }

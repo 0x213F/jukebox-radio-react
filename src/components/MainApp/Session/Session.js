@@ -84,11 +84,11 @@ function Session(props) {
               <div className={styles.PrimaryContent}>
                 <QueueApp />
               </div>
-              <div className={styles.SecondaryContent}>
-                <Link to="/app/player">
-                  <MiniPlayer />
-                </Link>
-              </div>
+              <Link to="/app/player" style={{ textDecoration: 'none' }}>
+                <div className={styles.SecondaryContent}>
+                    <MiniPlayer />
+                </div>
+              </Link>
             </Route>
 
             {/* SEARCH */}
@@ -96,11 +96,11 @@ function Session(props) {
               <div className={styles.PrimaryContent}>
                 <SearchApp />
               </div>
-              <div className={styles.SecondaryContent}>
-              <Link to="/app/queue">
-                <MiniQueue />
+              <Link to="/app/queue" style={{ textDecoration: 'none' }}>
+                <div className={styles.SecondaryContent}>
+                  <MiniQueue />
+                </div>
               </Link>
-              </div>
             </Route>
 
           </Switch>

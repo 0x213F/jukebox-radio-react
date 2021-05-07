@@ -6,3 +6,31 @@
   line-height: 21px;
   overflow-wrap: break-word;
 }
+
+.Popover {
+  background-color: #FFF;
+  border: 2px solid #000;
+  border-radius: 6px;
+  padding: 0 2px;
+  top: 2px;
+  position: relative;
+}
+
+.Popover > button {
+  background-color: #FFF;
+  height: 24px;
+  width: 20px;
+
+  margin: 2px;
+  border: 0;
+  border-radius: 6px;
+  cursor: pointer;
+
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.Popover > button > span {
+  padding: 2px 4px;
+}

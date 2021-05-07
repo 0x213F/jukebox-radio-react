@@ -1,7 +1,7 @@
 .app-main-container {
   /* sizing and position */
   height: 100%;
-  width: calc(100% - 160px);
+  width: 100%;
   position: fixed;
   left: 0px;
 

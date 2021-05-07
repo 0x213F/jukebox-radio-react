@@ -20,7 +20,7 @@ import {
   playbackEnable,
   playbackLoadFiles,
   playbackCycleVolumeLevelAudio,
-} from  './reducers/playback';
+} from './reducers/playback';
 import {
   queueListSet,
   queueDeleteNode,
@@ -82,6 +82,7 @@ const initialState = {
       voice: 1.00,
     },
   },
+  // UI
   search: {
     serviceSpotify: true,
     serviceYouTube: true,

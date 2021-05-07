@@ -6,7 +6,7 @@
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 .Top {
   width: 100%;
-  height: calc(100% - 93px);
+  height: calc(100% - 102px);
   position: absolute;
 }
 
@@ -16,14 +16,15 @@
   top: 0px;
   margin-left: 268px;
   height: 100%;
-  width: calc(100% - 108px);
+  width: calc(100% - 268px);
 }
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 .MainContent {
-  margin-left: 104px;
+  margin-left: 77px;
+  margin-right: 77px;
   height: calc(100% - 104px);
-  width: calc(100% - 476px);
+  width: calc(100% - 154px);
   position: relative;
   float: left;
   margin-top: 95px;
@@ -31,9 +32,9 @@
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 .PrimaryContent {
-  margin-left: 104px;
+  margin-left: 77px;
   height: calc(100% - 104px);
-  width: calc(100% - 509px);
+  width: calc(100% - 511px);  /* 67 + 67 + 300 + 57 */
   position: relative;
   float: left;
   margin-top: 95px;
@@ -41,11 +42,11 @@
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 .SecondaryContent {
-  margin-left: 50px;
+  margin-left: 77px;
   margin-right: 57px;
   padding: 40px;
-  min-width: 298px;
-  max-width: 298px;
+  min-width: 300px;
+  max-width: 300px;
   border: 1px solid #BCBCBC;
   position: relative;
   float: left;
@@ -53,4 +54,5 @@
   display: block;
   top: 95px;
   box-sizing: border-box;
+  max-height: calc(100% - 137px);
 }

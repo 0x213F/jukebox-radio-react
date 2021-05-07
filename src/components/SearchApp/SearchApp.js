@@ -163,7 +163,7 @@ function SearchApp(props) {
               {search.serviceJukeboxRadio ? iconCheckboxChecked : iconCheckboxUnchecked}
             </button>
             <span style={(!search.serviceJukeboxRadio && {color: "#ABABAB"}) || {}}>
-              Jukebox Radio
+              Uploads
             </span>
           </label>
         </div>

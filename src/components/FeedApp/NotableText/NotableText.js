@@ -9,7 +9,6 @@ import {
   STYLE_ITALICIZE,
   STYLE_STRIKETHROUGH,
   STYLE_HIGHLIGHT,
-  STYLE_CHOICES,
 } from './constants';
 import { fetchCreateTextCommentModification } from './network';
 
@@ -117,7 +116,7 @@ function NotableText(props) {
         stylesObj['textDecoration'] = 'line-through';
       }
       if(style.has(STYLE_HIGHLIGHT)) {
-        stylesObj['backgroundColor'] = 'yellow';
+        stylesObj['backgroundColor'] = '#FFF960';
       }
 
       textCommentHtml = <>
@@ -141,15 +140,24 @@ function NotableText(props) {
       </p>
 
       <Popover selectionRef={selectableRef} onTextSelect={onTextSelect} onTextUnselect={onTextUnselect} isOpen={selectableIsShowable}>
-        {STYLE_CHOICES.map((style, index) => {
-          return (
-            <button key={index}
-                    type="button"
-                    onClick={async () => { await handleNotation(style); }}>
-              {style}
-            </button>
-          );
-        })}
+        <div className={styles.Popover}>
+          <button type="button"
+                  onClick={async () => { await handleNotation(STYLE_BOLD); }}>
+            <span style={{fontWeight: "bold"}}>B</span>
+          </button>
+          <button type="button"
+                  onClick={async () => { await handleNotation(STYLE_ITALICIZE); }}>
+            <span style={{fontStyle: "italic"}}>i</span>
+          </button>
+          <button type="button"
+                  onClick={async () => { await handleNotation(STYLE_STRIKETHROUGH); }}>
+            <span style={{textDecoration: "line-through"}}>S</span>
+          </button>
+          <button type="button"
+                  onClick={async () => { await handleNotation(STYLE_HIGHLIGHT); }}>
+            <span style={{backgroundColor: "#FFF960"}}>H</span>
+          </button>
+        </div>
       </Popover>
     </div>
   );
