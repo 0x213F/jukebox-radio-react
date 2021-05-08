@@ -62,16 +62,16 @@ function SideBar(props) {
         <ul className={styles.Menu}
             onClick={(e) => { setCounter(prev => prev + 1); }}>
           <li className={window.location.pathname.includes("search") && styles.LiSelected}>
-            <Link to="/app/search">Search</Link>
+            <Link to="/app/search" style={{color: "#000"}}>Search</Link>
           </li>
           <li className={window.location.pathname.includes("queue") && styles.LiSelected}>
-            <Link to="/app/queue">Queue</Link>
+            <Link to="/app/queue" style={{color: "#000"}}>Queue</Link>
           </li>
           <li className={window.location.pathname.includes("player") && styles.LiSelected}>
-            <Link to="/app/player">Player</Link>
+            <Link to="/app/player" style={{color: "#000"}}>Player</Link>
           </li>
           <li className={window.location.pathname.includes("feed") && styles.LiSelected}>
-            <Link to="/app/feed">Feed</Link>
+            <Link to="/app/feed" style={{color: "#000"}}>Feed</Link>
           </li>
         </ul>
       </div>

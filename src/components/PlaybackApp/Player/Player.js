@@ -51,60 +51,56 @@ function Player(props) {
 
   return (
     <div className={styles.Player}>
-      <div style={{width: "100%"}}>
-
-        <div className={styles.QueueItemContainer}>
-          <div className={styles.QueueItemLast}>
-            <div>
-              <img alt="" src={lastUp?.track?.imageUrl} />
-            </div>
-            <h5>
-              {lastUp?.track?.name || "Nothing..."}
-            </h5>
+      <div className={styles.QueueItemContainer}>
+        <div className={styles.QueueItemLast}>
+          <div>
+            <img alt="" src={lastUp?.track?.imageUrl} />
           </div>
-
-          <div className={styles.QueueItemCurrent}>
-            <div>
-              <img alt="" src={imageUrl} />
-            </div>
-            <h5>
-              {track?.name}
-            </h5>
-            <h6>
-              {track?.artistName}
-            </h6>
-          </div>
-
-          <div className={styles.QueueItemNext}>
-            <div>
-              <img alt="" src={nextUp?.track?.imageUrl} />
-            </div>
-            <h5>
-              {nextUp?.track.name || "Nothing..."}
-            </h5>
-          </div>
+          <h5>
+            {lastUp?.track?.name || "Nothing..."}
+          </h5>
         </div>
 
-        <div className={styles.PlaybackControls}>
-          <button onClick={props.prevTrack}
-                  disabled={!playback.controlsEnabled}>
-            {iconPrevTrack}
-          </button>
-          <button onClick={props.nextTrack}
-                  disabled={!playback.controlsEnabled}>
-            {iconNextTrack}
-          </button>
+        <div className={styles.QueueItemCurrent}>
+          <div className={styles.LargeImgContainer}>
+            <img alt="" src={imageUrl} />
+          </div>
+          <div className={styles.PlaybackControls}>
+            <button onClick={props.prevTrack}
+                    disabled={!playback.controlsEnabled}>
+              {iconPrevTrack}
+            </button>
+            <button onClick={props.nextTrack}
+                    disabled={!playback.controlsEnabled}>
+              {iconNextTrack}
+            </button>
+          </div>
+          <h5>
+            {track?.name}
+          </h5>
+          <h6>
+            {track?.artistName}
+          </h6>
         </div>
 
-        {stream?.nowPlaying && stream?.nowPlaying.track &&
-          <div className={styles.ProgressBarContainer}>
-            <ParentProgressBar queue={stream?.nowPlaying}
-                               stream={stream}
-                               mode={"player"}>
-            </ParentProgressBar>
+        <div className={styles.QueueItemNext}>
+          <div>
+            <img alt="" src={nextUp?.track?.imageUrl} />
           </div>
-        }
+          <h5>
+            {nextUp?.track.name || "Nothing..."}
+          </h5>
+        </div>
       </div>
+
+      {stream?.nowPlaying && stream?.nowPlaying.track &&
+        <div className={styles.ProgressBarContainer}>
+          <ParentProgressBar queue={stream?.nowPlaying}
+                             stream={stream}
+                             mode={"player"}>
+          </ParentProgressBar>
+        </div>
+      }
     </div>
   );
 }

@@ -84,7 +84,7 @@ function Session(props) {
               <div className={styles.PrimaryContent}>
                 <QueueApp />
               </div>
-              <Link to="/app/player" style={{ textDecoration: 'none' }}>
+              <Link to="/app/player" style={{ textDecoration: 'none', color: "#000" }}>
                 <div className={styles.SecondaryContent}>
                     <MiniPlayer />
                 </div>
@@ -96,7 +96,7 @@ function Session(props) {
               <div className={styles.PrimaryContent}>
                 <SearchApp />
               </div>
-              <Link to="/app/queue" style={{ textDecoration: 'none' }}>
+              <Link to="/app/queue" style={{ textDecoration: 'none', color: "#000" }}>
                 <div className={styles.SecondaryContent}>
                   <MiniQueue />
                 </div>

@@ -123,7 +123,7 @@ function WelcomeApp(props) {
                 Apple Music
               </div>
               <div className={styles.PlaybackOptionDescription}>
-                Click to connect your Apple Music account
+                Connect your Apple Music account
               </div>
             </div>
 
