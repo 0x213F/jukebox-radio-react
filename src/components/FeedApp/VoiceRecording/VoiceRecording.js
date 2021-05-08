@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 
 import { connect } from 'react-redux';
 
@@ -14,9 +14,11 @@ function VoiceRecording(props) {
    * 🏗
    */
   const voiceRecording = props.data,
-        voiceRecordingUuid = voiceRecording.uuid;
+        voiceRecordingUuid = voiceRecording.uuid,
+        stream = props.stream;
 
   const [hovering, setHovering] = useState(false);
+  const [isPlaying, setIsPlaying] = useState(false);
 
   /*
    * When the mouse enters the area, show the contextual buttons.
@@ -42,6 +44,19 @@ function VoiceRecording(props) {
       voiceRecordingUuid: voiceRecordingUuid,
     });
   }
+
+  useEffect(function() {
+    if(isPlaying) {
+      return;
+    }
+    setIsPlaying(true);
+    if(!stream.isPlaying || voiceRecording.created) {
+      return;
+    }
+    let audio = new Audio(voiceRecording.audioUrl);
+    audio.play();
+  // eslint-disable-next-line
+  }, [isPlaying])
 
   /*
    * 🎨
@@ -76,7 +91,9 @@ function VoiceRecording(props) {
 }
 
 
-const mapStateToProps = (state) => ({});
+const mapStateToProps = (state) => ({
+  stream: state.stream,
+});
 
 
 export default connect(mapStateToProps)(VoiceRecording);
