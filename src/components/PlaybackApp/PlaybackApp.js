@@ -21,6 +21,7 @@ import {
   SERVICE_SPOTIFY,
   SERVICE_APPLE_MUSIC,
   SERVICE_YOUTUBE,
+  SERVICE_AUDIUS,
 } from '../../config/services';
 
 import {
@@ -241,6 +242,15 @@ function PlaybackApp(props) {
       const responseJson = await fetchTrackGetFiles(lastUp.track.uuid);
       await props.dispatch(responseJson.redux);
     }
+    if(lastUp.track?.service === SERVICE_AUDIUS) {
+      await props.dispatch({
+        "type": "playback/loadAudius",
+        "payload": {
+          "id": lastUp.track.externalId,
+          "trackUuid": lastUp.track.uuid,
+        }
+      });
+    }
     const responseJsonPrevTrack = await fetchPrevTrack(stream.nowPlaying?.totalDurationMilliseconds);
     await props.dispatch(responseJsonPrevTrack.redux);
     await props.dispatch({ type: 'playback/start' });
@@ -259,6 +269,15 @@ function PlaybackApp(props) {
     if(nextUp?.track.service === SERVICE_JUKEBOX_RADIO) {
       const responseJson = await fetchTrackGetFiles(nextUp.track.uuid);
       await props.dispatch(responseJson.redux);
+    }
+    if(nextUp?.track.service === SERVICE_AUDIUS) {
+      await props.dispatch({
+        "type": "playback/loadAudius",
+        "payload": {
+          "id": nextUp.track.externalId,
+          "trackUuid": nextUp.track.uuid,
+        }
+      });
     }
     const responseJsonNextTrack = await fetchNextTrack(
       stream.nowPlaying?.totalDurationMilliseconds, false

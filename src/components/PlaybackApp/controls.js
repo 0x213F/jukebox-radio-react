@@ -5,6 +5,7 @@ import {
   SERVICE_SPOTIFY,
   SERVICE_YOUTUBE,
   SERVICE_JUKEBOX_RADIO,
+  SERVICE_AUDIUS,
 } from '../../config/services';
 import {
   fetchTrackGetFiles,
@@ -40,7 +41,6 @@ export const playbackControlStart = function(playback, stream) {
           });
       });
   } else if(playbackService === SERVICE_SPOTIFY) {
-    console.log('PLAY')
     playback.spotifyApi.play({
       uris: [stream.nowPlaying.track.externalId],
       position_ms: positionMilliseconds,
@@ -54,6 +54,14 @@ export const playbackControlStart = function(playback, stream) {
     if(positionMilliseconds > 0) {
       audio.currentTime = positionMilliseconds / 1000;
     }
+    audio.play();
+  } else if(playbackService === SERVICE_AUDIUS) {
+    const trackUuid = stream.nowPlaying.track.uuid,
+          audio = playback.files[trackUuid];
+    if(positionMilliseconds > 0) {
+      audio.currentTime = positionMilliseconds / 1000;
+    }
+    console.log(audio)
     audio.play();
   }
 };
@@ -83,6 +91,10 @@ export const playbackControlPause = function(playback, stream) {
         audio.pause();
       }
     }
+  } else if(playbackService === SERVICE_AUDIUS) {
+    const trackUuid = stream.nowPlaying.track.uuid,
+          audio = playback.files[trackUuid];
+    audio.pause();
   }
 }
 
@@ -107,6 +119,10 @@ export const playbackControlPlay = function(playback, stream) {
           instrument = arr[2],
           trackUuid = stream.nowPlaying.track.uuid,
           audio = playback.files[trackUuid][instrument];
+    audio.play();
+  } else if(playbackService === SERVICE_AUDIUS) {
+    const trackUuid = stream.nowPlaying.track.uuid,
+          audio = playback.files[trackUuid];
     audio.play();
   }
 }
@@ -148,6 +164,12 @@ export const playbackControlSeek = function(playback, stream, startedAt) {
 
     audio.currentTime = positionMilliseconds / 1000;
     audio.play();
+  } else if(playbackService === SERVICE_AUDIUS) {
+    const trackUuid = stream.nowPlaying.track.uuid,
+          audio = playback.files[trackUuid];
+
+    audio.currentTime = positionMilliseconds / 1000;
+    audio.play();
   }
 }
 
@@ -166,6 +188,8 @@ export const playbackControlSkipToNext = function(playback, stream) {
   } else if(playbackService === SERVICE_YOUTUBE) {
     // TODO - seems to work out of the box :)
   } else if(playbackService === SERVICE_JUKEBOX_RADIO) {
+    // TODO - refactor stuff to go inside of here instead
+  } else if(playbackService === SERVICE_AUDIUS) {
     // TODO - refactor stuff to go inside of here instead
   }
 }
@@ -226,6 +250,18 @@ export const playbackControlQueue = function(playback, stream, nextUp) {
         store.dispatch(responseJson.redux);
       });
   }
+
+  // Audius
+  shouldAddToQueue = nextPlaybackService === SERVICE_AUDIUS;
+  if(shouldAddToQueue) {
+    store.dispatch({
+      "type": "playback/loadAudius",
+      "payload": {
+        "id": nextUp.track.externalId,
+        "trackUuid": nextUp.track.uuid,
+      }
+    });
+  }
 }
 
 
@@ -239,11 +275,24 @@ export const playbackChangeVolume = function(playback, stream, volumeLevel) {
 
   const trackUuid = stream.nowPlaying?.track?.uuid,
         audios = playback.files[trackUuid];
-  if(audios) {
-    audios.all.volume = volumeLevel;
-    audios.drums.volume = volumeLevel;
-    audios.vocals.volume = volumeLevel;
-    audios.bass.volume = volumeLevel;
-    audios.other.volume = volumeLevel;
+
+  try {
+    if(audios) {
+      audios.all.volume = volumeLevel;
+      audios.drums.volume = volumeLevel;
+      audios.vocals.volume = volumeLevel;
+      audios.bass.volume = volumeLevel;
+      audios.other.volume = volumeLevel;
+    }
+  } catch (e) {
+    //
+  }
+
+  try {
+    if(audios) {
+      audios.volume = volumeLevel;
+    }
+  } catch (e) {
+    //
   }
 }

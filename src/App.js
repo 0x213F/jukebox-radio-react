@@ -18,7 +18,7 @@ import PlaybackApp from './components/PlaybackApp/PlaybackApp';
 import { useEffect, useState } from "react";
 import { Provider } from 'react-redux';
 import { BrowserRouter as Router } from "react-router-dom";
-import { SERVICE_JUKEBOX_RADIO } from './config/services';
+import { SERVICE_JUKEBOX_RADIO, SERVICE_AUDIUS } from './config/services';
 import TimeAgo from 'javascript-time-ago'
 import en from 'javascript-time-ago/locale/en'
 
@@ -83,6 +83,15 @@ function App() {
         //   store.dispatch(responseJson.redux);
         // }
         // request.send();
+      }
+      if(nowPlayingTrack?.service === SERVICE_AUDIUS) {
+        await store.dispatch({
+          "type": "playback/loadAudius",
+          "payload": {
+            "id": nowPlayingTrack.externalId,
+            "trackUuid": nowPlayingTrack.uuid,
+          }
+        });
       }
 
       // 4: Load the queue.

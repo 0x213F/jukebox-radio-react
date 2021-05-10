@@ -57,6 +57,13 @@ function SearchApp(props) {
     });
   }
 
+  const handleAudius = function() {
+    props.dispatch({
+      type: 'search/toggleService',
+      payload: { serviceName: "serviceAudius" },
+    });
+  }
+
   const handleJukeboxRadio = function() {
     props.dispatch({
       type: 'search/toggleService',
@@ -76,6 +83,7 @@ function SearchApp(props) {
       search.serviceAppleMusic,
       search.serviceSpotify,
       search.serviceYouTube,
+      search.serviceAudius,
       search.serviceJukeboxRadio,
       formatTrack,
       formatAlbum,
@@ -115,6 +123,7 @@ function SearchApp(props) {
           <input type="text"
                  name="query"
                  autocomplete="off"
+                 spellcheck="false"
                  placeholder=""
                  className={styles.SearchBar}
                  value={query}
@@ -156,6 +165,15 @@ function SearchApp(props) {
             </button>
             <span style={(!search.serviceAppleMusic && {color: "#BCBCBC"}) || {}}>
               Apple Music
+            </span>
+          </label>
+
+          <label className={styles.ServiceCheckboxContainer}>
+            <button onClick={handleAudius}>
+              {search.serviceAudius ? iconCheckboxChecked : iconCheckboxUnchecked}
+            </button>
+            <span style={(!search.serviceAudius && {color: "#BCBCBC"}) || {}}>
+              Audius
             </span>
           </label>
 

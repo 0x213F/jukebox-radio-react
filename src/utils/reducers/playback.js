@@ -290,6 +290,23 @@ export const playbackLoadFiles = function(state, payload) {
 }
 
 
+export const playbackLoadAudius = function(state, payload) {
+  const playback = { ...state.playback },
+        files = { ...state.playback.files };
+
+  const audioObj = new Audio(`https://discoveryprovider.audius5.prod-us-west-2.staked.cloud/v1/tracks/${payload.id}/stream?app_name=Jukebox Radio`);
+  files[payload.trackUuid] = audioObj;
+
+  return {
+    ...state,
+    playback: {
+      ...playback,
+      files: files,
+    }
+  };
+}
+
+
 export const playbackCycleVolumeLevelAudio = function(state) {
   const volumeLevel = { ...state.playback.volumeLevel },
         audioLevel = volumeLevel.audio;

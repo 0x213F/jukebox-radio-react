@@ -19,6 +19,7 @@ import {
   playbackDisable,
   playbackEnable,
   playbackLoadFiles,
+  playbackLoadAudius,
   playbackCycleVolumeLevelAudio,
 } from './reducers/playback';
 import {
@@ -100,6 +101,7 @@ const searchToggleServiceOff = function(state, payload) {
       serviceYouTube: false,
       serviceAppleMusic: false,
       serviceJukeboxRadio: false,
+      serviceAudius: false,
       ...payload
     }
   }
@@ -209,6 +211,8 @@ const reducer = (state = initialState, action) => {
       return playbackNextSeekScheduled(state, action.payload);
     case "playback/loadFiles":
       return playbackLoadFiles(state, action.payload);
+    case "playback/loadAudius":
+      return playbackLoadAudius(state, action.payload);
     case "playback/cycleVolumeLevelAudio":
       return playbackCycleVolumeLevelAudio(state);
     case "search/toggleServiceOff":
