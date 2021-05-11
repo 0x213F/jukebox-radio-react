@@ -24,20 +24,27 @@ export const playbackControlStart = function(playback, stream) {
         instrument = arr[2],
         playbackService = stream.nowPlaying.track.service;
   if(playbackService === SERVICE_APPLE_MUSIC) {
-    const music = window.MusicKit.getInstance();
+    const music = window.MusicKit.getInstance(),
+          state = store.getState(),
+          volumeLevel = state.playback.volumeLevel.audio;
     music.setQueue({ song: stream.nowPlaying.track.externalId })
       .then(() => {
+        if(positionMilliseconds >= 1000) {
+          music.player.volume = 0;
+        }
         music.player.play()
           .then(() => {
-            music.player.pause()
-              .then(() => {
-                const delayArr = getPositionMilliseconds(stream, stream.startedAt),
-                      delayPositionMilliseconds = delayArr[0];
-                music.player.seekToTime(delayPositionMilliseconds / 1000)
-                  .then(() => {
-                    music.player.play();
-                  });
-              });
+            if(positionMilliseconds < 1000) {
+              return;
+            }
+            setTimeout(function() {
+              const delayArr = getPositionMilliseconds(stream, stream.startedAt),
+                    delayPositionMilliseconds = delayArr[0];
+              music.player.seekToTime(delayPositionMilliseconds / 1000)
+                .then(() => {
+                  music.player.volume = volumeLevel;
+                });
+            }, 500);
           });
       });
   } else if(playbackService === SERVICE_SPOTIFY) {

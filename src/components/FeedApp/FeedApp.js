@@ -186,7 +186,7 @@ function FeedApp(props) {
                  name="text"
                  value={textCommentText}
                  onChange={handleTextChange}
-                 autocomplete={"off"}
+                 autoComplete="off"
                  disabled={!stream.isPlaying} />
           <button className={styles.SubmitButton}
                   type="submit"

@@ -122,8 +122,8 @@ function SearchApp(props) {
         <div className={styles.SearchBarContainer}>
           <input type="text"
                  name="query"
-                 autocomplete="off"
-                 spellcheck="false"
+                 autoComplete="off"
+                 spellCheck="false"
                  placeholder=""
                  className={styles.SearchBar}
                  value={query}

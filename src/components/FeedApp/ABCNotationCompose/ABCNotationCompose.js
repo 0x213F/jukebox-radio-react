@@ -68,7 +68,7 @@ function ABCNotationCompose(props) {
                     name="text"
                     placeholder="text"
                     value={text}
-                    spellcheck="false"
+                    spellCheck="false"
                     onChange={handleTextChange}
                     disabled={isDisabled} />
         </div>
