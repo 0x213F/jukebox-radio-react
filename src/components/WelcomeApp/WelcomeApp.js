@@ -2,7 +2,7 @@ import React from "react";
 import { connect } from 'react-redux';
 import Modal from 'react-modal';
 import { useHistory } from "react-router-dom";
-import { iconLogo, iconSpotify, iconYouTube, iconAppleMusic } from '../../icons';
+import { iconLogo, iconSpotify, iconYouTube, iconAppleMusic, iconAudius34 } from '../../icons';
 import styles from './WelcomeApp.module.css';
 import { iconFolder } from './icons';
 
@@ -48,6 +48,15 @@ function WelcomeApp(props) {
     props.dispatch({
       type: 'search/toggleServiceOff',
       payload: { serviceYouTube: true },
+    });
+    history.push("/app/search");
+    closeModal();
+  }
+
+  const handleAudius = function () {
+    props.dispatch({
+      type: 'search/toggleServiceOff',
+      payload: { serviceAudius: true },
     });
     history.push("/app/search");
     closeModal();
@@ -124,6 +133,19 @@ function WelcomeApp(props) {
               </div>
               <div className={styles.PlaybackOptionDescription}>
                 Connect your Apple Music account
+              </div>
+            </div>
+
+            <div className={styles.PlaybackOption}
+                    onClick={handleAudius}>
+              <div className={styles.PlaybackOptionLogo}>
+                {iconAudius34}
+              </div>
+              <div className={styles.PlaybackOptionService}>
+                Audius
+              </div>
+              <div className={styles.PlaybackOptionDescription}>
+                Free access to the Audius catalog
               </div>
             </div>
 

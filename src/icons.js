@@ -6,6 +6,13 @@ export const iconLogo = (
   </svg>
 );
 
+export const iconLogoAlt = (
+  <svg height="24" viewBox="0 0 131 213" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <path fill-rule="evenodd" clip-Rule="evenodd" d="M-5.72619e-06 213C72.3493 213 131 154.349 131 82L80 82C80 126.183 44.1828 162 -3.49691e-06 162L-5.72619e-06 213Z" fill="#0047FF"/>
+    <circle cx="105" cy="26" r="26" fill="#0047FF"/>
+  </svg>
+);
+
 export const iconCheckboxUnchecked = (
   <svg width="25" height="25" viewBox="0 0 25 25" fill="none" xmlns="http://www.w3.org/2000/svg">
     <rect x="1" y="1" width="23" height="23" rx="5" stroke="#0047FF" strokeWidth="2"/>
@@ -104,3 +111,11 @@ export const iconBack = (
     <path d="M18.793 13.1133H8.79297" stroke="#0047FF" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
   </svg>
 );
+
+export const iconAudius = (
+  <img src="/audius.png" style={{maxWidth: "24px", maxHeight: "24px"}} alt="Audius" />
+)
+
+export const iconAudius34 = (
+  <img src="/audius.png" style={{maxWidth: "34px", maxHeight: "34px"}} alt="Audius" />
+)

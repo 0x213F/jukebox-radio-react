@@ -6,8 +6,8 @@ import 'react-circular-progressbar/dist/styles.css';
 
 import { cycleVolumeLevel } from '../../PlaybackApp/utils';
 import { playbackChangeVolume } from '../../PlaybackApp/controls';
-import { iconSpotify, iconYouTube, iconAppleMusic, iconLogo } from '../../../icons';
-import { SERVICE_SPOTIFY, SERVICE_YOUTUBE, SERVICE_APPLE_MUSIC, SERVICE_JUKEBOX_RADIO } from '../../../config/services';
+import { iconSpotify, iconYouTube, iconAppleMusic, iconLogoAlt, iconAudius } from '../../../icons';
+import { SERVICE_SPOTIFY, SERVICE_YOUTUBE, SERVICE_APPLE_MUSIC, SERVICE_JUKEBOX_RADIO, SERVICE_AUDIUS } from '../../../config/services';
 
 import styles from './BottomBar.module.css';
 import {
@@ -44,8 +44,10 @@ function BottomBar(props) {
   } else if(nowPlayingTrackService === SERVICE_APPLE_MUSIC) {
     serviceSvg = iconAppleMusic;
   } else if(nowPlayingTrackService === SERVICE_JUKEBOX_RADIO) {
-    serviceSvg = iconLogo;
- }
+    serviceSvg = iconLogoAlt;
+  } else if(nowPlayingTrackService === SERVICE_AUDIUS) {
+    serviceSvg = iconAudius;
+  }
 
   /*
    * Modify playback to seek in a certain diretion ('forward' or 'backward').

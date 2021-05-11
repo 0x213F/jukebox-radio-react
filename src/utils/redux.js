@@ -89,6 +89,7 @@ const initialState = {
     serviceYouTube: true,
     serviceAppleMusic: true,
     serviceJukeboxRadio: true,
+    serviceAudius: true,
   },
 }
 
