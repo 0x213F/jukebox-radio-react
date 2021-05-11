@@ -5,6 +5,7 @@ import { connect } from 'react-redux';
 import { iconTrash } from '../icons';
 
 import styles from './VoiceRecording.module.css';
+import { getPositionMilliseconds } from '../../PlaybackApp/utils';
 import { fetchDeleteVoiceRecording } from './network';
 
 
@@ -49,10 +50,22 @@ function VoiceRecording(props) {
     if(isPlaying) {
       return;
     }
+
     setIsPlaying(true);
     if(!stream.isPlaying || voiceRecording.created) {
       return;
     }
+
+    const arr = getPositionMilliseconds(stream, stream.startedAt),
+          position = arr[0],
+          withinContext = (
+            voiceRecording.timestampMilliseconds >= position - 2000 &&
+            voiceRecording.timestampMilliseconds <= position + 2000
+          );
+    if(!withinContext) {
+      return;
+    }
+
     let audio = new Audio(voiceRecording.audioUrl);
     audio.play();
   // eslint-disable-next-line
