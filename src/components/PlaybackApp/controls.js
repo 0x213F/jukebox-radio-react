@@ -61,7 +61,6 @@ export const playbackControlStart = function(playback, stream) {
     if(positionMilliseconds > 0) {
       audio.currentTime = positionMilliseconds / 1000;
     }
-    console.log(audio)
     audio.play();
   }
 };
@@ -87,7 +86,7 @@ export const playbackControlPause = function(playback, stream) {
           audios = playback.files[trackUuid];
     // eslint-disable-next-line
     for(const [instrument, audio] of Object.entries(audios)) {
-      if(audio.paused) {
+      if(!audio.paused) {
         audio.pause();
       }
     }

@@ -115,6 +115,8 @@ function PlaybackApp(props) {
       (
         // Everytime a manual upload is currently playing.
         nowPlaying.track.service === SERVICE_JUKEBOX_RADIO ||
+        // Everytime Audius is currently playing.
+        nowPlaying.track.service === SERVICE_AUDIUS ||
         // Currently playing Spotify, nothing is up next.
         (
           nowPlaying.track.service === SERVICE_SPOTIFY &&

@@ -101,7 +101,10 @@ function FeedApp(props) {
             lastModified: Date.now(),
           });
 
-          const responseJson = await fetchCreateVoiceRecording(file, JSON.stringify([]), '');
+          const arr = getPositionMilliseconds(stream, stream.startedAt),
+                position = arr[0];
+
+          const responseJson = await fetchCreateVoiceRecording(file, JSON.stringify([]), '', position);
 
           await props.dispatch({
             type: 'voiceRecording/create',

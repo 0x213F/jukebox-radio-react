@@ -10,12 +10,12 @@ import { fetchBackend } from '../../../utils/network';
  * Creates a voice recording.
  */
 export const fetchCreateVoiceRecording = async (
-  audioFile, transcriptData, transcriptFinal
+  audioFile, transcriptData, transcriptFinal, voiceRecordingTimestamp
 ) => {
   const response = await fetchBackend(
     TYPE_POST,
     ENDPOINT_VOICE_RECORDING_CREATE,
-    { audioFile, transcriptData, transcriptFinal },
+    { audioFile, transcriptData, transcriptFinal, voiceRecordingTimestamp},
   );
   const responseJson = await response.json();
   return responseJson;
