@@ -1,6 +1,8 @@
-import React from "react";
+import React, { useEffect } from "react";
+
 import { connect } from 'react-redux';
 import Modal from 'react-modal';
+
 import { useHistory } from "react-router-dom";
 import { iconLogo, iconSpotify, iconYouTube, iconAppleMusic, iconAudius34 } from '../../icons';
 import styles from './WelcomeApp.module.css';
@@ -70,6 +72,14 @@ function WelcomeApp(props) {
     history.push("/app/search");
     closeModal();
   }
+
+  useEffect(function() {
+    props.dispatch({
+      type: "sideBar/selectTab",
+      payload: { tab: "search" },
+    });
+  // eslint-disable-next-line
+  }, [])
 
    /*
     * 🎨

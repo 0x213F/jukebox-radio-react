@@ -56,6 +56,9 @@ import {
   userSettingsUpdate,
   userGetSettings,
 } from './reducers/userSettings';
+import {
+  sideBarSelectTab,
+} from './reducers/sideBar';
 
 
 const initialState = {
@@ -91,6 +94,9 @@ const initialState = {
     serviceJukeboxRadio: true,
     serviceAudius: true,
   },
+  sideBar: {
+    tab: null,
+  }
 }
 
 
@@ -220,6 +226,8 @@ const reducer = (state = initialState, action) => {
       return searchToggleServiceOff(state, action.payload);
     case "search/toggleService":
       return searchToggleService(state, action.payload);
+    case "sideBar/selectTab":
+      return sideBarSelectTab(state, action.payload);
     // case "@redux/INIT":
     //   return state;
     default:

@@ -120,6 +120,12 @@ function App() {
     }
     // End PWA
 
+    // Prestyle side bar
+    store.dispatch({
+      type: "sideBar/selectTab",
+      payload: { tab: window.location.pathname.substring(5) },
+    });
+
     // Define behavior for when the webpage is closed.
     window.addEventListener("beforeunload", (e) => {
       e.preventDefault();

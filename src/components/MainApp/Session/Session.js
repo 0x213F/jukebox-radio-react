@@ -28,8 +28,21 @@ function Session(props) {
   const [showModal, setShowModal] = useState(false);
   const [forceHideModal, setForceHideModal] = useState(false);
 
+  /*
+   * Closes the "Welcome" modal.
+   */
   const closeModal = function() {
     setShowModal(false);
+  }
+
+  /*
+   * Switches the active tab, updating styles in the side bar.
+   */
+  const handleTab = function(tab) {
+    props.dispatch({
+      type: "sideBar/selectTab",
+      payload: { tab },
+    });
   }
 
   useEffect(() => {
@@ -84,7 +97,7 @@ function Session(props) {
               <div className={styles.PrimaryContent}>
                 <QueueApp />
               </div>
-              <Link to="/app/player" style={{ textDecoration: 'none', color: "#000" }}>
+              <Link to="/app/player" onClick={() => { handleTab("player"); }} style={{ textDecoration: 'none', color: "#000" }}>
                 <div className={styles.SecondaryContent}>
                     <MiniPlayer />
                 </div>
@@ -96,7 +109,7 @@ function Session(props) {
               <div className={styles.PrimaryContent}>
                 <SearchApp />
               </div>
-              <Link to="/app/queue" style={{ textDecoration: 'none', color: "#000" }}>
+              <Link to="/app/queue" onClick={() => { handleTab("queue"); }} style={{ textDecoration: 'none', color: "#000" }}>
                 <div className={styles.SecondaryContent}>
                   <MiniQueue />
                 </div>

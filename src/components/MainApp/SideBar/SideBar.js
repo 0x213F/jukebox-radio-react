@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 
+import { connect } from 'react-redux';
 import { Link } from "react-router-dom";
 
 import UserSettings from '../../UserSettings/UserSettings'
@@ -13,6 +14,8 @@ function SideBar(props) {
   /*
    * 🏗
    */
+  const sideBar = props.sideBar;
+
   const [showModal, setShowModal] = useState(false);
   // eslint-disable-next-line
   const [counter, setCounter] = useState(0);
@@ -31,15 +34,25 @@ function SideBar(props) {
     setShowModal(false);
   }
 
+  /*
+   * Switches the active tab, updating styles in the side bar.
+   */
+  const handleTab = function(tab) {
+    props.dispatch({
+      type: "sideBar/selectTab",
+      payload: { tab },
+    });
+  }
+
   // TODO: refactor these inline CSS styles into classes.
   let top;
-  if (window.location.pathname.includes("search")) {
+  if (sideBar.tab === "search") {
     top = "165px";
-  } else if (window.location.pathname.includes("queue")) {
+  } else if (sideBar.tab === "queue") {
     top = "229px";
-  } else if (window.location.pathname.includes("player")) {
+  } else if (sideBar.tab === "player") {
     top = "293px";
-  } else if (window.location.pathname.includes("feed")) {
+  } else if (sideBar.tab === "feed") {
     top = "357px";
   }
 
@@ -61,17 +74,17 @@ function SideBar(props) {
 
         <ul className={styles.Menu}
             onClick={(e) => { setCounter(prev => prev + 1); }}>
-          <li className={window.location.pathname.includes("search") && styles.LiSelected}>
-            <Link to="/app/search" style={{color: "#000"}}>Search</Link>
+          <li className={sideBar.tab === "search" && styles.LiSelected}>
+            <Link to="/app/search" onClick={() => { handleTab("search"); }} style={{color: "#000"}}>Search</Link>
           </li>
-          <li className={window.location.pathname.includes("queue") && styles.LiSelected}>
-            <Link to="/app/queue" style={{color: "#000"}}>Queue</Link>
+          <li className={sideBar.tab === "queue" && styles.LiSelected}>
+            <Link to="/app/queue" onClick={() => { handleTab("queue"); }} style={{color: "#000"}}>Queue</Link>
           </li>
-          <li className={window.location.pathname.includes("player") && styles.LiSelected}>
-            <Link to="/app/player" style={{color: "#000"}}>Player</Link>
+          <li className={sideBar.tab === "player" && styles.LiSelected}>
+            <Link to="/app/player" onClick={() => { handleTab("player"); }} style={{color: "#000"}}>Player</Link>
           </li>
-          <li className={window.location.pathname.includes("feed") && styles.LiSelected}>
-            <Link to="/app/feed" style={{color: "#000"}}>Feed</Link>
+          <li className={sideBar.tab === "feed" && styles.LiSelected}>
+            <Link to="/app/feed" onClick={() => { handleTab("feed"); }} style={{color: "#000"}}>Feed</Link>
           </li>
         </ul>
       </div>
@@ -88,4 +101,9 @@ function SideBar(props) {
 }
 
 
-export default SideBar;
+const mapStateToProps = (state) => ({
+    sideBar: state.sideBar,
+});
+
+
+export default connect(mapStateToProps)(SideBar);
