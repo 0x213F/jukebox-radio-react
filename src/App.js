@@ -98,13 +98,17 @@ function App() {
       responseJson = await fetchQueueList();
       await store.dispatch(responseJson.redux);
 
-      // 5: Load relevant comments.
-      const textCommentsJsonResponse = await fetchTextCommentList(payload.stream.nowPlaying?.track?.uuid);
-      await store.dispatch(textCommentsJsonResponse.redux);
+      // IMPORTANT: need to reload stream from state to get cleaned stream.
+      const stream = store.getState().stream;
+      if(stream.nowPlaying?.track?.uuid) {
+        // 5: Load relevant comments.
+        const textCommentsJsonResponse = await fetchTextCommentList(stream.nowPlaying?.track?.uuid);
+        await store.dispatch(textCommentsJsonResponse.redux);
 
-      // 6: Load relevant voice recordings. This will also generate the feed.
-      const voiceRecordingsJsonResponse = await fetchVoiceRecordingList(payload.stream.nowPlaying?.track?.uuid);
-      await store.dispatch(voiceRecordingsJsonResponse.redux);
+        // 6: Load relevant voice recordings. This will also generate the feed.
+        const voiceRecordingsJsonResponse = await fetchVoiceRecordingList(stream.nowPlaying?.track?.uuid);
+        await store.dispatch(voiceRecordingsJsonResponse.redux);
+      }
 
       // Update status.
       setStatus('ready');
