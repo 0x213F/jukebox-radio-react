@@ -45,8 +45,7 @@ export const ENDPOINT_STREAM_NEXT_TRACK = '/streams/stream/next-track/'
 export const ENDPOINT_STREAM_PAUSE_TRACK = '/streams/stream/pause-track/'
 export const ENDPOINT_STREAM_PLAY_TRACK = '/streams/stream/play-track/'
 export const ENDPOINT_STREAM_PREV_TRACK = '/streams/stream/prev-track/'
-export const ENDPOINT_STREAM_SCAN_BACKWARD = '/streams/stream/scan-backward/'
-export const ENDPOINT_STREAM_SCAN_FORWARD = '/streams/stream/scan-forward/'
+export const ENDPOINT_STREAM_SCAN = '/streams/stream/scan/'
 
 // MARKER
 export const ENDPOINT_MARKER_CREATE = '/streams/marker/create/'

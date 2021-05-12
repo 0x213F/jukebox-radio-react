@@ -78,7 +78,7 @@ function Session(props) {
 
             {/* FEED */}
             <Route path="/app/feed">
-              <FeedApp />
+              <FeedApp seek={props.playbackControls.seek}/>
             </Route>
 
             {/* PLAYER */}

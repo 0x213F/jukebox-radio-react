@@ -157,12 +157,12 @@ function FeedApp(props) {
           {feed.map((value, index) => {
             if(value.class === CLASS_TEXT_COMMENT) {
               if(value.format === FORMAT_TEXT) {
-                return <TextComment key={index} data={value} />;
+                return <TextComment key={index} data={value} seek={props.seek} />;
               } else if(value.format === FORMAT_ABC_NOTATION) {
-                return <ABCNotationDisplay key={index} data={value} />;
+                return <ABCNotationDisplay key={index} data={value} seek={props.seek} />;
               }
             } else if(value.class === CLASS_VOICE_RECORDING) {
-              return <VoiceRecording key={index} data={value} />
+              return <VoiceRecording key={index} data={value} seek={props.seek} />
             }
             return <></>;
           })}

@@ -5,8 +5,7 @@ import {
   ENDPOINT_STREAM_PAUSE_TRACK,
   ENDPOINT_STREAM_PLAY_TRACK,
   ENDPOINT_STREAM_PREV_TRACK,
-  ENDPOINT_STREAM_SCAN_BACKWARD,
-  ENDPOINT_STREAM_SCAN_FORWARD,
+  ENDPOINT_STREAM_SCAN,
 } from '../../../config/api'
 import { TYPE_GET, TYPE_POST } from '../../../config/global'
 import { fetchBackend } from '../../../utils/network'
@@ -88,28 +87,16 @@ const fetchPrevTrack = async (nowPlayingTotalDurationMilliseconds) => {
 /*
  * Fetches...
  */
-const fetchScanBackward = async (nowPlayingTotalDurationMilliseconds) => {
+const fetchScan = async (startedAt, nowPlayingTotalDurationMilliseconds) => {
   const response = await fetchBackend(
     TYPE_POST,
-    ENDPOINT_STREAM_SCAN_BACKWARD,
-    { nowPlayingTotalDurationMilliseconds },
+    ENDPOINT_STREAM_SCAN,
+    { startedAt, nowPlayingTotalDurationMilliseconds },
   );
   const responseJson = await response.json();
   return responseJson;
 };
 
-/*
- * Fetches...
- */
-const fetchScanForward = async (nowPlayingTotalDurationMilliseconds) => {
-  const response = await fetchBackend(
-    TYPE_POST,
-    ENDPOINT_STREAM_SCAN_FORWARD,
-    { nowPlayingTotalDurationMilliseconds }
-  );
-  const responseJson = await response.json();
-  return responseJson;
-};
 
 export {
   fetchStreamGet,
@@ -117,7 +104,6 @@ export {
   fetchPauseTrack,
   fetchPlayTrack,
   fetchPrevTrack,
-  fetchScanBackward,
-  fetchScanForward,
+  fetchScan,
   fetchTrackGetFiles,
 }

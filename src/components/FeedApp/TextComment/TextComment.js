@@ -3,7 +3,7 @@ import React, { useState } from "react";
 import { connect } from 'react-redux';
 
 import NotableText from '../NotableText/NotableText';
-import { iconTrash, iconErase } from '../icons';
+import { iconTrash, iconErase, iconPlay } from '../icons';
 
 import styles from './TextComment.module.css';
 import {
@@ -18,7 +18,9 @@ function TextComment(props) {
    * 🏗
    */
   const textComment = props.data,
-        textCommentUuid = textComment.uuid;
+        textCommentUuid = textComment.uuid,
+        stream = props.stream,
+        nowPlayingTrackUuid = stream?.nowPlaying?.track?.uuid;
 
   const [hovering, setHovering] = useState(false);
 
@@ -50,6 +52,10 @@ function TextComment(props) {
   const clearModifications = async function() {
     const responseJson = await fetchListDeleteTextCommentModifications(textCommentUuid);
     await props.dispatch(responseJson.redux);
+  }
+
+  const handleSeek = function() {
+    props.seek(textComment.timestampMilliseconds);
   }
 
   // TODO: change styles with a class instead of injecting CSS
@@ -85,6 +91,12 @@ function TextComment(props) {
             <button type="button" onClick={clearModifications}>
               {iconErase}
             </button>
+
+            {textComment.trackUuid === nowPlayingTrackUuid &&
+              <button type="button" onClick={handleSeek}>
+                {iconPlay}
+              </button>
+            }
           </div>
         }
       </div>
@@ -93,7 +105,9 @@ function TextComment(props) {
 }
 
 
-const mapStateToProps = (state) => ({});
+const mapStateToProps = (state) => ({
+  stream: state.stream,
+});
 
 
 export default connect(mapStateToProps)(TextComment);

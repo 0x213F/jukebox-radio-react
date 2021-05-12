@@ -7,8 +7,7 @@ import MainApp from '../MainApp/MainApp';
 import {
   fetchNextTrack,
   fetchPrevTrack,
-  fetchScanBackward,
-  fetchScanForward,
+  fetchScan,
   fetchTrackGetFiles,
   fetchPauseTrack,
   fetchPlayTrack,
@@ -298,29 +297,36 @@ function PlaybackApp(props) {
    *      seek to the new expected track progress (in the case of a muted
    *      interval).
    */
-  const seek = async function(direction = undefined) {
+  const seek = async function(value = undefined) {
     await props.dispatch({ type: 'playback/disable' });
     let startedAt;
 
-    if(direction === 'forward') {
-      const response = await fetchScanForward(
-        stream.nowPlaying.totalDurationMilliseconds
+    if(value === undefined) {
+      startedAt = stream.startedAt;
+    } else {
+      if(value === 'forward') {
+        startedAt = stream.startedAt - (10000);
+      } else if(value === 'backward') {
+        const date = new Date(),
+              epochNow = date.getTime(),
+              proposedStartedAt = stream.startedAt + 10000,
+              proposedProgress = epochNow - proposedStartedAt;
+        startedAt = proposedProgress > 0 ? proposedStartedAt : epochNow;
+      } else {
+        const date = new Date(),
+              epochNow = date.getTime();
+        startedAt = epochNow - value;
+      }
+
+      const response = await fetchScan(
+        startedAt,
+        stream.nowPlaying.totalDurationMilliseconds,
       );
       // Seeking forward is not allowed because the track is almost over.
       if(response.system.status === 400) {
         await props.dispatch({ type: 'playback/enable' });
         return;
       }
-      startedAt = stream.startedAt - (10000);
-    } else if(direction === 'backward') {
-      await fetchScanBackward(stream.nowPlaying.totalDurationMilliseconds);
-      const date = new Date(),
-            epochNow = date.getTime(),
-            proposedStartedAt = stream.startedAt + 10000,
-            proposedProgress = epochNow - proposedStartedAt;
-      startedAt = proposedProgress > 0 ? proposedStartedAt : epochNow;
-    } else {
-      startedAt = stream.startedAt;
     }
 
     await props.dispatch({
