@@ -51,7 +51,7 @@
   float: left;
   height: 48px;
   margin-left: 34px;
-  width: calc(100% - 283px);
+  width: calc(100% - 291px);
 }
 
 .ResultInformation > h5 {
@@ -61,6 +61,7 @@
   font-size: 18px;
   line-height: 21px;
   padding-top: 1px;
+  padding-right: 16px;
   white-space: nowrap;
   overflow: hidden;
   display: block;
@@ -74,10 +75,21 @@
   font-size: 14px;
   line-height: 16px;
   padding-top: 8px;
+  padding-right: 16px;
   white-space: nowrap;
   overflow: hidden;
   display: block;
   text-overflow: ellipsis;
+}
+
+.ServiceLogo {
+  width: 24px;
+  height: 24px;
+  margin-right: 28px;
+  margin-left: auto;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .AddButton {
@@ -99,7 +111,6 @@
   border: 2px solid #0047FF;
   border-radius: 24px;
 
-  margin-left: auto;
   margin-right: 22px;
   cursor: pointer;
 }
