@@ -9,6 +9,7 @@ import {
   playbackAppleMusic,
   playbackSpotify,
   playbackYouTube,
+  playbackYouTubeTriggerAutoplay,
   playbackAddToQueue,
   playbackPlannedNextTrack,
   playbackStart,
@@ -74,6 +75,7 @@ const initialState = {
     controlsEnabled: false,
     spotifyApi: undefined,
     youTubeApi: undefined,
+    youTubeAutoplay: 0,
     appleMusic: {},
     isPlaying: false,
     queuedUp: false,
@@ -202,6 +204,8 @@ const reducer = (state = initialState, action) => {
       return playbackSpotify(state, action.payload);
     case "playback/youTube":
       return playbackYouTube(state, action.payload);
+    case "playback/youTubeTriggerAutoplay":
+      return playbackYouTubeTriggerAutoplay(state, action.payload);
     case "playback/addToQueue":
       return playbackAddToQueue(state);
     case "playback/plannedNextTrack":

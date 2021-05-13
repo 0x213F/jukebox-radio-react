@@ -100,6 +100,7 @@ function App() {
 
       // IMPORTANT: need to reload stream from state to get cleaned stream.
       const stream = store.getState().stream;
+      console.log(stream)
       if(stream.nowPlaying?.track?.uuid) {
         // 5: Load relevant comments.
         const textCommentsJsonResponse = await fetchTextCommentList(stream.nowPlaying?.track?.uuid);

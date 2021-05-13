@@ -53,8 +53,10 @@ export const playbackControlStart = function(playback, stream) {
       position_ms: positionMilliseconds,
     });
   } else if(playbackService === SERVICE_YOUTUBE) {
-    playback.youTubeApi.seekTo(Math.floor(positionMilliseconds / 1000));
-    playback.youTubeApi.playVideo();
+    store.dispatch({
+      type: 'playback/youTubeTriggerAutoplay',
+      payload: { autoplay: true },
+    });
   } else if(playbackService === SERVICE_JUKEBOX_RADIO) {
     const trackUuid = stream.nowPlaying.track.uuid,
           audio = playback.files[trackUuid][instrument];

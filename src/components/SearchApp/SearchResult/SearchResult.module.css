@@ -40,7 +40,7 @@
   justify-content: center;
 
   background-color: #EAEAEA;
-  border-radius: 4px;
+  /* border-radius: 6px; */
 }
 
 .ImageParent > img {
@@ -177,21 +177,21 @@
 
 /* COLORS */
 .spotify {
-  background-color: rgba(29, 185, 84, 0.5);
+  /* background-color: rgba(29, 185, 84, 0.5); */
 }
 
 .apple_music {
-  background-color: rgba(251, 92, 116, 0.5);
+  /* background-color: rgba(251, 92, 116, 0.5); */
 }
 
 .youtube {
-  background-color: rgba(255, 0, 0, 0.5);
+  /* background-color: rgba(255, 0, 0, 0.5); */
 }
 
 .audius {
-  background-color: rgba(126, 27, 204, 0.5);
+  /* background-color: rgba(126, 27, 204, 0.5); */
 }
 
 .jukebox_radio {
-  background-color: rgba(0, 71, 255, 0.5);
+  /* background-color: rgba(0, 71, 255, 0.5); */
 }

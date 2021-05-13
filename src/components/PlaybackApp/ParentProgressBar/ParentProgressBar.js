@@ -16,10 +16,15 @@ function ParentProgressBar(props) {
 
   let position, pointerLeftDistance;
   if(mode === "player") {
-    const stream = props.stream,
-          arr = getPositionMilliseconds(stream, stream.startedAt);
-    position = arr[0];
-    pointerLeftDistance = (position / duration) * 100;
+    try {
+      const stream = props.stream,
+            arr = getPositionMilliseconds(stream, stream.startedAt);
+      position = arr[0];
+      pointerLeftDistance = (position / duration) * 100;
+    } catch (e) {
+      position = 0;
+      pointerLeftDistance = (position / duration) * 100;
+    }
   }
 
   const trackMarkerMap = props.trackMarkerMap,

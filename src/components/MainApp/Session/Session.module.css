@@ -47,7 +47,8 @@
   padding: 40px;
   min-width: 300px;
   max-width: 300px;
-  border: 1px solid #BCBCBC;
+  border: 2px solid #0047FF;
+  border-radius: 10px;
   position: relative;
   float: left;
   cursor: pointer;

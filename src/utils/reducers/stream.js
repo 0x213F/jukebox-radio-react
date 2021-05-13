@@ -14,22 +14,21 @@ export const streamSet = function(state, payload) {
   }
 
   obj.stream = stream;
+  const progress = (
+          stream.isPlaying ?
+          Date.now() - stream.startedAt : stream.pausedAt - stream.startedAt
+        );
+  const notPlaying = (
+    (!stream.isPlaying && !stream.isPaused && stream.nowPlaying) ||
+    (progress && progress >= stream.nowPlaying.totalDurationMilliseconds)
+  )
 
-  if(!stream.isPlaying && !stream.isPaused && stream.nowPlaying) {
+  if(notPlaying) {
     obj.lastUp = stream.nowPlaying;
     obj._lastPlayed = stream.nowPlaying;
     obj.stream.nowPlaying = undefined;
     obj.stream.isPlaying = false;
     obj.stream.isPaused = false;
-  } else if(stream.isPlaying) {
-    const progress = Date.now() - stream.startedAt;
-    if(progress && progress >= stream.nowPlaying.totalDurationMilliseconds) {
-      obj.lastUp = stream.nowPlaying;
-      obj._lastPlayed = stream.nowPlaying;
-      obj.stream.nowPlaying = undefined;
-      obj.stream.isPlaying = false;
-      obj.stream.isPaused = false;
-    }
   }
 
   return obj;

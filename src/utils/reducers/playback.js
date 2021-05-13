@@ -48,6 +48,17 @@ export const playbackYouTube = function(state, payload) {
 }
 
 
+export const playbackYouTubeTriggerAutoplay = function(state, payload) {
+  return {
+    ...state,
+    playback: {
+      ...state.playback,
+      youTubeAutoplay: payload.autoplay ? 1 : 0,
+    }
+  }
+}
+
+
 /*
  * Assumptions:
  *   - There is currently something playing in the stream.

@@ -598,20 +598,35 @@ function PlaybackApp(props) {
             modestbranding: 1,  // minimal YT branding
             origin: 'jukeboxrad.io',
             playsinline: 1,
+            start: (
+              stream.nowPlaying?.track.service === SERVICE_YOUTUBE &&
+              Math.floor(stream.nowPlaying.playbackIntervals[0].startPosition / 1000)
+            ),
           },
         },
-        videoId = stream?.nowPlaying?.track?.externalId;
+        videoId = (
+          stream.nowPlaying?.track.service === SERVICE_YOUTUBE &&
+          stream?.nowPlaying?.track?.externalId
+        );
 
   const onYouTubeReady = function(e) {
     const youTubeApi = e.target;
+
+    if(playback.youTubeAutoplay) {
+      youTubeApi.playVideo();
+      props.dispatch({
+        type: 'playback/youTubeTriggerAutoplay',
+        payload: { autoplay: false },
+      });
+    }
+
     props.dispatch({
       type: 'playback/youTube',
-      payload: { youTubeApi: youTubeApi },
+      payload: { youTubeApi },
     });
   }
 
   const onYouTubePause = function() {
-
     if(!stream.isPaused && stream.nowPlaying?.track.service === SERVICE_YOUTUBE) {
       pause();
     }
