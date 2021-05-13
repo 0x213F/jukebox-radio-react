@@ -53,7 +53,7 @@ function Player(props) {
     <div className={styles.Player}>
       <div className={styles.QueueItemContainer}>
         <div className={styles.QueueItemLast}>
-          <div>
+          <div className={styles[lastUp?.track?.service]}>
             <img alt="" src={lastUp?.track?.imageUrl} />
           </div>
           <h5>
@@ -62,7 +62,7 @@ function Player(props) {
         </div>
 
         <div className={styles.QueueItemCurrent}>
-          <div className={styles.LargeImgContainer}>
+          <div className={[styles.LargeImgContainer, styles[track.service]].join(' ')}>
             <img alt="" src={imageUrl} />
           </div>
           <div className={styles.PlaybackControls}>
@@ -84,7 +84,7 @@ function Player(props) {
         </div>
 
         <div className={styles.QueueItemNext}>
-          <div>
+          <div className={styles[nextUp?.track?.service]}>
             <img alt="" src={nextUp?.track?.imageUrl} />
           </div>
           <h5>

@@ -3,6 +3,7 @@
   position: relative;
   height: 16px;
   width: 100%;
+  box-shadow: 0px 4px 4px rgb(0 71 255 / 35%);
 }
 
 .ProgressPointer {

@@ -41,7 +41,7 @@ function SearchResult(props) {
   return (
     <div className={!isSubmitted ? styles.SearchResult : styles.SearchResultSubmitted}>
 
-      <div className={styles.ImageParent}>
+      <div className={[styles.ImageParent, styles[searchResult.provider]].join(' ')}>
         <img src={imgUrl} alt={"Album Art"} />
       </div>
 

@@ -39,6 +39,8 @@
   display: inline-flex;
   align-items: center;
   justify-content: center;
+  box-shadow: 4px 4px 32px rgb(0 0 0 / 7.5%);
+  border-radius: 12px;
 }
 
 .ImageContainer > img {
@@ -159,4 +161,30 @@
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 .SubmitButton {
   display: none!important;
+}
+
+/* COLORS */
+.spotify {
+  background-color: rgba(29, 185, 84, 0.5);
+  box-shadow: 4px 4px 16px rgba(29, 185, 84, 0.5);
+}
+
+.apple_music {
+  background-color: rgba(251, 92, 116, 0.5);
+  box-shadow: 4px 4px 16px rgba(251, 92, 116, 0.5);
+}
+
+.youtube {
+  background-color: rgba(255, 0, 0, 0.5);
+  box-shadow: 4px 4px 16px rgba(255, 0, 0, 0.5);
+}
+
+.audius {
+  background-color: rgba(126, 27, 204, 0.5);
+  box-shadow: 4px 4px 16px rgba(126, 27, 204, 0.5);
+}
+
+.jukebox_radio {
+  background-color: rgba(0, 71, 255, 0.5);
+  box-shadow: 4px 4px 8px rgba(0, 71, 255, 0.5);
 }

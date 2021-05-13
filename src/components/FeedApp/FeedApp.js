@@ -144,7 +144,7 @@ function FeedApp(props) {
                           closeModal={closeModal} />
 
       <div className={styles.ContentContainer}>
-        <div className={styles.ImageContainer}>
+        <div className={[styles.ImageContainer, styles[stream.nowPlaying?.track?.service]].join(' ')}>
           <img alt="" src={stream.nowPlaying?.track?.imageUrl} />
         </div>
         <h5>
