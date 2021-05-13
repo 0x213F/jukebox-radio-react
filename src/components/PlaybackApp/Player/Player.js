@@ -62,7 +62,7 @@ function Player(props) {
         </div>
 
         <div className={styles.QueueItemCurrent}>
-          <div className={[styles.LargeImgContainer, styles[track.service]].join(' ')}>
+          <div className={[styles.LargeImgContainer, styles[track?.service]].join(' ')}>
             <img alt="" src={imageUrl} />
           </div>
           <div className={styles.PlaybackControls}>
