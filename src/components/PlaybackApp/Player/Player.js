@@ -4,7 +4,6 @@ import {
   getNextUpQueue,
   getLastUpQueue,
 } from '../../../components/QueueApp/utils';
-import ParentProgressBar from '../ParentProgressBar/ParentProgressBar';
 import { iconNextTrack, iconPrevTrack } from '../icons';
 import styles from './Player.module.css';
 
@@ -93,14 +92,6 @@ function Player(props) {
         </div>
       </div>
 
-      {stream?.nowPlaying && stream?.nowPlaying.track &&
-        <div className={styles.ProgressBarContainer}>
-          <ParentProgressBar queue={stream?.nowPlaying}
-                             stream={stream}
-                             mode={"player"}>
-          </ParentProgressBar>
-        </div>
-      }
     </div>
   );
 }

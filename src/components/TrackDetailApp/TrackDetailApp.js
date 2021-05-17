@@ -116,8 +116,8 @@ function TrackDetailApp(props) {
       <div className={styles.ModalContent}>
 
         <div className={styles.Preview}>
-          <div className={styles.PreviewImgContainer}>
-            <img className={[styles.PreviewImg, styles[queue.track.service]].join(' ')}
+          <div className={[styles.PreviewImgContainer, styles[queue.track.service]].join(' ')}>
+            <img className={styles.PreviewImg}
                  src={queue.track.imageUrl}
                  alt={"Album Art"} />
           </div>
@@ -135,11 +135,11 @@ function TrackDetailApp(props) {
         </div>
 
         <div className={styles.TabButtonContainer}>
-          <button className={styles.TabButton}
+          <button className={styles[tab === "markers" ? "TabButtonActive": "TabButton"]}
                   onClick={showMarkers}>
             Markers
           </button>
-          <button className={styles.TabButton}
+          <button className={styles[tab === "intervals" ? "TabButtonActive": "TabButton"]}
                   onClick={showIntervals}>
             Intervals
           </button>

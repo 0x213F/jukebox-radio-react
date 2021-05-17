@@ -15,7 +15,6 @@ function QueueTrack(props) {
 
   const [showModal, setShowModal] = useState(false);
   const [shouldOpenModal, setShouldOpenModal] = useState(false);
-  const [isHovering, setIsHovering] = useState(false);
 
   const initializeModal = function() {
     setShouldOpenModal(true);
@@ -29,15 +28,8 @@ function QueueTrack(props) {
     setShowModal(false);
   }
 
-  const onMouseEnter = function() {
-    setIsHovering(true);
-  }
-
-  const onMouseLeave = function() {
-    setIsHovering(false);
-  }
-
   const mainClass = queue.parentUuid ? "QueueTrackChild" : "QueueTrackHead",
+        infoClass = queue.parentUuid ? "QueueInformationChild" : "QueueInformationHead",
         buttonClass = queue.parentUuid ? "ButtonChild" : "ButtonHead";
         // infoClass = queue.parentUuid ? "TrackInfoContainerChild" : "TrackInfoContainerHead";
 
@@ -47,16 +39,14 @@ function QueueTrack(props) {
    * 🎨
    */
   return (
-    <div onMouseEnter={onMouseEnter}
-         onMouseLeave={onMouseLeave}
-         className={styles[mainClass]}>
+    <div className={styles[mainClass]}>
       {!queue.parentUuid &&
-        <div className={[styles.AlbumArtContainer, styles[isHovering && queue.track.service]].join(' ')}>
+        <div className={[styles.AlbumArtContainer, styles[queue.track.service]].join(' ')}>
           <img src={queue.track.imageUrl} alt={"Album Art"} />
         </div>
       }
 
-      <div className={styles.QueueInformation}>
+      <div className={styles[infoClass]}>
         <h5>{queue.track.name}</h5>
         {!queue.parentUuid && <h6>{queue.track.artistName}</h6>}
       </div>

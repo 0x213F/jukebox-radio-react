@@ -62,7 +62,9 @@ export const getProgress = function(stream) {
  *
  */
 export const updateSpotifyPlayer = function(playback, device_id) {
-  playback.spotifyApi.transferMyPlayback([device_id])
+  setTimeout(function() {
+    playback.spotifyApi.transferMyPlayback([device_id]);
+  }, 1000);
 }
 
 

@@ -6,7 +6,7 @@
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 .Top {
   width: 100%;
-  height: calc(100% - 102px);
+  height: calc(100% - 114px);
   position: absolute;
 }
 
@@ -33,7 +33,7 @@
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 .PrimaryContent {
   margin-left: 77px;
-  height: calc(100% - 104px);
+  height: calc(100% - 161px);
   width: calc(100% - 511px);  /* 67 + 67 + 300 + 57 */
   position: relative;
   float: left;
@@ -47,8 +47,7 @@
   padding: 40px;
   min-width: 300px;
   max-width: 300px;
-  border: 2px solid #0047FF;
-  border-radius: 10px;
+  box-shadow: 4px 4px 12px rgba(0, 0, 0, 0.15), inset 0px 0px 0px 1px #BCBCBC;
   position: relative;
   float: left;
   cursor: pointer;

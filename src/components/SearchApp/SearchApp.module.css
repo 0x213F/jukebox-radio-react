@@ -80,7 +80,7 @@
 }
 
 .SearchResultsContainer {
-  width: calc(100% + 12px);
+  width: calc(100% + 20px);
 }
 
 .SearchResultsContainer::-webkit-scrollbar {
@@ -91,7 +91,7 @@
   overflow-y: scroll;
   margin-top: 34px;
   padding-top: 42px;
-  height: calc(100vh - 403px);
+  height: calc(100vh - 475px);
 }
 
 .SearchResults::-webkit-scrollbar {
@@ -108,9 +108,9 @@
   background-image : linear-gradient(to bottom,
                     rgba(255,255,255, 1),
                     rgba(255,255,255, 0) 95%);
-  width: calc(100% + 12px);
+  width: calc(100% + 20px);
   height   : 42px;
-  top: 163px;
+  top: 164px;
 }
 
 .SearchResults:after {
@@ -120,10 +120,11 @@
   bottom   : 0;
   left     : 0;
   pointer-events   : none;
-  background-image : linear-gradient(to bottom,
-                    rgba(255,255,255, 0),
-                    rgba(255,255,255, 1) 95%);
-  width: calc(100% + 12px);
-  height   : 42px;
-  bottom: -9px;
+  background-image : linear-gradient(
+                       to bottom,
+                       rgba(255,255,255, 0),
+                       rgba(255,255,255, 1) 42px, rgba(255,255,255, 1) 100%);
+  width: calc(100% + 20px);
+  height   : 102px;
+  bottom: -21px;
 }

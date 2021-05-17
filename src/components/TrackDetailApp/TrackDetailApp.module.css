@@ -21,10 +21,13 @@
 }
 
 .PreviewImgContainer {
-  background-color: #FFD7D7;
+  background-color: #EAEAEA;
   width: 315px;
   height: 191px;
   padding: 20px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 
 .PreviewImg {
@@ -63,6 +66,20 @@
   font-weight: bold;
   margin-right: 25px;
   background-color: #FFF;
+  font-family: Raleway;
+  cursor: pointer;
+}
+
+.TabButtonActive {
+  width: 206px;
+  height: 35px;
+  border: 2px solid #0047FF;
+  border-radius: 35px;
+  color: #FFF;
+  font-size: 18px;
+  font-weight: bold;
+  margin-right: 25px;
+  background-color: #0047FF;
   font-family: Raleway;
   cursor: pointer;
 }
@@ -191,4 +208,26 @@
 .ProgressBar {
   margin-top: 60px;
   width: 100%;
+  position: relative;
+}
+
+/* COLORS */
+.spotify {
+  border: 1px solid rgba(29, 185, 84, 1);
+}
+
+.apple_music {
+  border: 1px solid rgba(251, 92, 116, 1);
+}
+
+.youtube {
+  border: 1px solid rgba(255, 0, 0, 1);
+}
+
+.audius {
+  border: 1px solid rgba(126, 27, 204, 1);
+}
+
+.jukebox_radio {
+  border: 1px solid rgba(0, 71, 255, 1);
 }

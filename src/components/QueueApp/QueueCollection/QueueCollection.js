@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { connect } from 'react-redux'
 import styles from './QueueCollection.module.css';
 import QueueTrack from '../QueueTrack/QueueTrack';
-import { iconExpand, iconCollapse, iconRemove } from '../icons';
+import { iconExpand, iconCollapse, iconRemove, iconCollapseDisabled, iconRemoveDisabled } from '../icons';
 
 
 function QueueCollection(props) {
@@ -30,6 +30,9 @@ function QueueCollection(props) {
    * When...
    */
   const toggleReveal = function(e) {
+    if(isCurrentlyPlayingCollection) {
+      return;
+    }
     setReveal(!reveal);
   }
 
@@ -50,12 +53,26 @@ function QueueCollection(props) {
         </div>
 
         <div className={styles.ButtonContainer}>
-          <button type="button" onClick={toggleReveal}>
-            {reveal ? iconCollapse: iconExpand}
-          </button>
-          <button type="button" onClick={async (e) => { await props.destroy(queue); }}>
-            {iconRemove}
-          </button>
+          {!isCurrentlyPlayingCollection &&
+            <>
+              <button type="button" onClick={toggleReveal}>
+                {reveal ? iconCollapse: iconExpand}
+              </button>
+              <button type="button" onClick={async (e) => { await props.destroy(queue); }}>
+                {iconRemove}
+              </button>
+            </>
+          }
+          {isCurrentlyPlayingCollection &&
+            <>
+              <button type="button" disabled style={{cursor: "not-allowed"}}>
+                {iconCollapseDisabled}
+              </button>
+              <button type="button" disabled style={{cursor: "not-allowed"}}>
+                {iconRemoveDisabled}
+              </button>
+            </>
+          }
         </div>
       </div>
 

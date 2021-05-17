@@ -5,7 +5,8 @@
   margin-bottom: 14px;
   display: inline-flex;
   align-items: center;
-  width: calc(100% - 12px);
+  width: calc(100% - 20px);
+  margin-left: 8px;
 }
 
 .SearchResult:last-child {
@@ -28,8 +29,8 @@
 }
 
 .ImageParent {
-  width: 64px;
-  height: 48px;
+  width: 62px;
+  height: 46px;
 
   display: inline-block;
   float: left;
@@ -39,19 +40,20 @@
   align-items: center;
   justify-content: center;
 
-  background-color: #EAEAEA;
+  background-color: #FFF;
   /* border-radius: 6px; */
 }
 
 .ImageParent > img {
-  height: 32px;
+  max-height: 48px;
+  max-width: 64px;
 }
 
 .ResultInformation {
   display: inline-block;
   float: left;
   height: 48px;
-  margin-left: 34px;
+  margin-left: 32px;
   width: calc(100% - 291px);
 }
 
@@ -176,22 +178,22 @@
 }
 
 /* COLORS */
-.spotify {
-  /* background-color: rgba(29, 185, 84, 0.5); */
+/* .spotify {
+  border: 1px solid rgba(29, 185, 84, 1);
 }
 
 .apple_music {
-  /* background-color: rgba(251, 92, 116, 0.5); */
+  border: 1px solid rgba(251, 92, 116, 1);
 }
 
 .youtube {
-  /* background-color: rgba(255, 0, 0, 0.5); */
+  border: 1px solid rgba(255, 0, 0, 1);
 }
 
 .audius {
-  /* background-color: rgba(126, 27, 204, 0.5); */
+  border: 1px solid rgba(126, 27, 204, 1);
 }
 
 .jukebox_radio {
-  /* background-color: rgba(0, 71, 255, 0.5); */
-}
+  border: 1px solid rgba(0, 71, 255, 1);
+} */

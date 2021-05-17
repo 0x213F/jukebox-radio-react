@@ -3,10 +3,8 @@ import React, { useState } from "react";
 import { connect } from 'react-redux';
 import { Link } from "react-router-dom";
 
-import UserSettings from '../../UserSettings/UserSettings'
-
 import styles from './SideBar.module.css';
-import { iconLogo, iconGear } from './icons';
+import { iconLogo } from './icons';
 
 
 function SideBar(props) {
@@ -16,23 +14,8 @@ function SideBar(props) {
    */
   const sideBar = props.sideBar;
 
-  const [showModal, setShowModal] = useState(false);
   // eslint-disable-next-line
   const [counter, setCounter] = useState(0);
-
-  /*
-   * Opens the "User Settings" modal.
-   */
-  const openModal = function() {
-    setShowModal(true);
-  }
-
-  /*
-   * Closes the "User Settings" modal.
-   */
-  const closeModal = function() {
-    setShowModal(false);
-  }
 
   /*
    * Switches the active tab, updating styles in the side bar.
@@ -89,13 +72,6 @@ function SideBar(props) {
         </ul>
       </div>
 
-      <div className={styles.Settings}>
-        <button onClick={openModal}>
-          {iconGear}
-        </button>
-      </div>
-      <UserSettings isOpen={showModal}
-                    closeModal={closeModal} />
     </div>
   );
 }

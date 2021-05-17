@@ -7,8 +7,6 @@
 
   display: flex;
   align-items: center;
-
-  z-index: 2;
 }
 
 .Logo {
@@ -58,23 +56,6 @@
 
 .Menu > li > a {
   text-decoration: none;
-}
-
-/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
-.Settings {
-  position: absolute;
-  height: 24px;
-  left: 81.5px;
-  bottom: 38px;
-}
-
-.Settings > button {
-  border: none;
-  background-color: #FFF;
-  padding: 0;
-  width: 24px;
-  height: 24px;
-  cursor: pointer;
 }
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */

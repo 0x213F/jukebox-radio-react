@@ -3,8 +3,9 @@
   box-shadow: 4px 4px 12px rgba(0, 0, 0, 0.15), inset 0px 0px 0px 1px #EAEAEA;
   display: inline-flex;
   align-items: center;
-  width: calc(100% - 12px);
+  width: calc(100% - 20px);
   margin-bottom: 14px;
+  margin-left: 8px;
 }
 
 .QueueTrackChild {
@@ -14,14 +15,18 @@
   padding-left: 100px;
 }
 
+.QueueTrackChild:first-child {
+  margin-top: 4px;
+}
+
 .QueueTrackChild:last-child {
-  margin-bottom: 14px;
+  padding-bottom: 8px;
 }
 
 /* ALBUM ART */
 .AlbumArtContainer {
-  width: 64px;
-  height: 48px;
+  width: 62px;
+  height: 46px;
 
   display: inline-block;
   float: left;
@@ -31,16 +36,18 @@
   align-items: center;
   justify-content: center;
 
-  background-color: #EAEAEA;
+  background-color: #FFF;
   /* border-radius: 6px; */
 }
 
 .AlbumArtContainer > img {
-  height: 32px;
+  max-height: 48px;
+  max-width: 64px;
 }
 
 /* TRACK INFO */
-.QueueInformation {
+.QueueInformationHead,
+.QueueInformationChild {
   display: inline-block;
   float: left;
   height: 48px;
@@ -48,7 +55,12 @@
   width: calc(100% - 400px);
 }
 
-.QueueInformation > h5 {
+.QueueInformationChild {
+  margin-left: 22px;
+}
+
+.QueueInformationHead > h5,
+.QueueInformationChild > h5 {
   margin: 0;
   font-style: normal;
   font-weight: 500;
@@ -61,7 +73,12 @@
   text-overflow: ellipsis;
 }
 
-.QueueInformation > h6 {
+.QueueInformationChild > h5 {
+  margin-top: 12px;
+}
+
+.QueueInformationHead > h6,
+.QueueInformationChild > h6 {
   margin: 0;
   font-style: normal;
   font-weight: 500;
@@ -120,22 +137,22 @@
 
 
 /* COLORS */
-.spotify {
-  /* background-color: rgba(29, 185, 84, 0.5); */
+/* .spotify {
+  border: 1px solid rgba(29, 185, 84, 1);
 }
 
 .apple_music {
-  /* background-color: rgba(251, 92, 116, 0.5); */
+  border: 1px solid rgba(251, 92, 116, 1);
 }
 
 .youtube {
-  /* background-color: rgba(255, 0, 0, 0.5); */
+  border: 1px solid rgba(255, 0, 0, 1);
 }
 
 .audius {
-  /* background-color: rgba(126, 27, 204, 0.5); */
+  border: 1px solid rgba(126, 27, 204, 1);
 }
 
 .jukebox_radio {
-  /* background-color: rgba(0, 71, 255, 0.5); */
-}
+  border: 1px solid rgba(0, 71, 255, 1);
+} */

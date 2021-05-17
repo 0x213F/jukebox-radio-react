@@ -446,11 +446,13 @@ function PlaybackApp(props) {
               type: 'user/get-settings',
               userSettings: responseJson.data,
             });
+            console.log(responseJson.data.spotify.accessToken)
 
             // Initialize the Spotify player (conditionally).
             const spotifyAccessToken = responseJson.data.spotify.accessToken;
             if(spotifyAccessToken) {
               const spotifyApi = new SpotifyWebApi();
+              console.log('!!!')
               spotifyApi.setAccessToken(responseJson.data.spotify.accessToken);
               props.dispatch({
                 type: 'playback/spotify',

@@ -18,8 +18,7 @@ export const iconErase = (
 );
 
 export const iconPlay = (
-  <svg width="24" height="24" viewBox="0 0 26 26" fill="none" xmlns="http://www.w3.org/2000/svg">
-    <path d="M13 25C19.6274 25 25 19.6274 25 13C25 6.37258 19.6274 1 13 1C6.37258 1 1 6.37258 1 13C1 19.6274 6.37258 25 13 25Z" stroke="#E9E9E9" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
-    <path d="M11 8L18 13L11 18V8Z" stroke="black" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+  <svg width="10" height="12" viewBox="0 0 10 12" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <path d="M1 1L8.6 6L1 11V1Z" stroke="black" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
   </svg>
 );

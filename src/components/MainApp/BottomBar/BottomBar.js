@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 
 import { connect } from 'react-redux';
 import { CircularProgressbarWithChildren, buildStyles } from 'react-circular-progressbar';
@@ -6,11 +6,14 @@ import 'react-circular-progressbar/dist/styles.css';
 
 import { cycleVolumeLevel } from '../../PlaybackApp/utils';
 import { playbackChangeVolume } from '../../PlaybackApp/controls';
+import ParentProgressBar from '../../PlaybackApp/ParentProgressBar/ParentProgressBar';
 import { iconSpotify, iconYouTube, iconAppleMusic, iconLogoAlt, iconAudius } from '../../../icons';
 import { SERVICE_SPOTIFY, SERVICE_YOUTUBE, SERVICE_APPLE_MUSIC, SERVICE_JUKEBOX_RADIO, SERVICE_AUDIUS } from '../../../config/services';
+import UserSettings from '../../UserSettings/UserSettings'
 
 import styles from './BottomBar.module.css';
 import {
+  iconGear,
   iconScanForward,
   iconScanBackward,
   iconPlayCircle,
@@ -35,6 +38,22 @@ function BottomBar(props) {
         ),
         playPauseDisabled = !playback.controlsEnabled,
         nowPlayingTrackService = stream.nowPlaying?.track?.service;
+
+  const [showModal, setShowModal] = useState(false);
+
+  /*
+   * Opens the "User Settings" modal.
+   */
+  const openModal = function() {
+    setShowModal(true);
+  }
+
+  /*
+   * Closes the "User Settings" modal.
+   */
+  const closeModal = function() {
+    setShowModal(false);
+  }
 
   let serviceSvg;
   if(nowPlayingTrackService === SERVICE_SPOTIFY) {
@@ -93,25 +112,39 @@ function BottomBar(props) {
   return (
     <div className={styles.BottomBar}>
 
-      <div className={styles.Volume}>
-        <button onClick={handleCycleVolumeLevel}>
-          <CircularProgressbarWithChildren
-                value={audioVolumeLevel * 100}
-                circleRatio={0.75}
-                strokeWidth={3}
-                styles={buildStyles({
-                  rotation: 1 / 2 + 1 / 8,
-                  strokeLinecap: "butt",
-                  pathColor: "#0047FF",
-                  trailColor: "#EAEAEA",
-                  pathTransitionDuration: 0.15,
-                })} >
-            <div className={styles.IconContainer}>
-              {serviceSvg}
-            </div>
-          </CircularProgressbarWithChildren>
+      <div className={styles.ProgressBarContainer}>
+        <ParentProgressBar queue={stream?.nowPlaying}
+                           stream={stream}
+                           mode={"player"}
+                           playbackControls={props.playbackControls}>
+        </ParentProgressBar>
+      </div>
+
+      <div className={styles.Settings}>
+        <button onClick={openModal}>
+          {iconGear}
         </button>
       </div>
+      <UserSettings isOpen={showModal}
+                    closeModal={closeModal} />
+
+      <button className={styles.Volume} onClick={handleCycleVolumeLevel}>
+        <CircularProgressbarWithChildren
+              value={audioVolumeLevel * 100}
+              circleRatio={0.75}
+              strokeWidth={3}
+              styles={buildStyles({
+                rotation: 1 / 2 + 1 / 8,
+                strokeLinecap: "butt",
+                pathColor: "#0047FF",
+                trailColor: "#EAEAEA",
+                pathTransitionDuration: 0.15,
+              })} >
+          <div className={styles.IconContainer}>
+            {serviceSvg}
+          </div>
+        </CircularProgressbarWithChildren>
+      </button>
 
       <div className={styles.Playback}>
         <button onClick={() => { handleSeek('backward'); }}

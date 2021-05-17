@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { connect } from 'react-redux';
 import styles from './ChildProgressBar.module.css';
-import { iconUpTriangle, iconTrash } from '../icons';
+import { iconMarker, iconTrash } from '../icons';
 import { fetchStreamQueueIntervalDelete } from '../../TrackDetailApp/Interval/network';
 
 
@@ -58,7 +58,7 @@ function ChildProgressBar(props) {
       {editable && hovering &&
         <div className={styles.ProgressHoverContainer}>
           <div className={styles.ProgressHoverPointer}>
-            {iconUpTriangle}
+            {iconMarker}
           </div>
 
           <div className={styles.HoverContainer}>

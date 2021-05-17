@@ -4,14 +4,14 @@ import styles from './ParentProgressBar.module.css';
 import { getPositionMilliseconds } from '../utils';
 import ChildProgressBar from '../ChildProgressBar/ChildProgressBar';
 import ProgressBarMarker from '../ProgressBarMarker/ProgressBarMarker';
-import { iconDownTriangle } from '../icons';
+import { iconSmallCircle } from '../icons';
 
 
 function ParentProgressBar(props) {
 
   const queue = props.queue,
         mode = props.mode,
-        allIntervals = queue.allIntervals,
+        allIntervals = queue?.allIntervals || [],
         duration = queue?.track?.durationMilliseconds || 0;
 
   let position, pointerLeftDistance;
@@ -28,13 +28,22 @@ function ParentProgressBar(props) {
   }
 
   const trackMarkerMap = props.trackMarkerMap,
-        markers = trackMarkerMap[queue.uuid] || [];
+        markers = trackMarkerMap[queue?.uuid] || [];
 
-  let runningMark = 11;
+  let runningMark = 6;
   for(let i=0; i < markers.length; i++) {
     let pix = markers[i].timestampMilliseconds / duration * 100;
     markers[i].styleLeft = `calc(${pix}% - ${runningMark}px)`;
-    runningMark += 22;
+    runningMark += 12;
+
+    if(markers[i].timestampMilliseconds < position) {
+      markers[i].forceDisplay = true;
+      if(i !== 0) {
+        markers[i - 1].forceDisplay = false;
+      }
+    } else {
+      markers[i].forceDisplay = false;
+    }
   }
 
   //////////////////////////////////////////////////////////////////////////////
@@ -45,7 +54,7 @@ function ParentProgressBar(props) {
 
     const periodicTask = setInterval(() => {
       setCounter(prev => prev + 1);
-    }, 50);
+    }, 15);
 
     return () => {
       clearInterval(periodicTask);
@@ -58,8 +67,8 @@ function ParentProgressBar(props) {
     <div className={styles.ParentProgressBar}>
       {mode === "player" &&
         <div className={styles.ProgressPointer}
-             style={{left: `calc(${pointerLeftDistance}% - 11px)`}}>
-          {iconDownTriangle}
+             style={{left: `calc(${pointerLeftDistance}% - 6px)`}}>
+          {iconSmallCircle}
         </div>
       }
       <div className={styles.ProgressBar}>
@@ -80,7 +89,10 @@ function ParentProgressBar(props) {
             return <ProgressBarMarker key={marker.uuid}
                                       marker={marker}
                                       queueUuid={queue.uuid}
-                                      editable={mode === "markers"} />;
+                                      forceDisplay={marker.forceDisplay}
+                                      editable={mode === "markers"}
+                                      playable={mode === "player"}
+                                      playbackControls={props.playbackControls} />;
           })}
         </div>
       }

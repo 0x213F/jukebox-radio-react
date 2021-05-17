@@ -1,10 +1,10 @@
 .QueueApp {
   overflow-y: scroll;
   height: 100%;
-  padding-top: 42px;
-  top: -42px;
+  padding-top: 50px;
+  top: -50px;
   position: relative;
-  width: calc(100% + 12px);
+  width: calc(100% + 20px);
 }
 
 .QueueApp::-webkit-scrollbar {
@@ -12,6 +12,32 @@
 }
 
 .QueueApp:before {
+  content: "";
+  position: fixed;
+  z-index: 24;
+  pointer-events: none;
+  background-image: linear-gradient(to bottom, rgba(255,255,255, 1), rgba(255,255,255, 0) 95%);
+  width: calc(100% + 12px);
+  height: 42px;
+  top: 45px;
+}
+
+.QueueApp:after {
+  content  : "";
+  position : fixed;
+  z-index  : 1;
+  bottom   : 114px;
+  left     : 0;
+  pointer-events   : none;
+  background-image : linear-gradient(
+                       to bottom,
+                       rgba(255,255,255, 0),
+                       rgba(255,255,255, 1) 42px, rgba(255,255,255, 1) 100%);
+  width: calc(100% + 12px);
+  height   : 102px;
+}
+
+/* .QueueApp:before {
   content  : "";
   position : fixed;
   z-index  : 1;
@@ -28,16 +54,17 @@
 .QueueApp:after {
   content  : "";
   position : fixed;
-  z-index  : 1;
+  z-index  : 2;
   left     : 0;
   pointer-events   : none;
-  background-image : linear-gradient(to bottom,
-                    rgba(255,255,255, 0),
-                    rgba(255,255,255, 1) 95%);
+  background-image : linear-gradient(
+                       to bottom,
+                       rgba(255,255,255, 0),
+                       rgba(255,255,255, 1) 50%, rgba(255,255,255, 1) 100%);
   width: calc(100% + 12px);
-  height   : 42px;
-  bottom: 111px;
-}
+  height   : 84px;
+  bottom: -62px;
+} */
 
 .PlaybackDuration {
   display: inline-block;
