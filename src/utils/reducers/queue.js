@@ -13,7 +13,7 @@ export const finalizeQueue = function(queue) {
   if(copy.children.length) {
     const editedChildren = copy.children.map(finalizeQueue),
           totalDurationMilliseconds = editedChildren.reduce((total, q) => (
-            total + q.durationMilliseconds
+            total + q.totalDurationMilliseconds
           ), 0);
     copy.children = editedChildren;
     copy.totalDurationMilliseconds = totalDurationMilliseconds;

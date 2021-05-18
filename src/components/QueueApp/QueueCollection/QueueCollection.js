@@ -3,6 +3,7 @@ import { connect } from 'react-redux'
 import styles from './QueueCollection.module.css';
 import QueueTrack from '../QueueTrack/QueueTrack';
 import { iconExpand, iconCollapse, iconRemove, iconCollapseDisabled, iconRemoveDisabled } from '../icons';
+import { durationPretty } from '../utils';
 
 
 function QueueCollection(props) {
@@ -50,6 +51,10 @@ function QueueCollection(props) {
         <div className={styles.QueueInformation}>
           <h5>{queue.collection.name}</h5>
           <h6>{queue.collection.artistName}</h6>
+        </div>
+
+        <div className={styles.DurationContainer}>
+          {durationPretty(queue.totalDurationMilliseconds)}
         </div>
 
         <div className={styles.ButtonContainer}>

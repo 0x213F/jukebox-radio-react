@@ -52,11 +52,12 @@
   float: left;
   height: 48px;
   margin-left: 34px;
-  width: calc(100% - 400px);
+  width: calc(100% - 362px);
 }
 
 .QueueInformationChild {
   margin-left: 22px;
+  width: calc(100% - 262px);
 }
 
 .QueueInformationHead > h5,
@@ -99,9 +100,6 @@
 }
 
 .ButtonContainer {
-  margin-left: auto;
-  margin-right: 26px;
-
   display: inline-block;
   float: right;
   margin-right: 26px;
@@ -133,6 +131,39 @@
   margin: 9px;
   margin-left: 26px;
   margin-right: 0px;
+}
+
+.DurationContainerChild {
+  margin-left: auto;
+  margin-right: auto;
+
+  font-family: Raleway;
+  font-style: normal;
+  font-weight: 500;
+  font-size: 16px;
+  color: #BCBCBC;
+
+  display: inline-block;
+  float: left;
+  cursor: default;
+  height: 48px;
+  line-height: 48px;
+  margin-left: 30px;
+}
+
+.DurationContainerHead {
+  margin-left: auto;
+  margin-right: auto;
+
+  font-family: Raleway;
+  font-style: normal;
+  font-weight: 500;
+  font-size: 16px;
+  color: #BCBCBC;
+
+  display: inline-block;
+  cursor: default;
+  float: right;
 }
 
 

@@ -7,17 +7,17 @@
 
 .QueueCollectionMain {
   width: 100%;
-  display: block;
   height: 84px;
+  display: inline-flex;
+  align-items: center;
 }
 
 .AlbumArtContainer {
   width: 62px;
-  height: 46px;
+  height: 48px;
 
   display: inline-block;
   float: left;
-  margin-top: 18px;
   margin-left: 26px;
 
   display: inline-flex;
@@ -38,8 +38,8 @@
   float: left;
   height: 48px;
   margin-left: 34px;
-  margin-top: 19px;
-  width: calc(100% - 400px);
+  margin-top: 2px;
+  width: calc(100% - 362px);
 }
 
 .QueueInformation > h5 {
@@ -71,7 +71,7 @@
 .ButtonContainer {
   display: inline-block;
   float: right;
-  margin-top: 26px;
+  margin-top: 5.5px;
   margin-right: 26px;
 }
 
@@ -88,6 +88,21 @@
   justify-content: center;
 
   cursor: pointer;
+}
+
+.DurationContainer {
+  margin-left: auto;
+  margin-right: auto;
+
+  font-family: Raleway;
+  font-style: normal;
+  font-weight: 500;
+  font-size: 16px;
+  color: #BCBCBC;
+
+  display: inline-block;
+  float: right;
+  cursor: default;
 }
 
 /* COLORS */

@@ -17,7 +17,7 @@
     "react-redux": "^7.2.2",
     "react-rough-notation": "^1.0.1",
     "react-router-dom": "^5.2.0",
-    "react-scripts": "4.0.1",
+    "react-scripts": "^4.0.1",
     "react-speech-recognition": "^3.6.0",
     "react-text-selection-popover": "^1.3.2",
     "react-time-ago": "^6.2.2",
