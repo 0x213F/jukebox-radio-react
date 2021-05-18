@@ -277,7 +277,7 @@ function PlaybackApp(props) {
         "payload": {
           "id": nextUp.track.externalId,
           "trackUuid": nextUp.track.uuid,
-        }
+        },
       });
     }
     const responseJsonNextTrack = await fetchNextTrack(
@@ -373,9 +373,23 @@ function PlaybackApp(props) {
   /*
    * Toggling the player from the "paused" to "playing" state.
    */
-  const play = async function() {
+  const play = async function(timestampMilliseconds = undefined) {
+
+
+    let startedAt;
+    if(timestampMilliseconds === undefined) {
+      startedAt = undefined;
+    } else {
+      const date = new Date(),
+            epochNow = date.getTime();
+      startedAt = epochNow - timestampMilliseconds;
+    }
+
     await props.dispatch({ type: 'playback/disable' });
-    const jsonResponse = await fetchPlayTrack();
+    const jsonResponse = await fetchPlayTrack(
+      startedAt,
+      stream.nowPlaying.totalDurationMilliseconds,
+    );
     await props.dispatch(jsonResponse.redux);
 
     // When page loads with the player in the "paused" state and then the user

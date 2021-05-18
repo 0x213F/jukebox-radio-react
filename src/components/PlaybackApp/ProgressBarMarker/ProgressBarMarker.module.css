@@ -5,13 +5,23 @@
   padding: 10px 5px 0 5px;
 }
 
-.ProgressBarMarkerPointer {
+.ProgressBarMarkerPointer,
+.ProgressBarMarkerPointerGrey {
   height: 10px;
   width: 2px;
   background-color: #0047FF;
 }
 
-.ProgressBarMarkerPointerExtension {
+.ProgressBarMarkerPointerGrey {
+  background-color: #BCBCBC;
+}
+
+.ProgressBarMarkerPointerExtensionGrey > svg > path {
+  fill: #BCBCBC;
+}
+
+.ProgressBarMarkerPointerExtension,
+.ProgressBarMarkerPointerExtensionGrey {
   position: relative;
   top: -15px;
   display: inline-block;

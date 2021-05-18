@@ -3,7 +3,6 @@ import { connect } from 'react-redux';
 import Modal from 'react-modal';
 import {
   fetchStreamMarkerCreate,
-  fetchStreamMarkerList,
 } from './Marker/network';
 import {
   fetchStreamQueueIntervalCreate,
@@ -29,8 +28,12 @@ function TrackDetailApp(props) {
         openModal = props.openModal,
         closeModal = props.closeModal,
         // Redux
-        trackMarkerMap = props.trackMarkerMap,
-        markers = trackMarkerMap[queueUuid] || [];
+        markerMap = props.markerMap,
+        markers = Object.values(markerMap[queue.track.uuid] || []).sort((a, b) => {
+          return a.timestampMilliseconds - b.timestampMilliseconds;
+        });
+
+  console.log(markerMap)
 
   const [tab, setTab] = useState('markers'),
         [formMarkerTimestamp, setFormMarkerTimestamp] = useState(''),
@@ -70,18 +73,11 @@ function TrackDetailApp(props) {
   ////////////////////////////////////////////////////////
   // load markers that need to be displayed in the modal
   useEffect(() => {
-    async function loadData() {
-      const responseJson = await fetchStreamMarkerList(
-        queue.track.uuid, queueUuid
-      );
-      await props.dispatch(responseJson.redux);
-      openModal();
-    }
     if(!shouldOpenModal) {
       return;
     }
     setShouldOpenModal(false);
-    loadData();
+    openModal();
   // eslint-disable-next-line
   }, [shouldOpenModal])
 
@@ -229,7 +225,7 @@ function TrackDetailApp(props) {
 }
 
 const mapStateToProps = (state) => ({
-  trackMarkerMap: state.trackMarkerMap,
+  markerMap: state.markerMap,
   stream: state.stream,
 });
 

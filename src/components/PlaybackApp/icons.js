@@ -11,7 +11,7 @@ export const iconPrevTrack = (
     <path d="M10 15L1 8L10 1V15Z" stroke="#0047FF" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
     <path d="M21 15L12 8L21 1V15Z" stroke="#0047FF" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
   </svg>
-)
+);
 
 
 

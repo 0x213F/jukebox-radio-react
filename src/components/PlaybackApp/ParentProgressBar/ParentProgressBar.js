@@ -11,14 +11,14 @@ function ParentProgressBar(props) {
 
   const queue = props.queue,
         mode = props.mode,
+        stream = props.stream,
         allIntervals = queue?.allIntervals || [],
         duration = queue?.track?.durationMilliseconds || 0;
 
   let position, pointerLeftDistance;
   if(mode === "player") {
     try {
-      const stream = props.stream,
-            arr = getPositionMilliseconds(stream, stream.startedAt);
+      const arr = getPositionMilliseconds(stream, stream.startedAt);
       position = arr[0];
       pointerLeftDistance = (position / duration) * 100;
     } catch (e) {
@@ -27,8 +27,10 @@ function ParentProgressBar(props) {
     }
   }
 
-  const trackMarkerMap = props.trackMarkerMap,
-        markers = trackMarkerMap[queue?.uuid] || [];
+  const markerMap = props.markerMap,
+        markers = Object.values(markerMap[queue?.track?.uuid] || []).sort((a, b) => {
+          return a.timestampMilliseconds - b.timestampMilliseconds;
+        });
 
   let runningMark = 6;
   for(let i=0; i < markers.length; i++) {
@@ -36,13 +38,56 @@ function ParentProgressBar(props) {
     markers[i].styleLeft = `calc(${pix}% - ${runningMark}px)`;
     runningMark += 12;
 
-    if(markers[i].timestampMilliseconds < position) {
-      markers[i].forceDisplay = true;
-      if(i !== 0) {
-        markers[i - 1].forceDisplay = false;
+    if(mode === "player") {
+
+      // Force display contextual marker
+      if(markers[i].timestampMilliseconds < position) {
+        markers[i].forceDisplay = true;
+        if(i !== 0) {
+          markers[i - 1].forceDisplay = false;
+        }
+      } else {
+        markers[i].forceDisplay = false;
       }
-    } else {
-      markers[i].forceDisplay = false;
+
+      // Allow "stop"
+      if(markers[i].timestampMilliseconds > position + 5000) {
+        markers[i].stoppable = true;
+      } else {
+        markers[i].stoppable = false;
+      }
+    }
+
+    // Change styles for markers that are "not playable"
+    if(mode === "player") {
+      for(let j=0; j < stream.nowPlaying.allIntervals.length; j++) {
+        const interval = stream.nowPlaying.allIntervals[j],
+              notPlayable = (
+                interval.purpose === 'muted' &&
+                interval.startPosition <= markers[i].timestampMilliseconds &&
+                interval.endPosition > markers[i].timestampMilliseconds
+              );
+
+        markers[i].playable = true;
+        if(notPlayable) {
+          markers[i].playable = false;
+
+          // If this is the end of the song, do not allow "stop"
+          const playbackIntervals = stream.nowPlaying.playbackIntervals,
+                endPosition = playbackIntervals[playbackIntervals.length - 1].endPosition,
+                forceStoppable = (
+                  markers[i].timestampMilliseconds === endPosition ||
+                  (
+                    interval.startPosition < markers[i].timestampMilliseconds &&
+                    interval.endPosition > markers[i].timestampMilliseconds
+                  )
+                );
+          if(forceStoppable) {
+            markers[i].stoppable = false;
+          }
+          break;
+        }
+      }
     }
   }
 
@@ -54,7 +99,7 @@ function ParentProgressBar(props) {
 
     const periodicTask = setInterval(() => {
       setCounter(prev => prev + 1);
-    }, 15);
+    }, 50);
 
     return () => {
       clearInterval(periodicTask);
@@ -91,7 +136,8 @@ function ParentProgressBar(props) {
                                       queueUuid={queue.uuid}
                                       forceDisplay={marker.forceDisplay}
                                       editable={mode === "markers"}
-                                      playable={mode === "player"}
+                                      playable={marker.playable}
+                                      stoppable={marker.stoppable}
                                       playbackControls={props.playbackControls} />;
           })}
         </div>
@@ -101,7 +147,7 @@ function ParentProgressBar(props) {
 }
 
 const mapStateToProps = (state) => ({
-  trackMarkerMap: state.trackMarkerMap,
+  markerMap: state.markerMap,
 });
 
 

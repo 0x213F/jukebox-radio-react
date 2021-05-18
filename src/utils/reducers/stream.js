@@ -1,4 +1,22 @@
- import { finalizeQueue } from './queue';
+import { finalizeQueue } from './queue';
+
+
+export const streamSetWrapper = function(state, payload) {
+  const stream = payload.stream,
+        obj = { ...state };
+
+  // Gotta update the marker map
+  const markerMap = { ...state.markerMap };
+  if(markerMap[stream.nowPlaying.track.uuid] === undefined || markerMap[stream.nowPlaying.track.uuid].length === 0) {
+    markerMap[stream.nowPlaying.track.uuid] = {};
+  }
+  for(const marker of stream.nowPlaying.markers) {
+    markerMap[stream.nowPlaying.track.uuid][marker.uuid] = marker;
+  }
+  obj.markerMap = markerMap;
+
+  return streamSet(obj, payload);
+}
 
 
 /*

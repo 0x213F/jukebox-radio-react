@@ -55,7 +55,11 @@ function TextComment(props) {
   }
 
   const handleSeek = function() {
-    props.seek(textComment.timestampMilliseconds);
+    if(stream.isPaused) {
+      props.playbackControls.play(textComment.timestampMilliseconds);
+    } else {
+      props.playbackControls.seek(textComment.timestampMilliseconds);
+    }
   }
 
   // TODO: change styles with a class instead of injecting CSS

@@ -3,7 +3,6 @@ import { feedUpdate } from './reducers/feed';
 import {
   markerCreate,
   markerDelete,
-  markerList,
 } from './reducers/marker';
 import {
   playbackAppleMusic,
@@ -33,7 +32,7 @@ import {
   queueIntervalDelete,
 } from './reducers/queueInterval';
 import {
-  streamSet,
+  streamSetWrapper,
   streamPlay,
   streamPause,
   streamPrevTrack,
@@ -70,7 +69,7 @@ const initialState = {
   voiceRecordings: [],
   feed: [],
   userSettings: undefined,
-  trackMarkerMap: {},
+  markerMap: {},
   playback: {
     controlsEnabled: false,
     spotifyApi: undefined,
@@ -131,7 +130,7 @@ const reducer = (state = initialState, action) => {
     ////////////////////////////////////////////////////////////////////////////
     // STREAM
     case "stream/set":
-      return streamSet(state, action.payload);
+      return streamSetWrapper(state, action.payload);
     case "stream/play":
       return streamPlay(state, action.payload);
     case "stream/pause":
@@ -184,8 +183,6 @@ const reducer = (state = initialState, action) => {
       return markerCreate(state, action.payload);
     case "marker/delete":
       return markerDelete(state, action.payload);
-    case "marker/list":
-      return markerList(state, action.payload);
     ////////////////////////////////////////////////////////////////////////////
     // QUEUE INTERVAL
     case "queueInterval/create":

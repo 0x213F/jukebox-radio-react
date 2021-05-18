@@ -50,8 +50,8 @@ export const ENDPOINT_STREAM_SCAN = '/streams/stream/scan/'
 // MARKER
 export const ENDPOINT_MARKER_CREATE = '/streams/marker/create/'
 export const ENDPOINT_MARKER_DELETE = '/streams/marker/delete/'
-export const ENDPOINT_MARKER_LIST = '/streams/marker/list'
 
 // QUEUE INTERVAL
 export const ENDPOINT_QUEUE_INTERVAL_CREATE = '/streams/queue-interval/create/'
 export const ENDPOINT_QUEUE_INTERVAL_DELETE = '/streams/queue-interval/delete/'
+export const ENDPOINT_QUEUE_INTERVAL_STOP = '/streams/queue-interval/stop/'

@@ -44,6 +44,29 @@ export const getPositionMilliseconds = function(stream, startedAt) {
 }
 
 
+export const getProgressMilliseconds = function(stream, position) {
+  if(!stream.nowPlaying) {
+    return undefined;
+  }
+
+  let progress = 0,
+      playbackIntervalIdx = 0,
+      cumulativeProgress = 0;
+  while(true) {
+    const playbackInterval = stream.nowPlaying.playbackIntervals[playbackIntervalIdx],
+          playbackIntervalDuration = playbackInterval.endPosition - playbackInterval.startPosition;
+    if(position >= playbackInterval.startPosition && position < playbackInterval.endPosition) {
+      progress = position - playbackInterval.startPosition + cumulativeProgress;
+      break;
+    }
+    playbackIntervalIdx += 1;
+    cumulativeProgress += playbackIntervalDuration;
+  }
+  console.log(progress)
+  return progress;
+}
+
+
 /*
  * Get the progress of a stream.
  */

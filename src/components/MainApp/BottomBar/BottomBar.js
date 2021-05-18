@@ -6,6 +6,7 @@ import 'react-circular-progressbar/dist/styles.css';
 
 import { cycleVolumeLevel } from '../../PlaybackApp/utils';
 import { playbackChangeVolume } from '../../PlaybackApp/controls';
+import { iconNextTrack, iconPrevTrack } from '../../PlaybackApp/icons';
 import ParentProgressBar from '../../PlaybackApp/ParentProgressBar/ParentProgressBar';
 import { iconSpotify, iconYouTube, iconAppleMusic, iconLogoAlt, iconAudius } from '../../../icons';
 import { SERVICE_SPOTIFY, SERVICE_YOUTUBE, SERVICE_APPLE_MUSIC, SERVICE_JUKEBOX_RADIO, SERVICE_AUDIUS } from '../../../config/services';
@@ -14,7 +15,9 @@ import UserSettings from '../../UserSettings/UserSettings'
 import styles from './BottomBar.module.css';
 import {
   iconGear,
+  // eslint-disable-next-line
   iconScanForward,
+  // eslint-disable-next-line
   iconScanBackward,
   iconPlayCircle,
   iconPauseCircle,
@@ -31,12 +34,13 @@ function BottomBar(props) {
         playback = props.playback,
         audioVolumeLevel = playback.volumeLevel.audio;
 
+  // eslint-disable-next-line
   const scanDisabled = (
           !stream.nowPlaying ||
           stream.isPaused ||
           !playback.controlsEnabled
         ),
-        playPauseDisabled = !playback.controlsEnabled,
+        playPauseNextPrevDisabled = !playback.controlsEnabled,
         nowPlayingTrackService = stream.nowPlaying?.track?.service;
 
   const [showModal, setShowModal] = useState(false);
@@ -71,11 +75,21 @@ function BottomBar(props) {
   /*
    * Modify playback to seek in a certain diretion ('forward' or 'backward').
    */
-  const handleSeek = function(direction) {
-    if(scanDisabled) {
+  const handleNext = function(direction) {
+    if(playPauseNextPrevDisabled) {
       return;
     }
-    playbackControls.seek(direction);
+    playbackControls.nextTrack();
+  };
+
+  /*
+   * Modify playback to seek in a certain diretion ('forward' or 'backward').
+   */
+  const handlePrev = function(direction) {
+    if(playPauseNextPrevDisabled) {
+      return;
+    }
+    playbackControls.prevTrack();
   };
 
   /*
@@ -84,7 +98,7 @@ function BottomBar(props) {
    *       actually perform the "nextTrack" action.
    */
   const handlePlayPause = function() {
-    if(playPauseDisabled) {
+    if(playPauseNextPrevDisabled) {
       return;
     }
     if(stream.isPlaying) {
@@ -147,19 +161,19 @@ function BottomBar(props) {
       </button>
 
       <div className={styles.Playback}>
-        <button onClick={() => { handleSeek('backward'); }}
-                disabled={scanDisabled} >
-          {iconScanBackward}
+        <button onClick={handlePrev}
+                disabled={playPauseNextPrevDisabled} >
+          {iconPrevTrack}
         </button>
-        <button onClick={() => { handlePlayPause(); }}
-                disabled={playPauseDisabled} >
+        <button onClick={handlePlayPause}
+                disabled={playPauseNextPrevDisabled} >
           {stream.nowPlaying && stream.isPlaying ?
             iconPauseCircle : iconPlayCircle
           }
         </button>
-        <button onClick={() => { handleSeek('forward'); }}
-                disabled={scanDisabled} >
-          {iconScanForward}
+        <button onClick={handleNext}
+                disabled={playPauseNextPrevDisabled} >
+          {iconNextTrack}
         </button>
       </div>
 

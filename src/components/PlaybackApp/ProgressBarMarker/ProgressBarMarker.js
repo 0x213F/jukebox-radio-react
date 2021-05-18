@@ -2,7 +2,9 @@ import React, { useState } from "react";
 import { connect } from 'react-redux';
 import styles from './ProgressBarMarker.module.css';
 import { iconTrash, iconPlay, iconMarkerExtension, iconStop } from '../icons';
+import { getProgressMilliseconds } from '../utils';
 import { fetchStreamMarkerDelete } from '../../TrackDetailApp/Marker/network';
+import { fetchStreamQueueIntervalStop } from '../../TrackDetailApp/Interval/network';
 
 
 function ProgressBarMarker(props) {
@@ -11,10 +13,16 @@ function ProgressBarMarker(props) {
         queueUuid = props.queueUuid,
         editable = props.editable,
         playable = props.playable,
+        stoppable = props.stoppable,
         forceDisplay = props.forceDisplay,
         playbackControls = props.playbackControls;
 
+  const stream = props.stream;
+
   const [hovering, setHovering] = useState(false);
+
+  const classPointer = playable ? "ProgressBarMarkerPointer" : "ProgressBarMarkerPointerGrey",
+        classPointerExt = playable ? "ProgressBarMarkerPointerExtension" : "ProgressBarMarkerPointerExtensionGrey";
 
   /*
    * ENTER
@@ -42,7 +50,29 @@ function ProgressBarMarker(props) {
    * SEEK
    */
   const seekToMarker = async function() {
-    playbackControls.seek(marker.timestampMilliseconds);
+    const progress = getProgressMilliseconds(stream, marker.timestampMilliseconds);
+    if(stream.isPaused) {
+      playbackControls.play(progress);
+    } else {
+      playbackControls.seek(progress);
+    }
+  }
+
+  const stopAtMarker = async function() {
+    const responseJson = await fetchStreamQueueIntervalStop(
+      stream.nowPlaying.uuid,
+      marker.uuid,
+      stream.nowPlaying.parentUuid,
+    );
+
+    for(const [_type, payloads] of Object.entries(responseJson.redux.payload)) {
+      for(const payload of payloads) {
+        props.dispatch({
+          type: _type,
+          payload: payload,
+        });
+      }
+    }
   }
 
   return (
@@ -51,9 +81,9 @@ function ProgressBarMarker(props) {
          onMouseEnter={onMouseEnter}
          onMouseLeave={onMouseLeave}>
 
-      <div className={styles.ProgressBarMarkerPointer}>
+      <div className={styles[classPointer]}>
         {(hovering || forceDisplay) &&
-          <div className={styles.ProgressBarMarkerPointerExtension}>
+          <div className={styles[classPointerExt]}>
             {iconMarkerExtension}
           </div>
         }
@@ -81,9 +111,9 @@ function ProgressBarMarker(props) {
               </button>
             }
 
-            {hovering && playable &&
+            {hovering && stoppable && false &&
               <button className={styles.Stop}
-                      onClick={seekToMarker}>
+                      onClick={stopAtMarker}>
                 {iconStop}
               </button>
             }
@@ -95,7 +125,9 @@ function ProgressBarMarker(props) {
 }
 
 
-const mapStateToProps = (state) => ({});
+const mapStateToProps = (state) => ({
+  stream: state.stream,
+});
 
 
 export default connect(mapStateToProps)(ProgressBarMarker);

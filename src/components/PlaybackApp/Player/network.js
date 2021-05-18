@@ -62,10 +62,11 @@ const fetchPauseTrack = async (nowPlayingTotalDurationMilliseconds) => {
 /*
  * Fetches...
  */
-const fetchPlayTrack = async () => {
+const fetchPlayTrack = async (startedAt, nowPlayingTotalDurationMilliseconds) => {
   const response = await fetchBackend(
     TYPE_POST,
     ENDPOINT_STREAM_PLAY_TRACK,
+    { startedAt, nowPlayingTotalDurationMilliseconds },
   );
   const responseJson = await response.json();
   return responseJson;

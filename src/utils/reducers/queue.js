@@ -33,6 +33,7 @@ export const finalizeQueue = function(queue) {
   }
 
   const intervals = copy.intervals,
+        markers = copy.markers,
         trackDurationMilliseconds = copy.track?.durationMilliseconds;
 
   // Base case: no configured intervals
@@ -57,11 +58,16 @@ export const finalizeQueue = function(queue) {
     return copy;
   }
 
+  const markerMap = {};
+  for(const marker of markers) {
+    markerMap[marker.uuid] = marker;
+  }
+
   const allIntervals = [];
   let lastBound;
   for(const interval of intervals) {
-    const lowerBound = interval.lowerBound?.timestampMilliseconds,
-          upperBound = interval.upperBound?.timestampMilliseconds;
+    const lowerBound = markerMap[interval.lowerBoundUuid]?.timestampMilliseconds,
+          upperBound = markerMap[interval.upperBoundUuid]?.timestampMilliseconds;
 
     ////////////////////////////////////////////////////////////////////////////
     // TRIMMED
@@ -71,14 +77,14 @@ export const finalizeQueue = function(queue) {
 
       // Trimmed && No LOWER bound
       // Meaning, the beginning of the track is trimmed.
-      if(!interval.lowerBound) {
+      if(!interval.lowerBoundUuid) {
         allIntervals.push({
           startPosition: 0,
-          endPosition: interval.upperBound.timestampMilliseconds,
+          endPosition: upperBound,
           purpose: "muted",
           uuid: interval.uuid,
         });
-        lastBound = interval.upperBound.timestampMilliseconds;
+        lastBound = upperBound;
         continue;
       }
 
@@ -94,7 +100,7 @@ export const finalizeQueue = function(queue) {
 
       // Trimmed && No UPPER bound
       // Meaning, the end of the track is trimmed.
-      if(!interval.upperBound) {
+      if(!interval.upperBoundUuid) {
 
         // One more case to consider here...
         // Same concept as the ** below
@@ -202,6 +208,27 @@ export const queueListSet = function(state, payload) {
         nextUpQueues = payload.nextUpQueues.map(finalizeQueue),
         _lastPlayed = state._lastPlayed;
 
+  // Gotta update the marker map
+  const markerMap = { ...state.markerMap };
+  for(const queues of [lastUpQueues, nextUpQueues]) {
+    for(const queue of queues) {
+      for(const marker of queue.markers) {
+        if(markerMap[marker.trackUuid] === undefined || markerMap[marker.trackUuid].length === 0) {
+          markerMap[marker.trackUuid] = {};
+        }
+        markerMap[marker.trackUuid][marker.uuid] = marker;
+      }
+      for(const child of queue.children) {
+        for(const marker of child.markers) {
+          if(markerMap[marker.trackUuid] === undefined || markerMap[marker.trackUuid].length === 0) {
+            markerMap[marker.trackUuid] = {};
+          }
+          markerMap[marker.trackUuid][marker.uuid] = marker;
+        }
+      }
+    }
+  }
+
   if(_lastPlayed) {
     lastUpQueues.push(_lastPlayed);
   }
@@ -232,6 +259,7 @@ export const queueListSet = function(state, payload) {
     lastUpQueues: lastUpQueues,
     nextUp: nextUp,
     nextUpQueues: nextUpQueues,
+    markerMap: markerMap,
   }
 }
 
