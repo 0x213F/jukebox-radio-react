@@ -14,10 +14,14 @@
   position: absolute;
   display: block;
   height: 12px;
-  width: 12px;
-  top: 8px;
+  width: 8px;
+  top: 13px;
   cursor: pointer;
   z-index: 3;
+}
+
+.ProgressPointer > svg {
+  margin-bottom: 5px;
 }
 
 .ProgressMarkerContainer {

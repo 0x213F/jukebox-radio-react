@@ -1,5 +1,8 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
+
 import { connect } from 'react-redux';
+import Draggable from 'react-draggable';
+
 import styles from './ParentProgressBar.module.css';
 import { getPositionMilliseconds } from '../utils';
 import ChildProgressBar from '../ChildProgressBar/ChildProgressBar';
@@ -8,6 +11,13 @@ import { iconSmallCircle } from '../icons';
 
 
 function ParentProgressBar(props) {
+
+  const DISABLE_ANIMATION = 0,
+        ENABLE_ANIMATION = 1;
+
+  const draggableRef = useRef();
+
+  const [dragOffset, setDragOffset] = useState(0);
 
   const queue = props.queue,
         mode = props.mode,
@@ -91,30 +101,78 @@ function ParentProgressBar(props) {
     }
   }
 
+  /*
+   *
+   */
+  const handleDragStart = function(e, ui) {
+    setAnimationStatus(DISABLE_ANIMATION);
+  }
+
+  /*
+   *
+   */
+  const handleDragChange = function(e, ui) {
+    // noop
+  }
+
+  /*
+   *
+   */
+  const handleDragStop = async function(e, ui) {
+    console.log(ui);
+    // setAnimationStatus(ENABLE_ANIMATION);
+    // setDraggableDisabled(true);
+    const rect = draggableRef.current.getBoundingClientRect(),
+          playbackPercent = rect.left / (window.innerWidth - 8),
+          nextPosition = Math.round(duration * playbackPercent);
+    await props.playbackControls.seek(nextPosition);
+    setDragOffset(ui.x);
+    setAnimationStatus(ENABLE_ANIMATION);
+  }
+
   //////////////////////////////////////////////////////////////////////////////
   // REGENERATE THE FEED
+  const [animationStatus, setAnimationStatus] = useState(ENABLE_ANIMATION);
+  const [animationPeriodicTask, setAnimationPeriodicTask] = useState(-1);
   // eslint-disable-next-line
   const [counter, setCounter] = useState(0);
   useEffect(() => {
+
+    if(animationStatus === DISABLE_ANIMATION) {
+      if(animationPeriodicTask !== -1) {
+        clearInterval(animationPeriodicTask);
+      }
+      return;
+    }
 
     const periodicTask = setInterval(() => {
       setCounter(prev => prev + 1);
     }, 50);
 
+    setAnimationPeriodicTask(periodicTask);
+
     return () => {
-      clearInterval(periodicTask);
+      clearInterval(animationPeriodicTask);
     }
 
   // eslint-disable-next-line
-  }, []);
+  }, [animationStatus]);
 
   return (
     <div className={styles.ParentProgressBar}>
       {mode === "player" &&
-        <div className={styles.ProgressPointer}
-             style={{left: `calc(${pointerLeftDistance}% - 6px)`}}>
-          {iconSmallCircle}
-        </div>
+        <Draggable axis="x"
+                   bounds="body"
+                   disabled={stream.isPaused}
+                   onStart={handleDragStart}
+                   onDrag={handleDragChange}
+                   onStop={handleDragStop}>
+          <div ref={draggableRef}
+               className={styles.ProgressPointer}
+               style={{left: `calc(${pointerLeftDistance}% - ${6 + dragOffset}px)`}}>
+            {iconSmallCircle}
+          </div>
+        </Draggable>
       }
       <div className={styles.ProgressBar}>
         {  // eslint-disable-next-line

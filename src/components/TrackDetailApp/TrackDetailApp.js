@@ -33,8 +33,6 @@ function TrackDetailApp(props) {
           return a.timestampMilliseconds - b.timestampMilliseconds;
         });
 
-  console.log(markerMap)
-
   const [tab, setTab] = useState('markers'),
         [formMarkerTimestamp, setFormMarkerTimestamp] = useState(''),
         [formMarkerName, setFormMarkerName] = useState('');
