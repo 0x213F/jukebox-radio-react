@@ -2,7 +2,7 @@ import { finalizeQueue } from './queue';
 
 
 export const streamSetWrapper = function(state, payload) {
-  const obj = streamSet(obj, payload);
+  const obj = streamSet(state, payload);
 
   const stream = { ...obj.stream };
   if(!stream.nowPlaying?.track?.uuid) {
