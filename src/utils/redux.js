@@ -89,11 +89,11 @@ const initialState = {
   },
   // UI
   search: {
-    serviceSpotify: true,
-    serviceYouTube: true,
-    serviceAppleMusic: true,
-    serviceJukeboxRadio: true,
-    serviceAudius: true,
+    serviceSpotify: false,
+    serviceYouTube: false,
+    serviceAppleMusic: false,
+    serviceJukeboxRadio: false,
+    serviceAudius: false,
   },
   sideBar: {
     tab: null,
@@ -116,11 +116,18 @@ const searchToggleServiceOff = function(state, payload) {
 }
 
 const searchToggleService = function(state, payload) {
-  const newState = { ...state },
-        newSearch = { ...state.search };
-
-  newSearch[payload.serviceName] = !newSearch[payload.serviceName]
-  newState.search = newSearch;
+  const newState = {
+    ...state,
+    search : {
+      serviceSpotify: false,
+      serviceYouTube: false,
+      serviceAppleMusic: false,
+      serviceJukeboxRadio: false,
+      serviceAudius: false,
+      ...payload
+    }
+  };
+  newState.search[payload.serviceName] = true;
   return newState;
 }
 

@@ -24,6 +24,9 @@ function ChildProgressBar(props) {
 
   const progressClass = "Progress" + cleanedPurpose;
 
+  const classHoverContainer = "ProgressHoverContainer" + cleanedPurpose,
+        classHoverPointer = "ProgressHoverPointer" + cleanedPurpose;
+
   /*
    * Hovering logic
    */
@@ -56,8 +59,8 @@ function ChildProgressBar(props) {
          onMouseEnter={onMouseEnter}
          onMouseLeave={onMouseLeave}>
       {editable && hovering &&
-        <div className={styles.ProgressHoverContainer}>
-          <div className={styles.ProgressHoverPointer}>
+        <div className={styles[classHoverContainer]}>
+          <div className={styles[classHoverPointer]}>
             {iconMarker}
           </div>
 

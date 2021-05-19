@@ -187,7 +187,7 @@ function TrackDetailApp(props) {
                       onChange={(e) => {setLowerBoundMarkerUuid(e.target.value)}}>
                 <option value={'null'}>Beginning</option>
                 {markers.map((value, index) => (
-                  <option key={index} value={value.uuid}>@ {value.timestampMilliseconds}</option>
+                  <option key={index} value={value.uuid}>{value.name}</option>
                 ))}
               </select>
             </label>
@@ -198,7 +198,7 @@ function TrackDetailApp(props) {
                       value={upperBoundMarkerUuid}
                       onChange={(e) => {setUpperBoundMarkerUuid(e.target.value)}}>
                 {markers.map((value, index) => (
-                  <option key={index} value={value.uuid}>@ {value.timestampMilliseconds}</option>
+                  <option key={index} value={value.uuid}>{value.name}</option>
                 ))}
                 <option value={'null'}>End</option>
               </select>

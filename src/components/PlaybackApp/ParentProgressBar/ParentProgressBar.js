@@ -12,12 +12,15 @@ import { iconSmallCircle } from '../icons';
 
 function ParentProgressBar(props) {
 
-  const DISABLE_ANIMATION = 0,
-        ENABLE_ANIMATION = 1;
+  const DISABLE_ANIMATION = -1,
+        ENABLE_ANIMATION = 0;
 
   const draggableRef = useRef();
 
+  const [stickyPointerLeftDistance, setStickyPointerLeftDistance] = useState(false);
   const [dragOffset, setDragOffset] = useState(0);
+
+  const [markerHover, setMarkerHover] = useState(false);
 
   const queue = props.queue,
         mode = props.mode,
@@ -101,11 +104,18 @@ function ParentProgressBar(props) {
     }
   }
 
+  // Change styles for markers that are "not playable"
+  if(mode === "markers") {
+    for(let i=0; i < allIntervals.length; i++) {
+      allIntervals[i].purpose = "all";
+    }
+  }
   /*
    *
    */
   const handleDragStart = function(e, ui) {
     setAnimationStatus(DISABLE_ANIMATION);
+    setStickyPointerLeftDistance(pointerLeftDistance);
   }
 
   /*
@@ -119,15 +129,13 @@ function ParentProgressBar(props) {
    *
    */
   const handleDragStop = async function(e, ui) {
-    console.log(ui);
-    // setAnimationStatus(ENABLE_ANIMATION);
-    // setDraggableDisabled(true);
     const rect = draggableRef.current.getBoundingClientRect(),
           playbackPercent = rect.left / (window.innerWidth - 8),
           nextPosition = Math.round(duration * playbackPercent);
     await props.playbackControls.seek(nextPosition);
     setDragOffset(ui.x);
     setAnimationStatus(ENABLE_ANIMATION);
+    setStickyPointerLeftDistance(false);
   }
 
   //////////////////////////////////////////////////////////////////////////////
@@ -157,6 +165,10 @@ function ParentProgressBar(props) {
 
   // eslint-disable-next-line
   }, [animationStatus]);
+
+  if(stickyPointerLeftDistance) {
+    pointerLeftDistance = stickyPointerLeftDistance;
+  }
 
   return (
     <div className={styles.ParentProgressBar}>
@@ -196,7 +208,9 @@ function ParentProgressBar(props) {
                                       editable={mode === "markers"}
                                       playable={marker.playable}
                                       stoppable={marker.stoppable}
-                                      playbackControls={props.playbackControls} />;
+                                      playbackControls={props.playbackControls}
+                                      markerHover={markerHover}
+                                      setMarkerHover={setMarkerHover} />;
           })}
         </div>
       }

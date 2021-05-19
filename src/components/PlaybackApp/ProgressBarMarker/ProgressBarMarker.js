@@ -29,6 +29,7 @@ function ProgressBarMarker(props) {
    */
   const onMouseEnter = function() {
     setHovering(true);
+    props.setMarkerHover(true);
   }
 
   /*
@@ -36,6 +37,7 @@ function ProgressBarMarker(props) {
    */
   const onMouseLeave = function() {
     setHovering(false);
+    props.setMarkerHover(false);
   }
 
   /*
@@ -82,13 +84,13 @@ function ProgressBarMarker(props) {
          onMouseLeave={onMouseLeave}>
 
       <div className={styles[classPointer]}>
-        {(hovering || forceDisplay) &&
+        {(hovering || (forceDisplay && !props.markerHover)) &&
           <div className={styles[classPointerExt]}>
             {iconMarkerExtension}
           </div>
         }
 
-        {(hovering || forceDisplay) &&
+        {(hovering || (forceDisplay && !props.markerHover)) &&
           <div className={styles.HoverContainer}>
 
             {(hovering || forceDisplay) &&

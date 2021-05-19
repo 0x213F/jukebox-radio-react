@@ -22,7 +22,8 @@
   background-color: #BCBCBC;
 }
 
-.ProgressHoverContainer {
+.ProgressHoverContainerAll,
+.ProgressHoverContainerMuted {
   position: absolute;
   display: inline-block;
   width: 100%;
@@ -31,9 +32,18 @@
   /* margin-left: calc(50% - 11px); */
 }
 
-.ProgressHoverPointer {
+.ProgressHoverPointerAll,
+.ProgressHoverPointerMuted {
   margin-top: 4px;
   margin-left: calc(50% - 1px);
+}
+
+.ProgressHoverPointerMuted > svg > path:first-child {
+  stroke: #BCBCBC;
+}
+
+.ProgressHoverPointerMuted > svg > path {
+  fill: #BCBCBC;
 }
 
 .ProgressHoverPurpose {
