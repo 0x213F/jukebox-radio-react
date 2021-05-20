@@ -21,7 +21,6 @@ function ChildProgressBar(props) {
   let cleanedPurpose;
   cleanedPurpose = interval.purpose.includes('solo') ? 'solo' : interval.purpose;
   cleanedPurpose = cleanedPurpose.charAt(0).toUpperCase() + cleanedPurpose.slice(1);
-
   const progressClass = "Progress" + cleanedPurpose;
 
   const classHoverContainer = "ProgressHoverContainer" + cleanedPurpose,

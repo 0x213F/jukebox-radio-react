@@ -135,7 +135,7 @@ function App() {
     window.addEventListener("beforeunload", (e) => {
       e.preventDefault();
       const state = store.getState();
-      if(!state.stream.isPlaying) {
+      if(state.stream.nowPlaying.status !== "played") {
         return;
       }
       fetchPauseTrack();

@@ -53,7 +53,7 @@ function ProgressBarMarker(props) {
    */
   const seekToMarker = async function() {
     const progress = getProgressMilliseconds(stream, marker.timestampMilliseconds);
-    if(stream.isPaused) {
+    if(stream.nowPlaying.status === 'paused') {
       playbackControls.play(progress);
     } else {
       playbackControls.seek(progress);

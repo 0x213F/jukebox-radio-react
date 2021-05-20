@@ -165,7 +165,7 @@ export const playbackPlannedNextTrack = function(state, payload) {
   const childPayload = payload.payload,  // yes
         updatedNowPlaying = updatedState.stream.nowPlaying;
   childPayload.startedAt = (
-    updatedState.stream.startedAt + updatedNowPlaying.totalDurationMilliseconds
+    updatedState.stream.nowPlaying.startedAt + updatedNowPlaying.durationMilliseconds
   );
   updatedState = streamNextTrack(updatedState, childPayload);
   return updatedState;

@@ -37,7 +37,7 @@ function BottomBar(props) {
   // eslint-disable-next-line
   const scanDisabled = (
           !stream.nowPlaying ||
-          stream.isPaused ||
+          stream.nowPlaying.status === 'paused' ||
           !playback.controlsEnabled
         ),
         playPauseNextPrevDisabled = !playback.controlsEnabled,
@@ -101,9 +101,9 @@ function BottomBar(props) {
     if(playPauseNextPrevDisabled) {
       return;
     }
-    if(stream.isPlaying) {
+    if(stream.nowPlaying?.status === "played") {
       playbackControls.pause();
-    } else if(stream.isPaused) {
+    } else if(stream.nowPlaying?.status === 'paused') {
       playbackControls.play();
     } else {
       playbackControls.nextTrack();
@@ -167,7 +167,7 @@ function BottomBar(props) {
         </button>
         <button onClick={handlePlayPause}
                 disabled={playPauseNextPrevDisabled} >
-          {stream.nowPlaying && stream.isPlaying ?
+          {stream.nowPlaying && stream.nowPlaying.status === "played" ?
             iconPauseCircle : iconPlayCircle
           }
         </button>

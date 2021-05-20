@@ -52,11 +52,11 @@ function VoiceRecording(props) {
     }
 
     setIsPlaying(true);
-    if(!stream.isPlaying || voiceRecording.created) {
+    if(stream.nowPlaying.status !== "played" || voiceRecording.created) {
       return;
     }
 
-    const arr = getPositionMilliseconds(stream, stream.startedAt),
+    const arr = getPositionMilliseconds(stream, stream.nowPlaying.startedAt),
           position = arr[0],
           withinContext = (
             voiceRecording.timestampMilliseconds >= position - 2000 &&

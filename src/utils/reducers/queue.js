@@ -1,29 +1,35 @@
 import { SERVICE_APPLE_MUSIC } from './../../config/services';
 
+
+export const finalizeQueues = function(state, queues) {
+  let newState = { ...state };
+  for(const queue of queues) {
+    newState = finalizeQueue(newState, queue);
+  }
+  console.log(newState.queueMap)
+  return newState;
+}
+
 /*
  * A queue object is returned from the server with an assortment of
  * intervals. These intervals must be interpreted on the front-end
  * to put together the full picture - how long is the queue item
  * expected to play for?
  */
-export const finalizeQueue = function(queue) {
-  const copy = { ...queue };
+export const finalizeQueue = function(state, queue) {
+  const copy = { ...queue },
+        newState = { ...state },
+        newQueueMap = { ...state.queueMap};
 
   // Recursive case: parent node (queue item of format collection)
   if(copy.children.length) {
-    const editedChildren = copy.children.map(finalizeQueue),
-          totalDurationMilliseconds = editedChildren.reduce((total, q) => (
-            total + q.totalDurationMilliseconds
-          ), 0);
-    copy.children = editedChildren;
-    copy.totalDurationMilliseconds = totalDurationMilliseconds;
-
     if(copy.collection?.service === SERVICE_APPLE_MUSIC) {
       copy.collection.imageUrl = copy.collection.imageUrl.replace("{w}", "300");
       copy.collection.imageUrl = copy.collection.imageUrl.replace("{h}", "300");
     }
-
-    return copy;
+    newQueueMap[copy.uuid] = copy;
+    newState.queueMap = newQueueMap;
+    return finalizeQueues(newState, copy.children);
   }
 
   // Some data cleaning that probably shouldn't happen here.
@@ -33,12 +39,28 @@ export const finalizeQueue = function(queue) {
   }
 
   const intervals = copy.intervals,
-        markers = copy.markers,
         trackDurationMilliseconds = copy.track?.durationMilliseconds;
+
+  // Gotta update the marker map
+  const markerMap = { ...state.markerMap };
+  for(const marker of queue.markers) {
+    if(markerMap[marker.trackUuid] === undefined || markerMap[marker.trackUuid].length === 0) {
+      markerMap[marker.trackUuid] = {};
+    }
+    markerMap[marker.trackUuid][marker.uuid] = marker;
+  }
+  for(const child of queue.children) {
+    for(const marker of child.markers) {
+      if(markerMap[marker.trackUuid] === undefined || markerMap[marker.trackUuid].length === 0) {
+        markerMap[marker.trackUuid] = {};
+      }
+      markerMap[marker.trackUuid][marker.uuid] = marker;
+    }
+  }
+  newState.markerMap = markerMap;
 
   // Base case: no configured intervals
   if(!intervals.length) {
-    copy.totalDurationMilliseconds = trackDurationMilliseconds;
     copy.playbackIntervals = [
       {
         startPosition: 0,
@@ -55,19 +77,17 @@ export const finalizeQueue = function(queue) {
         uuid: null,
       }
     ];
-    return copy;
+    newQueueMap[copy.uuid] = copy;
+    newState.queueMap = newQueueMap;
+    return newState;
   }
 
-  const markerMap = {};
-  for(const marker of markers) {
-    markerMap[marker.uuid] = marker;
-  }
-
-  const allIntervals = [];
+  const allIntervals = [],
+        trackUuid = queue.track.uuid;
   let lastBound;
   for(const interval of intervals) {
-    const lowerBound = markerMap[interval.lowerBoundUuid]?.timestampMilliseconds,
-          upperBound = markerMap[interval.upperBoundUuid]?.timestampMilliseconds;
+    const lowerBound = markerMap[trackUuid][interval.lowerBoundUuid]?.timestampMilliseconds,
+          upperBound = markerMap[trackUuid][interval.upperBoundUuid]?.timestampMilliseconds;
 
     ////////////////////////////////////////////////////////////////////////////
     // TRIMMED
@@ -185,15 +205,12 @@ export const finalizeQueue = function(queue) {
 
   const playbackIntervals = allIntervals.filter(i => i.purpose !== "muted");
 
-  const totalDurationMilliseconds = playbackIntervals.reduce((total, i) => (
-    total + (i.endPosition - i.startPosition)
-  ), 0);
-
-  copy.totalDurationMilliseconds = totalDurationMilliseconds;
   copy.playbackIntervals = playbackIntervals;
   copy.allIntervals = allIntervals;
 
-  return copy;
+  newQueueMap[copy.uuid] = copy;
+  newState.queueMap = newQueueMap;
+  return newState;
 }
 
 
@@ -204,62 +221,68 @@ export const finalizeQueue = function(queue) {
  * expected to play for?
  */
 export const queueListSet = function(state, payload) {
-  const lastUpQueues = payload.lastUpQueues.map(finalizeQueue),
-        nextUpQueues = payload.nextUpQueues.map(finalizeQueue),
-        _lastPlayed = state._lastPlayed;
+  let newState = { ...state };
+  newState = finalizeQueues(newState, payload.lastUpQueues);
+  newState = finalizeQueues(newState, payload.nextUpQueues);
 
-  // Gotta update the marker map
-  const markerMap = { ...state.markerMap };
-  for(const queues of [lastUpQueues, nextUpQueues]) {
-    for(const queue of queues) {
-      for(const marker of queue.markers) {
-        if(markerMap[marker.trackUuid] === undefined || markerMap[marker.trackUuid].length === 0) {
-          markerMap[marker.trackUuid] = {};
-        }
-        markerMap[marker.trackUuid][marker.uuid] = marker;
-      }
-      for(const child of queue.children) {
-        for(const marker of child.markers) {
-          if(markerMap[marker.trackUuid] === undefined || markerMap[marker.trackUuid].length === 0) {
-            markerMap[marker.trackUuid] = {};
-          }
-          markerMap[marker.trackUuid][marker.uuid] = marker;
-        }
-      }
-    }
-  }
+  let lastUpQueues = payload.lastUpQueues.map(o => o.uuid),
+      nextUpQueues = payload.nextUpQueues.map(o => o.uuid);
+
+
+  const _lastPlayed = newState._lastPlayed;
 
   if(_lastPlayed) {
-    lastUpQueues.push(_lastPlayed);
+    lastUpQueues.push(_lastPlayed.uuid);
   }
 
-  let stream = state.stream;
-  if(!stream.isPlaying && !stream.isPaused && stream.nowPlaying) {
-    lastUpQueues.push(stream.nowPlaying);
+  let stream = newState.stream;
+  if(stream.nowPlaying?.status !== "played" && stream.nowPlaying?.status !== 'paused' && stream.nowPlaying) {
+    lastUpQueues.push(stream.nowPlaying.uuid);
     stream = { ...stream, nowPlaying: undefined }
   }
 
-  const lastUp = (
+  const lastUpUuid = (
           !lastUpQueues.length ?
             undefined :
             lastUpQueues[lastUpQueues.length - 1]
         ),
+        lastUp = newState.queueMap[lastUpUuid],
         nextUp = (
           !nextUpQueues.length ? undefined : (
-            !nextUpQueues[0].children.length ?
-              nextUpQueues[0] :
-              nextUpQueues[0].children[0]
+            !newState.queueMap[nextUpQueues[0]].children.length ?
+              newState.queueMap[nextUpQueues[0]] :
+              newState.queueMap[nextUpQueues[0]].children[0]
           )
         );
 
+  lastUpQueues = lastUpQueues.map(function(queueUuid) { return newState.queueMap[queueUuid]; });
+  nextUpQueues = nextUpQueues.map(function(queueUuid) { return newState.queueMap[queueUuid]; });
+
   return {
-    ...state,
+    ...newState,
     stream: stream,
     lastUp: lastUp,
     lastUpQueues: lastUpQueues,
     nextUp: nextUp,
     nextUpQueues: nextUpQueues,
-    markerMap: markerMap,
+    queueMap: newState.queueMap,
+  }
+}
+
+export const queueUpdate = function(state, action) {
+  const newState = finalizeQueues(state, action.queues);
+
+  const nextUpQueues = newState.nextUpQueues.map(queue => newState.queueMap[queue.uuid]),
+        nextUp = newState.queueMap[newState.nextUp.uuid];
+
+  return {
+    ...newState,
+    nextUp: nextUp,
+    nextUpQueues: nextUpQueues,
+    stream: {
+      ...newState.stream,
+      nowPlaying: newState.queueMap[newState.stream.nowPlaying.uuid]
+    }
   }
 }
 

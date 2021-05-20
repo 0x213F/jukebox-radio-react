@@ -55,7 +55,7 @@ function TextComment(props) {
   }
 
   const handleSeek = function() {
-    if(stream.isPaused) {
+    if(stream.nowPlaying.status === 'paused') {
       props.playbackControls.play(textComment.timestampMilliseconds);
     } else {
       props.playbackControls.seek(textComment.timestampMilliseconds);

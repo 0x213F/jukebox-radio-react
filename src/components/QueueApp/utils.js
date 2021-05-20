@@ -56,10 +56,10 @@ export const getQueueDuration = function(queues, stream) {
     let total = 0;
     if(queue.children.length) {
       for(let child of queue.children) {
-        total += child.totalDurationMilliseconds;
+        total += child.durationMilliseconds;
       }
     } else {
-      total += queue.totalDurationMilliseconds;
+      total += queue.durationMilliseconds;
     }
     return total;
   }
@@ -78,7 +78,7 @@ export const getQueueDuration = function(queues, stream) {
   const progress = getProgress(stream);
   let remainingProgress = 0;
   if(progress) {
-    remainingProgress = stream.nowPlaying.totalDurationMilliseconds - progress;
+    remainingProgress = stream.nowPlaying.durationMilliseconds - progress;
   }
 
   // Now add determine the total length of all queue objects.

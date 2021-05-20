@@ -12,8 +12,8 @@ export const getPositionMilliseconds = function(stream, startedAt) {
   }
 
   let progress;
-  if(stream.isPaused) {
-    progress = stream.pausedAt - startedAt;
+  if(stream.nowPlaying.status === 'paused') {
+    progress = stream.nowPlaying.statusAt - startedAt;
   } else {
     progress = Date.now() - startedAt;
   }
@@ -72,9 +72,9 @@ export const getProgressMilliseconds = function(stream, position) {
  */
 export const getProgress = function(stream) {
   if(stream?.isPaused) {
-    return stream.pausedAt - stream.startedAt;
+    return stream.nowPlaying.statusAt - stream.nowPlaying.startedAt;
   } else if(stream?.isPlaying) {
-    return Date.now() - stream.startedAt;
+    return Date.now() - stream.nowPlaying.startedAt;
   } else {
     return undefined;
   }

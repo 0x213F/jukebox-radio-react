@@ -17,14 +17,14 @@ export const iconPrevTrack = (
 
 export const iconMarker = (
   <svg width="9" height="25" viewBox="0 0 9 25" fill="none" xmlns="http://www.w3.org/2000/svg">
-    <path d="M1 9V5V1" stroke="#0047FF" stroke-width="2" stroke-linecap="square"/>
+    <path d="M1 9V5V1" stroke="#0047FF" strokeWidth="2" strokeLinecap="square"/>
     <path d="M8.61782 23.2137C9.05209 23.5549 9.12753 24.1835 8.78632 24.6178C8.4451 25.0521 7.81645 25.1275 7.38218 24.7863L8.61782 23.2137ZM7.38218 24.7863L7.06588 24.5378L8.30153 22.9652L8.61782 23.2137L7.38218 24.7863ZM7.06588 24.5378C2.6048 21.0327 0 15.6734 0 10H2C2 15.0597 4.32302 19.8392 8.30153 22.9652L7.06588 24.5378Z" fill="#0047FF"/>
   </svg>
 );
 
 export const iconSmallCircle = (
   <svg width="8" height="8" viewBox="0 0 8 8" fill="none" xmlns="http://www.w3.org/2000/svg">
-    <path d="M4 7C5.65685 7 7 5.65685 7 4C7 2.34315 5.65685 1 4 1C2.34315 1 1 2.34315 1 4C1 5.65685 2.34315 7 4 7Z" fill="#0047FF" stroke="#0047FF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+    <path d="M4 7C5.65685 7 7 5.65685 7 4C7 2.34315 5.65685 1 4 1C2.34315 1 1 2.34315 1 4C1 5.65685 2.34315 7 4 7Z" fill="#0047FF" stroke="#0047FF" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
   </svg>
 );
 
@@ -39,13 +39,13 @@ export const iconTrash = (
 
 export const iconPlay = (
   <svg width="10" height="12" viewBox="0 0 10 12" fill="none" xmlns="http://www.w3.org/2000/svg">
-    <path d="M1 1L8.6 6L1 11V1Z" stroke="black" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+    <path d="M1 1L8.6 6L1 11V1Z" stroke="black" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
   </svg>
 );
 
 export const iconStop = (
   <svg width="10" height="10" viewBox="0 0 10 10" fill="none" xmlns="http://www.w3.org/2000/svg">
-  <path d="M1 1H9V3.34315V9H6.65689H1V6.65685V3.34315V1Z" stroke="black" stroke-width="1.5"/>
+  <path d="M1 1H9V3.34315V9H6.65689H1V6.65685V3.34315V1Z" stroke="black" strokeWidth="1.5"/>
   </svg>
 );
 

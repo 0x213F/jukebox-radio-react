@@ -128,7 +128,7 @@ function PlaybackApp(props) {
           (
             !isPlanned ||
             (
-              lastPlaybackInterval.endPosition !== nowPlaying.totalDurationMilliseconds &&
+              lastPlaybackInterval.endPosition !== nowPlaying.durationMilliseconds &&
               isPlanned
             )
           )
@@ -145,7 +145,7 @@ function PlaybackApp(props) {
           (
             !isPlanned ||
             (
-              lastPlaybackInterval.endPosition !== nowPlaying.totalDurationMilliseconds &&
+              lastPlaybackInterval.endPosition !== nowPlaying.durationMilliseconds &&
               isPlanned
             )
           )
@@ -162,7 +162,7 @@ function PlaybackApp(props) {
           (
             !isPlanned ||
             (
-              lastPlaybackInterval.endPosition !== nowPlaying.totalDurationMilliseconds &&
+              lastPlaybackInterval.endPosition !== nowPlaying.durationMilliseconds &&
               isPlanned
             )
           )
@@ -197,7 +197,7 @@ function PlaybackApp(props) {
 
     // update the back-end
     const responseJsonNextTrack = await fetchNextTrack(
-      stream.nowPlaying?.totalDurationMilliseconds, true
+      stream.nowPlaying?.durationMilliseconds, true
     );
 
     // update the front-end later
@@ -239,11 +239,11 @@ function PlaybackApp(props) {
     if(shouldPauseOnTrackChange(lastUp, false)) {
       playbackControlPause(playback, stream);
     }
-    if(lastUp.track?.service === SERVICE_JUKEBOX_RADIO) {
+    if(lastUp?.track?.service === SERVICE_JUKEBOX_RADIO) {
       const responseJson = await fetchTrackGetFiles(lastUp.track.uuid);
       await props.dispatch(responseJson.redux);
     }
-    if(lastUp.track?.service === SERVICE_AUDIUS) {
+    if(lastUp?.track?.service === SERVICE_AUDIUS) {
       await props.dispatch({
         "type": "playback/loadAudius",
         "payload": {
@@ -252,7 +252,7 @@ function PlaybackApp(props) {
         }
       });
     }
-    const responseJsonPrevTrack = await fetchPrevTrack(stream.nowPlaying?.totalDurationMilliseconds);
+    const responseJsonPrevTrack = await fetchPrevTrack(stream.nowPlaying?.durationMilliseconds);
     await props.dispatch(responseJsonPrevTrack.redux);
     await props.dispatch({ type: 'playback/start' });
     await props.dispatch({ type: 'playback/enable' });
@@ -281,7 +281,7 @@ function PlaybackApp(props) {
       });
     }
     const responseJsonNextTrack = await fetchNextTrack(
-      stream.nowPlaying?.totalDurationMilliseconds, false
+      stream.nowPlaying?.durationMilliseconds, false
     );
     await props.dispatch(responseJsonNextTrack.redux);
     await props.dispatch({ type: 'playback/start' });
@@ -302,14 +302,14 @@ function PlaybackApp(props) {
     let startedAt;
 
     if(value === undefined) {
-      startedAt = stream.startedAt;
+      startedAt = stream.nowPlaying.startedAt;
     } else {
       if(value === 'forward') {
-        startedAt = stream.startedAt - (10000);
+        startedAt = stream.nowPlaying.startedAt - (10000);
       } else if(value === 'backward') {
         const date = new Date(),
               epochNow = date.getTime(),
-              proposedStartedAt = stream.startedAt + 10000,
+              proposedStartedAt = stream.nowPlaying.startedAt + 10000,
               proposedProgress = epochNow - proposedStartedAt;
         startedAt = proposedProgress > 0 ? proposedStartedAt : epochNow;
       } else {
@@ -320,7 +320,7 @@ function PlaybackApp(props) {
 
       const response = await fetchScan(
         startedAt,
-        stream.nowPlaying.totalDurationMilliseconds,
+        stream.nowPlaying.durationMilliseconds,
       );
       // Seeking forward is not allowed because the track is almost over.
       if(response.system.status === 400) {
@@ -330,8 +330,10 @@ function PlaybackApp(props) {
     }
 
     await props.dispatch({
-      type: 'stream/set',
-      payload: {stream: { ...stream, startedAt: startedAt }},
+      type: 'queue/update',
+      payload: {
+        queues: [{ ...stream.nowPlaying, startedAt: startedAt }]
+      },
     });
 
     const arr = getPositionMilliseconds(stream, startedAt),
@@ -362,7 +364,7 @@ function PlaybackApp(props) {
       return;
     }
     await props.dispatch({ type: 'playback/disable' });
-    const jsonResponse = await fetchPauseTrack(stream.nowPlaying.totalDurationMilliseconds);
+    const jsonResponse = await fetchPauseTrack(stream.nowPlaying.durationMilliseconds);
     await props.dispatch(jsonResponse.redux);
     await props.dispatch({ type: 'playback/addToQueueReschedule' });
     playbackControlPause(playback, stream);
@@ -388,7 +390,7 @@ function PlaybackApp(props) {
     await props.dispatch({ type: 'playback/disable' });
     const jsonResponse = await fetchPlayTrack(
       startedAt,
-      stream.nowPlaying.totalDurationMilliseconds,
+      stream.nowPlaying.durationMilliseconds,
     );
     await props.dispatch(jsonResponse.redux);
 
@@ -521,7 +523,7 @@ function PlaybackApp(props) {
 
     // debouncer
     const needsToScheduleAddToQueue = (
-      stream.isPlaying &&
+      stream.nowPlaying?.status === "played" &&
       playback.isPlaying &&
       !playback.addToQueueTimeoutId
     );
@@ -534,9 +536,9 @@ function PlaybackApp(props) {
     }
 
     // schedule add to queue
-    const progress = Date.now() - stream.startedAt,
+    const progress = Date.now() - stream.nowPlaying.startedAt,
           timeLeft = (
-            stream.nowPlaying.totalDurationMilliseconds - progress
+            stream.nowPlaying.durationMilliseconds - progress
           ),
           timeoutDuration = timeLeft - 5000;
     const timeoutId = setTimeout(() => {
@@ -548,7 +550,7 @@ function PlaybackApp(props) {
     });
 
     // schedule seek
-    const arr = getPositionMilliseconds(stream, stream.startedAt),
+    const arr = getPositionMilliseconds(stream, stream.nowPlaying.startedAt),
           seekTimeoutDuration = arr[1];
     if(seekTimeoutDuration) {
       const seekTimeoutId = setTimeout(() => {
@@ -576,9 +578,9 @@ function PlaybackApp(props) {
     setMessageScheduleNextTrack(false);
 
     // schedule next track
-    const progress = Date.now() - stream.startedAt,
+    const progress = Date.now() - stream.nowPlaying.startedAt,
           timeoutDuration = (
-            stream.nowPlaying.totalDurationMilliseconds - progress
+            stream.nowPlaying.durationMilliseconds - progress
           );
     const timeoutId = setTimeout(() => {
       plannedNextTrack();
@@ -592,7 +594,7 @@ function PlaybackApp(props) {
   //////////////////////////////////////////////////////////////////////////////
   // Play the music.
   useEffect(() => {
-    if(stream.isPlaying && !playback.isPlaying && playback.isReady) {
+    if(stream.nowPlaying?.status === "played" && !playback.isPlaying && playback.isReady) {
       start();
     }
   // eslint-disable-next-line
@@ -615,13 +617,13 @@ function PlaybackApp(props) {
             origin: 'jukeboxrad.io',
             playsinline: 1,
             start: (
-              stream.nowPlaying?.track.service === SERVICE_YOUTUBE &&
+              stream.nowPlaying?.track?.service === SERVICE_YOUTUBE &&
               Math.floor(stream.nowPlaying.playbackIntervals[0].startPosition / 1000)
             ),
           },
         },
         videoId = (
-          stream.nowPlaying?.track.service === SERVICE_YOUTUBE &&
+          stream.nowPlaying?.track?.service === SERVICE_YOUTUBE &&
           stream?.nowPlaying?.track?.externalId
         );
 
@@ -643,13 +645,13 @@ function PlaybackApp(props) {
   }
 
   const onYouTubePause = function() {
-    if(!stream.isPaused && stream.nowPlaying?.track.service === SERVICE_YOUTUBE) {
+    if(stream.nowPlaying.status !== 'paused' && stream.nowPlaying?.track.service === SERVICE_YOUTUBE) {
       pause();
     }
   }
 
   const onYouTubePlay = function() {
-    if(!stream.isPlaying && stream.nowPlaying?.track.service === SERVICE_YOUTUBE) {
+    if(stream.nowPlaying.status !== "played" && stream.nowPlaying?.track.service === SERVICE_YOUTUBE) {
       play();
     }
   }

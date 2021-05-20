@@ -54,7 +54,7 @@ function QueueCollection(props) {
         </div>
 
         <div className={styles.DurationContainer}>
-          {durationPretty(queue.totalDurationMilliseconds)}
+          {durationPretty(queue.durationMilliseconds)}
         </div>
 
         <div className={styles.ButtonContainer}>

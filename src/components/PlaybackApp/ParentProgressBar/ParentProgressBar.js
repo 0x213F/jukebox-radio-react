@@ -31,7 +31,7 @@ function ParentProgressBar(props) {
   let position, pointerLeftDistance;
   if(mode === "player") {
     try {
-      const arr = getPositionMilliseconds(stream, stream.startedAt);
+      const arr = getPositionMilliseconds(stream, stream.nowPlaying.startedAt);
       position = arr[0];
       pointerLeftDistance = (position / duration) * 100;
     } catch (e) {
@@ -107,7 +107,7 @@ function ParentProgressBar(props) {
   // Change styles for markers that are "not playable"
   if(mode === "markers") {
     for(let i=0; i < allIntervals.length; i++) {
-      allIntervals[i].purpose = "all";
+      // allIntervals[i].purpose = "all";
     }
   }
   /*
@@ -170,12 +170,13 @@ function ParentProgressBar(props) {
     pointerLeftDistance = stickyPointerLeftDistance;
   }
 
+
   return (
     <div className={styles.ParentProgressBar}>
       {mode === "player" &&
         <Draggable axis="x"
                    bounds="body"
-                   disabled={stream.isPaused}
+                   disabled={stream.nowPlaying?.status === 'paused'}
                    onStart={handleDragStart}
                    onDrag={handleDragChange}
                    onStop={handleDragStop}>

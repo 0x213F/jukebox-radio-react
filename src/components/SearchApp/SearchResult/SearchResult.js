@@ -19,7 +19,6 @@ function SearchResult(props) {
   }
 
   let imgUrl = searchResult.img_url;
-  console.log(searchResult)
   if(searchResult.provider === SERVICE_APPLE_MUSIC) {
     imgUrl = imgUrl.replace("{w}", "300");
     imgUrl = imgUrl.replace("{h}", "300");

@@ -1,4 +1,4 @@
-import { finalizeQueue } from './queue';
+import { finalizeQueues } from './queue';
 
 
 export const streamSetWrapper = function(state, payload) {
@@ -30,29 +30,29 @@ export const streamSetWrapper = function(state, payload) {
  */
 export const streamSet = function(state, payload) {
   const stream = payload.stream,
-        nowPlaying = stream.nowPlaying,
-        obj = { ...state };
+        nowPlaying = stream.nowPlaying;
+  let obj = { ...state };
 
   if(nowPlaying) {
-    stream.nowPlaying = finalizeQueue(nowPlaying);
+    obj = finalizeQueues(obj, [nowPlaying]);
+    stream.nowPlaying = obj.queueMap[nowPlaying.uuid];
+    console.log(obj.queueMap[nowPlaying.uuid])
   }
 
   obj.stream = stream;
   const progress = (
-          stream.isPlaying ?
-          Date.now() - stream.startedAt : stream.pausedAt - stream.startedAt
+          stream.nowPlaying.status === "played" ?
+          Date.now() - stream.nowPlaying.startedAt : stream.nowPlaying.statusAt - stream.nowPlaying.startedAt
         );
   const notPlaying = (
-    (!stream.isPlaying && !stream.isPaused && stream.nowPlaying) ||
-    (progress && progress >= stream.nowPlaying.totalDurationMilliseconds)
+    (stream.nowPlaying.status !== "played" && stream.nowPlaying.status !== 'paused' && stream.nowPlaying) ||
+    (progress && progress >= stream.nowPlaying.durationMilliseconds)
   )
 
   if(notPlaying) {
     obj.lastUp = stream.nowPlaying;
     obj._lastPlayed = stream.nowPlaying;
     obj.stream.nowPlaying = undefined;
-    obj.stream.isPlaying = false;
-    obj.stream.isPaused = false;
   }
 
   return obj;
@@ -66,9 +66,12 @@ export const streamPlay = function(state, payload) {
   const updatedPayload = {
     stream: {
       ...state.stream,
-      isPlaying: true,
-      isPaused: false,
-      startedAt: payload.startedAt,
+      nowPlaying: {
+        ...state.stream.nowPlaying,
+        startedAt: payload.startedAt,
+        statusAt: payload.statusAt,
+        status: payload.status,
+      }
     }
   };
   return streamSet(state, updatedPayload);
@@ -82,9 +85,11 @@ export const streamPause = function(state, payload) {
   const updatedPayload = {
     stream: {
       ...state.stream,
-      isPlaying: false,
-      isPaused: true,
-      pausedAt: payload.pausedAt,
+      nowPlaying: {
+        ...state.stream.nowPlaying,
+        statusAt: payload.statusAt,
+        status: payload.status,
+      }
     }
   };
   return streamSet(state, updatedPayload);
@@ -135,10 +140,12 @@ export const streamPrevTrack = function(state, payload) {
       ...state,
       stream: {
         ...state.stream,
-        startedAt: payload.startedAt,
-        nowPlaying: nextNowPlaying,
-        isPlaying: true,
-        isPaused: false,
+        nowPlaying: {
+          ...nextNowPlaying,
+          startedAt: payload.startedAt,
+          statusAt: payload.statusAt,
+          status: payload.status,
+        }
       },
       lastUpQueues: lastUpQueues,
       nextUpQueues: nextUpQueues,
@@ -182,10 +189,12 @@ export const streamNextTrack = function(state, payload) {
       ...state,
       stream: {
         ...state.stream,
-        startedAt: payload.startedAt,
-        nowPlaying: nextNowPlaying,
-        isPlaying: !!nextNowPlaying,
-        isPaused: false,
+        nowPlaying: {
+          ...nextNowPlaying,
+          startedAt: payload.startedAt,
+          statusAt: payload.statusAt,
+          status: payload.status,
+        }
       },
       lastUpQueues: lastUpQueues,
       nextUpQueues: nextUpQueues,

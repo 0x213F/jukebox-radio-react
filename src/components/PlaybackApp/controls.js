@@ -19,7 +19,7 @@ import { store } from '../../utils/redux';
  *     - stream
  */
 export const playbackControlStart = function(playback, stream) {
-  const arr = getPositionMilliseconds(stream, stream.startedAt),
+  const arr = getPositionMilliseconds(stream, stream.nowPlaying.startedAt),
         positionMilliseconds = arr[0],
         instrument = arr[2],
         playbackService = stream.nowPlaying.track.service;
@@ -38,7 +38,7 @@ export const playbackControlStart = function(playback, stream) {
               return;
             }
             setTimeout(function() {
-              const delayArr = getPositionMilliseconds(stream, stream.startedAt),
+              const delayArr = getPositionMilliseconds(stream, stream.nowPlaying.startedAt),
                     delayPositionMilliseconds = delayArr[0];
               music.player.seekToTime(delayPositionMilliseconds / 1000)
                 .then(() => {
@@ -123,7 +123,7 @@ export const playbackControlPlay = function(playback, stream) {
   } else if(playbackService === SERVICE_YOUTUBE) {
     playback.youTubeApi.playVideo();
   } else if(playbackService === SERVICE_JUKEBOX_RADIO) {
-    const arr = getPositionMilliseconds(stream, stream.startedAt),
+    const arr = getPositionMilliseconds(stream, stream.nowPlaying.startedAt),
           instrument = arr[2],
           trackUuid = stream.nowPlaying.track.uuid,
           audio = playback.files[trackUuid][instrument];

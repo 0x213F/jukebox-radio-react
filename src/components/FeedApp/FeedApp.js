@@ -38,7 +38,7 @@ function FeedApp(props) {
    * Opens the modal, showing ABCNotationCompose.
    */
   const openModal = function() {
-    const arr = getPositionMilliseconds(stream, stream.startedAt),
+    const arr = getPositionMilliseconds(stream, stream.nowPlaying.startedAt),
           position = arr[0];
     setTextCommentTrackUuid(stream.nowPlaying.track.uuid);
     setTextCommentTimestamp(position);
@@ -62,7 +62,7 @@ function FeedApp(props) {
     if(textCommentTrackUuid && textCommentTimestamp) {
       return;
     }
-    const arr = getPositionMilliseconds(stream, stream.startedAt),
+    const arr = getPositionMilliseconds(stream, stream.nowPlaying.startedAt),
           position = arr[0];
     setTextCommentTimestamp(position);
     setTextCommentTrackUuid(stream.nowPlaying.track.uuid);
@@ -101,7 +101,7 @@ function FeedApp(props) {
             lastModified: Date.now(),
           });
 
-          const arr = getPositionMilliseconds(stream, stream.startedAt),
+          const arr = getPositionMilliseconds(stream, stream.nowPlaying.startedAt),
                 position = arr[0];
 
           const responseJson = await fetchCreateVoiceRecording(file, JSON.stringify([]), '', position);
@@ -173,13 +173,13 @@ function FeedApp(props) {
           <button className={styles.NotationButton}
                   type="button"
                   onClick={openModal}
-                  disabled={!stream.isPlaying} >
+                  disabled={stream.nowPlaying.status !== "played"} >
             <div></div>
           </button>
           <button className={styles.RecordButton}
                   type="button"
                   onClick={handleRecord}
-                  disabled={!stream.isPlaying} >
+                  disabled={stream.nowPlaying.status !== "played"} >
             <div></div>
           </button>
           <input type="text"
@@ -187,10 +187,10 @@ function FeedApp(props) {
                  value={textCommentText}
                  onChange={handleTextChange}
                  autoComplete="off"
-                 disabled={!stream.isPlaying} />
+                 disabled={stream.nowPlaying.status !== "played"} />
           <button className={styles.SubmitButton}
                   type="submit"
-                  disabled={!stream.isPlaying} >
+                  disabled={stream.nowPlaying.status !== "played"} >
             Send
           </button>
         </form>

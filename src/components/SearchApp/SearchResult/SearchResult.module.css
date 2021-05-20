@@ -22,6 +22,7 @@
   display: inline-flex;
   align-items: center;
   width: calc(100% - 12px);
+  margin-left: 8px;
 
   transition-property: box-shadow;
   transition-duration: 0.15s;

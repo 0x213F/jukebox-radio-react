@@ -71,10 +71,10 @@ const getPositionMilliseconds = function(stream) {
     return [undefined, undefined, undefined];
   }
 
-  const startedAt = stream.startedAt;
+  const startedAt = stream.nowPlaying.startedAt;
 
   let progress = (
-        stream.isPlaying ? Date.now() - startedAt : stream.pausedAt - startedAt
+        stream.nowPlaying.status === "played" ? Date.now() - startedAt : stream.nowPlaying.statusAt - startedAt
       ),
       playbackIntervalIdx = 0,
       displayThreshold = 0,

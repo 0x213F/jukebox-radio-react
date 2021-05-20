@@ -24,13 +24,14 @@ import {
 } from './reducers/playback';
 import {
   queueListSet,
+  queueUpdate,
   queueDeleteNode,
   queueDeleteChildNode,
 } from './reducers/queue';
-import {
-  queueIntervalCreate,
-  queueIntervalDelete,
-} from './reducers/queueInterval';
+// import {
+//   queueIntervalCreate,
+//   queueIntervalDelete,
+// } from './reducers/queueInterval';
 import {
   streamSetWrapper,
   streamPlay,
@@ -70,6 +71,7 @@ const initialState = {
   feed: [],
   userSettings: undefined,
   markerMap: {},
+  queueMap: {},
   playback: {
     controlsEnabled: false,
     spotifyApi: undefined,
@@ -154,6 +156,8 @@ const reducer = (state = initialState, action) => {
       return queueDeleteNode(state, action);
     case "queue/deleteChildNode":
       return queueDeleteChildNode(state, action);
+    case "queue/update":
+      return queueUpdate(state, action.payload);
     case "textComment/listSet":
     ////////////////////////////////////////////////////////////////////////////
     // TEXT COMMENT
@@ -192,10 +196,10 @@ const reducer = (state = initialState, action) => {
       return markerDelete(state, action.payload);
     ////////////////////////////////////////////////////////////////////////////
     // QUEUE INTERVAL
-    case "queueInterval/create":
-      return queueIntervalCreate(state, action.payload);
-    case "queueInterval/delete":
-      return queueIntervalDelete(state, action.payload);
+    // case "queueInterval/create":
+    //   return queueIntervalCreate(state, action.payload);
+    // case "queueInterval/delete":
+    //   return queueIntervalDelete(state, action.payload);
     ////////////////////////////////////////////////////////////////////////////
     // PLAYBACK
     case "playback/disable":

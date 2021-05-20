@@ -31,7 +31,7 @@ function Player(props) {
 
   // BUG: Edge case needed to refresh the webpage. In the future, there should
   //      be an API endpoint to fetch additional past queue items.
-  if(stream?.nowPlaying?.index !== 1 && !lastUp) {
+  if(stream?.nowPlaying && stream?.nowPlaying?.index !== 1 && !lastUp) {
     window.location.reload();
   }
 

@@ -47,8 +47,8 @@ function Session(props) {
 
   useEffect(() => {
     const shouldDisplayModal = (
-      !stream.isPlaying &&
-      !stream.isPaused &&
+      stream.nowPlaying?.status !== "played" &&
+      stream.nowPlaying?.status !== 'paused' &&
       !nextUpQueues.length &&
       !forceHideModal
     )
