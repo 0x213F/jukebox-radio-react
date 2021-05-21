@@ -101,6 +101,7 @@ function BottomBar(props) {
     if(playPauseNextPrevDisabled) {
       return;
     }
+    console.log(stream.nowPlaying?.status)
     if(stream.nowPlaying?.status === "played") {
       playbackControls.pause();
     } else if(stream.nowPlaying?.status === 'paused') {
@@ -116,7 +117,7 @@ function BottomBar(props) {
    */
   const handleCycleVolumeLevel = function() {
     const nextVolumeLevel = cycleVolumeLevel(audioVolumeLevel);
-    playbackChangeVolume(playback, stream, nextVolumeLevel);
+    playbackChangeVolume(playback, stream.nowPlaying, nextVolumeLevel);
     props.dispatch({ type: 'playback/cycleVolumeLevelAudio' });
   }
 
@@ -128,9 +129,12 @@ function BottomBar(props) {
 
       <div className={styles.ProgressBarContainer}>
         <ParentProgressBar queue={stream?.nowPlaying}
-                           stream={stream}
                            mode={"player"}
-                           playbackControls={props.playbackControls}>
+                           playbackControls={props.playbackControls}
+                           allowMarkerSeek={true}
+                           allowMarkerDelete={false}
+                           allowIntervalPlay={false}
+                           allowIntervalDelete={false}>
         </ParentProgressBar>
       </div>
 

@@ -139,7 +139,7 @@ function App() {
         return;
       }
       fetchPauseTrack();
-      playbackControlPause(state.playback, state.stream);
+      playbackControlPause(state.playback, state.stream.nowPlaying);
     });
   }, []);
 

@@ -50,16 +50,18 @@ function QueueApp(props) {
       nextUpQueues.map((value, index) => {
         if(value.collection) {
           return (
-            <QueueCollection key={value.uuid}
+            <QueueCollection key={index}
                              data={value}
-                             destroy={destroyQueueItem}>
+                             destroy={destroyQueueItem}
+                             playbackControls={props.playbackControls}>
             </QueueCollection>
           );
         } else if(value.track) {
           return (
-            <QueueTrack key={value.uuid}
+            <QueueTrack key={index}
                         data={value}
-                        destroy={destroyQueueItem}>
+                        destroy={destroyQueueItem}
+                        playbackControls={props.playbackControls}>
             </QueueTrack>
           );
         }

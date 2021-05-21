@@ -6,7 +6,6 @@ export const finalizeQueues = function(state, queues) {
   for(const queue of queues) {
     newState = finalizeQueue(newState, queue);
   }
-  console.log(newState.queueMap)
   return newState;
 }
 

@@ -10,14 +10,14 @@ import { fetchStreamQueueIntervalStop } from '../../TrackDetailApp/Interval/netw
 function ProgressBarMarker(props) {
 
   const marker = props.marker,
-        queueUuid = props.queueUuid,
+        queue = props.queue,
         editable = props.editable,
         playable = props.playable,
         stoppable = props.stoppable,
         forceDisplay = props.forceDisplay,
-        playbackControls = props.playbackControls;
-
-  const stream = props.stream;
+        playbackControls = props.playbackControls,
+        allowMarkerSeek = props.allowMarkerSeek,
+        hoveringEnabled = props.hoveringEnabled;
 
   const [hovering, setHovering] = useState(false);
 
@@ -44,7 +44,7 @@ function ProgressBarMarker(props) {
    * DELETE
    */
   const deleteTrackMarker = async function() {
-    const responseJson = await fetchStreamMarkerDelete(marker.uuid, queueUuid);
+    const responseJson = await fetchStreamMarkerDelete(marker.uuid, queue.uuid);
     await props.dispatch(responseJson.redux);
   }
 
@@ -52,19 +52,19 @@ function ProgressBarMarker(props) {
    * SEEK
    */
   const seekToMarker = async function() {
-    const progress = getProgressMilliseconds(stream, marker.timestampMilliseconds);
-    if(stream.nowPlaying.status === 'paused') {
-      playbackControls.play(progress);
-    } else {
+    const progress = getProgressMilliseconds(queue, marker.timestampMilliseconds);
+    if(queue.status === 'played') {
       playbackControls.seek(progress);
+    } else {
+      playbackControls.play(progress);
     }
   }
 
   const stopAtMarker = async function() {
     const responseJson = await fetchStreamQueueIntervalStop(
-      stream.nowPlaying.uuid,
+      queue.uuid,
       marker.uuid,
-      stream.nowPlaying.parentUuid,
+      queue.parentUuid,
     );
 
     for(const [_type, payloads] of Object.entries(responseJson.redux.payload)) {
@@ -84,13 +84,13 @@ function ProgressBarMarker(props) {
          onMouseLeave={onMouseLeave}>
 
       <div className={styles[classPointer]}>
-        {(hovering || (forceDisplay && !props.markerHover)) &&
+        {((hovering && hoveringEnabled) || (forceDisplay && !props.markerHover)) &&
           <div className={styles[classPointerExt]}>
             {iconMarkerExtension}
           </div>
         }
 
-        {(hovering || (forceDisplay && !props.markerHover)) &&
+        {((hovering && hoveringEnabled) || (forceDisplay && !props.markerHover)) &&
           <div className={styles.HoverContainer}>
 
             {(hovering || forceDisplay) &&
@@ -106,7 +106,7 @@ function ProgressBarMarker(props) {
               </button>
             }
 
-            {hovering && playable &&
+            {hovering && playable && allowMarkerSeek &&
               <button className={styles.Play}
                       onClick={seekToMarker}>
                 {iconPlay}
@@ -127,9 +127,7 @@ function ProgressBarMarker(props) {
 }
 
 
-const mapStateToProps = (state) => ({
-  stream: state.stream,
-});
+const mapStateToProps = (state) => ({});
 
 
 export default connect(mapStateToProps)(ProgressBarMarker);

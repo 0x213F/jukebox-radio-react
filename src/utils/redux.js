@@ -21,6 +21,8 @@ import {
   playbackLoadFiles,
   playbackLoadAudius,
   playbackCycleVolumeLevelAudio,
+  playbackModalOpen,
+  playbackModalClose,
 } from './reducers/playback';
 import {
   queueListSet,
@@ -88,6 +90,7 @@ const initialState = {
       audio: 1.00,
       voice: 1.00,
     },
+    nowPlaying: undefined,
   },
   // UI
   search: {
@@ -234,6 +237,10 @@ const reducer = (state = initialState, action) => {
       return playbackLoadAudius(state, action.payload);
     case "playback/cycleVolumeLevelAudio":
       return playbackCycleVolumeLevelAudio(state);
+    case "playback/modalOpen":
+      return playbackModalOpen(state, action.payload);
+    case "playback/modalClose":
+      return playbackModalClose(state, action.payload);
     case "search/toggleServiceOff":
       return searchToggleServiceOff(state, action.payload);
     case "search/toggleService":

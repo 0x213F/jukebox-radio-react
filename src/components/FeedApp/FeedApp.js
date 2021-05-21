@@ -38,7 +38,7 @@ function FeedApp(props) {
    * Opens the modal, showing ABCNotationCompose.
    */
   const openModal = function() {
-    const arr = getPositionMilliseconds(stream, stream.nowPlaying.startedAt),
+    const arr = getPositionMilliseconds(stream.nowPlaying, stream.nowPlaying.startedAt),
           position = arr[0];
     setTextCommentTrackUuid(stream.nowPlaying.track.uuid);
     setTextCommentTimestamp(position);
@@ -62,7 +62,7 @@ function FeedApp(props) {
     if(textCommentTrackUuid && textCommentTimestamp) {
       return;
     }
-    const arr = getPositionMilliseconds(stream, stream.nowPlaying.startedAt),
+    const arr = getPositionMilliseconds(stream.nowPlaying, stream.nowPlaying.startedAt),
           position = arr[0];
     setTextCommentTimestamp(position);
     setTextCommentTrackUuid(stream.nowPlaying.track.uuid);
@@ -101,7 +101,7 @@ function FeedApp(props) {
             lastModified: Date.now(),
           });
 
-          const arr = getPositionMilliseconds(stream, stream.nowPlaying.startedAt),
+          const arr = getPositionMilliseconds(stream.nowPlaying, stream.nowPlaying.startedAt),
                 position = arr[0];
 
           const responseJson = await fetchCreateVoiceRecording(file, JSON.stringify([]), '', position);

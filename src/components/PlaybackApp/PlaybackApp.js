@@ -183,7 +183,7 @@ function PlaybackApp(props) {
       return;
     }
     props.dispatch({ type: 'playback/started' });
-    playbackControlStart(playback, stream);
+    playbackControlStart(playback, playback.queue || stream.nowPlaying);
   }
 
   /*
@@ -206,7 +206,7 @@ function PlaybackApp(props) {
     // add to queue
     await props.dispatch({ type: 'playback/addToQueue' });
 
-    playbackControlQueue(playback, stream, nextUp);
+    playbackControlQueue(playback, stream.nowPlaying, nextUp);
 
     // schedule "next track"
     setMessageScheduleNextTrack(true);
@@ -217,11 +217,11 @@ function PlaybackApp(props) {
    */
   const plannedNextTrack = async function() {
     if(shouldPauseOnTrackChange(nextUp, true)) {
-      playbackControlPause(playback, stream);
+      playbackControlPause(playback, stream.nowPlaying);
     }
     const queuedUp = playback.queuedUp;
     if(queuedUp) {
-      playbackControlSkipToNext(playback, stream);
+      playbackControlSkipToNext(playback, stream.nowPlaying);
     }
     await props.dispatch({
       type: 'playback/plannedNextTrack',
@@ -237,7 +237,7 @@ function PlaybackApp(props) {
   const prevTrack = async function() {
     await props.dispatch({ type: 'playback/disable' });
     if(shouldPauseOnTrackChange(lastUp, false)) {
-      playbackControlPause(playback, stream);
+      playbackControlPause(playback, stream.nowPlaying);
     }
     if(lastUp?.track?.service === SERVICE_JUKEBOX_RADIO) {
       const responseJson = await fetchTrackGetFiles(lastUp.track.uuid);
@@ -265,7 +265,7 @@ function PlaybackApp(props) {
   const nextTrack = async function() {
     await props.dispatch({ type: 'playback/disable' });
     if(shouldPauseOnTrackChange(nextUp, false)) {
-      playbackControlPause(playback, stream);
+      playbackControlPause(playback, stream.nowPlaying);
     }
     if(nextUp?.track.service === SERVICE_JUKEBOX_RADIO) {
       const responseJson = await fetchTrackGetFiles(nextUp.track.uuid);
@@ -336,9 +336,10 @@ function PlaybackApp(props) {
       },
     });
 
-    const arr = getPositionMilliseconds(stream, startedAt),
+    const arr = getPositionMilliseconds(stream.nowPlaying, startedAt),
           seekTimeoutDuration = arr[1];
-    playbackControlSeek(playback, stream, startedAt);
+    stream.nowPlaying.startedAt = startedAt;
+    playbackControlSeek(playback, stream.nowPlaying, startedAt);
     await props.dispatch({ type: 'playback/addToQueueReschedule' });
 
     // schedule seek
@@ -367,7 +368,7 @@ function PlaybackApp(props) {
     const jsonResponse = await fetchPauseTrack(stream.nowPlaying.durationMilliseconds);
     await props.dispatch(jsonResponse.redux);
     await props.dispatch({ type: 'playback/addToQueueReschedule' });
-    playbackControlPause(playback, stream);
+    playbackControlPause(playback, stream.nowPlaying);
     clearTimeout(plannedNextTrackTimeoutId);
     await props.dispatch({ type: 'playback/enable' });
   }
@@ -402,7 +403,7 @@ function PlaybackApp(props) {
     }
 
     await props.dispatch({ type: 'playback/addToQueueReschedule' });
-    playbackControlPlay(playback, stream);
+    playbackControlPlay(playback, stream.nowPlaying);
     await props.dispatch({ type: 'playback/enable' });
   }
 
@@ -550,7 +551,7 @@ function PlaybackApp(props) {
     });
 
     // schedule seek
-    const arr = getPositionMilliseconds(stream, stream.nowPlaying.startedAt),
+    const arr = getPositionMilliseconds(stream.nowPlaying, stream.nowPlaying.startedAt),
           seekTimeoutDuration = arr[1];
     if(seekTimeoutDuration) {
       const seekTimeoutId = setTimeout(() => {
@@ -617,14 +618,14 @@ function PlaybackApp(props) {
             origin: 'jukeboxrad.io',
             playsinline: 1,
             start: (
-              stream.nowPlaying?.track?.service === SERVICE_YOUTUBE &&
+              (playback.nowPlaying || stream.nowPlaying)?.track?.service === SERVICE_YOUTUBE &&
               Math.floor(stream.nowPlaying.playbackIntervals[0].startPosition / 1000)
             ),
           },
         },
         videoId = (
-          stream.nowPlaying?.track?.service === SERVICE_YOUTUBE &&
-          stream?.nowPlaying?.track?.externalId
+          (playback.nowPlaying || stream.nowPlaying)?.track?.service === SERVICE_YOUTUBE &&
+          (playback.nowPlaying || stream.nowPlaying)?.track?.externalId
         );
 
   const onYouTubeReady = function(e) {

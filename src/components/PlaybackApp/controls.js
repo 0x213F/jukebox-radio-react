@@ -16,18 +16,18 @@ import { store } from '../../utils/redux';
 /*
  * Executes the "start" of playback given:
  *     - playback (singleton instance in the React application)
- *     - stream
+ *     - queue
  */
-export const playbackControlStart = function(playback, stream) {
-  const arr = getPositionMilliseconds(stream, stream.nowPlaying.startedAt),
+export const playbackControlStart = function(playback, queue) {
+  const arr = getPositionMilliseconds(queue, queue.startedAt),
         positionMilliseconds = arr[0],
         instrument = arr[2],
-        playbackService = stream.nowPlaying.track.service;
+        playbackService = queue.track.service;
   if(playbackService === SERVICE_APPLE_MUSIC) {
     const music = window.MusicKit.getInstance(),
           state = store.getState(),
           volumeLevel = state.playback.volumeLevel.audio;
-    music.setQueue({ song: stream.nowPlaying.track.externalId })
+    music.setQueue({ song: queue.track.externalId })
       .then(() => {
         if(positionMilliseconds >= 1000) {
           music.player.volume = 0;
@@ -38,7 +38,7 @@ export const playbackControlStart = function(playback, stream) {
               return;
             }
             setTimeout(function() {
-              const delayArr = getPositionMilliseconds(stream, stream.nowPlaying.startedAt),
+              const delayArr = getPositionMilliseconds(queue, queue.startedAt),
                     delayPositionMilliseconds = delayArr[0];
               music.player.seekToTime(delayPositionMilliseconds / 1000)
                 .then(() => {
@@ -49,23 +49,28 @@ export const playbackControlStart = function(playback, stream) {
       });
   } else if(playbackService === SERVICE_SPOTIFY) {
     playback.spotifyApi.play({
-      uris: [stream.nowPlaying.track.externalId],
+      uris: [queue.track.externalId],
       position_ms: positionMilliseconds,
     });
   } else if(playbackService === SERVICE_YOUTUBE) {
-    store.dispatch({
-      type: 'playback/youTubeTriggerAutoplay',
-      payload: { autoplay: true },
-    });
+    if(playback.nowPlaying) {
+      playback.youTubeApi.seekTo(positionMilliseconds / 1000);
+      playback.youTubeApi.playVideo();
+    } else {
+      store.dispatch({
+        type: 'playback/youTubeTriggerAutoplay',
+        payload: { autoplay: true },
+      });
+    }
   } else if(playbackService === SERVICE_JUKEBOX_RADIO) {
-    const trackUuid = stream.nowPlaying.track.uuid,
+    const trackUuid = queue.track.uuid,
           audio = playback.files[trackUuid][instrument];
     if(positionMilliseconds > 0) {
       audio.currentTime = positionMilliseconds / 1000;
     }
     audio.play();
   } else if(playbackService === SERVICE_AUDIUS) {
-    const trackUuid = stream.nowPlaying.track.uuid,
+    const trackUuid = queue.track.uuid,
           audio = playback.files[trackUuid];
     if(positionMilliseconds > 0) {
       audio.currentTime = positionMilliseconds / 1000;
@@ -78,10 +83,10 @@ export const playbackControlStart = function(playback, stream) {
 /*
  * "Pauses" the current playback given:
  *     - playback (singleton instance in the React application)
- *     - stream
+ *     - queue
  */
-export const playbackControlPause = function(playback, stream) {
-  const playbackService = stream.nowPlaying.track.service;
+export const playbackControlPause = function(playback, queue) {
+  const playbackService = queue.track.service;
 
   if(playbackService === SERVICE_APPLE_MUSIC) {
     const music = window.MusicKit.getInstance();
@@ -91,7 +96,7 @@ export const playbackControlPause = function(playback, stream) {
   } else if(playbackService === SERVICE_YOUTUBE) {
     playback.youTubeApi.pauseVideo();
   } else if(playbackService === SERVICE_JUKEBOX_RADIO) {
-    const trackUuid = stream.nowPlaying.track.uuid,
+    const trackUuid = queue.track.uuid,
           audios = playback.files[trackUuid];
     // eslint-disable-next-line
     for(const [instrument, audio] of Object.entries(audios)) {
@@ -100,7 +105,7 @@ export const playbackControlPause = function(playback, stream) {
       }
     }
   } else if(playbackService === SERVICE_AUDIUS) {
-    const trackUuid = stream.nowPlaying.track.uuid,
+    const trackUuid = queue.track.uuid,
           audio = playback.files[trackUuid];
     audio.pause();
   }
@@ -110,26 +115,27 @@ export const playbackControlPause = function(playback, stream) {
 /*
  * "Plays" the current playback given:
  *     - playback (singleton instance in the React application)
- *     - stream
+ *     - queue
  */
-export const playbackControlPlay = function(playback, stream) {
-  const playbackService = stream.nowPlaying.track.service;
+export const playbackControlPlay = function(playback, queue) {
+  const playbackService = queue.track.service;
 
   if(playbackService === SERVICE_APPLE_MUSIC) {
     const music = window.MusicKit.getInstance();
     music.player.play();
   } else if(playbackService === SERVICE_SPOTIFY) {
+    console.log('playin')
     playback.spotifyApi.play();
   } else if(playbackService === SERVICE_YOUTUBE) {
     playback.youTubeApi.playVideo();
   } else if(playbackService === SERVICE_JUKEBOX_RADIO) {
-    const arr = getPositionMilliseconds(stream, stream.nowPlaying.startedAt),
+    const arr = getPositionMilliseconds(queue, queue.startedAt),
           instrument = arr[2],
-          trackUuid = stream.nowPlaying.track.uuid,
+          trackUuid = queue.track.uuid,
           audio = playback.files[trackUuid][instrument];
     audio.play();
   } else if(playbackService === SERVICE_AUDIUS) {
-    const trackUuid = stream.nowPlaying.track.uuid,
+    const trackUuid = queue.track.uuid,
           audio = playback.files[trackUuid];
     audio.play();
   }
@@ -139,13 +145,13 @@ export const playbackControlPlay = function(playback, stream) {
 /*
  * "Seeks" the current playback given to the expected position given:
  *     - playback (singleton instance in the React application)
- *     - stream
+ *     - queue
  */
-export const playbackControlSeek = function(playback, stream, startedAt) {
-  const arr = getPositionMilliseconds(stream, startedAt),
+export const playbackControlSeek = function(playback, queue, startedAt) {
+  const arr = getPositionMilliseconds(queue, startedAt),
         positionMilliseconds = arr[0],
         instrument = arr[2],
-        playbackService = stream.nowPlaying.track.service;
+        playbackService = queue.track.service;
 
   if(playbackService === SERVICE_APPLE_MUSIC) {
     const music = window.MusicKit.getInstance();
@@ -156,7 +162,7 @@ export const playbackControlSeek = function(playback, stream, startedAt) {
     playback.youTubeApi.seekTo(positionMilliseconds / 1000);
     playback.youTubeApi.playVideo();
   } else if(playbackService === SERVICE_JUKEBOX_RADIO) {
-    const trackUuid = stream.nowPlaying.track.uuid,
+    const trackUuid = queue.track.uuid,
           audios = playback.files[trackUuid],
           audio = audios[instrument];
 
@@ -173,7 +179,7 @@ export const playbackControlSeek = function(playback, stream, startedAt) {
     audio.currentTime = positionMilliseconds / 1000;
     audio.play();
   } else if(playbackService === SERVICE_AUDIUS) {
-    const trackUuid = stream.nowPlaying.track.uuid,
+    const trackUuid = queue.track.uuid,
           audio = playback.files[trackUuid];
 
     audio.currentTime = positionMilliseconds / 1000;
@@ -185,8 +191,8 @@ export const playbackControlSeek = function(playback, stream, startedAt) {
 /*
  *
  */
-export const playbackControlSkipToNext = function(playback, stream) {
-  const playbackService = stream.nowPlaying.track.service;
+export const playbackControlSkipToNext = function(playback, queue) {
+  const playbackService = queue.track.service;
 
   if(playbackService === SERVICE_APPLE_MUSIC) {
     const music = window.MusicKit.getInstance();
@@ -206,18 +212,18 @@ export const playbackControlSkipToNext = function(playback, stream) {
 /*
  * "Queues" the (track) queue item up next given:
  *     - playback (singleton instance in the React application)
- *     - stream
+ *     - queue
  *     - nextUp
  *
  * In this context, queuing up the track means doing as much pre-loading as
  * possible.
  */
-export const playbackControlQueue = function(playback, stream, nextUp) {
+export const playbackControlQueue = function(playback, queue, nextUp) {
   if(!nextUp) {
     return;
   }
 
-  const nowPlaying = stream.nowPlaying,
+  const nowPlaying = queue,
         playbackService = nowPlaying.track.service,
         nextPlaybackService = nextUp.track.service;
   let shouldAddToQueue;
@@ -273,7 +279,7 @@ export const playbackControlQueue = function(playback, stream, nextUp) {
 }
 
 
-export const playbackChangeVolume = function(playback, stream, volumeLevel) {
+export const playbackChangeVolume = function(playback, queue, volumeLevel) {
   const music = window.MusicKit.getInstance();
   music.player.volume = volumeLevel;
 
@@ -281,7 +287,7 @@ export const playbackChangeVolume = function(playback, stream, volumeLevel) {
 
   playback.youTubeApi.setVolume(volumeLevel * 100);
 
-  const trackUuid = stream.nowPlaying?.track?.uuid,
+  const trackUuid = queue?.track?.uuid,
         audios = playback.files[trackUuid];
 
   try {

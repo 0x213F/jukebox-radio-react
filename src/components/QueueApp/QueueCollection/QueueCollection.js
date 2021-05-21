@@ -86,7 +86,8 @@ function QueueCollection(props) {
           {queue.children.map((value, index) => (
             <QueueTrack key={index}
                         data={value}
-                        destroy={props.destroy}>
+                        destroy={props.destroy}
+                        playbackControls={props.playbackControls}>
             </QueueTrack>
           ))}
         </div>

@@ -19,7 +19,6 @@ const RENDER_STATUS_HISTORY = 'history',
  * other reducers need to re-generate the feed.
  */
 export const feedGenerate = function(state) {
-
   const stream = state.stream,
         [progress, displayThreshold, historyThreshold] = getPositionMilliseconds(stream);
 

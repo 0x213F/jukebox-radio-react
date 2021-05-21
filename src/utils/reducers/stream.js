@@ -36,7 +36,6 @@ export const streamSet = function(state, payload) {
   if(nowPlaying) {
     obj = finalizeQueues(obj, [nowPlaying]);
     stream.nowPlaying = obj.queueMap[nowPlaying.uuid];
-    console.log(obj.queueMap[nowPlaying.uuid])
   }
 
   obj.stream = stream;
@@ -63,16 +62,21 @@ export const streamSet = function(state, payload) {
  * ...
  */
 export const streamPlay = function(state, payload) {
+  const queue = {
+          ...state.stream.nowPlaying,
+          startedAt: payload.startedAt,
+          statusAt: payload.statusAt,
+          status: payload.status,
+        },
+        queueMap = { ...state.queueMap };
+  queueMap[queue.uuid] = queue;
+
   const updatedPayload = {
     stream: {
       ...state.stream,
-      nowPlaying: {
-        ...state.stream.nowPlaying,
-        startedAt: payload.startedAt,
-        statusAt: payload.statusAt,
-        status: payload.status,
-      }
-    }
+      nowPlaying: queue,
+    },
+    queueMap: queueMap,
   };
   return streamSet(state, updatedPayload);
 }
@@ -82,15 +86,20 @@ export const streamPlay = function(state, payload) {
  * ...
  */
 export const streamPause = function(state, payload) {
+  const queue = {
+          ...state.stream.nowPlaying,
+          statusAt: payload.statusAt,
+          status: payload.status,
+        },
+        queueMap = { ...state.queueMap };
+  queueMap[queue.uuid] = queue;
+
   const updatedPayload = {
     stream: {
       ...state.stream,
-      nowPlaying: {
-        ...state.stream.nowPlaying,
-        statusAt: payload.statusAt,
-        status: payload.status,
-      }
-    }
+      nowPlaying: queue,
+    },
+    queueMap: queueMap,
   };
   return streamSet(state, updatedPayload);
 }
@@ -111,13 +120,14 @@ export const streamPrevTrack = function(state, payload) {
           nextUpQueue?.uuid &&
           lastNowPlaying?.parentUuid === nextUpQueue?.uuid
         );
+  let parentQueue;
   if(lastNowPlaying) {
     if(isTrackInCollection) {
       nextUpQueue.children.unshift(lastNowPlaying);
     } else {
       if(lastNowPlaying.parentUuid) {
         // Here we need to first create the "parent queue."
-        const parentQueue = { ...lastNowPlaying };
+        parentQueue = { ...lastNowPlaying };
         parentQueue.uuid = parentQueue.parentUuid;
         parentQueue.parentUuid = null;
         parentQueue.track = null;
@@ -136,17 +146,25 @@ export const streamPrevTrack = function(state, payload) {
 
   lastUpQueues.pop();
 
-  return {
-      ...state,
-      stream: {
-        ...state.stream,
-        nowPlaying: {
+  const queue = {
           ...nextNowPlaying,
           startedAt: payload.startedAt,
           statusAt: payload.statusAt,
           status: payload.status,
-        }
+        },
+        queueMap = { ...state.queueMap };
+  queueMap[queue.uuid] = queue;
+  if(parentQueue) {
+    queueMap[parentQueue.uuid] = parentQueue;
+  }
+
+  return {
+      ...state,
+      stream: {
+        ...state.stream,
+        nowPlaying: queue,
       },
+      queueMap: queueMap,
       lastUpQueues: lastUpQueues,
       nextUpQueues: nextUpQueues,
       _lastPlayed: undefined,
@@ -185,17 +203,22 @@ export const streamNextTrack = function(state, payload) {
     }
   }
 
-  return {
-      ...state,
-      stream: {
-        ...state.stream,
-        nowPlaying: {
+  const queue = {
           ...nextNowPlaying,
           startedAt: payload.startedAt,
           statusAt: payload.statusAt,
           status: payload.status,
-        }
+        },
+        queueMap = { ...state.queueMap };
+  queueMap[queue.uuid] = queue;
+
+  return {
+      ...state,
+      stream: {
+        ...state.stream,
+        nowPlaying: queue,
       },
+      queueMap: queueMap,
       lastUpQueues: lastUpQueues,
       nextUpQueues: nextUpQueues,
       _lastPlayed: lastNowPlaying,

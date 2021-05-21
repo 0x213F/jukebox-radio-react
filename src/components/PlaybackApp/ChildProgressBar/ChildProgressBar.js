@@ -1,8 +1,9 @@
 import React, { useState } from "react";
 import { connect } from 'react-redux';
 import styles from './ChildProgressBar.module.css';
-import { iconMarker, iconTrash } from '../icons';
+import { iconMarker, iconTrash, iconPlay } from '../icons';
 import { fetchStreamQueueIntervalDelete } from '../../TrackDetailApp/Interval/network';
+import { getProgressMilliseconds } from '../utils';
 
 
 function ChildProgressBar(props) {
@@ -13,7 +14,10 @@ function ChildProgressBar(props) {
   const interval = props.interval,
         duration = props.duration,
         queue = props.queue,
-        editable = props.editable;
+        editable = props.editable,
+        playbackControls = props.playbackControls,
+        allowIntervalPlay = props.allowIntervalPlay,
+        allowIntervalDelete = props.allowIntervalDelete;
 
   const intervalWidthDuration = interval.endPosition - interval.startPosition,
         intervalWidth = intervalWidthDuration / duration * 100;
@@ -49,6 +53,15 @@ function ChildProgressBar(props) {
     await props.dispatch(responseJson.redux);
   }
 
+  const seekToInterval = async function() {
+    const progress = getProgressMilliseconds(queue, interval.startPosition);
+    if(queue.status === 'played') {
+      playbackControls.seek(progress);
+    } else {
+      playbackControls.play(progress);
+    }
+  }
+
   /*
    * 🎨
    */
@@ -67,10 +80,16 @@ function ChildProgressBar(props) {
             <div className={styles.ProgressHoverPurpose}>
               {interval.purpose}
             </div>
-            {interval.uuid &&
+            {interval.uuid && allowIntervalDelete &&
               <button className={styles.ProgressHoverDelete}
                       onClick={deleteTrackInterval}>
                 {iconTrash}
+              </button>
+            }
+            {allowIntervalPlay && cleanedPurpose !== 'Muted' &&
+              <button className={styles.ProgressHoverDelete}
+                      onClick={seekToInterval}>
+                {iconPlay}
               </button>
             }
           </div>

@@ -329,3 +329,18 @@ export const playbackCycleVolumeLevelAudio = function(state) {
     playback: { ...state.playback, volumeLevel },
   }
 }
+
+
+export const playbackModalOpen = function(state, payload) {
+  return {
+    ...state,
+    playback: { ...state.playback, nowPlaying: payload.queue, },
+  }
+}
+
+export const playbackModalClose = function(state, payload) {
+  return {
+    ...state,
+    playback: { ...state.playback, nowPlaying: undefined, isPlaying: false, },
+  }
+}

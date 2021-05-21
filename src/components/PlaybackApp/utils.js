@@ -6,24 +6,19 @@
  *   seekTimeout: Time in milliseconds until the next seek should happen,
  * ]
  */
-export const getPositionMilliseconds = function(stream, startedAt) {
-  if(!stream.nowPlaying) {
+export const getPositionMilliseconds = function(queue, startedAt) {
+  if(!queue) {
     return [undefined, undefined];
   }
 
-  let progress;
-  if(stream.nowPlaying.status === 'paused') {
-    progress = stream.nowPlaying.statusAt - startedAt;
-  } else {
-    progress = Date.now() - startedAt;
-  }
+  let progress = getProgress(queue);
 
   let instrument = 'all',
       seekTimeout,
       playbackIntervalIdx = 0,
       cumulativeProgress = 0;
   while(true) {
-    const playbackInterval = stream.nowPlaying.playbackIntervals[playbackIntervalIdx],
+    const playbackInterval = queue.playbackIntervals[playbackIntervalIdx],
           playbackIntervalDuration = playbackInterval.endPosition - playbackInterval.startPosition,
           remainingProgress = progress - cumulativeProgress;
     if(remainingProgress < playbackIntervalDuration) {
@@ -36,7 +31,7 @@ export const getPositionMilliseconds = function(stream, startedAt) {
     cumulativeProgress += playbackIntervalDuration;
   }
 
-  if(playbackIntervalIdx === stream.nowPlaying.playbackIntervals.length - 1) {
+  if(playbackIntervalIdx === queue.playbackIntervals.length - 1) {
     seekTimeout = undefined;
   }
 
@@ -44,8 +39,8 @@ export const getPositionMilliseconds = function(stream, startedAt) {
 }
 
 
-export const getProgressMilliseconds = function(stream, position) {
-  if(!stream.nowPlaying) {
+export const getProgressMilliseconds = function(queue, position) {
+  if(!queue) {
     return undefined;
   }
 
@@ -53,7 +48,7 @@ export const getProgressMilliseconds = function(stream, position) {
       playbackIntervalIdx = 0,
       cumulativeProgress = 0;
   while(true) {
-    const playbackInterval = stream.nowPlaying.playbackIntervals[playbackIntervalIdx],
+    const playbackInterval = queue.playbackIntervals[playbackIntervalIdx],
           playbackIntervalDuration = playbackInterval.endPosition - playbackInterval.startPosition;
     if(position >= playbackInterval.startPosition && position < playbackInterval.endPosition) {
       progress = position - playbackInterval.startPosition + cumulativeProgress;
@@ -62,7 +57,6 @@ export const getProgressMilliseconds = function(stream, position) {
     playbackIntervalIdx += 1;
     cumulativeProgress += playbackIntervalDuration;
   }
-  console.log(progress)
   return progress;
 }
 
@@ -70,11 +64,11 @@ export const getProgressMilliseconds = function(stream, position) {
 /*
  * Get the progress of a stream.
  */
-export const getProgress = function(stream) {
-  if(stream?.isPaused) {
-    return stream.nowPlaying.statusAt - stream.nowPlaying.startedAt;
-  } else if(stream?.isPlaying) {
-    return Date.now() - stream.nowPlaying.startedAt;
+export const getProgress = function(queue) {
+  if(queue.status === "paused") {
+    return queue.statusAt - queue.startedAt;
+  } else if(queue.status === 'played') {
+    return Date.now() - queue.startedAt;
   } else {
     return undefined;
   }

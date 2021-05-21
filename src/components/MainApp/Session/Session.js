@@ -95,7 +95,7 @@ function Session(props) {
             {/* QUEUE */}
             <Route path="/app/queue">
               <div className={styles.PrimaryContent}>
-                <QueueApp />
+                <QueueApp playbackControls={props.playbackControls}/>
               </div>
               <Link to="/app/player" onClick={() => { handleTab("player"); }} style={{ textDecoration: 'none', color: "#000" }}>
                 <div className={styles.SecondaryContent}>

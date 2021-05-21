@@ -46,6 +46,7 @@
   margin: 88px;
   margin-top: 100px;
   height: calc(100% - 188px);
+  width: calc(100% - 176px);
 }
 
 .ContentContainer > div > h4 {

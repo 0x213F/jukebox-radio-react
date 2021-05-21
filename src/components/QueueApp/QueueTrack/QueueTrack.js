@@ -13,19 +13,34 @@ function QueueTrack(props) {
    */
   const queue = props.data;
 
+  const stream = props.stream;
+
   const [showModal, setShowModal] = useState(false);
   const [shouldOpenModal, setShouldOpenModal] = useState(false);
-
-  const initializeModal = function() {
-    setShouldOpenModal(true);
-  }
+  const [shouldPlayOnClose, setShouldPlayOnClose] = useState(false);
 
   const openModal = function() {
+    if(stream.nowPlaying?.status === 'played') {
+      props.playbackControls.pause();
+      setShouldPlayOnClose(true);
+    }
+    props.dispatch({
+      type: "playback/modalOpen",
+      payload: { queue },
+    });
     setShowModal(true);
   }
 
   const closeModal = function() {
+    props.dispatch({
+      type: "playback/modalClose",
+      payload: {},
+    });
     setShowModal(false);
+    if(shouldPlayOnClose) {
+      // props.playbackControls.play();
+      setShouldPlayOnClose(false);
+    }
   }
 
   const mainClass = queue.parentUuid ? "QueueTrackChild" : "QueueTrackHead",
@@ -54,7 +69,7 @@ function QueueTrack(props) {
       </div>
 
       <div className={styles.ButtonContainer}>
-        <button className={styles[buttonClass]} type="button" onClick={initializeModal}>
+        <button className={styles[buttonClass]} type="button" onClick={openModal}>
           {iconEdit}
         </button>
         <button className={styles[buttonClass]} type="button" onClick={async (e) => { await props.destroy(queue); }}>
@@ -62,15 +77,14 @@ function QueueTrack(props) {
         </button>
       </div>
       <TrackDetailApp data={queue}
-                 isOpen={showModal}
-                 shouldOpenModal={shouldOpenModal}
-                 setShouldOpenModal={setShouldOpenModal}
-                 openModal={openModal}
-                 closeModal={closeModal} />
+                      isOpen={showModal}
+                      closeModal={closeModal} />
     </div>
   );
 }
 
-const mapStateToProps = (state) => ({});
+const mapStateToProps = (state) => ({
+  stream: state.stream,
+});
 
 export default connect(mapStateToProps)(QueueTrack);

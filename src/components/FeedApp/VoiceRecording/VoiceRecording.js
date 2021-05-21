@@ -56,7 +56,7 @@ function VoiceRecording(props) {
       return;
     }
 
-    const arr = getPositionMilliseconds(stream, stream.nowPlaying.startedAt),
+    const arr = getPositionMilliseconds(stream.nowPlaying, stream.nowPlaying.startedAt),
           position = arr[0],
           withinContext = (
             voiceRecording.timestampMilliseconds >= position - 2000 &&

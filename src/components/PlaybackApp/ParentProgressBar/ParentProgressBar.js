@@ -4,7 +4,7 @@ import { connect } from 'react-redux';
 import Draggable from 'react-draggable';
 
 import styles from './ParentProgressBar.module.css';
-import { getPositionMilliseconds } from '../utils';
+import { getPositionMilliseconds, getProgressMilliseconds } from '../utils';
 import ChildProgressBar from '../ChildProgressBar/ChildProgressBar';
 import ProgressBarMarker from '../ProgressBarMarker/ProgressBarMarker';
 import { iconSmallCircle } from '../icons';
@@ -15,35 +15,40 @@ function ParentProgressBar(props) {
   const DISABLE_ANIMATION = -1,
         ENABLE_ANIMATION = 0;
 
-  const draggableRef = useRef();
+  const draggableRef = useRef(),
+        progressRef = useRef();
 
   const [stickyPointerLeftDistance, setStickyPointerLeftDistance] = useState(false);
   const [dragOffset, setDragOffset] = useState(0);
 
   const [markerHover, setMarkerHover] = useState(false);
 
-  const queue = props.queue,
+  const queue = { ...props.queue },
         mode = props.mode,
-        stream = props.stream,
         allIntervals = queue?.allIntervals || [],
-        duration = queue?.track?.durationMilliseconds || 0;
+        duration = queue?.track?.durationMilliseconds || 0,
+        allowMarkerSeek = props.allowMarkerSeek,
+        allowMarkerDelete = props.allowMarkerDelete,
+        allowIntervalPlay = props.allowIntervalPlay,
+        allowIntervalDelete = props.allowIntervalDelete;
 
   let position, pointerLeftDistance;
-  if(mode === "player") {
-    try {
-      const arr = getPositionMilliseconds(stream, stream.nowPlaying.startedAt);
-      position = arr[0];
-      pointerLeftDistance = (position / duration) * 100;
-    } catch (e) {
-      position = 0;
-      pointerLeftDistance = (position / duration) * 100;
-    }
+  try {
+    const arr = getPositionMilliseconds(queue, queue.startedAt);
+    position = arr[0];
+    pointerLeftDistance = (position / duration) * 100;
+  } catch (e) {
+    position = 0;
+    pointerLeftDistance = (position / duration) * 100;
   }
 
   const markerMap = props.markerMap,
-        markers = Object.values(markerMap[queue?.track?.uuid] || []).sort((a, b) => {
-          return a.timestampMilliseconds - b.timestampMilliseconds;
-        });
+        markers = (
+          props.markers ||
+          Object.values(markerMap[queue?.track?.uuid] || []).sort((a, b) => {
+            return a.timestampMilliseconds - b.timestampMilliseconds;
+          })
+        );
 
   let runningMark = 6;
   for(let i=0; i < markers.length; i++) {
@@ -72,44 +77,36 @@ function ParentProgressBar(props) {
     }
 
     // Change styles for markers that are "not playable"
-    if(mode === "player") {
-      for(let j=0; j < stream.nowPlaying.allIntervals.length; j++) {
-        const interval = stream.nowPlaying.allIntervals[j],
-              notPlayable = (
-                interval.purpose === 'muted' &&
-                interval.startPosition <= markers[i].timestampMilliseconds &&
-                interval.endPosition > markers[i].timestampMilliseconds
+    for(let j=0; j < queue.allIntervals.length; j++) {
+      const interval = queue.allIntervals[j],
+            notPlayable = (
+              interval.purpose === 'muted' &&
+              interval.startPosition <= markers[i].timestampMilliseconds &&
+              interval.endPosition > markers[i].timestampMilliseconds
+            );
+
+      markers[i].playable = true;
+      if(notPlayable) {
+        markers[i].playable = false;
+
+        // If this is the end of the song, do not allow "stop"
+        const playbackIntervals = queue.playbackIntervals,
+              endPosition = playbackIntervals[playbackIntervals.length - 1].endPosition,
+              forceStoppable = (
+                markers[i].timestampMilliseconds === endPosition ||
+                (
+                  interval.startPosition < markers[i].timestampMilliseconds &&
+                  interval.endPosition > markers[i].timestampMilliseconds
+                )
               );
-
-        markers[i].playable = true;
-        if(notPlayable) {
-          markers[i].playable = false;
-
-          // If this is the end of the song, do not allow "stop"
-          const playbackIntervals = stream.nowPlaying.playbackIntervals,
-                endPosition = playbackIntervals[playbackIntervals.length - 1].endPosition,
-                forceStoppable = (
-                  markers[i].timestampMilliseconds === endPosition ||
-                  (
-                    interval.startPosition < markers[i].timestampMilliseconds &&
-                    interval.endPosition > markers[i].timestampMilliseconds
-                  )
-                );
-          if(forceStoppable) {
-            markers[i].stoppable = false;
-          }
-          break;
+        if(forceStoppable) {
+          markers[i].stoppable = false;
         }
+        break;
       }
     }
   }
 
-  // Change styles for markers that are "not playable"
-  if(mode === "markers") {
-    for(let i=0; i < allIntervals.length; i++) {
-      // allIntervals[i].purpose = "all";
-    }
-  }
   /*
    *
    */
@@ -129,10 +126,13 @@ function ParentProgressBar(props) {
    *
    */
   const handleDragStop = async function(e, ui) {
-    const rect = draggableRef.current.getBoundingClientRect(),
-          playbackPercent = rect.left / (window.innerWidth - 8),
-          nextPosition = Math.round(duration * playbackPercent);
-    await props.playbackControls.seek(nextPosition);
+    const cursorRect = draggableRef.current.getBoundingClientRect(),
+          progressRect = progressRef.current.getBoundingClientRect(),
+          playbackPercent = (cursorRect.left - progressRect.left) / (progressRef.current.offsetWidth - 8),
+          nextPosition = Math.round(duration * playbackPercent),
+          nextProgress = getProgressMilliseconds(queue, nextPosition);
+
+    await props.playbackControls.seek(nextProgress);
     setDragOffset(ui.x);
     setAnimationStatus(ENABLE_ANIMATION);
     setStickyPointerLeftDistance(false);
@@ -172,21 +172,19 @@ function ParentProgressBar(props) {
 
 
   return (
-    <div className={styles.ParentProgressBar}>
-      {mode === "player" &&
-        <Draggable axis="x"
-                   bounds="body"
-                   disabled={stream.nowPlaying?.status === 'paused'}
-                   onStart={handleDragStart}
-                   onDrag={handleDragChange}
-                   onStop={handleDragStop}>
-          <div ref={draggableRef}
-               className={styles.ProgressPointer}
-               style={{left: `calc(${pointerLeftDistance}% - ${6 + dragOffset}px)`}}>
-            {iconSmallCircle}
-          </div>
-        </Draggable>
-      }
+    <div ref={progressRef} className={styles.ParentProgressBar}>
+      <Draggable axis="x"
+                 bounds="body"
+                 disabled={queue?.status === 'paused'}
+                 onStart={handleDragStart}
+                 onDrag={handleDragChange}
+                 onStop={handleDragStop}>
+        <div ref={draggableRef}
+             className={styles.ProgressPointer}
+             style={{left: `calc(${pointerLeftDistance}% - ${6 + dragOffset}px)`}}>
+          {iconSmallCircle}
+        </div>
+      </Draggable>
       <div className={styles.ProgressBar}>
         {  // eslint-disable-next-line
         allIntervals.map((interval, index) => {
@@ -194,27 +192,30 @@ function ParentProgressBar(props) {
                                    interval={interval}
                                    duration={duration}
                                    queue={queue}
-                                   editable={mode === "intervals"}>
+                                   editable={mode === "intervals"}
+                                   playbackControls={props.playbackControls}
+                                   allowIntervalPlay={allowIntervalPlay}
+                                   allowIntervalDelete={allowIntervalDelete}>
                  </ChildProgressBar>;
         })}
       </div>
-      {(mode === "markers" || mode === "player") &&
-        <div className={styles.ProgressMarkerContainer}>
-          {  // eslint-disable-next-line
-          markers.map((marker, index) => {
-            return <ProgressBarMarker key={marker.uuid}
-                                      marker={marker}
-                                      queueUuid={queue.uuid}
-                                      forceDisplay={marker.forceDisplay}
-                                      editable={mode === "markers"}
-                                      playable={marker.playable}
-                                      stoppable={marker.stoppable}
-                                      playbackControls={props.playbackControls}
-                                      markerHover={markerHover}
-                                      setMarkerHover={setMarkerHover} />;
-          })}
-        </div>
-      }
+      <div className={styles.ProgressMarkerContainer}>
+        {  // eslint-disable-next-line
+        markers.map((marker, index) => {
+          return <ProgressBarMarker key={marker.uuid}
+                                    marker={marker}
+                                    queue={queue}
+                                    forceDisplay={marker.forceDisplay}
+                                    editable={allowMarkerDelete}
+                                    playable={marker.playable}
+                                    stoppable={marker.stoppable}
+                                    playbackControls={props.playbackControls}
+                                    markerHover={markerHover}
+                                    setMarkerHover={setMarkerHover}
+                                    allowMarkerSeek={allowMarkerSeek}
+                                    hoveringEnabled={mode !== "intervals"} />;
+        })}
+      </div>
     </div>
   );
 }

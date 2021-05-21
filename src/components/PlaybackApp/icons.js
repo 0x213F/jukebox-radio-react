@@ -24,7 +24,7 @@ export const iconMarker = (
 
 export const iconSmallCircle = (
   <svg width="8" height="8" viewBox="0 0 8 8" fill="none" xmlns="http://www.w3.org/2000/svg">
-    <path d="M4 7C5.65685 7 7 5.65685 7 4C7 2.34315 5.65685 1 4 1C2.34315 1 1 2.34315 1 4C1 5.65685 2.34315 7 4 7Z" fill="#0047FF" stroke="#0047FF" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+    <path d="M7 4C7 5.65685 5.65685 7 4 7C2.34315 7 1 5.65685 1 4C1 2.34315 2.34315 1 4 1C5.65685 1 7 2.34315 7 4Z" fill="white" stroke="#0047FF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
   </svg>
 );
 

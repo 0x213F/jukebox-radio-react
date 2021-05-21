@@ -75,7 +75,7 @@ export const getQueueDuration = function(queues, stream) {
 
   // In addition to whatever is queued up, we must add the remaining progress
   // of whatever is now playing in the stream.
-  const progress = getProgress(stream);
+  const progress = stream.nowPlaying ? getProgress(stream.nowPlaying) : 0;
   let remainingProgress = 0;
   if(progress) {
     remainingProgress = stream.nowPlaying.durationMilliseconds - progress;
