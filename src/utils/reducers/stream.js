@@ -4,18 +4,20 @@ import { finalizeQueues } from './queue';
 export const streamSetWrapper = function(state, payload) {
   const obj = streamSet(state, payload);
 
-  const stream = { ...obj.stream };
-  if(!stream.nowPlaying?.track?.uuid) {
+  const stream = { ...obj.stream },
+        queueMap = obj.queueMap,
+        nowPlaying = queueMap[stream.nowPlayingUuid];
+  if(!nowPlaying?.track?.uuid) {
     return obj;
   }
 
   // Gotta update the marker map
   const markerMap = { ...state.markerMap };
-  if(markerMap[stream.nowPlaying.track.uuid] === undefined || markerMap[stream.nowPlaying.track.uuid].length === 0) {
-    markerMap[stream.nowPlaying.track.uuid] = {};
+  if(markerMap[nowPlaying.track.uuid] === undefined || markerMap[nowPlaying.track.uuid].length === 0) {
+    markerMap[nowPlaying.track.uuid] = {};
   }
-  for(const marker of stream.nowPlaying.markers) {
-    markerMap[stream.nowPlaying.track.uuid][marker.uuid] = marker;
+  for(const marker of nowPlaying.markers) {
+    markerMap[nowPlaying.track.uuid][marker.uuid] = marker;
   }
   obj.markerMap = markerMap;
   return {
@@ -30,12 +32,13 @@ export const streamSetWrapper = function(state, payload) {
  */
 export const streamSet = function(state, payload) {
   const stream = payload.stream,
-        nowPlaying = stream.nowPlaying;
+        nowPlaying = stream.nowPlaying;  // from server, this is a full obj!
   let obj = { ...state };
 
   if(nowPlaying) {
     obj = finalizeQueues(obj, [nowPlaying]);
-    stream.nowPlaying = obj.queueMap[nowPlaying.uuid];
+
+    // stream.nowPlaying = obj.queueMap[nowPlaying.uuid];
   }
 
   obj.stream = stream;
@@ -54,6 +57,16 @@ export const streamSet = function(state, payload) {
     obj.stream.nowPlaying = undefined;
   }
 
+  // clean nowPlaying
+  if(obj.stream.nowPlaying) {
+    const nowPlayingUuid = obj.stream.nowPlaying.uuid;
+    delete obj.stream.nowPlaying;
+    obj.stream.nowPlayingUuid = nowPlayingUuid;
+  } else {
+    delete obj.stream.nowPlaying;
+    obj.stream.nowPlayingUuid = undefined;
+  }
+
   return obj;
 }
 
@@ -62,23 +75,24 @@ export const streamSet = function(state, payload) {
  * ...
  */
 export const streamPlay = function(state, payload) {
-  const queue = {
-          ...state.stream.nowPlaying,
+  const queueMap = { ...state.queueMap },
+        queue = {
+          ...queueMap[state.stream.nowPlayingUuid],
           startedAt: payload.startedAt,
           statusAt: payload.statusAt,
           status: payload.status,
-        },
-        queueMap = { ...state.queueMap };
+        };
   queueMap[queue.uuid] = queue;
 
-  const updatedPayload = {
-    stream: {
-      ...state.stream,
-      nowPlaying: queue,
-    },
-    queueMap: queueMap,
+  return {
+    ...state,
+    queueMap
   };
-  return streamSet(state, updatedPayload);
+
+  // const updatedPayload = {
+  //   queueMap: queueMap,
+  // };
+  // return streamSet(state, updatedPayload);
 }
 
 
@@ -86,22 +100,23 @@ export const streamPlay = function(state, payload) {
  * ...
  */
 export const streamPause = function(state, payload) {
-  const queue = {
-          ...state.stream.nowPlaying,
+  const queueMap = { ...state.queueMap },
+        queue = {
+          ...queueMap[state.stream.nowPlayingUuid],
           statusAt: payload.statusAt,
           status: payload.status,
-        },
-        queueMap = { ...state.queueMap };
+        };
   queueMap[queue.uuid] = queue;
 
-  const updatedPayload = {
-    stream: {
-      ...state.stream,
-      nowPlaying: queue,
-    },
-    queueMap: queueMap,
+  return {
+    ...state,
+    queueMap
   };
-  return streamSet(state, updatedPayload);
+
+  // const updatedPayload = {
+  //   queueMap: queueMap,
+  // };
+  // return streamSet(state, updatedPayload);
 }
 
 
@@ -111,7 +126,8 @@ export const streamPause = function(state, payload) {
 export const streamPrevTrack = function(state, payload) {
   const lastUpQueues = [...state.lastUpQueues],
         nextUpQueues = [...state.nextUpQueues],
-        lastNowPlaying = state.stream.nowPlaying,
+        queueMap = state.queueMap,
+        lastNowPlaying = queueMap[state.stream.nowPlayingUuid],
         nextUpQueue = nextUpQueues[0],
         nextNowPlaying = lastUpQueues[lastUpQueues.length - 1];
 
@@ -151,9 +167,9 @@ export const streamPrevTrack = function(state, payload) {
           startedAt: payload.startedAt,
           statusAt: payload.statusAt,
           status: payload.status,
-        },
-        queueMap = { ...state.queueMap };
+        };
   queueMap[queue.uuid] = queue;
+
   if(parentQueue) {
     queueMap[parentQueue.uuid] = parentQueue;
   }
@@ -162,8 +178,9 @@ export const streamPrevTrack = function(state, payload) {
       ...state,
       stream: {
         ...state.stream,
-        nowPlaying: queue,
+        nowPlayingUuid: queue.uuid,
       },
+      playback: { ...state.playback, nowPlayingUuid: queue.uuid },
       queueMap: queueMap,
       lastUpQueues: lastUpQueues,
       nextUpQueues: nextUpQueues,
@@ -178,7 +195,8 @@ export const streamPrevTrack = function(state, payload) {
 export const streamNextTrack = function(state, payload) {
   const lastUpQueues = [...state.lastUpQueues],
         nextUpQueues = [...state.nextUpQueues],
-        lastNowPlaying = state.stream.nowPlaying,
+        queueMap = state.queueMap,
+        lastNowPlaying = queueMap[state.stream.nowPlayingUuid],
         nextUpQueue = nextUpQueues[0],
         nextNowPlaying = (
           nextUpQueue ?
@@ -208,16 +226,16 @@ export const streamNextTrack = function(state, payload) {
           startedAt: payload.startedAt,
           statusAt: payload.statusAt,
           status: payload.status,
-        },
-        queueMap = { ...state.queueMap };
+        };
   queueMap[queue.uuid] = queue;
 
   return {
       ...state,
       stream: {
         ...state.stream,
-        nowPlaying: queue,
+        nowPlayingUuid: queue.uuid,
       },
+      playback: { ...state.playback, nowPlayingUuid: queue.uuid },
       queueMap: queueMap,
       lastUpQueues: lastUpQueues,
       nextUpQueues: nextUpQueues,

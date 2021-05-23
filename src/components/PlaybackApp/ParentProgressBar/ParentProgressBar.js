@@ -175,6 +175,7 @@ function ParentProgressBar(props) {
     <div ref={progressRef} className={styles.ParentProgressBar}>
       <Draggable axis="x"
                  bounds="body"
+                 nodeRef={draggableRef}
                  disabled={queue?.status === 'paused'}
                  onStart={handleDragStart}
                  onDrag={handleDragChange}

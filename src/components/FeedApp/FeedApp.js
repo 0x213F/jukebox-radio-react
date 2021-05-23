@@ -22,7 +22,9 @@ function FeedApp(props) {
    * 🏗
    */
   const feed = props.feed,
-        stream = props.stream;
+        stream = props.stream,
+        queueMap = props.queueMap,
+        nowPlaying = queueMap[stream.nowPlayingUuid];
 
   const [textCommentText, setTextCommentText] = useState('');
   const [textCommentTrackUuid, setTextCommentTrackUuid] = useState(undefined);
@@ -38,9 +40,9 @@ function FeedApp(props) {
    * Opens the modal, showing ABCNotationCompose.
    */
   const openModal = function() {
-    const arr = getPositionMilliseconds(stream.nowPlaying, stream.nowPlaying.startedAt),
+    const arr = getPositionMilliseconds(nowPlaying, nowPlaying.startedAt),
           position = arr[0];
-    setTextCommentTrackUuid(stream.nowPlaying.track.uuid);
+    setTextCommentTrackUuid(nowPlaying.track.uuid);
     setTextCommentTimestamp(position);
     setShowModal(true);
   }
@@ -62,10 +64,10 @@ function FeedApp(props) {
     if(textCommentTrackUuid && textCommentTimestamp) {
       return;
     }
-    const arr = getPositionMilliseconds(stream.nowPlaying, stream.nowPlaying.startedAt),
+    const arr = getPositionMilliseconds(nowPlaying, nowPlaying.startedAt),
           position = arr[0];
     setTextCommentTimestamp(position);
-    setTextCommentTrackUuid(stream.nowPlaying.track.uuid);
+    setTextCommentTrackUuid(nowPlaying.track.uuid);
   }
 
   /*
@@ -101,7 +103,7 @@ function FeedApp(props) {
             lastModified: Date.now(),
           });
 
-          const arr = getPositionMilliseconds(stream.nowPlaying, stream.nowPlaying.startedAt),
+          const arr = getPositionMilliseconds(nowPlaying, nowPlaying.startedAt),
                 position = arr[0];
 
           const responseJson = await fetchCreateVoiceRecording(file, JSON.stringify([]), '', position);
@@ -144,11 +146,11 @@ function FeedApp(props) {
                           closeModal={closeModal} />
 
       <div className={styles.ContentContainer}>
-        <div className={[styles.ImageContainer, styles[stream.nowPlaying?.track?.service]].join(' ')}>
-          <img alt="" src={stream.nowPlaying?.track?.imageUrl} />
+        <div className={[styles.ImageContainer, styles[nowPlaying?.track?.service]].join(' ')}>
+          <img alt="" src={nowPlaying?.track?.imageUrl} />
         </div>
         <h5>
-          {stream.nowPlaying?.track?.name}
+          {nowPlaying?.track?.name}
         </h5>
       </div>
 
@@ -173,13 +175,13 @@ function FeedApp(props) {
           <button className={styles.NotationButton}
                   type="button"
                   onClick={openModal}
-                  disabled={stream.nowPlaying.status !== "played"} >
+                  disabled={nowPlaying.status !== "played"} >
             <div></div>
           </button>
           <button className={styles.RecordButton}
                   type="button"
                   onClick={handleRecord}
-                  disabled={stream.nowPlaying.status !== "played"} >
+                  disabled={nowPlaying.status !== "played"} >
             <div></div>
           </button>
           <input type="text"
@@ -187,10 +189,10 @@ function FeedApp(props) {
                  value={textCommentText}
                  onChange={handleTextChange}
                  autoComplete="off"
-                 disabled={stream.nowPlaying.status !== "played"} />
+                 disabled={nowPlaying.status !== "played"} />
           <button className={styles.SubmitButton}
                   type="submit"
-                  disabled={stream.nowPlaying.status !== "played"} >
+                  disabled={nowPlaying.status !== "played"} >
             Send
           </button>
         </form>
@@ -203,6 +205,7 @@ function FeedApp(props) {
 
 const mapStateToProps = (state) => ({
     stream: state.stream,
+    queueMap: state.queueMap,
     feed: state.feed,
 });
 

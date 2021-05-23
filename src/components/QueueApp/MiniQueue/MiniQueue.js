@@ -7,7 +7,9 @@ import ReactTimeAgo from 'react-time-ago';
 function MiniQueue(props) {
 
   const nextUpQueues = props.nextUpQueues,
-        stream = props.stream;
+        stream = props.stream,
+        queueMap = props.queueMap,
+        nowPlaying = queueMap[stream.nowPlayingUuid];
 
   let flattenedQueue, expandedQueues;
   if(nextUpQueues.length) {
@@ -18,7 +20,7 @@ function MiniQueue(props) {
   }
 
   // TODO needs to add however much is left inside now playing.
-  const queueDuration = getQueueDuration(nextUpQueues, stream);
+  const queueDuration = getQueueDuration(nextUpQueues, nowPlaying);
   const endsAt = new Date(Date.now() + queueDuration);
 
   /*
@@ -56,6 +58,7 @@ function MiniQueue(props) {
 const mapStateToProps = (state) => ({
   nextUpQueues: state.nextUpQueues,
   stream: state.stream,
+  queueMap: state.queueMap,
 });
 
 

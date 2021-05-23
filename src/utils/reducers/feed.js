@@ -19,8 +19,14 @@ const RENDER_STATUS_HISTORY = 'history',
  * other reducers need to re-generate the feed.
  */
 export const feedGenerate = function(state) {
+
+
+
   const stream = state.stream,
-        [progress, displayThreshold, historyThreshold] = getPositionMilliseconds(stream);
+        queueMap = state.queueMap,
+        nowPlaying = queueMap[stream.nowPlayingUuid];
+
+  const [progress, displayThreshold, historyThreshold] = getPositionMilliseconds(nowPlaying);
 
   if(!progress) {
     return [];
@@ -64,16 +70,16 @@ export const feedGenerate = function(state) {
  * Helper method which gets the timestamp marker thresholds to help define
  * which comments should be displayed.
  */
-const getPositionMilliseconds = function(stream) {
+const getPositionMilliseconds = function(nowPlaying) {
 
-  if(!stream?.nowPlaying?.track) {
+  if(!nowPlaying?.track) {
     return [undefined, undefined, undefined];
   }
 
-  const startedAt = stream.nowPlaying.startedAt;
+  const startedAt = nowPlaying.startedAt;
 
   let progress = (
-        stream.nowPlaying.status === "played" ? Date.now() - startedAt : stream.nowPlaying.statusAt - startedAt
+        nowPlaying.status === "played" ? Date.now() - startedAt : nowPlaying.statusAt - startedAt
       ),
       playbackIntervalIdx = 0,
       displayThreshold = 0,
@@ -81,7 +87,7 @@ const getPositionMilliseconds = function(stream) {
       cumulativeProgress = 0;
 
   while(true) {
-    const playbackInterval = stream.nowPlaying.playbackIntervals[playbackIntervalIdx],
+    const playbackInterval = nowPlaying.playbackIntervals[playbackIntervalIdx],
           playbackIntervalDuration = playbackInterval.endPosition - playbackInterval.startPosition;
     let remainingProgress;
 

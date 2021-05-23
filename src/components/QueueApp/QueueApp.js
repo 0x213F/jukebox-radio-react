@@ -11,9 +11,11 @@ import ReactTimeAgo from 'react-time-ago';
 function QueueApp(props) {
 
   const nextUpQueues = props.nextUpQueues,
-        stream = props.stream;
+        stream = props.stream,
+        queueMap = props.queueMap,
+        nowPlaying = queueMap[stream.nowPlayingUuid];
 
-  const queueDuration = getQueueDuration(nextUpQueues, stream);
+  const queueDuration = getQueueDuration(nextUpQueues, nowPlaying);
   const endsAt = new Date(Date.now() + queueDuration);
 
   /*
@@ -92,6 +94,7 @@ function QueueApp(props) {
 
 const mapStateToProps = (state) => ({
   stream: state.stream,
+  queueMap: state.queueMap,
   nextUpQueues: state.nextUpQueues,
   lastUpQueues: state.lastUpQueues,
 });

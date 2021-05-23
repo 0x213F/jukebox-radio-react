@@ -20,7 +20,9 @@ function TextComment(props) {
   const textComment = props.data,
         textCommentUuid = textComment.uuid,
         stream = props.stream,
-        nowPlayingTrackUuid = stream?.nowPlaying?.track?.uuid;
+        queueMap = props.queueMap,
+        nowPlaying = queueMap[stream.nowPlayingUuid],
+        nowPlayingTrackUuid = nowPlaying?.track?.uuid;
 
   const [hovering, setHovering] = useState(false);
 
@@ -55,7 +57,7 @@ function TextComment(props) {
   }
 
   const handleSeek = function() {
-    if(stream.nowPlaying.status === 'paused') {
+    if(nowPlaying.status === 'paused') {
       props.playbackControls.play(textComment.timestampMilliseconds);
     } else {
       props.playbackControls.seek(textComment.timestampMilliseconds);
@@ -111,6 +113,7 @@ function TextComment(props) {
 
 const mapStateToProps = (state) => ({
   stream: state.stream,
+  queueMap: state.queueMap,
 });
 
 

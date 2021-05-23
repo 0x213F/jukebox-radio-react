@@ -23,6 +23,8 @@ function Session(props) {
    * 🏗
    */
   const stream = props.stream,
+        queueMap = props.queueMap,
+        nowPlaying = queueMap[stream.nowPlayingUuid],
         nextUpQueues = props.nextUpQueues;
 
   const [showModal, setShowModal] = useState(false);
@@ -47,8 +49,8 @@ function Session(props) {
 
   useEffect(() => {
     const shouldDisplayModal = (
-      stream.nowPlaying?.status !== "played" &&
-      stream.nowPlaying?.status !== 'paused' &&
+      nowPlaying?.status !== "played" &&
+      nowPlaying?.status !== 'paused' &&
       !nextUpQueues.length &&
       !forceHideModal
     )
@@ -57,7 +59,7 @@ function Session(props) {
     }
     setShowModal(true);
     setForceHideModal(true);
-  }, [stream, nextUpQueues, forceHideModal])
+  }, [nowPlaying, nextUpQueues, forceHideModal])
 
    /*
     * 🎨
@@ -130,6 +132,7 @@ function Session(props) {
 
 const mapStateToProps = (state) => ({
     stream: state.stream,
+    queueMap: state.queueMap,
     nextUpQueues: state.nextUpQueues,
 });
 

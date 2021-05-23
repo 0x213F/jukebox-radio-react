@@ -13,14 +13,15 @@ function QueueTrack(props) {
    */
   const queue = props.data;
 
-  const stream = props.stream;
+  const stream = props.stream,
+        queueMap = props.queueMap,
+        nowPlaying = queueMap[stream.nowPlayingUuid];
 
   const [showModal, setShowModal] = useState(false);
-  const [shouldOpenModal, setShouldOpenModal] = useState(false);
   const [shouldPlayOnClose, setShouldPlayOnClose] = useState(false);
 
   const openModal = function() {
-    if(stream.nowPlaying?.status === 'played') {
+    if(nowPlaying?.status === 'played') {
       props.playbackControls.pause();
       setShouldPlayOnClose(true);
     }
@@ -85,6 +86,7 @@ function QueueTrack(props) {
 
 const mapStateToProps = (state) => ({
   stream: state.stream,
+  queueMap: state.queueMap,
 });
 
 export default connect(mapStateToProps)(QueueTrack);

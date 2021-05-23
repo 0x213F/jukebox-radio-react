@@ -57,16 +57,16 @@ function SideBar(props) {
 
         <ul className={styles.Menu}
             onClick={(e) => { setCounter(prev => prev + 1); }}>
-          <li className={sideBar.tab === "search" && styles.LiSelected}>
+          <li className={(sideBar.tab === "search" && styles.LiSelected) || ""}>
             <Link to="/app/search" onClick={() => { handleTab("search"); }} style={{color: "#000"}}>Search</Link>
           </li>
-          <li className={sideBar.tab === "queue" && styles.LiSelected}>
+          <li className={(sideBar.tab === "queue" && styles.LiSelected) || ""}>
             <Link to="/app/queue" onClick={() => { handleTab("queue"); }} style={{color: "#000"}}>Queue</Link>
           </li>
-          <li className={sideBar.tab === "player" && styles.LiSelected}>
+          <li className={(sideBar.tab === "player" && styles.LiSelected) || ""}>
             <Link to="/app/player" onClick={() => { handleTab("player"); }} style={{color: "#000"}}>Player</Link>
           </li>
-          <li className={sideBar.tab === "feed" && styles.LiSelected}>
+          <li className={(sideBar.tab === "feed" && styles.LiSelected) || ""}>
             <Link to="/app/feed" onClick={() => { handleTab("feed"); }} style={{color: "#000"}}>Feed</Link>
           </li>
         </ul>

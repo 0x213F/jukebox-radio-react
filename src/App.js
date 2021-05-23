@@ -60,9 +60,18 @@ function App() {
       responseJson = await fetchStreamGet();
       await store.dispatch(responseJson.redux);
 
+      // 2.5: Mount the stream for playback
+      const state = store.getState(),
+            stream = state.stream,
+            queueMap = state.queueMap,
+            nowPlaying = queueMap[stream.nowPlayingUuid];
+      await store.dispatch({
+        type: "playback/mount",
+        payload: { stream },
+      });
+
       // 3: Load the track now playing (conditionally).
-      const payload = responseJson.redux.payload,
-            nowPlayingTrack = payload.stream.nowPlaying?.track;
+      const nowPlayingTrack = nowPlaying?.track;
       if(nowPlayingTrack?.service === SERVICE_JUKEBOX_RADIO) {
         const trackUuid = nowPlayingTrack.uuid;
         responseJson = await fetchTrackGetFiles(trackUuid);
@@ -99,15 +108,13 @@ function App() {
       await store.dispatch(responseJson.redux);
 
       // IMPORTANT: need to reload stream from state to get cleaned stream.
-      const stream = store.getState().stream;
-      console.log(stream)
-      if(stream.nowPlaying?.track?.uuid) {
+      if(nowPlaying?.track?.uuid) {
         // 5: Load relevant comments.
-        const textCommentsJsonResponse = await fetchTextCommentList(stream.nowPlaying?.track?.uuid);
+        const textCommentsJsonResponse = await fetchTextCommentList(nowPlaying?.track?.uuid);
         await store.dispatch(textCommentsJsonResponse.redux);
 
         // 6: Load relevant voice recordings. This will also generate the feed.
-        const voiceRecordingsJsonResponse = await fetchVoiceRecordingList(stream.nowPlaying?.track?.uuid);
+        const voiceRecordingsJsonResponse = await fetchVoiceRecordingList(nowPlaying?.track?.uuid);
         await store.dispatch(voiceRecordingsJsonResponse.redux);
       }
 
@@ -134,12 +141,15 @@ function App() {
     // Define behavior for when the webpage is closed.
     window.addEventListener("beforeunload", (e) => {
       e.preventDefault();
-      const state = store.getState();
-      if(state.stream.nowPlaying.status !== "played") {
+      const state = store.getState(),
+            stream = state.stream,
+            queueMap = state.queueMap,
+            nowPlaying = queueMap[stream.nowPlayingUuid];
+      if(nowPlaying.status !== "played") {
         return;
       }
       fetchPauseTrack();
-      playbackControlPause(state.playback, state.stream.nowPlaying);
+      playbackControlPause(state.playback, nowPlaying);
     });
   }, []);
 

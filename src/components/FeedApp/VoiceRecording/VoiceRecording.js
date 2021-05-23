@@ -16,7 +16,9 @@ function VoiceRecording(props) {
    */
   const voiceRecording = props.data,
         voiceRecordingUuid = voiceRecording.uuid,
-        stream = props.stream;
+        stream = props.stream,
+        queueMap = props.queueMap,
+        nowPlaying = queueMap[stream.nowPlayingUuid];
 
   const [hovering, setHovering] = useState(false);
   const [isPlaying, setIsPlaying] = useState(false);
@@ -52,11 +54,11 @@ function VoiceRecording(props) {
     }
 
     setIsPlaying(true);
-    if(stream.nowPlaying.status !== "played" || voiceRecording.created) {
+    if(nowPlaying.status !== "played" || voiceRecording.created) {
       return;
     }
 
-    const arr = getPositionMilliseconds(stream.nowPlaying, stream.nowPlaying.startedAt),
+    const arr = getPositionMilliseconds(nowPlaying, nowPlaying.startedAt),
           position = arr[0],
           withinContext = (
             voiceRecording.timestampMilliseconds >= position - 2000 &&
@@ -106,6 +108,7 @@ function VoiceRecording(props) {
 
 const mapStateToProps = (state) => ({
   stream: state.stream,
+  queueMap: state.queueMap,
 });
 
 

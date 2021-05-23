@@ -9,9 +9,13 @@ import {
 } from './Interval/network';
 import styles from './TrackDetailApp.module.css';
 import {
+  // eslint-disable-next-line
   iconForward1000,
+  // eslint-disable-next-line
   iconForward100,
+  // eslint-disable-next-line
   iconBackward100,
+  // eslint-disable-next-line
   iconBackward1000,
   iconPlay,
   iconPause,
@@ -51,8 +55,7 @@ function TrackDetailApp(props) {
         [allowMarkerSeek, setAllowMarkerSeek] = useState(true),
         [allowMarkerDelete, setAllowMarkerDelete] = useState(false),
         [allowIntervalPlay, setAllowIntervalPlay] = useState(false),
-        [allowIntervalDelete, setAllowIntervalDelete] = useState(false),
-        [pauseTimeoutId, setPauseTimeoutId] = useState(false);
+        [allowIntervalDelete, setAllowIntervalDelete] = useState(false);
 
   const [purpose, setPurpose] = useState('muted');
   const [lowerBoundMarkerUuid, setLowerBoundMarkerUuid] = useState('null');
@@ -288,6 +291,7 @@ function TrackDetailApp(props) {
     }
 
     setMarkers(newMarkers);
+  // eslint-disable-next-line
   }, [lowerBoundMarkerUuid, upperBoundMarkerUuid, tab, motive])
 
   /*

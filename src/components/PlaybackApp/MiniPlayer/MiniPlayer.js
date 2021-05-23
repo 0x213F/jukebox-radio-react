@@ -11,7 +11,9 @@ function MiniPlayer(props) {
    * 🏗
    */
   const stream = props.stream,
-        imageUrl = stream.nowPlaying?.track?.imageUrl,
+        queueMap = props.queueMap,
+        nowPlaying = queueMap[stream.nowPlayingUuid],
+        imageUrl = nowPlaying?.track?.imageUrl,
         nowPlayingTrackName = stream?.nowPlaying?.track?.name;
 
   /*
@@ -38,6 +40,7 @@ function MiniPlayer(props) {
 
 const mapStateToProps = (state) => ({
     stream: state.stream,
+    queueMap: state.queueMap,
 });
 
 

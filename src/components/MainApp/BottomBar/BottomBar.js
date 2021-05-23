@@ -31,17 +31,19 @@ function BottomBar(props) {
    */
   const playbackControls = props.playbackControls,
         stream = props.stream,
+        queueMap = props.queueMap,
+        nowPlaying = queueMap[stream.nowPlayingUuid],
         playback = props.playback,
         audioVolumeLevel = playback.volumeLevel.audio;
 
   // eslint-disable-next-line
   const scanDisabled = (
-          !stream.nowPlaying ||
-          stream.nowPlaying.status === 'paused' ||
+          !nowPlaying ||
+          nowPlaying.status === 'paused' ||
           !playback.controlsEnabled
         ),
         playPauseNextPrevDisabled = !playback.controlsEnabled,
-        nowPlayingTrackService = stream.nowPlaying?.track?.service;
+        nowPlayingTrackService = nowPlaying?.track?.service;
 
   const [showModal, setShowModal] = useState(false);
 
@@ -101,10 +103,9 @@ function BottomBar(props) {
     if(playPauseNextPrevDisabled) {
       return;
     }
-    console.log(stream.nowPlaying?.status)
-    if(stream.nowPlaying?.status === "played") {
+    if(nowPlaying?.status === "played") {
       playbackControls.pause();
-    } else if(stream.nowPlaying?.status === 'paused') {
+    } else if(nowPlaying?.status === 'paused') {
       playbackControls.play();
     } else {
       playbackControls.nextTrack();
@@ -117,7 +118,7 @@ function BottomBar(props) {
    */
   const handleCycleVolumeLevel = function() {
     const nextVolumeLevel = cycleVolumeLevel(audioVolumeLevel);
-    playbackChangeVolume(playback, stream.nowPlaying, nextVolumeLevel);
+    playbackChangeVolume(playback, nowPlaying, nextVolumeLevel);
     props.dispatch({ type: 'playback/cycleVolumeLevelAudio' });
   }
 
@@ -128,7 +129,7 @@ function BottomBar(props) {
     <div className={styles.BottomBar}>
 
       <div className={styles.ProgressBarContainer}>
-        <ParentProgressBar queue={stream?.nowPlaying}
+        <ParentProgressBar queue={nowPlaying}
                            mode={"player"}
                            playbackControls={props.playbackControls}
                            allowMarkerSeek={true}
@@ -171,7 +172,7 @@ function BottomBar(props) {
         </button>
         <button onClick={handlePlayPause}
                 disabled={playPauseNextPrevDisabled} >
-          {stream.nowPlaying && stream.nowPlaying.status === "played" ?
+          {nowPlaying && nowPlaying.status === "played" ?
             iconPauseCircle : iconPlayCircle
           }
         </button>
@@ -188,6 +189,7 @@ function BottomBar(props) {
 
 const mapStateToProps = (state) => ({
     stream: state.stream,
+    queueMap: state.queueMap,
     playback: state.playback,
 });
 

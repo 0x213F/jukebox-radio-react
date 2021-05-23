@@ -234,10 +234,12 @@ export const queueListSet = function(state, payload) {
     lastUpQueues.push(_lastPlayed.uuid);
   }
 
-  let stream = newState.stream;
-  if(stream.nowPlaying?.status !== "played" && stream.nowPlaying?.status !== 'paused' && stream.nowPlaying) {
-    lastUpQueues.push(stream.nowPlaying.uuid);
-    stream = { ...stream, nowPlaying: undefined }
+  let stream = newState.stream,
+      queueMap = newState.queueMap,
+      nowPlaying = queueMap[stream.nowPlayingUuid];
+  if(nowPlaying?.status !== "played" && nowPlaying?.status !== 'paused' && nowPlaying) {
+    lastUpQueues.push(stream.nowPlayingUuid);
+    stream = { ...stream, nowPlayingUuid: undefined }
   }
 
   const lastUpUuid = (
@@ -278,10 +280,6 @@ export const queueUpdate = function(state, action) {
     ...newState,
     nextUp: nextUp,
     nextUpQueues: nextUpQueues,
-    stream: {
-      ...newState.stream,
-      nowPlaying: newState.queueMap[newState.stream.nowPlaying.uuid]
-    }
   }
 }
 

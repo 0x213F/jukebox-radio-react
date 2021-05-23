@@ -5,8 +5,11 @@ import {
   markerDelete,
 } from './reducers/marker';
 import {
+  playbackMount,
+  playbackUnmount,
   playbackAppleMusic,
   playbackSpotify,
+  playbackSpotifyLoaded,
   playbackYouTube,
   playbackYouTubeTriggerAutoplay,
   playbackAddToQueue,
@@ -90,7 +93,14 @@ const initialState = {
       audio: 1.00,
       voice: 1.00,
     },
+    loaded: {
+      spotify: false,
+      youTube: false,
+      appleMusic: true,
+    },
     nowPlaying: undefined,
+    nowPlayingUuid: undefined,
+    streamUuid: undefined,
   },
   // UI
   search: {
@@ -205,6 +215,10 @@ const reducer = (state = initialState, action) => {
     //   return queueIntervalDelete(state, action.payload);
     ////////////////////////////////////////////////////////////////////////////
     // PLAYBACK
+    case "playback/mount":
+      return playbackMount(state, action.payload);
+    case "playback/unmount":
+      return playbackUnmount(state, action.payload);
     case "playback/disable":
       return playbackDisable(state);
     case "playback/enable":
@@ -213,6 +227,8 @@ const reducer = (state = initialState, action) => {
       return playbackAppleMusic(state, action.payload);
     case "playback/spotify":
       return playbackSpotify(state, action.payload);
+    case "playback/spotifyLoaded":
+      return playbackSpotifyLoaded(state);
     case "playback/youTube":
       return playbackYouTube(state, action.payload);
     case "playback/youTubeTriggerAutoplay":

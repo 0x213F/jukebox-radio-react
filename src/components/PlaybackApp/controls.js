@@ -53,14 +53,14 @@ export const playbackControlStart = function(playback, queue) {
       position_ms: positionMilliseconds,
     });
   } else if(playbackService === SERVICE_YOUTUBE) {
-    if(playback.nowPlaying) {
-      playback.youTubeApi.seekTo(positionMilliseconds / 1000);
+    if(typeof playback.youTubeApi.getPlayerState() === "number") {
+      playback.youTubeApi.seekTo(Math.floor(positionMilliseconds / 1000));
       playback.youTubeApi.playVideo();
     } else {
-      store.dispatch({
-        type: 'playback/youTubeTriggerAutoplay',
-        payload: { autoplay: true },
-      });
+        store.dispatch({
+          type: 'playback/youTubeTriggerAutoplay',
+          payload: { autoplay: true },
+        });
     }
   } else if(playbackService === SERVICE_JUKEBOX_RADIO) {
     const trackUuid = queue.track.uuid,
@@ -124,7 +124,6 @@ export const playbackControlPlay = function(playback, queue) {
     const music = window.MusicKit.getInstance();
     music.player.play();
   } else if(playbackService === SERVICE_SPOTIFY) {
-    console.log('playin')
     playback.spotifyApi.play();
   } else if(playbackService === SERVICE_YOUTUBE) {
     playback.youTubeApi.playVideo();

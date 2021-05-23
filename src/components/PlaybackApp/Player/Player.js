@@ -14,8 +14,10 @@ function Player(props) {
    * 🏗
    */
   const stream = props.stream,
+        queueMap = props.queueMap,
+        nowPlaying = queueMap[stream.nowPlayingUuid],
         playback = props.playback,
-        imageUrl = stream.nowPlaying?.track?.imageUrl,
+        imageUrl = nowPlaying?.track?.imageUrl,
         track = stream?.nowPlaying?.track,
         lastUp = getLastUpQueue(props.lastUpQueues),
         nextUp = getNextUpQueue(props.nextUpQueues);
@@ -99,6 +101,7 @@ function Player(props) {
 
 const mapStateToProps = (state) => ({
     stream: state.stream,
+    queueMap: state.queueMap,
     lastUpQueues: state.lastUpQueues,
     nextUpQueues: state.nextUpQueues,
     playback: state.playback,

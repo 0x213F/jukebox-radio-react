@@ -49,7 +49,7 @@ export const flattenQueues = function(queues) {
 /*
  * Returns the (track) queue item that will be played next.
  */
-export const getQueueDuration = function(queues, stream) {
+export const getQueueDuration = function(queues, nowPlaying) {
 
   // Determines the duration of a queue object.
   const getDuration = function(queue) {
@@ -75,10 +75,10 @@ export const getQueueDuration = function(queues, stream) {
 
   // In addition to whatever is queued up, we must add the remaining progress
   // of whatever is now playing in the stream.
-  const progress = stream.nowPlaying ? getProgress(stream.nowPlaying) : 0;
+  const progress = nowPlaying ? getProgress(nowPlaying) : 0;
   let remainingProgress = 0;
   if(progress) {
-    remainingProgress = stream.nowPlaying.durationMilliseconds - progress;
+    remainingProgress = nowPlaying.durationMilliseconds - progress;
   }
 
   // Now add determine the total length of all queue objects.

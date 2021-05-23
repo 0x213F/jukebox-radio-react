@@ -38,19 +38,19 @@ export const iconPlay = (
 
 export const iconPause = (
   <svg width="17" height="23" viewBox="0 0 17 23" fill="none" xmlns="http://www.w3.org/2000/svg">
-    <path d="M1 1V22M16 22V1" stroke="#0047FF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+    <path d="M1 1V22M16 22V1" stroke="#0047FF" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
   </svg>
 );
 
 export const iconMiniCheckboxChecked = (
   <svg width="18" height="18" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg">
-  <rect x="1" y="1" width="16" height="16" stroke="#0047FF" stroke-width="2"/>
-  <path d="M13.1534 6.23047L7.44186 12.4612L4.8457 9.62907" stroke="#0047FF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+  <rect x="1" y="1" width="16" height="16" stroke="#0047FF" strokeWidth="2"/>
+  <path d="M13.1534 6.23047L7.44186 12.4612L4.8457 9.62907" stroke="#0047FF" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
   </svg>
 );
 
 export const iconMiniCheckboxUnchecked = (
   <svg width="18" height="18" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg">
-  <rect x="1" y="1" width="16" height="16" stroke="#BCBCBC" stroke-width="2"/>
+  <rect x="1" y="1" width="16" height="16" stroke="#BCBCBC" strokeWidth="2"/>
   </svg>
 );

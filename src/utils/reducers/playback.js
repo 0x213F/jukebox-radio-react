@@ -7,6 +7,33 @@ import { cycleVolumeLevel } from '../../components/PlaybackApp/utils';
 import { streamNextTrack } from './stream';
 
 
+export const playbackMount = function(state, payload) {
+  if(payload.stream) {
+    return {
+      ...state,
+      playback: {
+        ...state.playback,
+        nowPlayingUuid: payload.stream.nowPlayingUuid,
+        streamUuid: payload.stream.uuid,
+      }
+    }
+  } else {
+    return {
+      ...state,
+      playback: {
+        ...state.playback,
+        nowPlayingUuid: payload.queue.uuid,
+        streamUuid: undefined,
+      }
+    }
+  }
+}
+
+export const playbackUnmount = function(state, payload) {
+
+}
+
+
 export const playbackAppleMusic = function(state, payload) {
   return {
     ...state,
@@ -31,6 +58,20 @@ export const playbackSpotify = function(state, payload) {
       ...state.playback,
       spotifyApi: payload.spotifyApi,
       isReady: true,
+    }
+  }
+}
+
+
+export const playbackSpotifyLoaded = function(state) {
+  return {
+    ...state,
+    playback: {
+      ...state.playback,
+      loaded: {
+        ...state.playback.loaded,
+        spotify: true,
+      },
     }
   }
 }
@@ -71,7 +112,8 @@ export const playbackAddToQueue = function(state) {
   }
 
   const playback = { ...state.playback },
-        nowPlaying = state.stream.nowPlaying,
+        queueMap = state.queueMap,
+        nowPlaying = queueMap[state.stream.nowPlayingUuid],
         appleMusicShouldAddToQueue = (
           nowPlaying.track.service === SERVICE_APPLE_MUSIC &&
           nextUp.track.service === SERVICE_APPLE_MUSIC &&
@@ -162,11 +204,14 @@ const playbackPlannedNextTrackHelper = function(state) {
 export const playbackPlannedNextTrack = function(state, payload) {
   let updatedState = state;
   updatedState = playbackPlannedNextTrackHelper(updatedState);
-  const childPayload = payload.payload,  // yes
-        updatedNowPlaying = updatedState.stream.nowPlaying;
+  const childPayload = {},  // yes
+        queueMap = updatedState.queueMap,
+        updatedNowPlaying = queueMap[updatedState.stream.nowPlayingUuid];
   childPayload.startedAt = (
-    updatedState.stream.nowPlaying.startedAt + updatedNowPlaying.durationMilliseconds
+    updatedNowPlaying.startedAt + updatedNowPlaying.durationMilliseconds
   );
+  childPayload.status = 'played'
+  childPayload.statusAt = Date.now()
   updatedState = streamNextTrack(updatedState, childPayload);
   return updatedState;
 }
