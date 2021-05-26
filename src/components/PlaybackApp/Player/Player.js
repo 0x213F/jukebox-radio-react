@@ -1,8 +1,7 @@
 import { useState, useEffect } from "react";
 import { connect } from 'react-redux';
 import {
-  getNextUpQueue,
-  getLastUpQueue,
+  getLeafQueue,
 } from '../../../components/QueueApp/utils';
 import { iconNextTrack, iconPrevTrack } from '../icons';
 import styles from './Player.module.css';
@@ -19,8 +18,8 @@ function Player(props) {
         playback = props.playback,
         imageUrl = nowPlaying?.track?.imageUrl,
         track = stream?.nowPlaying?.track,
-        lastUp = getLastUpQueue(props.lastUpQueues),
-        nextUp = getNextUpQueue(props.nextUpQueues);
+        lastUp = getLeafQueue(props.lastUpQueueUuids[props.lastUpQueueUuids.length - 1], props.queueMap),
+        nextUp = getLeafQueue(props.nextUpQueueUuids[0], props.queueMap);
 
   // NOTE: This is a temporary mechanism to allow the user to refresh the
   //       progress value on the front-end.
@@ -102,8 +101,8 @@ function Player(props) {
 const mapStateToProps = (state) => ({
     stream: state.stream,
     queueMap: state.queueMap,
-    lastUpQueues: state.lastUpQueues,
-    nextUpQueues: state.nextUpQueues,
+    lastUpQueueUuids: state.lastUpQueueUuids,
+    nextUpQueueUuids: state.nextUpQueueUuids,
     playback: state.playback,
 });
 

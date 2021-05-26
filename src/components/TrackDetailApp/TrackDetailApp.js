@@ -3,9 +3,11 @@ import { connect } from 'react-redux';
 import Modal from 'react-modal';
 import {
   fetchStreamMarkerCreate,
+  fetchStreamMarkerDelete,
 } from './Marker/network';
 import {
   fetchStreamQueueIntervalCreate,
+  fetchStreamQueueIntervalDelete,
 } from './Interval/network';
 import styles from './TrackDetailApp.module.css';
 import {
@@ -36,45 +38,99 @@ import { removeIntervals } from './utils';
 
 function TrackDetailApp(props) {
 
+  const RERENDER = (prev) => prev + 1;
+
   /*
    * 🏗
    */
-  const [queue, setQueue] = useState(removeIntervals(props.data));
-
-  const markerMap = props.markerMap,
-        allMarkers = Object.values(markerMap[queue.track.uuid] || []).sort((a, b) => {
-          return a.timestampMilliseconds - b.timestampMilliseconds;
-        }),
-        [markers, setMarkers] = useState(allMarkers);
-
-  const [tab, setTab] = useState('markers'),
-        [motive, setMotive] = useState('listen'),
-        [playPauseEnabled, setPlayPauseEnabled] = useState(true),
-        [formMarkerTimestamp, setFormMarkerTimestamp] = useState(''),
-        [formMarkerName, setFormMarkerName] = useState(''),
-        [allowMarkerSeek, setAllowMarkerSeek] = useState(true),
-        [allowMarkerDelete, setAllowMarkerDelete] = useState(false),
-        [allowIntervalPlay, setAllowIntervalPlay] = useState(false),
-        [allowIntervalDelete, setAllowIntervalDelete] = useState(false);
-
-  const [purpose, setPurpose] = useState('muted');
-  const [lowerBoundMarkerUuid, setLowerBoundMarkerUuid] = useState('null');
-  const [upperBoundMarkerUuid, setUpperBoundMarkerUuid] = useState('null');
-
   const isOpen = props.isOpen,
         closeModal = props.closeModal,
         playback = props.playback;
+
+  const [queue, setQueue] = useState(removeIntervals(props.data));
+
+  ////////////
+  // Markers
+  const markerMap = props.markerMap,
+        originalMarkers = (
+          Object.values(markerMap[queue.track.uuid] || [])
+          .sort((a, b) => {
+            return a.timestampMilliseconds - b.timestampMilliseconds;
+          })
+        ),
+        [markers, setMarkers] = useState([]),
+        // Interface which force rerenders the marker UI
+        [rerenderMarkers, updateMarkers] = useState(0),
+        // Create form
+        [formMarkerTimestamp, setFormMarkerTimestamp] = useState(''),
+        [formMarkerName, setFormMarkerName] = useState(''),
+        // Feature flags
+        [allowMarkerSeek, setAllowMarkerSeek] = useState(true),
+        [allowMarkerDelete, setAllowMarkerDelete] = useState(false);
+
+  //////////////
+  // Intervals
+        // Interface which force rerenders the interval UI
+  const [rerenderIntervals, updateIntervals] = useState(0),
+        // Create form
+        [purpose, setPurpose] = useState('muted'),
+        [lowerBoundMarkerUuid, setLowerBoundMarkerUuid] = useState('null'),
+        [upperBoundMarkerUuid, setUpperBoundMarkerUuid] = useState('null'),
+        [allowIntervalPlay, setAllowIntervalPlay] = useState(false),
+        [allowIntervalDelete, setAllowIntervalDelete] = useState(false);
+
+
+  ///////
+  // UI
+  const [tab, setTab] = useState('markers'),
+        [motive, setMotive] = useState('listen'),
+        [playPauseEnabled, setPlayPauseEnabled] = useState(true),
+        // Interface which force rerenders the enabled status of playback
+        [rerenderPlayPauseEnabled, updatePlayPauseEnabled] = useState(0);
+
+  /*
+   * Close the modal.
+   */
+  const handleCloseModal = function() {
+    if(queue.status === "played") {
+      playbackControlPause(playback, queue);
+    }
+    const now = Date.now();
+    queue.startedAt = now;
+    queue.status = "paused";
+    queue.statusAt = now;
+    setQueue({ ...props.data });
+    closeModal();
+  }
 
   /*
    * Create a marker.
    */
   const createTrackMarker = async function() {
+    let markerTimestamp;
+    if(queue.track.service === 'youtube') {
+      markerTimestamp = Math.round(formMarkerTimestamp / 1000) * 1000;
+    } else {
+      markerTimestamp = formMarkerTimestamp
+    }
     const responseJson = await fetchStreamMarkerCreate(
-      queue.track.uuid, formMarkerTimestamp, queue.uuid, formMarkerName
+      queue.track.uuid, markerTimestamp, queue.uuid, formMarkerName
     );
     await props.dispatch(responseJson.redux);
-    setFormMarkerTimestamp('');
+    // Reset form
+    updateNewMarkerTimestamp('');
     setFormMarkerName('');
+    // Rerender
+    updateMarkers(RERENDER);
+  }
+
+  /*
+   * Delete a marker.
+   */
+  const deleteTrackMarker = async function(marker) {
+    const responseJson = await fetchStreamMarkerDelete(marker.uuid, queue.uuid);
+    await props.dispatch(responseJson.redux);
+    updateMarkers(RERENDER);
   }
 
   /*
@@ -90,20 +146,28 @@ function TrackDetailApp(props) {
       queue.parentUuid,
     );
     await props.dispatch(responseJson.redux);
-  }
-
-  const handleCloseModal = function() {
-    if(queue.status === "played") {
-      playbackControlPause(playback, queue);
-      queue.status = "paused";
-      queue.statusAt = Date.now();
-      setQueue({...queue});
-    }
-    closeModal();
+    // Reset form
+    setLowerBoundMarkerUuid('null');
+    setUpperBoundMarkerUuid('null');
+    // Rerender
+    updatePlayPauseEnabled(RERENDER);
+    updateMarkers(RERENDER);
+    updateIntervals(RERENDER);
   }
 
   /*
-   *
+   * Delete an interval.
+   */
+  const deleteTrackInterval = async function(interval) {
+    const responseJson = await fetchStreamQueueIntervalDelete(
+      interval.uuid, queue.uuid, queue.parentUuid
+    );
+    await props.dispatch(responseJson.redux);
+    updateIntervals(RERENDER);
+  }
+
+  /*
+   * When the user clicks the play/ pause button.
    */
   const handlePlayPause = function () {
     if(!playPauseEnabled || !playback.controlsEnabled) {
@@ -118,19 +182,27 @@ function TrackDetailApp(props) {
     }
   }
 
-  const updateNewMarkerTimestamp = function() {
-    // Update marker form with current timestamp
+  /*
+   * Small wrapper function which takes the current marker position and cleans
+   * it to a valid position timestamp.
+   */
+  const updateNewMarkerTimestamp = function(positionMillisecondsRaw) {
     let positionMilliseconds;
-    try {
-      const arr = getPositionMilliseconds(queue, queue.startedAt);
-      positionMilliseconds = arr[0];
-    } catch (e) {
-      positionMilliseconds = 0;
+    if(!positionMillisecondsRaw) {
+      try {
+        const arr = getPositionMilliseconds(queue, queue.startedAt);
+        positionMilliseconds = arr[0];
+      } catch (e) {
+        positionMilliseconds = 0;
+      }
+    } else {
+      positionMilliseconds = positionMillisecondsRaw;
     }
     if(queue.track.service === 'youtube') {
       positionMilliseconds = Math.round(positionMilliseconds / 1000) * 1000;
     }
     setFormMarkerTimestamp(positionMilliseconds);
+    updateMarkers(RERENDER);
   }
 
   /*
@@ -138,10 +210,19 @@ function TrackDetailApp(props) {
    */
   const showMarkers = function() {
     if(queue.status === "played") {
-      pause();
+      playbackControlPause(playback, queue);
     }
+
+    const now = Date.now();
+    queue.startedAt = now;
+    queue.status = "paused";
+    queue.statusAt = now;
+    setQueue(queue);
+
     setTab('markers');
-    setQueue(queue => removeIntervals(queue));
+    updatePlayPauseEnabled(RERENDER);
+    updateIntervals(RERENDER);
+    updateMarkers(RERENDER);
   }
 
   /*
@@ -149,63 +230,97 @@ function TrackDetailApp(props) {
    */
   const showIntervals = function() {
     if(queue.status === "played") {
-      pause();
+      playbackControlPause(playback, queue);
     }
+
+    const now = Date.now();
+    queue.startedAt = now;
+    queue.status = "paused";
+    queue.statusAt = now;
+    setQueue(queue);
+
     setTab('intervals');
-    setQueue(queue => ({
-      ...queue,
-      intervals: props.data.intervals,
-      allIntervals: props.data.allIntervals,
-      playbackIntervals: props.data.playbackIntervals,
-    }));
+    updatePlayPauseEnabled(RERENDER);
+    updateIntervals(RERENDER);
+    updateMarkers(RERENDER);
   }
 
   /*
-   *
+   * Motive button: show listen UI
    */
   const handleMotiveListen = function () {
     setMotive("listen");
+    updatePlayPauseEnabled(RERENDER);
+    updateIntervals(RERENDER);
+    updateMarkers(RERENDER);
   }
 
   /*
-   *
+   * Motive button: show create UI
    */
   const handleMotiveCreate = function () {
     setMotive("create");
-
     if(tab === "markers") {
       updateNewMarkerTimestamp();
     }
     if(queue.status === "played" && tab === "intervals") {
-      // Pause playback
       pause();
     }
+    updatePlayPauseEnabled(RERENDER);
+    updateIntervals(RERENDER);
+    updateMarkers(RERENDER);
   }
 
   /*
-   *
+   * Motive button: show delete UI
    */
   const handleMotiveDelete = function () {
-    setMotive("delete");
-
-    if(queue.status === "played") {
-      // Pause playback
+    if(tab === "intervals" && queue.status === "played") {
       pause();
     }
+    setMotive("delete");
+    updatePlayPauseEnabled(RERENDER);
+    updateIntervals(RERENDER);
+    updateMarkers(RERENDER);
   }
 
+  /*
+   * Handle...
+   */
+  const handleMarkerTimestamp = function(e) {
+    setFormMarkerTimestamp(e.target.value);
+    updateMarkers(RERENDER);
+  }
+
+  /*
+   * Handle...
+   */
+  const handleMarkerName = function(e) {
+    setFormMarkerName(e.target.value);
+    updateMarkers(RERENDER);
+  }
+
+  /*
+   * Handle...
+   */
   const handleLowerBoundMarker = function(e) {
     const markerUuid = e.target.value;
     setLowerBoundMarkerUuid(markerUuid);
+    updateIntervals(RERENDER);
+    updateMarkers(RERENDER);
   }
 
+  /*
+   * Handle
+   */
   const handleUpperBoundMarker = function(e) {
     const markerUuid = e.target.value;
     setUpperBoundMarkerUuid(markerUuid);
+    updateIntervals(RERENDER);
+    updateMarkers(RERENDER);
   }
 
   const play = function(progress) {
-    setPlayPauseEnabled(true);
     const playbackControlFunc = (
       (queue.status === "paused" && progress === 0) ?
       playbackControlPlay : playbackControlStart
@@ -214,16 +329,18 @@ function TrackDetailApp(props) {
     queue.startedAt = Date.now() - progress;
     queue.status = "played";
     queue.statusAt = Date.now();
-    playbackControlFunc(playback, queue);
     setQueue({...queue});
+
+    playbackControlFunc(playback, queue);
     updateNewMarkerTimestamp();
   }
 
   const pause = function() {
     queue.status = "paused";
     queue.statusAt = Date.now();
-    playbackControlPause(playback, queue);
     setQueue({...queue});
+
+    playbackControlPause(playback, queue);
     updateNewMarkerTimestamp();
   }
 
@@ -231,19 +348,21 @@ function TrackDetailApp(props) {
     queue.startedAt = Date.now() - progress;
     queue.status = "played";
     queue.statusAt = Date.now();
-    playbackControlSeek(playback, queue);
     setQueue({...queue});
+
+    playbackControlSeek(playback, queue);
     updateNewMarkerTimestamp();
   }
 
   const playbackControls = { play, pause, seek };
 
+  /*
+   * There has been an action taken by the user (something was clicked/
+   * selected). So now this fires, which updates the data layer and the UI.
+   */
   useEffect(() => {
-    const newMarkers = [...markers];
-
     const shouldEnable = (
-      (tab === "markers" && motive === "listen") ||
-      (tab === "markers" && motive === "create") ||
+      (tab === "markers") ||
       (tab === "intervals" && motive === "listen")
     );
     if(shouldEnable) {
@@ -252,13 +371,41 @@ function TrackDetailApp(props) {
       setPlayPauseEnabled(false);
     }
 
-    for(let i=0; i < newMarkers.length; i++) {
-      if((newMarkers[i].uuid === lowerBoundMarkerUuid || newMarkers[i].uuid === upperBoundMarkerUuid) && tab === "intervals" && motive === 'create') {
-        newMarkers[i].forceDisplay = true;
+  // eslint-disable-next-line
+  }, [isOpen, rerenderPlayPauseEnabled])
+
+  /*
+   * Update markers in the data layer. This happens because of a UI change or
+   * a backend update (create/ delete marker).
+   */
+  useEffect(() => {
+    const nextMarkers = [...originalMarkers];
+
+    for(let i=0; i < nextMarkers.length; i++) {
+      const creatingInterval = (
+        tab === "intervals" &&
+        motive === "create" &&
+        (
+          nextMarkers[i].uuid === lowerBoundMarkerUuid ||
+          nextMarkers[i].uuid === upperBoundMarkerUuid
+        )
+      );
+      if(creatingInterval) {
+        nextMarkers[i].forceDisplay = true;
       } else {
-        delete newMarkers[i].forceDisplay;
+        delete nextMarkers[i].forceDisplay;
       }
     }
+
+    if(tab === "markers" && motive === "create") {
+      nextMarkers.push({
+        trackUuid: queue.track.uuid,
+        timestampMilliseconds: formMarkerTimestamp,
+        name: formMarkerName,
+        forceDisplay: true,
+      });
+    }
+    setMarkers(nextMarkers);
 
     if(tab === "markers" && (motive === "listen" || motive === "create")) {
       setAllowMarkerSeek(true);
@@ -266,16 +413,28 @@ function TrackDetailApp(props) {
       setAllowMarkerSeek(false);
     }
 
-    if(tab === "markers" && motive === "create") {
-      setMarkers([]);
-    } else {
-      setMarkers(allMarkers);
-    }
-
     if(tab === "markers" && motive === "delete") {
       setAllowMarkerDelete(true);
     } else {
       setAllowMarkerDelete(false);
+    }
+  // eslint-disable-next-line
+  }, [isOpen, rerenderMarkers]);
+
+  /*
+   * Update intervals in the data layer. This happens because of a UI change or
+   * a backend update (create/ delete interval).
+   */
+  useEffect(() => {
+    if(tab === "intervals") {
+      setQueue(queue => ({
+        ...queue,
+        intervals: props.data.intervals,
+        allIntervals: props.data.allIntervals,
+        playbackIntervals: props.data.playbackIntervals,
+      }));
+    } else {
+      setQueue(q => removeIntervals(q));
     }
 
     if(tab === "intervals" && motive === "listen") {
@@ -289,10 +448,8 @@ function TrackDetailApp(props) {
     } else {
       setAllowIntervalDelete(false);
     }
-
-    setMarkers(newMarkers);
   // eslint-disable-next-line
-  }, [lowerBoundMarkerUuid, upperBoundMarkerUuid, tab, motive])
+  }, [isOpen, rerenderIntervals])
 
   /*
    * 🎨
@@ -380,7 +537,7 @@ function TrackDetailApp(props) {
               <input className={styles.FormInput}
                      type="text"
                      value={formMarkerTimestamp}
-                     onChange={(e) => {setFormMarkerTimestamp(e.target.value)}} />
+                     onChange={handleMarkerTimestamp} />
             </label>
 
             <label className={styles.FormLabel}>
@@ -390,7 +547,7 @@ function TrackDetailApp(props) {
               <input className={styles.FormInput}
                      type="text"
                      value={formMarkerName}
-                     onChange={(e) => {setFormMarkerName(e.target.value)}} />
+                     onChange={handleMarkerName} />
             </label>
 
             <button className={styles.FormSubmit}
@@ -458,6 +615,8 @@ function TrackDetailApp(props) {
                              markers={markers}
                              mode={tab}
                              playbackControls={playbackControls}
+                             deleteTrackMarker={deleteTrackMarker}
+                             deleteTrackInterval={deleteTrackInterval}
                              allowMarkerSeek={allowMarkerSeek}
                              allowMarkerDelete={allowMarkerDelete}
                              allowIntervalPlay={allowIntervalPlay}

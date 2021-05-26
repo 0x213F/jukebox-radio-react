@@ -2,40 +2,41 @@ import { getProgress } from '../PlaybackApp/utils';
 
 
 /*
- * Returns the (track) queue item that was last played.
+ * Gets queues from queueUuids
  */
-export const getLastUpQueue = function(lastUpQueues) {
-  return lastUpQueues[lastUpQueues.length - 1];
+export const getQueues = function(queueUuids, queueMap) {
+  return queueUuids.map(uuid => queueMap[uuid]);
 }
 
 
 /*
  * Returns the (track) queue item that will be played next.
  */
-export const getNextUpQueue = function(nextUpQueues) {
-  return (
-    nextUpQueues.length ?
-      (nextUpQueues[0].children.length ?
-        nextUpQueues[0].children[0] :
-        nextUpQueues[0]) :
-      undefined
-  );
+export const getLeafQueue = function(queueUuid, queueMap) {
+  if(!queueUuid) {
+    return null;
+  }
+  let queue = queueMap[queueUuid];
+  if(!queue.childUuids.length) {
+    return queue;
+  }
+  return getLeafQueue(queue.childUuids[0], queueMap);
 }
 
 
 /*
  *
  */
-export const flattenQueues = function(queues) {
+export const flattenQueues = function(queues, queueMap) {
   if(!queues.length) {
     return undefined;
   }
 
   const flattenedQueues = [];
   for(let queue of queues) {
-    if(queue.children.length) {
-      for(let child of queue.children) {
-        flattenedQueues.push(child);
+    if(queue.childUuids.length) {
+      for(let childUuid of queue.childUuids) {
+        flattenedQueues.push(queueMap[childUuid]);
       }
     } else {
       flattenedQueues.push(queue);
@@ -53,15 +54,7 @@ export const getQueueDuration = function(queues, nowPlaying) {
 
   // Determines the duration of a queue object.
   const getDuration = function(queue) {
-    let total = 0;
-    if(queue.children.length) {
-      for(let child of queue.children) {
-        total += child.durationMilliseconds;
-      }
-    } else {
-      total += queue.durationMilliseconds;
-    }
-    return total;
+    return queue.durationMilliseconds;
   }
 
   // Reducer function which reduces an array of queues into total duration.

@@ -2,7 +2,7 @@ import {
   SERVICE_APPLE_MUSIC,
   SERVICE_SPOTIFY,
 } from '../../config/services';
-import { getNextUpQueue } from '../../components/QueueApp/utils';
+import { getLeafQueue } from '../../components/QueueApp/utils';
 import { cycleVolumeLevel } from '../../components/PlaybackApp/utils';
 import { streamNextTrack } from './stream';
 
@@ -106,7 +106,7 @@ export const playbackYouTubeTriggerAutoplay = function(state, payload) {
  *   - We are not certain that something is up next.
  */
 export const playbackAddToQueue = function(state) {
-  const nextUp = getNextUpQueue(state.nextUpQueues);
+  const nextUp = getLeafQueue(state.nextUpQueueUuids[0], state.queueMap);
   if(!nextUp) {
     return { ...state };
   }
@@ -160,7 +160,7 @@ export const playbackAddToQueue = function(state) {
  *
  */
 const playbackPlannedNextTrackHelper = function(state) {
-  const nextUp = getNextUpQueue(state.nextUpQueues),
+  const nextUp = getLeafQueue(state.nextUpQueueUuids[0], state.queueMap),
         queuedUp = state.playback.queuedUp,
         noopNextTrack = state.playback.noopNextTrack,
         addToQueueTimeoutId = state.playback.addToQueueTimeoutId,

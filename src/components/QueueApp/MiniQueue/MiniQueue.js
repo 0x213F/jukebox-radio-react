@@ -1,19 +1,21 @@
 import { connect } from 'react-redux'
 import styles from './MiniQueue.module.css';
-import { getQueueDuration, flattenQueues } from '../utils';
+import { getQueues, getQueueDuration, flattenQueues } from '../utils';
 import ReactTimeAgo from 'react-time-ago';
 
 
 function MiniQueue(props) {
 
-  const nextUpQueues = props.nextUpQueues,
+  const nextUpQueueUuids = props.nextUpQueueUuids,
         stream = props.stream,
         queueMap = props.queueMap,
         nowPlaying = queueMap[stream.nowPlayingUuid];
 
+  const nextUpQueues = getQueues(nextUpQueueUuids, queueMap);
+
   let flattenedQueue, expandedQueues;
-  if(nextUpQueues.length) {
-    flattenedQueue = flattenQueues([nextUpQueues[0]]);
+  if(nextUpQueueUuids.length) {
+    flattenedQueue = flattenQueues([nextUpQueues[0]], queueMap);
     expandedQueues = [...flattenedQueue, ...nextUpQueues.slice(1)];
   } else {
     expandedQueues = [];
@@ -56,7 +58,7 @@ function MiniQueue(props) {
 
 
 const mapStateToProps = (state) => ({
-  nextUpQueues: state.nextUpQueues,
+  nextUpQueueUuids: state.nextUpQueueUuids,
   stream: state.stream,
   queueMap: state.queueMap,
 });

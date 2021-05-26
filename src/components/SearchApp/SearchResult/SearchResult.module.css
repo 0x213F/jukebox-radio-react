@@ -10,7 +10,7 @@
 }
 
 .SearchResult:last-child {
-  margin-bottom: 54px;
+  margin-bottom: 64px;
 }
 
 .SearchResultSubmitted {
@@ -21,7 +21,7 @@
   margin-bottom: 14px;
   display: inline-flex;
   align-items: center;
-  width: calc(100% - 12px);
+  width: calc(100% - 20px);
   margin-left: 8px;
 
   transition-property: box-shadow;
@@ -117,6 +117,10 @@
 
   margin-right: 22px;
   cursor: pointer;
+
+  transition-property: color, background-color;
+  transition-duration: 0.15s;
+  transition-timing-function: ease-in-out;
 }
 
 .AddButtonInverted {
@@ -138,9 +142,12 @@
   border: 2px solid #0047FF;
   border-radius: 24px;
 
-  margin-left: auto;
   margin-right: 22px;
   cursor: not-allowed;
+
+  transition-property: color, background-color;
+  transition-duration: 0.15s;
+  transition-timing-function: ease-in-out;
 }
 
 /**********/
@@ -166,12 +173,13 @@
 .ggSpinner::before {
     animation: spinner 1s
     cubic-bezier(.6,0,.4,1) infinite;
-    border: 3px solid transparent;
-    border-top-color: currentColor
+    border: 2px solid transparent;
+    border-top-color: #0047FF;
 }
 .ggSpinner::after {
-    border: 3px solid;
-    opacity: .2
+    border: 2px solid #EAEAEA;
+    opacity: 0.5;
+    z-index: -1;
 }
 @keyframes spinner {
     0% { transform: rotate(0deg) }

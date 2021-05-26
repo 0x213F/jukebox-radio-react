@@ -182,7 +182,7 @@ function ParentProgressBar(props) {
                  onStop={handleDragStop}>
         <div ref={draggableRef}
              className={styles.ProgressPointer}
-             style={{left: `calc(${pointerLeftDistance}% - ${6 + dragOffset}px)`}}>
+             style={{left: `calc(${pointerLeftDistance}% - ${4 + dragOffset}px)`}}>
           {iconSmallCircle}
         </div>
       </Draggable>
@@ -195,6 +195,7 @@ function ParentProgressBar(props) {
                                    queue={queue}
                                    editable={mode === "intervals"}
                                    playbackControls={props.playbackControls}
+                                   deleteTrackInterval={props.deleteTrackInterval}
                                    allowIntervalPlay={allowIntervalPlay}
                                    allowIntervalDelete={allowIntervalDelete}>
                  </ChildProgressBar>;
@@ -211,6 +212,7 @@ function ParentProgressBar(props) {
                                     playable={marker.playable}
                                     stoppable={marker.stoppable}
                                     playbackControls={props.playbackControls}
+                                    deleteTrackMarker={props.deleteTrackMarker}
                                     markerHover={markerHover}
                                     setMarkerHover={setMarkerHover}
                                     allowMarkerSeek={allowMarkerSeek}

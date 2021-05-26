@@ -11,10 +11,11 @@ function QueueTrack(props) {
   /*
    * 🏗
    */
-  const queue = props.data;
+  const queueMap = props.queueMap;
+
+  const queue = props.data || queueMap[props.queueUuid];
 
   const stream = props.stream,
-        queueMap = props.queueMap,
         nowPlaying = queueMap[stream.nowPlayingUuid];
 
   const [showModal, setShowModal] = useState(false);
@@ -26,7 +27,7 @@ function QueueTrack(props) {
       setShouldPlayOnClose(true);
     }
     props.dispatch({
-      type: "playback/modalOpen",
+      type: "playback/mount",
       payload: { queue },
     });
     setShowModal(true);
@@ -34,8 +35,8 @@ function QueueTrack(props) {
 
   const closeModal = function() {
     props.dispatch({
-      type: "playback/modalClose",
-      payload: {},
+      type: "playback/mount",
+      payload: { stream },
     });
     setShowModal(false);
     if(shouldPlayOnClose) {

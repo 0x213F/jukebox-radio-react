@@ -68,8 +68,8 @@ import {
 
 
 const initialState = {
-  nextUpQueues: [],
-  lastUpQueues: [],
+  nextUpQueueUuids: [],
+  lastUpQueueUuids: [],
   _lastPlayed: undefined,
   textComments: [],
   voiceRecordings: [],

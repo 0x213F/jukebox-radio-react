@@ -2,7 +2,6 @@ import React, { useState } from "react";
 import { connect } from 'react-redux';
 import styles from './ChildProgressBar.module.css';
 import { iconMarker, iconTrash, iconPlay } from '../icons';
-import { fetchStreamQueueIntervalDelete } from '../../TrackDetailApp/Interval/network';
 import { getProgressMilliseconds } from '../utils';
 
 
@@ -43,16 +42,6 @@ function ChildProgressBar(props) {
     setHovering(false);
   }
 
-  /*
-   *
-   */
-  const deleteTrackInterval = async function() {
-    const responseJson = await fetchStreamQueueIntervalDelete(
-      interval.uuid, queue.uuid, queue.parentUuid
-    );
-    await props.dispatch(responseJson.redux);
-  }
-
   const seekToInterval = async function() {
     const progress = getProgressMilliseconds(queue, interval.startPosition);
     if(queue.status === 'played') {
@@ -82,7 +71,7 @@ function ChildProgressBar(props) {
             </div>
             {interval.uuid && allowIntervalDelete &&
               <button className={styles.ProgressHoverDelete}
-                      onClick={deleteTrackInterval}>
+                      onClick={(e) => {props.deleteTrackInterval(interval)}}>
                 {iconTrash}
               </button>
             }

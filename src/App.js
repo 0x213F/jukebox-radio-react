@@ -133,6 +133,7 @@ function App() {
     // End PWA
 
     // Prestyle side bar
+    console.log(window.location.pathname.substring(5))
     store.dispatch({
       type: "sideBar/selectTab",
       payload: { tab: window.location.pathname.substring(5) },

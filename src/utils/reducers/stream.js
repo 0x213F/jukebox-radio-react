@@ -1,3 +1,4 @@
+import { getLeafQueue } from '../../components/QueueApp/utils';
 import { finalizeQueues } from './queue';
 
 
@@ -124,66 +125,51 @@ export const streamPause = function(state, payload) {
  * Set the stream context.
  */
 export const streamPrevTrack = function(state, payload) {
-  const lastUpQueues = [...state.lastUpQueues],
-        nextUpQueues = [...state.nextUpQueues],
-        queueMap = state.queueMap,
-        lastNowPlaying = queueMap[state.stream.nowPlayingUuid],
-        nextUpQueue = nextUpQueues[0],
-        nextNowPlaying = lastUpQueues[lastUpQueues.length - 1];
+  const lastUpQueueUuids = [...state.lastUpQueueUuids],
+        nextUpQueueUuids = [...state.nextUpQueueUuids],
+        nowPlayingUuid = state.stream.nowPlayingUuid,
+        queueMap = { ...state.queueMap };
 
-  const isTrackInCollection = (
-          lastNowPlaying?.parentUuid &&
-          nextUpQueue?.uuid &&
-          lastNowPlaying?.parentUuid === nextUpQueue?.uuid
-        );
-  let parentQueue;
-  if(lastNowPlaying) {
-    if(isTrackInCollection) {
-      nextUpQueue.children.unshift(lastNowPlaying);
+  const nextUpUuid = nextUpQueueUuids[0],
+        nextUp = getLeafQueue(nextUpUuid, queueMap);
+
+  const nowPlaying = { ...queueMap[nowPlayingUuid] };
+  if(!nextUp) {
+    if(nowPlaying.parentUuid) {
+      nextUpQueueUuids.unshift(nowPlaying.parentUuid);
+      const nextUpCollection = { ...queueMap[nowPlaying.parentUuid] };
+      nextUpCollection.childUuids.unshift(nowPlayingUuid);
     } else {
-      if(lastNowPlaying.parentUuid) {
-        // Here we need to first create the "parent queue."
-        parentQueue = { ...lastNowPlaying };
-        parentQueue.uuid = parentQueue.parentUuid;
-        parentQueue.parentUuid = null;
-        parentQueue.track = null;
-        parentQueue.isAbstract = true;
-        parentQueue.playbackIntervals = [];
-        parentQueue.allIntervals = [];
-        parentQueue.intervals = [];
-        // Then, it goes into the queue along with the track as its first child.
-        parentQueue.children.unshift(lastNowPlaying);
-        nextUpQueues.unshift(parentQueue);
-      } else {
-        nextUpQueues.unshift(lastNowPlaying);
-      }
+      nextUpQueueUuids.unshift(nowPlayingUuid);
     }
+  } else if(nextUp.uuid !== nextUpUuid) {
+    let nextUpCollection;
+    nextUpCollection = { ...queueMap[nextUpUuid] };
+    if(nowPlaying.parentUuid !== nextUpCollection.uuid) {
+      nextUpQueueUuids.unshift(nowPlaying.parentUuid);
+      nextUpCollection = { ...queueMap[nowPlaying.parentUuid] };
+    }
+    nextUpCollection.childUuids.unshift(nowPlayingUuid);
+    queueMap[nextUpCollection.uuid] = nextUpCollection;
+  } else {
+    nextUpQueueUuids.unshift(nowPlayingUuid);
   }
 
-  lastUpQueues.pop();
-
-  const queue = {
-          ...nextNowPlaying,
-          startedAt: payload.startedAt,
-          statusAt: payload.statusAt,
-          status: payload.status,
-        };
-  queueMap[queue.uuid] = queue;
-
-  if(parentQueue) {
-    queueMap[parentQueue.uuid] = parentQueue;
-  }
+  const nextNowPlayingUuid = lastUpQueueUuids.pop();
 
   return {
       ...state,
       stream: {
         ...state.stream,
-        nowPlayingUuid: queue.uuid,
+        nowPlayingUuid: nextNowPlayingUuid,
       },
-      playback: { ...state.playback, nowPlayingUuid: queue.uuid },
+      playback: {
+        ...state.playback,
+        nowPlayingUuid: nextNowPlayingUuid,
+      },
+      lastUpQueueUuids: lastUpQueueUuids,
+      nextUpQueueUuids: nextUpQueueUuids,
       queueMap: queueMap,
-      lastUpQueues: lastUpQueues,
-      nextUpQueues: nextUpQueues,
       _lastPlayed: undefined,
   };
 }
@@ -193,52 +179,42 @@ export const streamPrevTrack = function(state, payload) {
  * ...
  */
 export const streamNextTrack = function(state, payload) {
-  const lastUpQueues = [...state.lastUpQueues],
-        nextUpQueues = [...state.nextUpQueues],
-        queueMap = state.queueMap,
-        lastNowPlaying = queueMap[state.stream.nowPlayingUuid],
-        nextUpQueue = nextUpQueues[0],
-        nextNowPlaying = (
-          nextUpQueue ?
-            (nextUpQueue.children.length ?
-              nextUpQueue.children[0] :
-              nextUpQueue) :
-            undefined
-        );
+  const lastUpQueueUuids = [...state.lastUpQueueUuids],
+        nextUpQueueUuids = [...state.nextUpQueueUuids],
+        nowPlayingUuid = state.stream.nowPlayingUuid,
+        queueMap = state.queueMap;
 
-  if(lastNowPlaying) {
-    lastUpQueues.push(lastNowPlaying);
-  }
+  lastUpQueueUuids.push(nowPlayingUuid);
 
-  if(nextUpQueue) {
-    if(nextUpQueue.children.length) {
-      nextUpQueue.children.shift();
-      if(!nextUpQueue.children.length) {
-        nextUpQueues.shift();
-      }
-    } else {
-      nextUpQueues.shift();
+  const nextUpUuid = nextUpQueueUuids.shift();
+  const nextNowPlaying = getLeafQueue(nextUpUuid, queueMap);
+
+  // Handle leaf node. (playing a track inside a collection)
+  if(nextUpUuid !== nextNowPlaying.uuid) {
+    // Pop the child from the collection.
+    let nextUp;
+    nextUp = { ...state.queueMap[nextUpUuid] };
+    nextUp.childUuids.shift();
+    queueMap[nextUp.uuid] = nextUp;
+    if(nextUp.childUuids.length > 0) {
+      // If no more children, pop the collection from the queue.
+      nextUpQueueUuids.unshift(nextUpUuid);
     }
   }
-
-  const queue = {
-          ...nextNowPlaying,
-          startedAt: payload.startedAt,
-          statusAt: payload.statusAt,
-          status: payload.status,
-        };
-  queueMap[queue.uuid] = queue;
 
   return {
       ...state,
       stream: {
         ...state.stream,
-        nowPlayingUuid: queue.uuid,
+        nowPlayingUuid: nextNowPlaying.uuid,
       },
-      playback: { ...state.playback, nowPlayingUuid: queue.uuid },
+      playback: {
+        ...state.playback,
+        nowPlayingUuid: nextNowPlaying.uuid,
+      },
+      lastUpQueueUuids: lastUpQueueUuids,
+      nextUpQueueUuids: nextUpQueueUuids,
       queueMap: queueMap,
-      lastUpQueues: lastUpQueues,
-      nextUpQueues: nextUpQueues,
-      _lastPlayed: lastNowPlaying,
+      _lastPlayed: undefined,
   };
 }

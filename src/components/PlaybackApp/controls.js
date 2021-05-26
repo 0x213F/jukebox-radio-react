@@ -158,8 +158,9 @@ export const playbackControlSeek = function(playback, queue, startedAt) {
   } else if(playbackService === SERVICE_SPOTIFY) {
     playback.spotifyApi.seek(positionMilliseconds);
   } else if(playbackService === SERVICE_YOUTUBE) {
-    playback.youTubeApi.seekTo(positionMilliseconds / 1000);
-    playback.youTubeApi.playVideo();
+    console.log(Math.floor(positionMilliseconds / 1000))
+    playback.youTubeApi.seekTo(Math.floor(positionMilliseconds / 1000));
+    // playback.youTubeApi.playVideo();
   } else if(playbackService === SERVICE_JUKEBOX_RADIO) {
     const trackUuid = queue.track.uuid,
           audios = playback.files[trackUuid],

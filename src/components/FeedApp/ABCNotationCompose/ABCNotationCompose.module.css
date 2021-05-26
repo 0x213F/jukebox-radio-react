@@ -22,6 +22,8 @@
   right: 0;
   bottom: 0;
   background-color: rgba(11, 29, 45, 0.53);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
 
   display: flex;
   align-items: center;

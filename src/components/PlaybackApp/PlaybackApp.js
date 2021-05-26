@@ -13,7 +13,7 @@ import {
   fetchPlayTrack,
 } from './Player/network';
 import { fetchUpdateFeed } from '../FeedApp/utils';
-import { getLastUpQueue, getNextUpQueue } from '../QueueApp/utils';
+import { getLeafQueue } from '../QueueApp/utils';
 import { fetchGetUserSettings } from '../UserSettings/network';
 import {
   SERVICE_JUKEBOX_RADIO,
@@ -46,8 +46,8 @@ function PlaybackApp(props) {
    */
   const playback = props.playback,
         userSettings = props.userSettings,
-        lastUp = getLastUpQueue(props.lastUpQueues),
-        nextUp = getNextUpQueue(props.nextUpQueues);
+        lastUp = getLeafQueue(props.lastUpQueueUuids[0], props.queueMap),
+        nextUp = getLeafQueue(props.nextUpQueueUuids[0], props.queueMap);
 
   const queueMap = props.queueMap,
         nowPlaying = queueMap[playback.nowPlayingUuid];
@@ -175,6 +175,7 @@ function PlaybackApp(props) {
     }
     const responseJsonPrevTrack = await fetchPrevTrack(nowPlaying?.durationMilliseconds);
     await props.dispatch(responseJsonPrevTrack.redux);
+    await props.dispatch({ type: 'stream/prevTrack' });
     await props.dispatch({ type: 'playback/start' });
     await props.dispatch({ type: 'playback/enable' });
     await fetchUpdateFeed(lastUp?.track?.uuid);
@@ -186,7 +187,6 @@ function PlaybackApp(props) {
   const nextTrack = async function() {
     await props.dispatch({ type: 'playback/disable' });
     if(shouldPauseOnTrackChange(nextUp, false)) {
-      console.log('PAUSING OWOOOPOPWS')
       playbackControlPause(playback, nowPlaying);
     }
     if(nextUp?.track.service === SERVICE_JUKEBOX_RADIO) {
@@ -208,6 +208,7 @@ function PlaybackApp(props) {
       nowPlaying?.durationMilliseconds, false
     );
     await props.dispatch(responseJsonNextTrack.redux);
+    await props.dispatch({ type: 'stream/nextTrack' });
     await props.dispatch({ type: 'playback/start' });
     await props.dispatch({ type: 'playback/enable' });
     await fetchUpdateFeed(nextUp?.track?.uuid);
@@ -631,8 +632,8 @@ function PlaybackApp(props) {
 const mapStateToProps = (state) => ({
     playback: state.playback,
     queueMap: state.queueMap,
-    lastUpQueues: state.lastUpQueues,
-    nextUpQueues: state.nextUpQueues,
+    lastUpQueueUuids: state.lastUpQueueUuids,
+    nextUpQueueUuids: state.nextUpQueueUuids,
     userSettings: state.userSettings,
 });
 

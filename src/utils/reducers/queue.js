@@ -21,15 +21,24 @@ export const finalizeQueue = function(state, queue) {
         newQueueMap = { ...state.queueMap};
 
   // Recursive case: parent node (queue item of format collection)
-  if(copy.children.length) {
+  if(copy.children?.length) {
     if(copy.collection?.service === SERVICE_APPLE_MUSIC) {
       copy.collection.imageUrl = copy.collection.imageUrl.replace("{w}", "300");
       copy.collection.imageUrl = copy.collection.imageUrl.replace("{h}", "300");
     }
-    newQueueMap[copy.uuid] = copy;
-    newState.queueMap = newQueueMap;
-    return finalizeQueues(newState, copy.children);
+    // newQueueMap[copy.uuid] = copy;
+    const anotherNewState = finalizeQueues(newState, copy.children);
+    copy.childUuids = copy.children.map(obj => obj.uuid);
+    delete copy.children;
+
+    const anotherNewMap = { ...anotherNewState.queueMap }
+    anotherNewMap[copy.uuid] = copy;
+    anotherNewState.queueMap = anotherNewMap;
+    return anotherNewState;
   }
+
+  delete copy.children;
+  copy.childUuids = [];
 
   // Some data cleaning that probably shouldn't happen here.
   if(copy.track?.service === SERVICE_APPLE_MUSIC) {
@@ -47,14 +56,6 @@ export const finalizeQueue = function(state, queue) {
       markerMap[marker.trackUuid] = {};
     }
     markerMap[marker.trackUuid][marker.uuid] = marker;
-  }
-  for(const child of queue.children) {
-    for(const marker of child.markers) {
-      if(markerMap[marker.trackUuid] === undefined || markerMap[marker.trackUuid].length === 0) {
-        markerMap[marker.trackUuid] = {};
-      }
-      markerMap[marker.trackUuid][marker.uuid] = marker;
-    }
   }
   newState.markerMap = markerMap;
 
@@ -227,9 +228,7 @@ export const queueListSet = function(state, payload) {
   let lastUpQueues = payload.lastUpQueues.map(o => o.uuid),
       nextUpQueues = payload.nextUpQueues.map(o => o.uuid);
 
-
   const _lastPlayed = newState._lastPlayed;
-
   if(_lastPlayed) {
     lastUpQueues.push(_lastPlayed.uuid);
   }
@@ -242,73 +241,37 @@ export const queueListSet = function(state, payload) {
     stream = { ...stream, nowPlayingUuid: undefined }
   }
 
-  const lastUpUuid = (
-          !lastUpQueues.length ?
-            undefined :
-            lastUpQueues[lastUpQueues.length - 1]
-        ),
-        lastUp = newState.queueMap[lastUpUuid],
-        nextUp = (
-          !nextUpQueues.length ? undefined : (
-            !newState.queueMap[nextUpQueues[0]].children.length ?
-              newState.queueMap[nextUpQueues[0]] :
-              newState.queueMap[nextUpQueues[0]].children[0]
-          )
-        );
-
-  lastUpQueues = lastUpQueues.map(function(queueUuid) { return newState.queueMap[queueUuid]; });
-  nextUpQueues = nextUpQueues.map(function(queueUuid) { return newState.queueMap[queueUuid]; });
-
   return {
     ...newState,
     stream: stream,
-    lastUp: lastUp,
-    lastUpQueues: lastUpQueues,
-    nextUp: nextUp,
-    nextUpQueues: nextUpQueues,
+    lastUpQueueUuids: lastUpQueues,
+    nextUpQueueUuids: nextUpQueues,
     queueMap: newState.queueMap,
   }
 }
 
 export const queueUpdate = function(state, action) {
-  const newState = finalizeQueues(state, action.queues);
-
-  const nextUpQueues = newState.nextUpQueues.map(queue => newState.queueMap[queue.uuid]),
-        nextUp = newState.queueMap[newState.nextUp.uuid];
-
-  return {
-    ...newState,
-    nextUp: nextUp,
-    nextUpQueues: nextUpQueues,
-  }
+  return finalizeQueues(state, action.queues);
 }
 
 
 export const queueDeleteNode = function(state, action) {
-  const queues = state.nextUpQueues,
-        filteredQueues = queues.filter(i => i.uuid !== action.queueUuid);
+  const queueUuids = state.nextUpQueueUuids,
+        filteredQueueUuids = queueUuids.filter(uuid => uuid !== action.queueUuid);
 
   return {
     ...state,
-    nextUpQueues: filteredQueues,
+    nextUpQueueUuids: filteredQueueUuids,
   }
 }
 
 
 export const queueDeleteChildNode = function(state, action) {
-  let queues = [...state.nextUpQueues];
-  const parentIndex = queues.findIndex(i => i.uuid === action.parentUuid),
-        children = queues[parentIndex].children,
-        filteredChildren = children.filter(i => i.uuid !== action.queueUuid);
+  const queueMap = { ...state.queueMap },
+        parentQueue = { ...state.queueMap[action.parentUuid] };
+  parentQueue.childUuids = parentQueue.childUuids.filter(uuid => uuid !== action.queueUuid);
 
-  queues[parentIndex].children = filteredChildren;
+  queueMap[parentQueue.uuid] = parentQueue;
 
-  if(!filteredChildren.length) {
-    queues = queues.filter(i => i.uuid !== action.parentUuid);
-  }
-
-  return {
-    ...state,
-    nextUpQueues: queues,
-  }
+  return { ...state, queueMap };
 }

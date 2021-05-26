@@ -53,34 +53,17 @@ function SearchResult(props) {
         {serviceSvg}
       </div>
 
-      { /* Initial state: button has not been clicked. */
-      !isSubmitting && !isSubmitted &&
-        <button type="button"
-                className={styles.AddButton}
-                onClick={handleAddToQueue}
-                disabled={false}>
-          Add
-        </button>
-      }
+      <button type="button"
+              onClick={handleAddToQueue}
+              className={styles[isSubmitted ? "AddButtonInverted" : "AddButton"]}
+              style={((isSubmitting && !isSubmitted) && {cursor: "wait"}) || {}}
+              disabled={!(!isSubmitting && !isSubmitted)}>
+        {!isSubmitted ?
+          (isSubmitting ? <i className={styles.ggSpinner}></i> : "Add") :
+          "Added"
+        }
+      </button>
 
-      { /* Immediately after being clicked, disable and display spinner. */
-      isSubmitting && !isSubmitted &&
-        <button type="button"
-                className={styles.AddButton}
-                style={{cursor: "wait"}}
-                disabled={true}>
-          <i className={styles.ggSpinner}></i>
-        </button>
-      }
-
-      { /* Once loaded, stay disabled but display a check */
-      isSubmitted &&
-        <button type="button"
-                className={styles.AddButtonInverted}
-                disabled={true}>
-          Added
-        </button>
-      }
     </div>
   );
 }

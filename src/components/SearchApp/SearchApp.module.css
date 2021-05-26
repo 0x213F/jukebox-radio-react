@@ -39,7 +39,8 @@
   background-color: #FFF;
 
   padding: 0;
-  border: 2px solid #0047FF;
+  /* border: 2px solid #0047FF; */
+  border: 0;
   border-radius: 35px;
 
   margin-left: 14px;

@@ -4,16 +4,18 @@ import styles from './QueueApp.module.css';
 import { fetchDeleteQueue } from './network'
 import QueueCollection from './QueueCollection/QueueCollection'
 import QueueTrack from './QueueTrack/QueueTrack'
-import { getQueueDuration } from './utils';
+import { getQueues, getQueueDuration } from './utils';
 import ReactTimeAgo from 'react-time-ago';
 
 
 function QueueApp(props) {
 
-  const nextUpQueues = props.nextUpQueues,
+  const nextUpQueueUuids = props.nextUpQueueUuids,
         stream = props.stream,
         queueMap = props.queueMap,
         nowPlaying = queueMap[stream.nowPlayingUuid];
+
+  const nextUpQueues = getQueues(nextUpQueueUuids, queueMap);
 
   const queueDuration = getQueueDuration(nextUpQueues, nowPlaying);
   const endsAt = new Date(Date.now() + queueDuration);
@@ -95,8 +97,8 @@ function QueueApp(props) {
 const mapStateToProps = (state) => ({
   stream: state.stream,
   queueMap: state.queueMap,
-  nextUpQueues: state.nextUpQueues,
-  lastUpQueues: state.lastUpQueues,
+  nextUpQueueUuids: state.nextUpQueueUuids,
+  lastUpQueueUuids: state.lastUpQueueUuids,
 });
 
 

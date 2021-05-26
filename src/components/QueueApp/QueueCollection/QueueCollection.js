@@ -3,7 +3,7 @@ import { connect } from 'react-redux'
 import styles from './QueueCollection.module.css';
 import QueueTrack from '../QueueTrack/QueueTrack';
 import { iconExpand, iconCollapse, iconRemove, iconCollapseDisabled, iconRemoveDisabled } from '../icons';
-import { durationPretty } from '../utils';
+import { durationPretty, getLeafQueue } from '../utils';
 
 
 function QueueCollection(props) {
@@ -11,17 +11,21 @@ function QueueCollection(props) {
   /*
    * 🏗
    */
+  const queueMap = props.queueMap;
+
   const queue = props.data,
         stream = props.stream,
-        lastUpQueues = props.lastUpQueues,
-        lastUp = lastUpQueues[lastUpQueues.length - 1],
+        lastUpQueueUuids = props.lastUpQueueUuids,
+        lastUp = getLeafQueue(lastUpQueueUuids[lastUpQueueUuids.length - 1], queueMap),
         queueUuid = queue.uuid;
+
+  const nowPlaying = queueMap[stream.nowPlayingUuid];
 
   const isCurrentlyPlayingCollection = (
     // Stream is NOW playing - "now playing" belongs to same parent UUID
-    (stream?.nowPlaying && stream?.nowPlaying?.parentUuid === queueUuid) ||
+    (nowPlaying && nowPlaying?.parentUuid === queueUuid) ||
     // Stream is NOT playing - "last up" belongs to same parent UUID
-    (!stream?.nowPlaying && lastUp?.parentUuid && lastUp?.parentUuid === queueUuid)
+    (!nowPlaying && lastUp?.parentUuid && lastUp?.parentUuid === queueUuid)
   );
 
 
@@ -81,11 +85,11 @@ function QueueCollection(props) {
         </div>
       </div>
 
-      {queue.children.length > 0 && reveal &&
+      {queue.childUuids.length > 0 && reveal &&
         <div className={styles.Children}>
-          {queue.children.map((value, index) => (
+          {queue.childUuids.map((value, index) => (
             <QueueTrack key={index}
-                        data={value}
+                        queueUuid={value}
                         destroy={props.destroy}
                         playbackControls={props.playbackControls}>
             </QueueTrack>
@@ -99,7 +103,8 @@ function QueueCollection(props) {
 
 const mapStateToProps = (state) => ({
   stream: state.stream,
-  lastUpQueues: state.lastUpQueues,
+  lastUpQueueUuids: state.lastUpQueueUuids,
+  queueMap: state.queueMap,
 });
 
 export default connect(mapStateToProps)(QueueCollection);

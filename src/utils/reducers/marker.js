@@ -21,15 +21,13 @@ export const markerCreate = function(state, action) {
 /*
  * Delete a marker relevant to a queue item (track).
  */
-export const markerDelete = function(state, action) {
+export const markerDelete = function(state, payload) {
   const markerMap = { ...state.markerMap },
-        marker = action.marker,
-        markers = markerMap[action.queueUuid];
+        marker = payload.marker,
+        markers = { ...markerMap[marker.trackUuid] };
 
   delete markers[marker.uuid];
+  markerMap[marker.trackUuid] = markers;
 
-  return {
-    ...state,
-    markerMap: markerMap,
-  };
+  return { ...state, markerMap };
 }

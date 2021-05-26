@@ -74,12 +74,15 @@ function WelcomeApp(props) {
   }
 
   useEffect(function() {
+    if(!isOpen) {
+      return;
+    }
     props.dispatch({
       type: "sideBar/selectTab",
       payload: { tab: "search" },
     });
   // eslint-disable-next-line
-  }, [])
+  }, [isOpen])
 
    /*
     * 🎨

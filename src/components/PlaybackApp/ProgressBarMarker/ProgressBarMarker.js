@@ -3,7 +3,6 @@ import { connect } from 'react-redux';
 import styles from './ProgressBarMarker.module.css';
 import { iconTrash, iconPlay, iconMarkerExtension, iconStop } from '../icons';
 import { getProgressMilliseconds } from '../utils';
-import { fetchStreamMarkerDelete } from '../../TrackDetailApp/Marker/network';
 import { fetchStreamQueueIntervalStop } from '../../TrackDetailApp/Interval/network';
 
 
@@ -38,14 +37,6 @@ function ProgressBarMarker(props) {
   const onMouseLeave = function() {
     setHovering(false);
     props.setMarkerHover(false);
-  }
-
-  /*
-   * DELETE
-   */
-  const deleteTrackMarker = async function() {
-    const responseJson = await fetchStreamMarkerDelete(marker.uuid, queue.uuid);
-    await props.dispatch(responseJson.redux);
   }
 
   /*
@@ -101,7 +92,7 @@ function ProgressBarMarker(props) {
 
             {hovering && editable &&
               <button className={styles.Delete}
-                      onClick={deleteTrackMarker}>
+                      onClick={(e) => {props.deleteTrackMarker(marker)}}>
                 {iconTrash}
               </button>
             }
