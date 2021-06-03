@@ -4,6 +4,7 @@ import {
   getLeafQueue,
 } from '../../../components/QueueApp/utils';
 import { iconNextTrack, iconPrevTrack } from '../icons';
+import { featureIsEnabled } from '../utils';
 import styles from './Player.module.css';
 
 
@@ -67,11 +68,11 @@ function Player(props) {
           </div>
           <div className={styles.PlaybackControls}>
             <button onClick={props.prevTrack}
-                    disabled={!playback.controlsEnabled}>
+                    disabled={!featureIsEnabled(nowPlaying, playback, "prev")}>
               {iconPrevTrack}
             </button>
             <button onClick={props.nextTrack}
-                    disabled={!playback.controlsEnabled}>
+                    disabled={!featureIsEnabled(nowPlaying, playback, "next")}>
               {iconNextTrack}
             </button>
           </div>

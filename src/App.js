@@ -11,7 +11,6 @@ import {
 } from './components/PlaybackApp/Player/network';
 import { fetchGetUserSettings } from './components/UserSettings/network';
 import { fetchQueueList } from './components/QueueApp/network'
-import { playbackControlPause } from './components/PlaybackApp/controls';
 import { store } from './utils/redux'
 import Login from './components/Login/Login';
 import PlaybackApp from './components/PlaybackApp/PlaybackApp';
@@ -133,7 +132,6 @@ function App() {
     // End PWA
 
     // Prestyle side bar
-    console.log(window.location.pathname.substring(5))
     store.dispatch({
       type: "sideBar/selectTab",
       payload: { tab: window.location.pathname.substring(5) },
@@ -150,9 +148,12 @@ function App() {
         return;
       }
       fetchPauseTrack();
-      playbackControlPause(state.playback, nowPlaying);
     });
   }, []);
+
+  window.addEventListener('playbackStateDidChange', (event) => {
+    console.log('apple loaded!!');
+  });
 
   // When the page is initially loaded, display nothing.
   if(status === 'initial') {

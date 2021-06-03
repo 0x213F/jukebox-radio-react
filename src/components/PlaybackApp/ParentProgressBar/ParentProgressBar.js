@@ -155,7 +155,7 @@ function ParentProgressBar(props) {
 
     const periodicTask = setInterval(() => {
       setCounter(prev => prev + 1);
-    }, 50);
+    }, 150);
 
     setAnimationPeriodicTask(periodicTask);
 

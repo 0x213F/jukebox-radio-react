@@ -78,16 +78,13 @@ const initialState = {
   markerMap: {},
   queueMap: {},
   playback: {
-    controlsEnabled: false,
     spotifyApi: undefined,
     youTubeApi: undefined,
     youTubeAutoplay: 0,
-    appleMusic: {},
     isPlaying: false,
     queuedUp: false,
     noopNextTrack: false,
     addToQueueTimeoutId: undefined,
-    isReady: false,
     files: {},
     volumeLevel: {
       audio: 1.00,
@@ -96,11 +93,19 @@ const initialState = {
     loaded: {
       spotify: false,
       youTube: false,
-      appleMusic: true,
+      appleMusic: false,
+      audius: true,
+      jukeboxRadio: true,
     },
-    nowPlaying: undefined,
+    pending: {
+      spotify: false,
+      youTube: false,
+      appleMusic: false,
+      audius: false,
+      jukeboxRadio: false,
+    },
+    actionQueue: [],
     nowPlayingUuid: undefined,
-    streamUuid: undefined,
   },
   // UI
   search: {

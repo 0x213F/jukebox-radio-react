@@ -85,6 +85,7 @@ function TrackDetailApp(props) {
   const [tab, setTab] = useState('markers'),
         [motive, setMotive] = useState('listen'),
         [playPauseEnabled, setPlayPauseEnabled] = useState(true),
+        [scanControlsEnabled, setScanControlsEnabled] = useState(false),
         // Interface which force rerenders the enabled status of playback
         [rerenderPlayPauseEnabled, updatePlayPauseEnabled] = useState(0);
 
@@ -95,11 +96,15 @@ function TrackDetailApp(props) {
     if(queue.status === "played") {
       playbackControlPause(playback, queue);
     }
+
     const now = Date.now();
     queue.startedAt = now;
     queue.status = "paused";
     queue.statusAt = now;
     setQueue({ ...props.data });
+    setTab("markers");
+    setMotive("listen");
+
     closeModal();
   }
 
@@ -121,6 +126,7 @@ function TrackDetailApp(props) {
     updateNewMarkerTimestamp('');
     setFormMarkerName('');
     // Rerender
+    setMotive("listen");
     updateMarkers(RERENDER);
   }
 
@@ -150,6 +156,7 @@ function TrackDetailApp(props) {
     setLowerBoundMarkerUuid('null');
     setUpperBoundMarkerUuid('null');
     // Rerender
+    setMotive("listen");
     updatePlayPauseEnabled(RERENDER);
     updateMarkers(RERENDER);
     updateIntervals(RERENDER);
@@ -170,7 +177,7 @@ function TrackDetailApp(props) {
    * When the user clicks the play/ pause button.
    */
   const handlePlayPause = function () {
-    if(!playPauseEnabled || !playback.controlsEnabled) {
+    if(!playPauseEnabled) {
       return;
     }
     if(queue.status === "played") {
@@ -180,6 +187,7 @@ function TrackDetailApp(props) {
     } else {
       play(0);
     }
+    updatePlayPauseEnabled(RERENDER);
   }
 
   /*
@@ -287,6 +295,14 @@ function TrackDetailApp(props) {
   /*
    * Handle...
    */
+  const handleMarkerAdjust = function(delta) {
+    setFormMarkerTimestamp(prev => prev + delta);
+    updateMarkers(RERENDER);
+  }
+
+  /*
+   * Handle...
+   */
   const handleMarkerTimestamp = function(e) {
     setFormMarkerTimestamp(e.target.value);
     updateMarkers(RERENDER);
@@ -341,7 +357,6 @@ function TrackDetailApp(props) {
     setQueue({...queue});
 
     playbackControlPause(playback, queue);
-    updateNewMarkerTimestamp();
   }
 
   const seek = function(progress) {
@@ -369,6 +384,12 @@ function TrackDetailApp(props) {
       setPlayPauseEnabled(true);
     } else {
       setPlayPauseEnabled(false);
+    }
+
+    if(tab === "markers" && motive === "create" && queue.status === 'paused') {
+      setScanControlsEnabled(true);
+    } else {
+      setScanControlsEnabled(false);
     }
 
   // eslint-disable-next-line
@@ -474,15 +495,31 @@ function TrackDetailApp(props) {
                  alt={"Album Art"} />
           </div>
           <div className={styles.PreviewControlContainer}>
-            {/* <button className={styles.PreviewControl}>{iconBackward1000}</button> */}
-            {/* <button className={styles.PreviewControl}>{iconBackward100}</button> */}
-            <button className={styles[playPauseEnabled ? "PreviewControl" : "PreviewControlDisabled"]}
+            <button className={styles.PreviewControlScan}
+                    disabled={!scanControlsEnabled}
+                    onClick={() => { handleMarkerAdjust(-1000); }}>
+              {iconBackward1000}
+            </button>
+            <button className={styles.PreviewControlScan}
+                    disabled={!scanControlsEnabled}
+                    onClick={() => { handleMarkerAdjust(-100); }}>
+              {iconBackward100}
+            </button>
+            <button className={styles.PreviewControl}
                     onClick={handlePlayPause}
-                    disabled={!playPauseEnabled || !playback.controlsEnabled}>
+                    disabled={!playPauseEnabled}>
               {queue.status === "played" ? iconPause : iconPlay}
             </button>
-            {/* <button className={styles.PreviewControl}>{iconForward100}</button> */}
-            {/* <button className={styles.PreviewControl}>{iconForward1000}</button> */}
+            <button className={styles.PreviewControlScan}
+                    disabled={!scanControlsEnabled}
+                    onClick={() => { handleMarkerAdjust(100); }}>
+              {iconForward100}
+            </button>
+            <button className={styles.PreviewControlScan}
+                    disabled={!scanControlsEnabled}
+                    onClick={() => { handleMarkerAdjust(1000); }}>
+              {iconForward1000}
+            </button>
           </div>
         </div>
 

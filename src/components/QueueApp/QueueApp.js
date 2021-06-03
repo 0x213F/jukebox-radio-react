@@ -45,6 +45,13 @@ function QueueApp(props) {
     }
   }
 
+  const handleSearch = function() {
+    props.dispatch({
+      type: "sideBar/selectTab",
+      payload: { tab: "search" },
+    });
+  }
+
   /*
    * 🎨
    */
@@ -84,7 +91,7 @@ function QueueApp(props) {
           )
         }
       </div>
-      <Link to="/app/search">
+      <Link onClick={handleSearch} to="/app/search">
         <button className={styles.AddToQueue}>
           Add To Queue
         </button>

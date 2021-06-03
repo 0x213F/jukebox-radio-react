@@ -14,7 +14,6 @@ export const playbackMount = function(state, payload) {
       playback: {
         ...state.playback,
         nowPlayingUuid: payload.stream.nowPlayingUuid,
-        streamUuid: payload.stream.uuid,
       }
     }
   } else {
@@ -23,7 +22,6 @@ export const playbackMount = function(state, payload) {
       playback: {
         ...state.playback,
         nowPlayingUuid: payload.queue.uuid,
-        streamUuid: undefined,
       }
     }
   }
@@ -42,7 +40,6 @@ export const playbackAppleMusic = function(state, payload) {
       appleMusic: {
         api: payload.appleMusicApi,
       },
-      isReady: true,
     }
   }
 }
@@ -57,7 +54,6 @@ export const playbackSpotify = function(state, payload) {
     playback: {
       ...state.playback,
       spotifyApi: payload.spotifyApi,
-      isReady: true,
     }
   }
 }

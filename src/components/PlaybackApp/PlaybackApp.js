@@ -9,7 +9,6 @@ import {
   fetchPrevTrack,
   fetchScan,
   fetchTrackGetFiles,
-  fetchPauseTrack,
   fetchPlayTrack,
 } from './Player/network';
 import { fetchUpdateFeed } from '../FeedApp/utils';
@@ -267,13 +266,9 @@ function PlaybackApp(props) {
     if(!nowPlaying) {
       return;
     }
-    await props.dispatch({ type: 'playback/disable' });
-    const jsonResponse = await fetchPauseTrack(nowPlaying.durationMilliseconds);
-    await props.dispatch(jsonResponse.redux);
-    await props.dispatch({ type: 'playback/addToQueueReschedule' });
+    props.dispatch({ type: 'playback/addToQueueReschedule' });
     playbackControlPause(playback, nowPlaying);
     clearTimeout(plannedNextTrackTimeoutId);
-    await props.dispatch({ type: 'playback/enable' });
   }
 
   /*
@@ -477,6 +472,13 @@ function PlaybackApp(props) {
       return;
     }
 
+    window.addEventListener('musickitloaded', () => {
+      props.dispatch({
+        type: "playback/loaded",
+        payload: { service: "appleMusic" },
+      });
+    })
+
     // Define the Apple Music Web SDK.
     const player = window.MusicKit.configure({
       developerToken: userSettings.appleMusic.token,
@@ -605,7 +607,8 @@ function PlaybackApp(props) {
   ////////////////////////////////////////////////////////////////////////////
   // Play the music.
   useEffect(() => {
-    if(nowPlaying?.status === "played" && !playback.isPlaying && playback.isReady) {
+    // TODO add check to verify that service is prepared to play
+    if(nowPlaying?.status === "played" && !playback.isPlaying) {
       start();
     }
   // eslint-disable-next-line

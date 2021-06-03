@@ -100,3 +100,23 @@ export const cycleVolumeLevel = function(volumeLevel) {
     return FULL;
   }
 }
+
+
+export const featureIsEnabled = function(queue, playback, action) {
+  const service = queue?.service;
+  if(!service) {
+    return true;
+  }
+
+  const isLoaded = playback.loading[service];
+  if(!isLoaded) {
+    return false;
+  }
+
+  const pendingAction = playback.pending[service];
+  if(pendingAction) {
+    return false;
+  }
+
+  return true;
+}

@@ -13,8 +13,7 @@ function WelcomeApp(props) {
 
   const history = useHistory();
 
-  const userSettings = props.userSettings,
-        playback = props.playback;
+  const userSettings = props.userSettings;
 
   const isOpen = props.isOpen,
         closeModal = props.closeModal;
@@ -22,7 +21,7 @@ function WelcomeApp(props) {
   const handleAppleMusic = function() {
     const music = window.MusicKit.getInstance();
     if(!music.musicUserToken) {
-      playback.appleMusic.api.authorize();
+      music.authorize();
     } else {
       props.dispatch({
         type: 'search/toggleServiceOff',
@@ -87,6 +86,17 @@ function WelcomeApp(props) {
    /*
     * 🎨
     */
+  let appleMusicEnabled = false;
+  try {
+    if(window.MusicKit.getInstance().musicUserToken) {
+      appleMusicEnabled(true);
+    }
+  } catch {
+    // pass
+  } finally {
+    // pass
+  }
+
   return (
     <Modal isOpen={isOpen}
            ariaHideApp={false}
@@ -137,7 +147,7 @@ function WelcomeApp(props) {
 
             <div className={styles.PlaybackOption}
                     onClick={handleAppleMusic}
-                    disabled={!playback.appleMusic.api}>
+                    disabled={appleMusicEnabled}>
               <div className={styles.PlaybackOptionLogo}>
                 {iconAppleMusic}
               </div>
@@ -184,7 +194,6 @@ function WelcomeApp(props) {
 
 const mapStateToProps = (state) => ({
   userSettings: state.userSettings,
-  playback: state.playback,
 });
 
 

@@ -4,7 +4,10 @@ import { connect } from 'react-redux';
 import { CircularProgressbarWithChildren, buildStyles } from 'react-circular-progressbar';
 import 'react-circular-progressbar/dist/styles.css';
 
-import { cycleVolumeLevel } from '../../PlaybackApp/utils';
+import { cycleVolumeLevel, featureIsEnabled } from '../../PlaybackApp/utils';
+import {
+  fetchPauseTrack,
+} from '../../PlaybackApp/Player/network';
 import { playbackChangeVolume } from '../../PlaybackApp/controls';
 import { iconNextTrack, iconPrevTrack } from '../../PlaybackApp/icons';
 import ParentProgressBar from '../../PlaybackApp/ParentProgressBar/ParentProgressBar';
@@ -39,10 +42,12 @@ function BottomBar(props) {
   // eslint-disable-next-line
   const scanDisabled = (
           !nowPlaying ||
-          nowPlaying.status === 'paused' ||
-          !playback.controlsEnabled
+          nowPlaying.status === 'paused'
         ),
-        playPauseNextPrevDisabled = !playback.controlsEnabled,
+        playDisabled = !featureIsEnabled(nowPlaying, playback, 'play'),
+        pauseDisabled = !featureIsEnabled(nowPlaying, playback, 'pause'),
+        nextDisabled = !featureIsEnabled(nowPlaying, playback, 'next'),
+        prevDisabled = !featureIsEnabled(nowPlaying, playback, 'prev'),
         nowPlayingTrackService = nowPlaying?.track?.service;
 
   const [showModal, setShowModal] = useState(false);
@@ -78,7 +83,7 @@ function BottomBar(props) {
    * Modify playback to seek in a certain diretion ('forward' or 'backward').
    */
   const handleNext = function(direction) {
-    if(playPauseNextPrevDisabled) {
+    if(nextDisabled) {
       return;
     }
     playbackControls.nextTrack();
@@ -88,7 +93,7 @@ function BottomBar(props) {
    * Modify playback to seek in a certain diretion ('forward' or 'backward').
    */
   const handlePrev = function(direction) {
-    if(playPauseNextPrevDisabled) {
+    if(prevDisabled) {
       return;
     }
     playbackControls.prevTrack();
@@ -99,12 +104,17 @@ function BottomBar(props) {
    * NOTE: If no song is currently playing, then the "play button" will
    *       actually perform the "nextTrack" action.
    */
-  const handlePlayPause = function() {
-    if(playPauseNextPrevDisabled) {
+  const handlePlayPause = async function() {
+    if(playDisabled && pauseDisabled) {
       return;
     }
     if(nowPlaying?.status === "played") {
       playbackControls.pause();
+
+      props.dispatch({ type: 'playback/disable' });
+      const jsonResponse = await fetchPauseTrack(nowPlaying.durationMilliseconds);
+      props.dispatch(jsonResponse.redux);
+      props.dispatch({ type: 'playback/enable' });
     } else if(nowPlaying?.status === 'paused') {
       playbackControls.play();
     } else {
@@ -167,17 +177,17 @@ function BottomBar(props) {
 
       <div className={styles.Playback}>
         <button onClick={handlePrev}
-                disabled={playPauseNextPrevDisabled} >
+                disabled={prevDisabled} >
           {iconPrevTrack}
         </button>
         <button onClick={handlePlayPause}
-                disabled={playPauseNextPrevDisabled} >
+                disabled={playDisabled && pauseDisabled} >
           {nowPlaying && nowPlaying.status === "played" ?
             iconPauseCircle : iconPlayCircle
           }
         </button>
         <button onClick={handleNext}
-                disabled={playPauseNextPrevDisabled} >
+                disabled={nextDisabled} >
           {iconNextTrack}
         </button>
       </div>

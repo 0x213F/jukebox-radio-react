@@ -18,39 +18,35 @@
 /* TRACK PLAYBACK CONTROLS */
 .Preview {
   display: block;
-  width: 600px;
   position: relative;
   float: right;
 }
 
 .PreviewImgContainer {
   background-color: #EAEAEA;
-  padding: 24px;
-  width: calc(100% - 48px);
+  width: 315px;
+  height: 191px;
   display: flex;
   justify-content: center;
   align-items: center;
   border-radius: 12px;
-  position: relative;
-  float: right;
 }
 
 .PreviewImg {
-  height: 300px;
+  max-height: calc(100% - 42px);
   float: right;
   display: inline-block;
 }
 
 .PreviewControlContainer {
-  margin: auto;
-  padding-top: 24px;
-  width: 260px;
+  padding-top: 25px;
+  margin: 0 30px;
   display: flex;
   justify-content: space-around;
 }
 
 .PreviewControl,
-.PreviewControlDisabled {
+.PreviewControlScan {
   width: 24px;
   background-color: #FFF;
   border: 0;
@@ -61,8 +57,19 @@
   cursor: pointer;
 }
 
-.PreviewControlDisabled > svg > path {
+.PreviewControl:disabled,
+.PreviewControlScan:disabled {
+  cursor: not-allowed;
+}
+
+.PreviewControl:disabled > svg > path,
+.PreviewControlScan:disabled > svg > path:nth-child(1),
+.PreviewControlScan:disabled > svg > path:nth-child(2) {
   stroke: #BCBCBC;
+}
+
+.PreviewControlScan:disabled > svg > path:nth-child(3) {
+  fill: #BCBCBC;
 }
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
@@ -103,10 +110,7 @@
 
 .MotiveContainer {
   margin-top: 30px;
-  width: 437px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  margin-left: 4px;
 }
 
 .MotiveCheckboxContainer {
@@ -114,7 +118,7 @@
   cursor: pointer;
   user-select: none;
   display: inline-block;
-  margin-left: 16px;
+  margin-left: 12px;
   margin-right: 16px;
 }
 
@@ -138,9 +142,8 @@
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 /* MARKER FORM */
 .Form {
-  margin-top: 32px;
+  margin-top: 42px;
   padding-left: 8px;
-  height: 214px;
   display: flex;
   flex-direction: column;
   justify-content: flex-end;
@@ -215,7 +218,7 @@
 
   width: calc(100% - 408px);
   height: calc(100% - 363px);
-  min-width: 1032px;
+  min-width: 978px;
   min-height: 537px;
 
   border-radius: 14px;
