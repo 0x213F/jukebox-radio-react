@@ -104,8 +104,8 @@ export const durationPretty = function(durationMilliseconds) {
   var hrs = (s - mins) / 60;
 
   if(durationMilliseconds >= 1000 * 60 * 60) {
-    return pad(hrs) + ':' + pad(mins) + ':' + pad(secs);
+    return hrs + ':' + pad(mins) + ':' + pad(secs);
   } else {
-    return pad(mins) + ':' + pad(secs);
+    return mins + ':' + pad(secs);
   }
 }

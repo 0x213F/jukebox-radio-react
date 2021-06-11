@@ -18,8 +18,8 @@ export const iconScanBackward = (
 
 export const iconPlayCircle = (
   <svg width="65" height="65" viewBox="0 0 65 65" fill="none" xmlns="http://www.w3.org/2000/svg">
-    <path d="M32.5 64C49.897 64 64 49.897 64 32.5C64 15.103 49.897 1 32.5 1C15.103 1 1 15.103 1 32.5C1 49.897 15.103 64 32.5 64Z" stroke="#0047FF" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-    <path d="M26 20L45 32.5L26 45V20Z" stroke="#0047FF" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+    <path d="M32.5 64C49.897 64 64 49.897 64 32.5C64 15.103 49.897 1 32.5 1C15.103 1 1 15.103 1 32.5C1 49.897 15.103 64 32.5 64Z" stroke="#0047FF" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" fill="#FFF"/>
+    <path d="M26 20L45 32.5L26 45V20Z" stroke="#0047FF" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" fill="#FFF"/>
   </svg>
 );
 

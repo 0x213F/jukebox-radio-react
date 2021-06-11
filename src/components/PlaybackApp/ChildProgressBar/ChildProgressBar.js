@@ -14,7 +14,6 @@ function ChildProgressBar(props) {
         duration = props.duration,
         queue = props.queue,
         editable = props.editable,
-        playbackControls = props.playbackControls,
         allowIntervalPlay = props.allowIntervalPlay,
         allowIntervalDelete = props.allowIntervalDelete;
 
@@ -45,9 +44,27 @@ function ChildProgressBar(props) {
   const seekToInterval = async function() {
     const progress = getProgressMilliseconds(queue, interval.startPosition);
     if(queue.status === 'played') {
-      playbackControls.seek(progress);
+      const action = {
+        name: "seek",
+        timestampMilliseconds: progress,
+        status: "kickoff",
+        fake: false,
+      };
+      props.dispatch({
+        type: "main/addAction",
+        payload: { action },
+      });
     } else {
-      playbackControls.play(progress);
+      const action = {
+        name: "play",
+        timestampMilliseconds: progress,
+        status: "kickoff",
+        fake: false,
+      };
+      props.dispatch({
+        type: "main/addAction",
+        payload: { action },
+      });
     }
   }
 

@@ -7,9 +7,14 @@
 .TextComment {
   width: 357px;
   min-height: 62px;
-  background-color: rgba(91, 201, 236, 0.2);
+
+  border-radius: 6px;
   padding: 22px 28px;
   margin-bottom: 19px;
+
+  background-color: rgba(231, 249, 255, 0.93);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
 }
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 
 import { connect } from 'react-redux';
 import MicRecorder from 'mic-recorder-to-mp3';
@@ -8,6 +8,9 @@ import ABCNotationCompose from './ABCNotationCompose/ABCNotationCompose';
 import VoiceRecording from './VoiceRecording/VoiceRecording';
 import { getPositionMilliseconds } from '../PlaybackApp/utils';
 import { CLASS_TEXT_COMMENT, CLASS_VOICE_RECORDING } from '../../config/model';
+import {
+  SERVICE_YOUTUBE,
+} from '../../config/services';
 
 import styles from './FeedApp.module.css';
 import { fetchTextCommentCreate } from './network';
@@ -35,6 +38,8 @@ function FeedApp(props) {
 
   // Modal displays ABCNotationCompose
   const [showModal, setShowModal] = useState(false);
+
+  const contentContainer = useRef();
 
   /*
    * Opens the modal, showing ABCNotationCompose.
@@ -123,6 +128,12 @@ function FeedApp(props) {
   // REGENERATE THE FEED
   useEffect(() => {
 
+    const containerRect = contentContainer.current.getBoundingClientRect();
+    props.dispatch({
+      type: "feedApp/setContentContainer",
+      payload: { contentContainer: containerRect },
+    });
+
     const periodicTask = setInterval(() => {
       props.dispatch({ type: "feed/update" });
     }, 50);
@@ -146,12 +157,17 @@ function FeedApp(props) {
                           closeModal={closeModal} />
 
       <div className={styles.ContentContainer}>
-        <div className={[styles.ImageContainer, styles[nowPlaying?.track?.service]].join(' ')}>
-          <img alt="" src={nowPlaying?.track?.imageUrl} />
+        <div ref={contentContainer} className={styles.ImageContainer}>
+          {nowPlaying?.track?.service !== SERVICE_YOUTUBE &&
+            <img alt="" src={nowPlaying?.track?.imageUrl} />
+          }
         </div>
         <h5>
           {nowPlaying?.track?.name}
         </h5>
+        <h6>
+          {nowPlaying?.track?.artistName}
+        </h6>
       </div>
 
       <div className={styles.FeedWrapper}>

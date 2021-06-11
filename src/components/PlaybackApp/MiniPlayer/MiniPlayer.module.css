@@ -20,4 +20,7 @@
 
 .MiniPlayer > img {
   width: 100%;
+  /* width: calc(100% - 50px);
+  border: 25px solid #EAEAEA;
+  border-radius: 12px; */
 }

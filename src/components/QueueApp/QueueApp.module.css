@@ -1,90 +1,139 @@
 .QueueApp {
-  overflow-y: scroll;
   height: 100%;
   padding-top: 50px;
   top: -50px;
   position: relative;
-  width: calc(100% + 20px);
 }
 
-.QueueApp::-webkit-scrollbar {
+.NowPlaying {
+  width: calc(100% - 4px);
+  height: 84px;
+
+  margin: 0;
+  padding: 0;
+
+  border: 2px solid #0047FF;
+  border-radius: 44px;
+
+  background-color: rgba(251, 252, 255, 0.93);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+
+  font-size: 20px;
+  outline: none;
+
+  position: relative;
+
+  font-family: "Raleway";
+  font-weight: 500;
+
+  z-index: 4;
+}
+
+.NowPlayingArt {
+  width: 74px;
+  height: 58px;
+
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  float: left;
+  margin-top: 14px;
+  margin-left: 46px;
+}
+
+.NowPlayingArt > img {
+  max-height: 58px;
+  max-width: 74px;
+}
+
+.NowPlayingInformation {
+  margin-top: 18px;
+  margin-left: 36px;
+  display: inline-block;
+}
+
+.NowPlayingInformation > h5 {
+  margin: 0;
+  font-style: normal;
+  font-weight: 500;
+  font-size: 19px;
+  line-height: 21px;
+  padding-top: 1px;
+  white-space: nowrap;
+  overflow: hidden;
+  display: block;
+  text-overflow: ellipsis;
+}
+
+.NowPlayingInformation > h6 {
+  margin: 0;
+  font-style: normal;
+  font-weight: 500;
+  font-size: 15px;
+  line-height: 16px;
+  padding-top: 9px;
+  white-space: nowrap;
+  overflow: hidden;
+  display: block;
+  text-overflow: ellipsis;
+}
+
+.NowPlayingDuration {
+  margin-top: 31px;
+  margin-right: 37px;
+
+  font-family: Raleway;
+  font-style: normal;
+  font-weight: 500;
+  font-size: 16px;
+  color: #BCBCBC;
+
+  display: inline-block;
+  cursor: default;
+  float: right;
+}
+
+.QueueContainer {
+  overflow-y: scroll;
+  top: -10px;
+  padding-top: 10px;
+  position: relative;
+  height: calc(100vh - 297px);
+}
+
+.QueueContainer::-webkit-scrollbar {
   display: none;
 }
 
-.QueueApp:before {
-  content: "";
-  position: fixed;
-  z-index: 24;
-  pointer-events: none;
-  background-image: linear-gradient(to bottom, rgba(255,255,255, 1), rgba(255,255,255, 0) 95%);
-  width: calc(100% + 12px);
-  height: 42px;
-  top: 45px;
-}
-
-.QueueApp:after {
-  content  : "";
-  position : fixed;
-  z-index  : 1;
-  bottom   : 114px;
-  left     : 0;
-  pointer-events   : none;
-  background-image : linear-gradient(
-                       to bottom,
-                       rgba(255,255,255, 0),
-                       rgba(255,255,255, 1) 42px, rgba(255,255,255, 1) 100%);
-  width: calc(100% + 12px);
-  height   : 102px;
-}
-
-/* .QueueApp:before {
-  content  : "";
-  position : fixed;
-  z-index  : 1;
-  left     : 0;
-  pointer-events   : none;
-  background-image : linear-gradient(to bottom,
-                    rgba(255,255,255, 1),
-                    rgba(255,255,255, 0) 95%);
-  width: calc(100% + 12px);
-  height   : 42px;
-  top: 53px;
-}
-
-.QueueApp:after {
-  content  : "";
-  position : fixed;
-  z-index  : 2;
-  left     : 0;
-  pointer-events   : none;
-  background-image : linear-gradient(
-                       to bottom,
-                       rgba(255,255,255, 0),
-                       rgba(255,255,255, 1) 50%, rgba(255,255,255, 1) 100%);
-  width: calc(100% + 12px);
-  height   : 84px;
-  bottom: -62px;
-} */
-
 .PlaybackDuration {
+  height: 48px;
+  border-radius: 24px;
+  padding: 0 32px;
+
   display: inline-block;
 
   font-family: Raleway;
   font-style: normal;
   font-weight: 500;
   font-size: 16px;
-  line-height: 16px;
+  line-height: 48px;
 
-  margin-top: 50px;
-  margin-bottom: 42px;
-  margin-left: 8px;
+  margin-top: 22px;
+  margin-bottom: 72px;
+  margin-left: 24px;
+
+  background-color: rgba(251, 252, 255, 0.93);
 }
 
 .AddToQueue {
   display: inline-block;
   float: right;
-  margin-top: 33px;
-  margin-right: 12px;
+
+  margin-top: 22px;
+  margin-bottom: 72px;
+  margin-right: 24px;
 
   border: 2px solid #0047FF;
   box-sizing: border-box;

@@ -14,9 +14,11 @@ function ProgressBarMarker(props) {
         playable = props.playable,
         stoppable = props.stoppable,
         forceDisplay = props.forceDisplay,
-        playbackControls = props.playbackControls,
         allowMarkerSeek = props.allowMarkerSeek,
         hoveringEnabled = props.hoveringEnabled;
+
+  const stream = props.stream,
+        playback = props.playback;
 
   const [hovering, setHovering] = useState(false);
 
@@ -45,9 +47,27 @@ function ProgressBarMarker(props) {
   const seekToMarker = async function() {
     const progress = getProgressMilliseconds(queue, marker.timestampMilliseconds);
     if(queue.status === 'played') {
-      playbackControls.seek(progress);
+      const action = {
+        name: "seek",
+        timestampMilliseconds: progress,
+        status: "kickoff",
+        fake: !(playback.nowPlayingUuid === stream.nowPlayingUuid),
+      };
+      props.dispatch({
+        type: "main/addAction",
+        payload: { action },
+      });
     } else {
-      playbackControls.play(progress);
+      const action = {
+        name: "play",
+        timestampMilliseconds: progress,
+        status: "kickoff",
+        fake: !(playback.nowPlayingUuid === stream.nowPlayingUuid),
+      };
+      props.dispatch({
+        type: "main/addAction",
+        payload: { action },
+      });
     }
   }
 
@@ -118,7 +138,10 @@ function ProgressBarMarker(props) {
 }
 
 
-const mapStateToProps = (state) => ({});
+const mapStateToProps = (state) => ({
+  stream: state.stream,
+  playback: state.playback,
+});
 
 
 export default connect(mapStateToProps)(ProgressBarMarker);

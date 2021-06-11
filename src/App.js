@@ -7,7 +7,6 @@ import { fetchVerifyToken } from './components/Login/network';
 import {
   fetchStreamGet,
   fetchPauseTrack,
-  fetchTrackGetFiles,
 } from './components/PlaybackApp/Player/network';
 import { fetchGetUserSettings } from './components/UserSettings/network';
 import { fetchQueueList } from './components/QueueApp/network'
@@ -17,7 +16,6 @@ import PlaybackApp from './components/PlaybackApp/PlaybackApp';
 import { useEffect, useState } from "react";
 import { Provider } from 'react-redux';
 import { BrowserRouter as Router } from "react-router-dom";
-import { SERVICE_JUKEBOX_RADIO, SERVICE_AUDIUS } from './config/services';
 import TimeAgo from 'javascript-time-ago'
 import en from 'javascript-time-ago/locale/en'
 
@@ -64,43 +62,18 @@ function App() {
             stream = state.stream,
             queueMap = state.queueMap,
             nowPlaying = queueMap[stream.nowPlayingUuid];
-      await store.dispatch({
-        type: "playback/mount",
-        payload: { stream },
-      });
 
-      // 3: Load the track now playing (conditionally).
-      const nowPlayingTrack = nowPlaying?.track;
-      if(nowPlayingTrack?.service === SERVICE_JUKEBOX_RADIO) {
-        const trackUuid = nowPlayingTrack.uuid;
-        responseJson = await fetchTrackGetFiles(trackUuid);
-        await store.dispatch(responseJson.redux);
-        // NOTE: the above only works in production setups. This is because of
-        // how the file is served. the below setup can be adapted for a local
-        // setup.
-        //
-        // var request = new XMLHttpRequest();
-        // request.open("GET", responseJson.redux.payload.track.audioUrl, true);
-        // request.responseType = "blob";
-        // request.onload = () => {
-        //   if(this.status !== 200) {
-        //     return;
-        //   }
-        //   const audio = new Audio(URL.createObjectURL(this.response));
-        //   responseJson.redux.payload.track.audio = audio;
-        //   store.dispatch(responseJson.redux);
-        // }
-        // request.send();
-      }
-      if(nowPlayingTrack?.service === SERVICE_AUDIUS) {
-        await store.dispatch({
-          "type": "playback/loadAudius",
-          "payload": {
-            "id": nowPlayingTrack.externalId,
-            "trackUuid": nowPlayingTrack.uuid,
-          }
-        });
-      }
+      store.dispatch({
+        type: "main/addAction",
+        payload: {
+          action: {
+            name: "mount",
+            stream: stream,
+            status: "kickoff",
+            fake: true,  // symbolic, not functional
+          },
+        },
+      });
 
       // 4: Load the queue.
       responseJson = await fetchQueueList();

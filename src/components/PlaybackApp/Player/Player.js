@@ -4,7 +4,7 @@ import {
   getLeafQueue,
 } from '../../../components/QueueApp/utils';
 import { iconNextTrack, iconPrevTrack } from '../icons';
-import { featureIsEnabled } from '../utils';
+// import { featureIsEnabled } from '../utils';
 import styles from './Player.module.css';
 
 
@@ -16,7 +16,6 @@ function Player(props) {
   const stream = props.stream,
         queueMap = props.queueMap,
         nowPlaying = queueMap[stream.nowPlayingUuid],
-        playback = props.playback,
         imageUrl = nowPlaying?.track?.imageUrl,
         track = stream?.nowPlaying?.track,
         lastUp = getLeafQueue(props.lastUpQueueUuids[props.lastUpQueueUuids.length - 1], props.queueMap),
@@ -68,11 +67,11 @@ function Player(props) {
           </div>
           <div className={styles.PlaybackControls}>
             <button onClick={props.prevTrack}
-                    disabled={!featureIsEnabled(nowPlaying, playback, "prev")}>
+                    disabled={true}>
               {iconPrevTrack}
             </button>
             <button onClick={props.nextTrack}
-                    disabled={!featureIsEnabled(nowPlaying, playback, "next")}>
+                    disabled={true}>
               {iconNextTrack}
             </button>
           </div>

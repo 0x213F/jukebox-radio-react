@@ -187,7 +187,7 @@ export const streamNextTrack = function(state, payload) {
   lastUpQueueUuids.push(nowPlayingUuid);
 
   const nextUpUuid = nextUpQueueUuids.shift();
-  const nextNowPlaying = getLeafQueue(nextUpUuid, queueMap);
+  const nextNowPlaying = { ...getLeafQueue(nextUpUuid, queueMap) };
 
   // Handle leaf node. (playing a track inside a collection)
   if(nextUpUuid !== nextNowPlaying.uuid) {
@@ -201,6 +201,9 @@ export const streamNextTrack = function(state, payload) {
       nextUpQueueUuids.unshift(nextUpUuid);
     }
   }
+
+  nextNowPlaying.startedAt = Date.now();
+  queueMap[nextNowPlaying.uuid] = nextNowPlaying;
 
   return {
       ...state,

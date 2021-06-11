@@ -5,9 +5,6 @@ import { CircularProgressbarWithChildren, buildStyles } from 'react-circular-pro
 import 'react-circular-progressbar/dist/styles.css';
 
 import { cycleVolumeLevel, featureIsEnabled } from '../../PlaybackApp/utils';
-import {
-  fetchPauseTrack,
-} from '../../PlaybackApp/Player/network';
 import { playbackChangeVolume } from '../../PlaybackApp/controls';
 import { iconNextTrack, iconPrevTrack } from '../../PlaybackApp/icons';
 import ParentProgressBar from '../../PlaybackApp/ParentProgressBar/ParentProgressBar';
@@ -32,22 +29,14 @@ function BottomBar(props) {
   /*
    * 🏗
    */
-  const playbackControls = props.playbackControls,
-        stream = props.stream,
+  const stream = props.stream,
         queueMap = props.queueMap,
         nowPlaying = queueMap[stream.nowPlayingUuid],
         playback = props.playback,
         audioVolumeLevel = playback.volumeLevel.audio;
 
   // eslint-disable-next-line
-  const scanDisabled = (
-          !nowPlaying ||
-          nowPlaying.status === 'paused'
-        ),
-        playDisabled = !featureIsEnabled(nowPlaying, playback, 'play'),
-        pauseDisabled = !featureIsEnabled(nowPlaying, playback, 'pause'),
-        nextDisabled = !featureIsEnabled(nowPlaying, playback, 'next'),
-        prevDisabled = !featureIsEnabled(nowPlaying, playback, 'prev'),
+  const controlsEnabled = featureIsEnabled(props),
         nowPlayingTrackService = nowPlaying?.track?.service;
 
   const [showModal, setShowModal] = useState(false);
@@ -83,20 +72,79 @@ function BottomBar(props) {
    * Modify playback to seek in a certain diretion ('forward' or 'backward').
    */
   const handleNext = function(direction) {
-    if(nextDisabled) {
+    if(!controlsEnabled) {
       return;
     }
-    playbackControls.nextTrack();
+    props.dispatch({
+      type: "main/addAction",
+      payload: {
+        action: {
+          name: "pause",
+          status: "kickoff",
+          fake: true,
+        },
+      },
+    });
+    props.dispatch({
+      type: "main/addAction",
+      payload: {
+        action: {
+          name: "next",
+          status: "kickoff",
+          fake: false,
+        },
+      },
+    });
+    props.dispatch({
+      type: "main/addAction",
+      payload: {
+        action: {
+          name: "play",
+          status: "kickoff",
+          fake: true,
+        },
+      },
+    });
   };
 
   /*
    * Modify playback to seek in a certain diretion ('forward' or 'backward').
    */
   const handlePrev = function(direction) {
-    if(prevDisabled) {
+    if(!controlsEnabled) {
       return;
     }
-    playbackControls.prevTrack();
+    props.dispatch({
+      type: "main/addAction",
+      payload: {
+        action: {
+          name: "pause",
+          status: "kickoff",
+          fake: true,
+        },
+      },
+    });
+    props.dispatch({
+      type: "main/addAction",
+      payload: {
+        action: {
+          name: "prev",
+          status: "kickoff",
+          fake: false,
+        },
+      },
+    });
+    props.dispatch({
+      type: "main/addAction",
+      payload: {
+        action: {
+          name: "play",
+          timestampMilliseconds: 0,
+          status: "kickoff",
+          fake: true,
+        },
+      },
+    });
   };
 
   /*
@@ -105,20 +153,53 @@ function BottomBar(props) {
    *       actually perform the "nextTrack" action.
    */
   const handlePlayPause = async function() {
-    if(playDisabled && pauseDisabled) {
+    if(!controlsEnabled) {
       return;
     }
     if(nowPlaying?.status === "played") {
-      playbackControls.pause();
-
-      props.dispatch({ type: 'playback/disable' });
-      const jsonResponse = await fetchPauseTrack(nowPlaying.durationMilliseconds);
-      props.dispatch(jsonResponse.redux);
-      props.dispatch({ type: 'playback/enable' });
+      props.dispatch({
+        type: "main/addAction",
+        payload: {
+          action: {
+            name: "pause",
+            status: "kickoff",
+            fake: false,
+          },
+        },
+      });
     } else if(nowPlaying?.status === 'paused') {
-      playbackControls.play();
+      props.dispatch({
+        type: "main/addAction",
+        payload: {
+          action: {
+            name: "play",
+            timestampMilliseconds: nowPlaying.statusAt - nowPlaying.startedAt,
+            status: "kickoff",
+            fake: false,
+          },
+        },
+      });
     } else {
-      playbackControls.nextTrack();
+      props.dispatch({
+        type: "main/addAction",
+        payload: {
+          action: {
+            name: "next",
+            status: "kickoff",
+            fake: false,
+          },
+        },
+      });
+      props.dispatch({
+        type: "main/addAction",
+        payload: {
+          action: {
+            name: "play",
+            status: "kickoff",
+            fake: false,
+          },
+        },
+      });
     }
   }
 
@@ -177,17 +258,17 @@ function BottomBar(props) {
 
       <div className={styles.Playback}>
         <button onClick={handlePrev}
-                disabled={prevDisabled} >
+                disabled={!controlsEnabled} >
           {iconPrevTrack}
         </button>
         <button onClick={handlePlayPause}
-                disabled={playDisabled && pauseDisabled} >
+                disabled={!controlsEnabled} >
           {nowPlaying && nowPlaying.status === "played" ?
             iconPauseCircle : iconPlayCircle
           }
         </button>
         <button onClick={handleNext}
-                disabled={nextDisabled} >
+                disabled={!controlsEnabled} >
           {iconNextTrack}
         </button>
       </div>
@@ -201,6 +282,7 @@ const mapStateToProps = (state) => ({
     stream: state.stream,
     queueMap: state.queueMap,
     playback: state.playback,
+    main: state.main,
 });
 
 

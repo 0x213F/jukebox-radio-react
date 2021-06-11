@@ -1,8 +1,15 @@
 .QueueCollection {
-  box-shadow: 4px 4px 12px rgba(0, 0, 0, 0.15), inset 0px 0px 0px 1px #EAEAEA;
-  width: calc(100% - 20px);
+  box-shadow: inset 0px 0px 0px 1px #EAEAEA;
+  width: calc(100% - 48px);
   margin-bottom: 14px;
-  margin-left: 8px;
+  margin-left: 24px;
+  background-color: rgba(251, 252, 255, 0.93);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+}
+
+.QueueCollection:first-child {
+  margin-top: 14px;
 }
 
 .QueueCollectionMain {
@@ -24,7 +31,7 @@
   align-items: center;
   justify-content: center;
 
-  background-color: #FFF;
+  background-color: inherit;
   /* border-radius: 6px; */
 }
 
@@ -76,7 +83,7 @@
 }
 
 .ButtonContainer > button {
-  background-color: #FFF;
+  background-color: inherit;
   border: 0;
   padding: 0;
   height: 30px;

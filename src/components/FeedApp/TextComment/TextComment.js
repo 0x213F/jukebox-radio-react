@@ -60,7 +60,16 @@ function TextComment(props) {
     if(nowPlaying.status === 'paused') {
       props.playbackControls.play(textComment.timestampMilliseconds);
     } else {
-      props.playbackControls.seek(textComment.timestampMilliseconds);
+      const action = {
+        name: "seek",
+        timestampMilliseconds: textComment.timestampMilliseconds,
+        status: "kickoff",
+        fake: false,
+      };
+      props.dispatch({
+        type: "main/addAction",
+        payload: { action },
+      });
     }
   }
 

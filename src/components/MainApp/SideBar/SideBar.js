@@ -30,13 +30,11 @@ function SideBar(props) {
   // TODO: refactor these inline CSS styles into classes.
   let top;
   if (sideBar.tab === "search") {
-    top = "165px";
+    top = "28px";
   } else if (sideBar.tab === "queue") {
-    top = "229px";
-  } else if (sideBar.tab === "player") {
-    top = "293px";
+    top = "91.5px";
   } else if (sideBar.tab === "feed") {
-    top = "357px";
+    top = "155px";
   }
 
    /*
@@ -50,26 +48,22 @@ function SideBar(props) {
       </div>
 
       <div className={styles.MenuContainer}>
-
-        <div className={styles.Block}
-             style={{top}}>
+        <div className={styles.Menu}
+            onClick={(e) => { setCounter(prev => prev + 1); }}>
+          <div className={(sideBar.tab === "search" && styles.LiSelected) || ""}>
+            <Link to="/app/search" onClick={() => { handleTab("search"); }} style={{color: "#000"}}>Search</Link>
+          </div>
+          <div className={(sideBar.tab === "queue" && styles.LiSelected) || ""}>
+            <Link to="/app/queue" onClick={() => { handleTab("queue"); }} style={{color: "#000"}}>Queue</Link>
+          </div>
+          <div className={(sideBar.tab === "feed" && styles.LiSelected) || ""}>
+            <Link to="/app/feed" onClick={() => { handleTab("feed"); }} style={{color: "#000"}}>Feed</Link>
+          </div>
         </div>
 
-        <ul className={styles.Menu}
-            onClick={(e) => { setCounter(prev => prev + 1); }}>
-          <li className={(sideBar.tab === "search" && styles.LiSelected) || ""}>
-            <Link to="/app/search" onClick={() => { handleTab("search"); }} style={{color: "#000"}}>Search</Link>
-          </li>
-          <li className={(sideBar.tab === "queue" && styles.LiSelected) || ""}>
-            <Link to="/app/queue" onClick={() => { handleTab("queue"); }} style={{color: "#000"}}>Queue</Link>
-          </li>
-          <li className={(sideBar.tab === "player" && styles.LiSelected) || ""}>
-            <Link to="/app/player" onClick={() => { handleTab("player"); }} style={{color: "#000"}}>Player</Link>
-          </li>
-          <li className={(sideBar.tab === "feed" && styles.LiSelected) || ""}>
-            <Link to="/app/feed" onClick={() => { handleTab("feed"); }} style={{color: "#000"}}>Feed</Link>
-          </li>
-        </ul>
+        <div className={styles.BlockContainer}>
+          <div className={styles.Block} style={{top}}></div>
+        </div>
       </div>
 
     </div>

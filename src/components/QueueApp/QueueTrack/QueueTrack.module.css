@@ -1,11 +1,18 @@
 .QueueTrackHead {
   height: 84px;
-  box-shadow: 4px 4px 12px rgba(0, 0, 0, 0.15), inset 0px 0px 0px 1px #EAEAEA;
+  box-shadow: inset 0px 0px 0px 1px #EAEAEA;
   display: inline-flex;
   align-items: center;
-  width: calc(100% - 20px);
+  width: calc(100% - 48px);
   margin-bottom: 14px;
-  margin-left: 8px;
+  margin-left: 24px;
+  background-color: rgba(251, 252, 255, 0.93);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+}
+
+.QueueTrackHead:first-child {
+  margin-top: 36px;
 }
 
 .QueueTrackChild {
@@ -13,6 +20,7 @@
   display: block;
   width: calc(100% - 100px);
   padding-left: 100px;
+  background-color: inherit;
 }
 
 .QueueTrackChild:first-child {
@@ -25,8 +33,8 @@
 
 /* ALBUM ART */
 .AlbumArtContainer {
-  width: 62px;
-  height: 46px;
+  width: 74px;
+  height: 48px;
 
   display: inline-block;
   float: left;
@@ -35,14 +43,11 @@
   display: inline-flex;
   align-items: center;
   justify-content: center;
-
-  background-color: #FFF;
-  /* border-radius: 6px; */
 }
 
 .AlbumArtContainer > img {
   max-height: 48px;
-  max-width: 64px;
+  max-width: 74px;
 }
 
 /* TRACK INFO */
@@ -106,7 +111,7 @@
 }
 
 .ButtonContainer > button {
-  background-color: #FFF;
+  background-color: inherit;
   border: 0;
   padding: 0;
   height: 30px;

@@ -1,28 +1,34 @@
 .SearchResult {
   height: 84px;
   box-sizing: border-box;
-  box-shadow: 4px 4px 12px rgba(0, 0, 0, 0.15), inset 0px 0px 0px 1px #EAEAEA;
+  box-shadow: inset 0px 0px 0px 1px #eaeaea;
   margin-bottom: 14px;
   display: inline-flex;
   align-items: center;
-  width: calc(100% - 20px);
-  margin-left: 8px;
+  width: calc(100% - 48px);
+  margin-left: 24px;
+
+  background-color: rgba(251, 252, 255, 0.93);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
 }
 
-.SearchResult:last-child {
-  margin-bottom: 64px;
-}
+/* .SearchResult:last-child {
+  margin-bottom: 36px;
+} */
 
 .SearchResultSubmitted {
   height: 84px;
-  background: #FFFFFF;
+  background-color: rgba(251, 252, 255, 0.93);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
   box-sizing: border-box;
-  box-shadow: 4px 4px 12px rgba(0, 71, 255, 0.4), inset 0px 0px 0px 2.5px #0047FF;
+  box-shadow: inset 0px 0px 0px 2.5px #0047FF;
   margin-bottom: 14px;
   display: inline-flex;
   align-items: center;
-  width: calc(100% - 20px);
-  margin-left: 8px;
+  width: calc(100% - 48px);
+  margin-left: 24px;
 
   transition-property: box-shadow;
   transition-duration: 0.15s;
@@ -55,7 +61,7 @@
   float: left;
   height: 48px;
   margin-left: 32px;
-  width: calc(100% - 291px);
+  width: calc(100% - 315px);
 }
 
 .ResultInformation > h5 {
@@ -94,6 +100,9 @@
   display: flex;
   align-items: center;
   justify-content: center;
+  padding: 12px;
+  background: #FFF;
+  border-radius: 36px;
 }
 
 .AddButton {

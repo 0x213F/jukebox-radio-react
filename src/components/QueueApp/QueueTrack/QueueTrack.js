@@ -5,6 +5,11 @@ import styles from './QueueTrack.module.css';
 import { iconEdit, iconRemove } from '../icons';
 import { durationPretty } from '../utils';
 
+import {
+  SERVICE_JUKEBOX_RADIO,
+  SERVICE_AUDIUS,
+} from '../../../config/services';
+
 
 function QueueTrack(props) {
 
@@ -16,28 +21,91 @@ function QueueTrack(props) {
   const queue = props.data || queueMap[props.queueUuid];
 
   const stream = props.stream,
+        main = props.main,
+        playback = props.playback,
         nowPlaying = queueMap[stream.nowPlayingUuid];
 
   const [showModal, setShowModal] = useState(false);
   const [shouldPlayOnClose, setShouldPlayOnClose] = useState(false);
 
+  const loadTrack = function(queue) {
+    const rawAudioServices = new Set();
+    rawAudioServices.add(SERVICE_JUKEBOX_RADIO);
+    rawAudioServices.add(SERVICE_AUDIUS);
+    if(!rawAudioServices.has(queue.track.service)) {
+      // We only need to load audio from raw audio services.
+      return;
+    }
+
+    const queuesAlreadyLoading = new Set(
+      main.actions
+      .filter(a => a.name === 'loadAudio')
+      .map(a => a.queue.uuid)
+    );
+    if(queuesAlreadyLoading.has(queue.uuid) || playback.files.hasOwnProperty(queue.track.uuid)) {
+      // Audio is already loading or loaded.
+      return;
+    }
+
+    props.dispatch({
+      type: "main/addAction",
+      payload: {
+        action: {
+          name: "loadAudio",
+          queue: queue,
+          status: "kickoff",
+          fake: true,  // symbolic, not functional
+        },
+      },
+    });
+  }
+
   const openModal = function() {
     if(nowPlaying?.status === 'played') {
-      props.playbackControls.pause();
+      props.dispatch({
+        type: "main/addAction",
+        payload: {
+          action: {
+            name: "pause",
+            status: "kickoff",
+            fake: false,
+          },
+        },
+      });
       setShouldPlayOnClose(true);
     }
+
+    loadTrack(nowPlaying);
+
     props.dispatch({
-      type: "playback/mount",
-      payload: { queue },
+      type: "main/addAction",
+      payload: {
+        action: {
+          name: "mount",
+          queue: queue,
+          status: "kickoff",
+          fake: true,  // symbolic, not functional
+        },
+      },
     });
+
     setShowModal(true);
   }
 
   const closeModal = function() {
+
     props.dispatch({
-      type: "playback/mount",
-      payload: { stream },
+      type: "main/addAction",
+      payload: {
+        action: {
+          name: "mount",
+          stream: stream,
+          status: "kickoff",
+          fake: true,  // symbolic, not functional
+        },
+      },
     });
+
     setShowModal(false);
     if(shouldPlayOnClose) {
       // props.playbackControls.play();
@@ -78,9 +146,9 @@ function QueueTrack(props) {
           {iconRemove}
         </button>
       </div>
-      <TrackDetailApp data={queue}
-                      isOpen={showModal}
-                      closeModal={closeModal} />
+      <TrackDetailApp isOpen={showModal}
+                      closeModal={closeModal}
+                      playbackControls={props.playbackControls} />
     </div>
   );
 }
@@ -88,6 +156,8 @@ function QueueTrack(props) {
 const mapStateToProps = (state) => ({
   stream: state.stream,
   queueMap: state.queueMap,
+  main: state.main,
+  playback: state.playback,
 });
 
 export default connect(mapStateToProps)(QueueTrack);

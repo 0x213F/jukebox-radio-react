@@ -4,7 +4,6 @@ import {
 } from '../../config/services';
 import { getLeafQueue } from '../../components/QueueApp/utils';
 import { cycleVolumeLevel } from '../../components/PlaybackApp/utils';
-import { streamNextTrack } from './stream';
 
 
 export const playbackMount = function(state, payload) {
@@ -14,6 +13,7 @@ export const playbackMount = function(state, payload) {
       playback: {
         ...state.playback,
         nowPlayingUuid: payload.stream.nowPlayingUuid,
+        isPlaying: false,
       }
     }
   } else {
@@ -22,6 +22,7 @@ export const playbackMount = function(state, payload) {
       playback: {
         ...state.playback,
         nowPlayingUuid: payload.queue.uuid,
+        isPlaying: false,
       }
     }
   }
@@ -59,17 +60,14 @@ export const playbackSpotify = function(state, payload) {
 }
 
 
-export const playbackSpotifyLoaded = function(state) {
-  return {
-    ...state,
-    playback: {
-      ...state.playback,
-      loaded: {
-        ...state.playback.loaded,
-        spotify: true,
-      },
-    }
-  }
+export const playbackLoaded = function(state, payload) {
+  const service = payload.service,
+        playback = { ...state.playback },
+        loaded = { ...state.playback.loaded };
+  loaded[service] = true;
+  playback.loaded = loaded;
+
+  return { ...state, playback };
 }
 
 
@@ -155,67 +153,6 @@ export const playbackAddToQueue = function(state) {
 /*
  *
  */
-const playbackPlannedNextTrackHelper = function(state) {
-  const nextUp = getLeafQueue(state.nextUpQueueUuids[0], state.queueMap),
-        queuedUp = state.playback.queuedUp,
-        noopNextTrack = state.playback.noopNextTrack,
-        addToQueueTimeoutId = state.playback.addToQueueTimeoutId,
-        nextSeekTimeoutId = state.playback.nextSeekTimeoutId,
-        playback = {
-          ...state.playback,
-          queuedUp: false,
-          noopNextTrack: false,
-        };
-  if(!nextUp || noopNextTrack) {
-    playback.addToQueueTimeoutId = undefined;
-    return {
-      ...state,
-      playback: playback,
-    };
-  }
-
-  if(queuedUp) {
-    playback.addToQueueTimeoutId = undefined;
-    return {
-      ...state,
-      playback: playback,
-    };
-  }
-
-  clearTimeout(addToQueueTimeoutId);
-  clearTimeout(nextSeekTimeoutId);
-  playback.isPlaying = false;
-  playback.addToQueueTimeoutId = undefined;
-  playback.nextSeekTimeoutId = undefined;
-  return {
-    ...state,
-    playback: playback,
-  };
-}
-
-
-/*
- *
- */
-export const playbackPlannedNextTrack = function(state, payload) {
-  let updatedState = state;
-  updatedState = playbackPlannedNextTrackHelper(updatedState);
-  const childPayload = {},  // yes
-        queueMap = updatedState.queueMap,
-        updatedNowPlaying = queueMap[updatedState.stream.nowPlayingUuid];
-  childPayload.startedAt = (
-    updatedNowPlaying.startedAt + updatedNowPlaying.durationMilliseconds
-  );
-  childPayload.status = 'played'
-  childPayload.statusAt = Date.now()
-  updatedState = streamNextTrack(updatedState, childPayload);
-  return updatedState;
-}
-
-
-/*
- *
- */
 export const playbackStart = function(state) {
   const addToQueueTimeoutId = state.playback.addToQueueTimeoutId,
         nextSeekTimeoutId = state.playback.nextSeekTimeoutId,
@@ -252,50 +189,15 @@ export const playbackStarted = function(state) {
 }
 
 
-export const playbackAddToQueueReschedule = function(state) {
-  const addToQueueTimeoutId = state.playback.addToQueueTimeoutId,
-        nextSeekTimeoutId = state.playback.nextSeekTimeoutId,
-        playback = {
-          ...state.playback,
-          addToQueueTimeoutId: undefined,
-          nextSeekTimeoutId: undefined,
-        };
-
-  clearTimeout(addToQueueTimeoutId);
-  clearTimeout(nextSeekTimeoutId);
-
-  return {
-    ...state,
-    playback: playback,
-  };
+export const playbackSetSeekTimeoutId = function(state, payload) {
+  const playback = { ...state.playback, seekTimeoutId: payload.timeoutId };
+  return { ...state, playback };
 }
 
-
-export const playbackAddToQueueScheduled = function(state, payload) {
-  const playback = {
-          ...state.playback,
-          addToQueueTimeoutId: payload.addToQueueTimeoutId,
-        };
-  return {
-    ...state,
-    playback: playback,
-  };
-}
-
-
-export const playbackNextSeekScheduled = function(state, payload) {
-  const nextSeekTimeoutId = state.playback.nextSeekTimeoutId,
-        playback = {
-          ...state.playback,
-          nextSeekTimeoutId: payload.nextSeekTimeoutId,
-        };
-
-  clearTimeout(nextSeekTimeoutId);
-
-  return {
-    ...state,
-    playback: playback,
-  };
+export const playbackClearSeekTimeoutId = function(state, payload) {
+  clearTimeout(state.playback.seekTimeoutId);
+  const playback = { ...state.playback, seekTimeoutId: false };
+  return { ...state, playback };
 }
 
 
@@ -325,10 +227,22 @@ export const playbackLoadFiles = function(state, payload) {
   const playback = { ...state.playback },
         files = { ...state.playback.files };
 
-  const audiosObj = { all: new Audio(payload.track.audioUrl) };
+  const { onplay, onpause, onseeked } = payload;
+
+  let audioObj = new Audio(payload.track.audioUrl);
+  audioObj.onpause = onpause;
+  audioObj.onplay = onplay;
+  audioObj.onseeked = onseeked;
+
+  const audiosObj = { all: audioObj };
 
   for(const stem of payload.track.stems) {
-    audiosObj[stem.instrument] = new Audio(stem.audioUrl);
+    audioObj = new Audio(stem.audioUrl);
+    audioObj.onpause = onpause;
+    audioObj.onplay = onplay;
+    audioObj.onseeked = onseeked;
+
+    audiosObj[stem.instrument] = audioObj;
   }
 
   files[payload.track.uuid] = audiosObj;
@@ -346,7 +260,13 @@ export const playbackLoadAudius = function(state, payload) {
   const playback = { ...state.playback },
         files = { ...state.playback.files };
 
+  const { onplay, onpause, onseeked } = payload;
+
   const audioObj = new Audio(`https://discoveryprovider.audius5.prod-us-west-2.staked.cloud/v1/tracks/${payload.id}/stream?app_name=Jukebox Radio`);
+  audioObj.onpause = onpause;
+  audioObj.onplay = onplay;
+  audioObj.onseeked = onseeked;
+
   files[payload.trackUuid] = audioObj;
 
   return {
@@ -384,4 +304,41 @@ export const playbackModalClose = function(state, payload) {
     ...state,
     playback: { ...state.playback, nowPlaying: undefined, isPlaying: false, },
   }
+}
+
+
+/*
+ * Setting the "action" of playback aquires a lock - only one action can happen
+ * at a time.
+ *
+ * You might be wondering how the lock is lifted. The lock is lifted when
+ * "action === null." This case happens inside service event handlers (e.g. the
+ * Spotify SDK) that signal that the action has successfully taken place.
+ */
+export const playbackAction = function(state, payload) {
+  const action = payload.action,
+        playback = { ...state.playback, action },
+        queueMap = { ...state.queueMap },
+        main = { ...state.main };
+
+  if(!action) {
+  //   const queue = {
+  //           ...queueMap[state.playback.nowPlayingUuid],
+  //           statusAt: Date.now(),
+  //           status: action,
+  //         };
+  //   queueMap[queue.uuid] = queue;
+  // } else {
+    const staleAction = state.playback.action;
+    if(staleAction === 'played') {
+      playback.isPlaying = true;
+    } else if(staleAction === 'paused') {
+      playback.isPlaying = false;
+      // NOTE: We must cancel the autoplay timeout here.
+      clearTimeout(state.main.autoplayTimeoutId);
+      main.autoplayTimeoutId = false;
+    }
+  }
+
+  return { ...state, playback, queueMap };
 }

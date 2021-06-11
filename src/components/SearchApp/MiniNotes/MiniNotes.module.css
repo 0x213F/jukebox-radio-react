@@ -1,0 +1,39 @@
+.MiniNotes {
+  display: flex;
+  flex-direction: column;
+
+  padding: 40px;
+  border-radius: 12px;
+
+  box-shadow: 4px 4px 12px rgba(0, 0, 0, 0.15);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  background-color: #FFF;
+
+  margin-bottom: 36px;
+}
+
+.MiniNotes > h3 {
+  font-style: normal;
+  font-weight: bold;
+  font-size: 20px;
+  line-height: 23px;
+  text-decoration: none;
+  margin: 0;
+  margin-bottom: 21px;
+  cursor: default;
+}
+
+.MiniNotes > textarea {
+  margin: 0;
+  height: 220px;
+
+  outline: none;
+  resize: none;
+
+  border: 1px solid #000000;
+  box-sizing: border-box;
+  width: 100%;
+  font-size: 12px;
+  padding: 10px;
+}

@@ -36,11 +36,11 @@ const fetchTrackGetFiles = async(trackUuid) => {
 /*
  * Fetches...
  */
-const fetchNextTrack = async (nowPlayingTotalDurationMilliseconds, isPlanned) => {
+const fetchNextTrack = async (isPlanned) => {
   const response = await fetchBackend(
     TYPE_POST,
     ENDPOINT_STREAM_NEXT_TRACK,
-    { nowPlayingTotalDurationMilliseconds, isPlanned }
+    { isPlanned }
   );
   const responseJson = await response.json();
   return responseJson;
@@ -49,11 +49,11 @@ const fetchNextTrack = async (nowPlayingTotalDurationMilliseconds, isPlanned) =>
 /*
  * Fetches...
  */
-const fetchPauseTrack = async (nowPlayingTotalDurationMilliseconds) => {
+const fetchPauseTrack = async () => {
   const response = await fetchBackend(
     TYPE_POST,
     ENDPOINT_STREAM_PAUSE_TRACK,
-    { nowPlayingTotalDurationMilliseconds },
+    {},
   );
   const responseJson = await response.json();
   return responseJson;
@@ -62,11 +62,11 @@ const fetchPauseTrack = async (nowPlayingTotalDurationMilliseconds) => {
 /*
  * Fetches...
  */
-const fetchPlayTrack = async (startedAt, nowPlayingTotalDurationMilliseconds) => {
+const fetchPlayTrack = async (startedAt) => {
   const response = await fetchBackend(
     TYPE_POST,
     ENDPOINT_STREAM_PLAY_TRACK,
-    { startedAt, nowPlayingTotalDurationMilliseconds },
+    { startedAt },
   );
   const responseJson = await response.json();
   return responseJson;
@@ -88,11 +88,11 @@ const fetchPrevTrack = async (nowPlayingTotalDurationMilliseconds) => {
 /*
  * Fetches...
  */
-const fetchScan = async (startedAt, nowPlayingTotalDurationMilliseconds) => {
+const fetchScan = async (startedAt) => {
   const response = await fetchBackend(
     TYPE_POST,
     ENDPOINT_STREAM_SCAN,
-    { startedAt, nowPlayingTotalDurationMilliseconds },
+    { startedAt },
   );
   const responseJson = await response.json();
   return responseJson;

@@ -1,6 +1,6 @@
 import { connect } from 'react-redux'
 import styles from './MiniQueue.module.css';
-import { getQueues, getQueueDuration, flattenQueues } from '../utils';
+import { getQueues, getQueueDuration } from '../utils';
 import ReactTimeAgo from 'react-time-ago';
 
 
@@ -12,14 +12,6 @@ function MiniQueue(props) {
         nowPlaying = queueMap[stream.nowPlayingUuid];
 
   const nextUpQueues = getQueues(nextUpQueueUuids, queueMap);
-
-  let flattenedQueue, expandedQueues;
-  if(nextUpQueueUuids.length) {
-    flattenedQueue = flattenQueues([nextUpQueues[0]], queueMap);
-    expandedQueues = [...flattenedQueue, ...nextUpQueues.slice(1)];
-  } else {
-    expandedQueues = [];
-  }
 
   // TODO needs to add however much is left inside now playing.
   const queueDuration = getQueueDuration(nextUpQueues, nowPlaying);
@@ -43,15 +35,6 @@ function MiniQueue(props) {
           </p>
         )
       }
-      <ol>
-        {expandedQueues.map((queue, index) => {
-          return (
-            <li key={index} className={styles.MiniQueueItem}>
-              {queue.track?.name || queue.collection?.name}
-            </li>
-          );
-        })}
-      </ol>
     </div>
   );
 }

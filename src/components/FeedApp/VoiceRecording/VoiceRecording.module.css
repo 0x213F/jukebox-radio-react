@@ -7,9 +7,14 @@
 .VoiceRecording {
   width: 357px;
   min-height: 62px;
-  background-color: #b3b3b3;
   padding: 22px 28px;
   margin-bottom: 19px;
+
+  border-radius: 6px;
+
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  background-color: rgba(236, 231, 255, 0.93);
 }
 
 .VoiceRecording {

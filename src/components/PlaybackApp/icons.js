@@ -1,15 +1,15 @@
 export const iconNextTrack = (
   <svg width="22" height="16" viewBox="0 0 22 16" fill="none" xmlns="http://www.w3.org/2000/svg">
-    <path d="M12 15L21 8L12 1V15Z" stroke="#0047FF" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-    <path d="M1 15L10 8L1 1V15Z" stroke="#0047FF" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+    <path d="M12 15L21 8L12 1V15Z" stroke="#0047FF" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" fill="#FFF"/>
+    <path d="M1 15L10 8L1 1V15Z" stroke="#0047FF" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" fill="#FFF"/>
   </svg>
 );
 
 
 export const iconPrevTrack = (
   <svg width="22" height="16" viewBox="0 0 22 16" fill="none" xmlns="http://www.w3.org/2000/svg">
-    <path d="M10 15L1 8L10 1V15Z" stroke="#0047FF" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-    <path d="M21 15L12 8L21 1V15Z" stroke="#0047FF" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+    <path d="M10 15L1 8L10 1V15Z" stroke="#0047FF" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" fill="#FFF"/>
+    <path d="M21 15L12 8L21 1V15Z" stroke="#0047FF" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" fill="#FFF"/>
   </svg>
 );
 

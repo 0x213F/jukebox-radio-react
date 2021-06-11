@@ -27,11 +27,8 @@
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 .Menu {
-  font-size: 20px;
-  list-style-type: none;
-  text-decoration: none;
+  margin-left: 43px;
   padding-left: 0;
-  border-right: 1px solid #BCBCBC;
   height: 573px;
 
   display: flex;
@@ -39,23 +36,34 @@
   flex-direction: column;
 }
 
-.Menu > li {
+.Menu > div {
+  margin: 15px 0;
+  border-radius: 50px;
+  float: left;
+
+  width: 141px;
+  background-color: rgba(251, 252, 255, 0.93);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+}
+
+.Menu > div > a {
   font-size: 20px;
-  margin: 20px 77px;
-  width: 101px;
+  text-decoration: none;
+
+  border-radius: 50px;
+  padding: 5px 20px;
+  display: block;
 }
 
 .LiSelected > a {
   font-family: Raleway;
   font-style: normal;
   font-weight: bold;
-  font-size: 30px;
+  font-size: 30px!important;
   line-height: 35px;
   color: #0047FF!important;
-}
-
-.Menu > li > a {
-  text-decoration: none;
+  padding: 16px;
 }
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
@@ -65,15 +73,26 @@ a:visited {
 }
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
-.Block {
-  height: 52px;
-  width: 8px;
-  background-color: #0047FF;
+.BlockContainer {
+  height: 213px;
+  width: 24px;
+  border-radius: 16px;
+
+  background-color: rgba(251, 252, 255, 0.93);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
 
   position: absolute;
-  left: 256px;
+  left: 223px;
+}
 
-  transition-property: top;
-  transform-style: cubic-bezier(0.25, 0.1, 0.25, 1);
-  transition-duration: 0.15s;
+.Block {
+  height: 30px;
+  width: 8px;
+  border-radius: 8px;
+
+  background-color: #0047FF;
+  left: 8px;
+
+  position: relative;
 }

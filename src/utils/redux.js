@@ -1,5 +1,8 @@
 import { createStore } from 'redux';
-import { feedUpdate } from './reducers/feed';
+import {
+  feedUpdate,
+  feedAppSetContentContainer,
+} from './reducers/feed';
 import {
   markerCreate,
   markerDelete,
@@ -9,16 +12,14 @@ import {
   playbackUnmount,
   playbackAppleMusic,
   playbackSpotify,
-  playbackSpotifyLoaded,
+  playbackLoaded,
   playbackYouTube,
   playbackYouTubeTriggerAutoplay,
   playbackAddToQueue,
-  playbackPlannedNextTrack,
   playbackStart,
   playbackStarted,
-  playbackAddToQueueReschedule,
-  playbackAddToQueueScheduled,
-  playbackNextSeekScheduled,
+  playbackSetSeekTimeoutId,
+  playbackClearSeekTimeoutId,
   playbackDisable,
   playbackEnable,
   playbackLoadFiles,
@@ -26,6 +27,7 @@ import {
   playbackCycleVolumeLevelAudio,
   playbackModalOpen,
   playbackModalClose,
+  playbackAction,
 } from './reducers/playback';
 import {
   queueListSet,
@@ -33,6 +35,15 @@ import {
   queueDeleteNode,
   queueDeleteChildNode,
 } from './reducers/queue';
+import {
+  mainEnable,
+  mainDisable,
+  mainAddAction,
+  mainActionShift,
+  mainActionStart,
+  mainSetAutoplayTimeoutId,
+  mainClearAutoplayTimeoutId,
+} from './reducers/main';
 // import {
 //   queueIntervalCreate,
 //   queueIntervalDelete,
@@ -49,6 +60,9 @@ import {
   textCommentCreate,
   textCommentDelete,
 } from './reducers/textComment';
+import {
+  notesAppSet
+} from './reducers/notesApp';
 import {
   textCommentModificationCreate,
   textCommentClearModifications,
@@ -77,14 +91,19 @@ const initialState = {
   userSettings: undefined,
   markerMap: {},
   queueMap: {},
+  main: {
+    actions: [],
+    enabled: true,
+    autoplayTimeoutId: false,
+  },
   playback: {
     spotifyApi: undefined,
     youTubeApi: undefined,
     youTubeAutoplay: 0,
     isPlaying: false,
-    queuedUp: false,
-    noopNextTrack: false,
-    addToQueueTimeoutId: undefined,
+    // queuedUp: false,
+    // addToQueueTimeoutId: undefined,
+    seekTimeoutId: false,
     files: {},
     volumeLevel: {
       audio: 1.00,
@@ -99,12 +118,12 @@ const initialState = {
     },
     pending: {
       spotify: false,
-      youTube: false,
+      youtube: false,
       appleMusic: false,
       audius: false,
       jukeboxRadio: false,
     },
-    actionQueue: [],
+    action: null,
     nowPlayingUuid: undefined,
   },
   // UI
@@ -114,6 +133,12 @@ const initialState = {
     serviceAppleMusic: false,
     serviceJukeboxRadio: false,
     serviceAudius: false,
+  },
+  feedApp: {
+    contentContainer: null,
+  },
+  notesApp: {
+    store: JSON.parse(localStorage.getItem('notesStore')) || {},
   },
   sideBar: {
     tab: null,
@@ -200,6 +225,8 @@ const reducer = (state = initialState, action) => {
     // FEED
     case "feed/update":
       return feedUpdate(state);
+    case "feedApp/setContentContainer":
+      return feedAppSetContentContainer(state, action.payload);
     ////////////////////////////////////////////////////////////////////////////
     // USER
     case "user/get-settings":
@@ -232,26 +259,22 @@ const reducer = (state = initialState, action) => {
       return playbackAppleMusic(state, action.payload);
     case "playback/spotify":
       return playbackSpotify(state, action.payload);
-    case "playback/spotifyLoaded":
-      return playbackSpotifyLoaded(state);
+    case "playback/loaded":
+      return playbackLoaded(state, action.payload);
     case "playback/youTube":
       return playbackYouTube(state, action.payload);
     case "playback/youTubeTriggerAutoplay":
       return playbackYouTubeTriggerAutoplay(state, action.payload);
     case "playback/addToQueue":
       return playbackAddToQueue(state);
-    case "playback/plannedNextTrack":
-      return playbackPlannedNextTrack(state, action.payload);
     case "playback/start":
       return playbackStart(state);
     case "playback/started":
       return playbackStarted(state);
-    case "playback/addToQueueReschedule":
-      return playbackAddToQueueReschedule(state);
-    case "playback/addToQueueScheduled":
-      return playbackAddToQueueScheduled(state, action.payload);
-    case "playback/nextSeekScheduled":
-      return playbackNextSeekScheduled(state, action.payload);
+    case "playback/setSeekTimeoutId":
+      return playbackSetSeekTimeoutId(state, action.payload);
+    case "playback/clearSeekTimeoutId":
+      return playbackClearSeekTimeoutId(state, action.payload);
     case "playback/loadFiles":
       return playbackLoadFiles(state, action.payload);
     case "playback/loadAudius":
@@ -262,12 +285,30 @@ const reducer = (state = initialState, action) => {
       return playbackModalOpen(state, action.payload);
     case "playback/modalClose":
       return playbackModalClose(state, action.payload);
+    case "playback/action":
+      return playbackAction(state, action.payload);
+    case "main/enable":
+      return mainEnable(state, action.payload);
+    case "main/disable":
+      return mainDisable(state, action.payload);
+    case "main/addAction":
+      return mainAddAction(state, action.payload);
+    case "main/actionShift":
+      return mainActionShift(state, action.payload);
+    case "main/actionStart":
+      return mainActionStart(state, action.payload);
+    case "main/setAutoplayTimeoutId":
+      return mainSetAutoplayTimeoutId(state, action.payload);
+    case "main/clearAutoplayTimeoutId":
+      return mainClearAutoplayTimeoutId(state, action.payload);
     case "search/toggleServiceOff":
       return searchToggleServiceOff(state, action.payload);
     case "search/toggleService":
       return searchToggleService(state, action.payload);
     case "sideBar/selectTab":
       return sideBarSelectTab(state, action.payload);
+    case "notesApp/set":
+      return notesAppSet(state, action.payload);
     // case "@redux/INIT":
     //   return state;
     default:

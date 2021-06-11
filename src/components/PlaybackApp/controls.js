@@ -283,9 +283,17 @@ export const playbackChangeVolume = function(playback, queue, volumeLevel) {
   const music = window.MusicKit.getInstance();
   music.player.volume = volumeLevel;
 
-  playback.spotifyApi.setVolume(volumeLevel * 100);
+  try {
+    playback.spotifyApi.setVolume(volumeLevel * 100);
+  } catch (e) {
+    //
+  }
 
-  playback.youTubeApi.setVolume(volumeLevel * 100);
+  try {
+    playback.youTubeApi.setVolume(volumeLevel * 100);
+  } catch (e) {
+    //
+  }
 
   const trackUuid = queue?.track?.uuid,
         audios = playback.files[trackUuid];

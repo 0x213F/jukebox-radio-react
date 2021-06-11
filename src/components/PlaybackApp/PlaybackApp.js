@@ -4,22 +4,9 @@ import { connect } from 'react-redux';
 import YouTube from 'react-youtube';
 
 import MainApp from '../MainApp/MainApp';
-import {
-  fetchNextTrack,
-  fetchPrevTrack,
-  fetchScan,
-  fetchTrackGetFiles,
-  fetchPlayTrack,
-} from './Player/network';
-import { fetchUpdateFeed } from '../FeedApp/utils';
-import { getLeafQueue } from '../QueueApp/utils';
 import { fetchGetUserSettings } from '../UserSettings/network';
 import {
-  SERVICE_JUKEBOX_RADIO,
-  SERVICE_SPOTIFY,
-  SERVICE_APPLE_MUSIC,
   SERVICE_YOUTUBE,
-  SERVICE_AUDIUS,
 } from '../../config/services';
 import { appendScript } from '../../utils/async';
 import { store } from '../../utils/redux';
@@ -28,11 +15,9 @@ import {
   playbackControlStart,
   playbackControlSeek,
   playbackControlPause,
-  playbackControlPlay,
-  playbackControlSkipToNext,
-  playbackControlQueue,
 } from './controls';
 import { getPositionMilliseconds, updateSpotifyPlayer } from './utils';
+import styles from './PlaybackApp.module.css';
 
 
 const SpotifyWebApi = require('spotify-web-api-js');
@@ -43,10 +28,11 @@ function PlaybackApp(props) {
   /*
    * 🏗
    */
-  const playback = props.playback,
+  const stream = props.stream,
+        playback = props.playback,
         userSettings = props.userSettings,
-        lastUp = getLeafQueue(props.lastUpQueueUuids[0], props.queueMap),
-        nextUp = getLeafQueue(props.nextUpQueueUuids[0], props.queueMap);
+        feedApp = props.feedApp,
+        sideBar = props.sideBar;
 
   const queueMap = props.queueMap,
         nowPlaying = queueMap[playback.nowPlayingUuid];
@@ -56,320 +42,211 @@ function PlaybackApp(props) {
   const [spotifySDKReady, setSpotifySDKReady] = useState(false);
   const [spotifySDKDeviceID, setSpotifySDKDeviceID] = useState(undefined);
 
-  const [plannedNextTrackTimeoutId, setPlannedNextTrackTimeoutId] = useState({});
-  const [nextTrackJson, setNextTrackJson] = useState({});
-
   //////////////////////////////////////////////////////////////////////////////
   //////////////////////////////////////////////////////////////////////////////
   //// PLAYBACK INTERFACE
 
   /*
-   * When a track is changing from one to another, this boolean logic
-   * determines whether or not the currently playing item needs to be paused.
-   */
-  const shouldPauseOnTrackChange = function(nextPlayingQueue, isPlanned) {
-    const playbackIntervals = nowPlaying?.playbackIntervals,
-          lastPlaybackInterval = (playbackIntervals ?
-            playbackIntervals[playbackIntervals.length - 1] :
-            undefined
-          );
-    return (
-      // There must be something now playing.
-      nowPlaying?.track &&
-      (
-        // Everytime a manual upload is currently playing.
-        nowPlaying.track.service === SERVICE_JUKEBOX_RADIO ||
-        // Everytime Audius is currently playing.
-        nowPlaying.track.service === SERVICE_AUDIUS ||
-        // Currently playing Spotify, nothing is up next.
-        (
-          nowPlaying.track.service === SERVICE_SPOTIFY &&
-          !nextPlayingQueue?.track
-        ) ||
-        // Currently playing Spotify, Spotify is not up next.
-        (
-          nowPlaying.track.service === SERVICE_SPOTIFY &&
-          nextPlayingQueue.track.service !== SERVICE_SPOTIFY &&
-          (
-            !isPlanned ||
-            (
-              lastPlaybackInterval.endPosition !== nowPlaying.durationMilliseconds &&
-              isPlanned
-            )
-          )
-        ) ||
-        // Currently playing Apple Music, nothing is up next.
-        (
-          nowPlaying.track.service === SERVICE_APPLE_MUSIC &&
-          !nextPlayingQueue?.track
-        ) ||
-        // Currently playing Apple Music, Apple Music is not up next.
-        (
-          nowPlaying.track.service === SERVICE_APPLE_MUSIC &&
-          nextPlayingQueue?.track.service !== SERVICE_APPLE_MUSIC &&
-          (
-            !isPlanned ||
-            (
-              lastPlaybackInterval.endPosition !== nowPlaying.durationMilliseconds &&
-              isPlanned
-            )
-          )
-        ) ||
-        // Currently playing YouTube, nothing is up next.
-        (
-          nowPlaying.track.service === SERVICE_YOUTUBE &&
-          !nextPlayingQueue?.track
-        ) ||
-        // Currently playing YouTube, YouTube is not up next.
-        (
-          nowPlaying.track.service === SERVICE_YOUTUBE &&
-          nextPlayingQueue.track.service !== SERVICE_YOUTUBE &&
-          (
-            !isPlanned ||
-            (
-              lastPlaybackInterval.endPosition !== nowPlaying.durationMilliseconds &&
-              isPlanned
-            )
-          )
-        )
-      )
-    )
-  }
-
-  /*
-   * This starts the now playing track.
-   * NOTE: You may think of this as "playing" the track. However, "play" in
-   *       code references different behavior. "Play" is used for toggling the
-   *       current track from a "paused" state to "play." "Start" explicitly
-   *       plays the track.
-   */
-  const start = function() {
-    if(!nowPlaying?.track) {
-      return;
-    }
-    props.dispatch({ type: 'playback/started' });
-    playbackControlStart(playback, nowPlaying);
-  }
-
-  /*
-   * Triggered by human interaction, this plays the previous track.
-   */
-  const prevTrack = async function() {
-    await props.dispatch({ type: 'playback/disable' });
-    if(shouldPauseOnTrackChange(lastUp, false)) {
-      playbackControlPause(playback, nowPlaying);
-    }
-    if(lastUp?.track?.service === SERVICE_JUKEBOX_RADIO) {
-      const responseJson = await fetchTrackGetFiles(lastUp.track.uuid);
-      await props.dispatch(responseJson.redux);
-    }
-    if(lastUp?.track?.service === SERVICE_AUDIUS) {
-      await props.dispatch({
-        "type": "playback/loadAudius",
-        "payload": {
-          "id": lastUp.track.externalId,
-          "trackUuid": lastUp.track.uuid,
-        }
-      });
-    }
-    const responseJsonPrevTrack = await fetchPrevTrack(nowPlaying?.durationMilliseconds);
-    await props.dispatch(responseJsonPrevTrack.redux);
-    await props.dispatch({ type: 'stream/prevTrack' });
-    await props.dispatch({ type: 'playback/start' });
-    await props.dispatch({ type: 'playback/enable' });
-    await fetchUpdateFeed(lastUp?.track?.uuid);
-  }
-
-  /*
-   * Triggered by human interaction, this plays the next track.
-   */
-  const nextTrack = async function() {
-    await props.dispatch({ type: 'playback/disable' });
-    if(shouldPauseOnTrackChange(nextUp, false)) {
-      playbackControlPause(playback, nowPlaying);
-    }
-    if(nextUp?.track.service === SERVICE_JUKEBOX_RADIO) {
-      const responseJson = await fetchTrackGetFiles(nextUp.track.uuid);
-      await props.dispatch(responseJson.redux);
-    }
-    if(nextUp?.track.service === SERVICE_AUDIUS) {
-      await props.dispatch({
-        "type": "playback/loadAudius",
-        "payload": {
-          "id": nextUp.track.externalId,
-          "trackUuid": nextUp.track.uuid,
-        },
-      });
-    } if(nextUp?.track.service === SERVICE_YOUTUBE) {
-
-    }
-    const responseJsonNextTrack = await fetchNextTrack(
-      nowPlaying?.durationMilliseconds, false
-    );
-    await props.dispatch(responseJsonNextTrack.redux);
-    await props.dispatch({ type: 'stream/nextTrack' });
-    await props.dispatch({ type: 'playback/start' });
-    await props.dispatch({ type: 'playback/enable' });
-    await fetchUpdateFeed(nextUp?.track?.uuid);
-  }
-
-  /*
-   * Seek to the expected position in the track. This may be called in 3 cases:
-   *   1: a user signals the track to scan forward 10 seconds.
-   *   2: a user signals the track to scan backward 10 seconds.
-   *   3: a seekTimeout event is triggered, meaning the now playing track must
+   * Seek to the expected position in the track. This may be called in 2 cases:
+   *   1: a user prompts a manual seek event.
+   *   2: a seekTimeout event is triggered, meaning the now playing track must
    *      seek to the new expected track progress (in the case of a muted
    *      interval).
    */
-  const seek = async function(value = undefined) {
-    await props.dispatch({ type: 'playback/disable' });
-    let startedAt;
-
-    if(value === undefined) {
-      startedAt = nowPlaying.startedAt;
-    } else {
-      const date = new Date(),
-            epochNow = date.getTime();
-      startedAt = epochNow - value;
+  const seek = async function(timestampMilliseconds = undefined) {
+    if(!nowPlaying) {
+      // A queue must be mounted to the playback engine.
+      return false;
+    }
+    if(!playback.isPlaying) {
+      // That something in must also currently be playing.
+      return false;
+    }
+    if(playback.action) {
+      // No other action can be in progress, like playing a new track.
+      return false;
     }
 
-    await props.dispatch({
-      type: 'queue/update',
-      payload: {
-        queues: [
-          { ...nowPlaying, startedAt: startedAt },
-        ],
-      },
+    // Valid conditions, so we seek.
+    const action = 'played';
+    props.dispatch({
+      type: 'playback/action',
+      payload: { action },
     });
 
+    // Clear scheduled "seek"
+    props.dispatch({ type: 'playback/clearSeekTimeoutId' });
+
+    const startedAt = (
+      timestampMilliseconds === undefined ?
+      nowPlaying.startedAt : Date.now() - timestampMilliseconds
+    );
     nowPlaying.startedAt = startedAt;
     playbackControlSeek(playback, nowPlaying, startedAt);
 
-    if(value === undefined) {
-      const response = await fetchScan(
-        startedAt,
-        nowPlaying.durationMilliseconds,
-      );
-      if(response.system.status === 400) {
-        throw new Error("Invalid scan! Code needs to prevent this!");
-      }
-    }
+    // We need to update the queue object as well.
+    props.dispatch({
+      type: 'queue/update',
+      payload: {
+        queues: [
+          {
+            ...nowPlaying,
+            startedAt,
+            statusAt: Date.now(),
+            status: "played",
+          }
+        ]
+      },
+    });
 
-    await props.dispatch({ type: 'playback/addToQueueReschedule' });
-    await props.dispatch({ type: 'playback/enable' });
+    // Let the caller know that seek was initiated.
+    return true;
   }
 
   /*
-   * Toggling the player from the "playing" to "paused" state.
+   * Toggling the player from "playing" to "paused."
    */
   const pause = async function() {
     if(!nowPlaying) {
-      return;
+      // A queue must be mounted to the playback engine.
+      return false;
     }
-    props.dispatch({ type: 'playback/addToQueueReschedule' });
+    if(!playback.isPlaying) {
+      // That something in must also currently be playing.
+      return false;
+    }
+    if(playback.action) {
+      // No other action can be in progress, like playing a new track.
+      return false;
+    }
+
+    // Valid conditions, so we pause.
+    const action = 'paused';
+    props.dispatch({
+      type: 'playback/action',
+      payload: { action },
+    });
+
+    // Clear scheduled "seek"
+    props.dispatch({ type: 'playback/clearSeekTimeoutId' });
+
     playbackControlPause(playback, nowPlaying);
-    clearTimeout(plannedNextTrackTimeoutId);
+
+    // We need to update the queue object as well.
+    props.dispatch({
+      type: 'queue/update',
+      payload: {
+        queues: [
+          {
+            ...nowPlaying,
+            statusAt: Date.now(),
+            status: "paused",
+          }
+        ]
+      },
+    });
+
+    // Let the caller know that pause was initiated.
+    return true;
   }
 
   /*
    * Toggling the player from the "paused" to "playing" state.
    */
   const play = async function(timestampMilliseconds = undefined) {
-    await props.dispatch({ type: 'playback/disable' });
-    let startedAt;
-
-    if(timestampMilliseconds === undefined) {
-      startedAt = undefined;
-    } else {
-      const date = new Date(),
-            epochNow = date.getTime();
-      startedAt = epochNow - timestampMilliseconds;
+    if(!nowPlaying) {
+      // A queue must be mounted to the playback engine.
+      return false;
+    }
+    if(playback.isPlaying) {
+      // That something must also not be currently playing.
+      return false;
+    }
+    if(playback.action) {
+      // No other action can be in progress, like playing a new track.
+      return false;
     }
 
-    const jsonResponse = await fetchPlayTrack(
-      startedAt,
-      nowPlaying.durationMilliseconds,
-    );
-    await props.dispatch(jsonResponse.redux);
+    // Valid conditions, so we play.
+    const action = 'played';
+    props.dispatch({
+      type: 'playback/action',
+      payload: { action },
+    });
 
-    // When page loads with the player in the "paused" state and then the user
-    // toggles to the "playing" state.
-    if(!playback.isPlaying) {
-      await props.dispatch({ type: 'playback/enable' });
-      return;
-    }
+    const now = Date.now(),
+          startedAt = (
+            timestampMilliseconds ?
+            now - timestampMilliseconds : now
+          );
+    nowPlaying.status = 'played';
+    nowPlaying.statusAt = now;
+    nowPlaying.startedAt = startedAt;
 
-    await props.dispatch({ type: 'playback/addToQueueReschedule' });
-    playbackControlPlay(playback, nowPlaying);
-    await props.dispatch({ type: 'playback/enable' });
+    playbackControlStart(playback, nowPlaying);
+
+    // We need to update the queue object as well.
+    props.dispatch({
+      type: 'queue/update',
+      payload: {
+        queues: [
+          {
+            ...nowPlaying,
+            startedAt,
+            statusAt: now,
+            status: "played",
+          }
+        ]
+      },
+    });
+
+    return true;
   }
 
   /*
    * Passed down to child components so they can have a handle on playback.
    */
-  const playbackControls = { nextTrack, prevTrack, seek, pause, play };
+  const playbackControls = { seek, pause, play };
 
   //////////////////////////////////////////////////////////////////////////////
   //////////////////////////////////////////////////////////////////////////////
   //// PLAYBACK ENGINE
+  useEffect(() => {
 
-  /*
-   * This adds the nextUp item in the queue to play next (add to queue). This
-   * happens ~5 seconds before the next item should play.
-   */
-  const prepareTransitionToNextTrack = async function() {
-
-    // disable the player UI (until plannedNextTrack happens)
-    await props.dispatch({ type: 'playback/disable' });
-
-    // update the back-end
-    const responseJsonNextTrack = await fetchNextTrack(
-      nowPlaying?.durationMilliseconds, true
+    // debouncer
+    const needsToScheduleAddToQueue = (
+      nowPlaying?.status === "played" &&
+      playback.isPlaying &&
+      !playback.seekTimeoutId
     );
-
-    // update the front-end later
-    setNextTrackJson(responseJsonNextTrack.redux.payload);
-
-    // add to queue
-    await props.dispatch({ type: 'playback/addToQueue' });
-
-    playbackControlQueue(playback, nowPlaying, nextUp);
-
-    // schedule "next track"
-    // Happens at the very end of the currently playing track.
-    // schedule next track
-    const progress = Date.now() - nowPlaying.startedAt,
-          timeoutDuration = (
-            nowPlaying.durationMilliseconds - progress
-          );
-    const timeoutId = setTimeout(() => {
-      plannedNextTrack();
-    }, timeoutDuration);
-    clearTimeout(plannedNextTrackTimeoutId);
-    setPlannedNextTrackTimeoutId(timeoutId);
-  }
-
-  /*
-   *  Triggered by a scheduled task, this plays the next track.
-   */
-  const plannedNextTrack = async function() {
-
-    // There are cases where the currently playing item must be paused before
-    // the next track can be played.
-    if(shouldPauseOnTrackChange(nextUp, true)) {
-      playbackControlPause(playback, nowPlaying);
+    if(!needsToScheduleAddToQueue) {
+      return;
     }
-    const queuedUp = playback.queuedUp;
-    if(queuedUp) {
-      playbackControlSkipToNext(playback, nowPlaying);
+
+    // Schedule task that modifies playback due to configured intervals.
+    const arr = getPositionMilliseconds(nowPlaying, nowPlaying.startedAt),
+          seekTimeoutDuration = arr[1];
+    if(seekTimeoutDuration) {
+      const timeoutId = setTimeout(function() {
+        const action = {
+          name: "seek",
+          status: "kickoff",
+          fake: true,
+        };
+        props.dispatch({
+          type: "main/addAction",
+          payload: { action },
+        });
+      }, seekTimeoutDuration);
+      props.dispatch({
+        type: 'playback/setSeekTimeoutId',
+        payload: { timeoutId },
+      });
     }
-    await props.dispatch({
-      type: 'playback/plannedNextTrack',
-      payload: { payload: nextTrackJson },  // yes
-    });
-    await props.dispatch({ type: 'playback/enable' });
-    await fetchUpdateFeed(nextUp?.track?.uuid);
-  }
+
+  // eslint-disable-next-line
+  }, [playback]);
+
 
   //////////////////////////////////////////////////////////////////////////////
   //////////////////////////////////////////////////////////////////////////////
@@ -431,6 +308,11 @@ function PlaybackApp(props) {
 
     // TODO: Listen to Spotify events.
     player.addListener('player_state_changed', (state) => {
+      if(!state) {
+        return;
+      }
+      // console.log(`Time delta: ${Date.now() - state.timestamp}`)
+      // console.log(state)
       const reduxState = store.getState(),
             reduxPlayback = reduxState.playback;
       if(!reduxPlayback.loaded.spotify) {
@@ -439,6 +321,52 @@ function PlaybackApp(props) {
           payload: { service: "spotify" },
         });
       }
+
+      // let shouldCheckPosition = !state.paused;
+
+      // Release lock!
+      // console.log("action (in spotify event listner)", reduxState.playback.action)
+      if(reduxState.playback.action === "paused" && state.paused) {
+        // shouldCheckPosition = true;
+        const action = null;
+        props.dispatch({
+          type: "playback/action",
+          payload: { action },
+        });
+      } else if(reduxState.playback.action === "played" && !state.paused) {
+        // shouldCheckPosition = true;
+        const action = null;
+        props.dispatch({
+          type: "playback/action",
+          payload: { action },
+        });
+      } else if(reduxState.playback.action === "seek") {
+        const action = null;
+        props.dispatch({
+          type: "playback/action",
+          payload: { action },
+        });
+      }
+
+      // Release lock after seek as successfully taken place.
+      // TODO: the following!
+      // if(shouldCheckPosition) {
+      //   const delay = Date.now() - state.timestamp,
+      //         reduxNowPlaying = reduxState.queueMap[reduxState.playback.nowPlayingUuid],
+      //         arr = getPositionMilliseconds(reduxNowPlaying, reduxNowPlaying.startedAt),
+      //         enginePosition = arr[0],
+      //         spotifyPosition = state.position + delay,
+      //         delta = enginePosition - spotifyPosition;
+      //   console.log(enginePosition, spotifyPosition, enginePosition - spotifyPosition, (delta > 5 || delta < -5));
+      //
+      //   if(delta > 5 || delta < -5) {
+      //     const startedAt = nowPlaying.startedAt - delta;
+      //     props.dispatch({
+      //       type: 'queue/update',
+      //       payload: { queues: [{ ...nowPlaying, startedAt }] },
+      //     });
+      //   }
+      // }
     });
 
     // Kick off initialization.
@@ -489,7 +417,38 @@ function PlaybackApp(props) {
     });
 
     // TODO: Listen to Apple Music events.
-    player.addEventListener("playbackStateDidChange", (e) => {});
+    player.addEventListener("playbackStateDidChange", (e) => {
+      const reduxState = store.getState(),
+            playbackStates = window.MusicKit.PlaybackStates;
+
+      const didPlay = (
+        (
+          (playbackStates[e.oldState] === "seeking" && playbackStates[e.state] === "playing") ||
+          (playbackStates[e.oldState] === "waiting" && playbackStates[e.state] === "playing")
+        ) &&
+        reduxState.playback.action === "played"
+      )
+      if(didPlay) {
+        const action = null;
+        props.dispatch({
+          type: "playback/action",
+          payload: { action },
+        });
+      }
+
+      const didPause = (
+        playbackStates[e.oldState] === "playing" &&
+        playbackStates[e.state] === "paused" &&
+        reduxState.playback.action === "paused"
+      )
+      if(didPause) {
+        const action = null;
+        props.dispatch({
+          type: "playback/action",
+          payload: { action },
+        });
+      }
+    });
 
   // eslint-disable-next-line
   }, [appleMusicSDKReady]);
@@ -497,6 +456,46 @@ function PlaybackApp(props) {
   //////////////////////////////////////////////////////////////////////////////
   //////////////////////////////////////////////////////////////////////////////
   //// YOUTUBE
+  let youTubeContainerStyle = {},
+      youTubeWidth = 300,
+      youTubeHeight = 169;
+  if(nowPlaying?.track?.service === SERVICE_YOUTUBE) {
+    if(stream.nowPlayingUuid === playback.nowPlayingUuid) {
+      if(sideBar.tab === "feed" && feedApp.contentContainer) {
+        const containerRect = feedApp.contentContainer;
+        youTubeWidth = containerRect.width - 88;
+        youTubeHeight = youTubeWidth / 16 * 9;
+        youTubeContainerStyle = {
+          position: "absolute",
+          width: youTubeWidth,
+          height: youTubeHeight,
+          top: `${95 + 44}px`,
+          left: `${341 + 44}px`,
+          zIndex: 16,
+        }
+      } else {
+        youTubeContainerStyle = {
+          position: "absolute",
+          width: 300,
+          height: 169,
+          top: "95px",
+          right: "57px",
+          boxShadow: "4px 4px 12px rgba(0, 0, 0, 0.15)",
+        };
+      }
+    } else {
+      console.log('pop up queue view')
+      youTubeContainerStyle = {
+        position: "fixed",
+        top: "295px",
+        right: "257px",
+      };
+    }
+  } else {
+    youTubeContainerStyle = {
+      display: "none",
+    };
+  }
 
   const currentQueue = nowPlaying,
         isYouTube = currentQueue?.track?.service === SERVICE_YOUTUBE;
@@ -504,8 +503,8 @@ function PlaybackApp(props) {
   const youTubeStart = isYouTube ? Math.floor(currentQueue.playbackIntervals[0].startPosition / 1000) : null,
         youTubeVideoId = isYouTube ? currentQueue?.track?.externalId : null,
         youTubeOpts = {
-          height: '135',
-          width: '240',
+          width: "100%",
+          height: "100%",
           playerVars: {
             // https://developers.google.com/youtube/player_parameters
             autoplay: 0,   // the initial video will automatically start to play
@@ -525,7 +524,7 @@ function PlaybackApp(props) {
 
     props.dispatch({
       type: "playback/loaded",
-      payload: { service: "youTube" },
+      payload: { service: "youtube" },
     });
 
     if(playback.youTubeAutoplay) {
@@ -543,88 +542,42 @@ function PlaybackApp(props) {
   }
 
   const onYouTubePause = function() {
-    // if(nowPlaying.status !== 'paused' && nowPlaying?.track.service === SERVICE_YOUTUBE) {
-    //   pause();
-    // }
+    // console.log(playback.youTubeApi.getCurrentTime())
+    if(!playback.action) {
+      return;
+    }
+    const action = null;
+    props.dispatch({
+      type: "playback/action",
+      payload: { action },
+    });
   }
 
   const onYouTubePlay = function() {
-    // if(nowPlaying.status !== "played" && nowPlaying?.track.service === SERVICE_YOUTUBE) {
-    //   play();
-    // }
+    // console.log(playback.youTubeApi.getCurrentTime())
+    if(!playback.action) {
+      return;
+    }
+    const action = null;
+    props.dispatch({
+      type: "playback/action",
+      payload: { action },
+    });
   }
 
-  //////////////////////////////////////////////////////////////////////////////
-  // For one reason or another, the playback has changed. As such, we must
-  // reschedule needed scheduled tasks.
-  useEffect(() => {
-
-    // debouncer
-    const needsToScheduleAddToQueue = (
-      nowPlaying?.status === "played" &&
-      playback.isPlaying &&
-      !playback.addToQueueTimeoutId
-    );
-    if(!needsToScheduleAddToQueue) {
-      return;
-    }
-
-    // nothing to schedule
-    if(!nowPlaying) {
-      return;
-    }
-
-    // Schedule task that prepares the transition to next track.
-    const progress = Date.now() - nowPlaying.startedAt,
-          timeLeft = (
-            nowPlaying.durationMilliseconds - progress
-          ),
-          timeoutDuration = timeLeft - 5000;
-    const timeoutId = setTimeout(() => {
-      prepareTransitionToNextTrack();
-    }, timeoutDuration);
-    props.dispatch({
-      type: 'playback/addToQueueScheduled',
-      payload: { addToQueueTimeoutId: timeoutId },
-    });
-
-    // Schedule task that modifies playback due to configured intervals.
-    const arr = getPositionMilliseconds(nowPlaying, nowPlaying.startedAt),
-          seekTimeoutDuration = arr[1];
-    if(seekTimeoutDuration) {
-      const seekTimeoutId = setTimeout(() => {
-        seek();
-      }, seekTimeoutDuration);
-      props.dispatch({
-        type: 'playback/nextSeekScheduled',
-        payload: { nextSeekTimeoutId: seekTimeoutId },
-      });
-    }
-
-  // eslint-disable-next-line
-  }, [playback]);
-
-  ////////////////////////////////////////////////////////////////////////////
-  // Play the music.
-  useEffect(() => {
-    // TODO add check to verify that service is prepared to play
-    if(nowPlaying?.status === "played" && !playback.isPlaying) {
-      start();
-    }
-  // eslint-disable-next-line
-  }, [playback]);
 
   /*
    * 🎨
    */
   return (
     <>
-      <div style={{ display: 'none' }}>
-        <YouTube videoId={youTubeVideoId}
-                 opts={youTubeOpts}
-                 onReady={onYouTubeReady}
-                 onPause={onYouTubePause}
-                 onPlay={onYouTubePlay} />
+      <div className={styles.YouTubeContainer}
+           style={youTubeContainerStyle}>
+          <YouTube videoId={youTubeVideoId}
+                   opts={youTubeOpts}
+                   onReady={onYouTubeReady}
+                   onPause={onYouTubePause}
+                   onPlay={onYouTubePlay} />
       </div>
       <MainApp playbackControls={playbackControls}/>
     </>
@@ -633,11 +586,14 @@ function PlaybackApp(props) {
 
 
 const mapStateToProps = (state) => ({
+    stream: state.stream,
     playback: state.playback,
     queueMap: state.queueMap,
     lastUpQueueUuids: state.lastUpQueueUuids,
     nextUpQueueUuids: state.nextUpQueueUuids,
     userSettings: state.userSettings,
+    feedApp: state.feedApp,
+    sideBar: state.sideBar,
 });
 
 

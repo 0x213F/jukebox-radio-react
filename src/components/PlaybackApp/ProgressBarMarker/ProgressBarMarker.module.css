@@ -1,8 +1,12 @@
 .ProgressBarMarker {
   float: left;
-  position: relative;
+  position: absolute;
   height: 8px;
-  padding: 10px 5px 0 5px;
+  padding: 8px 8px 0 8px;
+  z-index: 6;
+  border-top-right-radius: 16px;
+  border-top-left-radius: 16px;
+  background-color: rgba(251, 252, 255, 0.93);
 }
 
 .ProgressBarMarkerPointer,

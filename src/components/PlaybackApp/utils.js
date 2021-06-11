@@ -62,6 +62,28 @@ export const getProgressMilliseconds = function(queue, position) {
 
 
 /*
+ *
+ */
+export const isPositionValid = function(queue, position) {
+  if(!queue) {
+    return false;
+  }
+
+  let playbackIntervalIdx = 0;
+  while(playbackIntervalIdx < queue.playbackIntervals.length) {
+    const playbackInterval = queue.playbackIntervals[playbackIntervalIdx];
+    if(position > playbackInterval.endPosition - 5000 && position < playbackInterval.endPosition) {
+      return false;
+    } else if(position > playbackInterval.startPosition && position < playbackInterval.endPosition) {
+      return true;
+    }
+    playbackIntervalIdx += 1;
+  }
+  return false;
+}
+
+
+/*
  * Get the progress of a stream.
  */
 export const getProgress = function(queue) {
@@ -70,7 +92,7 @@ export const getProgress = function(queue) {
   } else if(queue.status === 'played') {
     return Date.now() - queue.startedAt;
   } else {
-    return undefined;
+    return 0;
   }
 };
 
@@ -102,21 +124,29 @@ export const cycleVolumeLevel = function(volumeLevel) {
 }
 
 
-export const featureIsEnabled = function(queue, playback, action) {
-  const service = queue?.service;
-  if(!service) {
-    return true;
-  }
-
-  const isLoaded = playback.loading[service];
-  if(!isLoaded) {
-    return false;
-  }
-
-  const pendingAction = playback.pending[service];
-  if(pendingAction) {
-    return false;
-  }
-
+export const featureIsEnabled = function(stateLike) {
   return true;
+  // const { queueMap, playback, action, main } = stateLike,
+  //       queue = queueMap[playback.nowPlayingUuid];
+  //
+  // if(!queue) {
+  //   return false;
+  // }
+  //
+  // const service = queue.track?.service;
+  // if(!service) {
+  //   return false;
+  // }
+  //
+  // const isLoaded = playback.loaded[service];
+  // if(!isLoaded) {
+  //   return false;
+  // }
+  //
+  // const pendingAction = playback.action;
+  // if(pendingAction) {
+  //   return false;
+  // }
+  //
+  // return true;
 }

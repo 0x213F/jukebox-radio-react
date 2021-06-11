@@ -129,3 +129,10 @@ export const feedUpdate = function(state) {
     feed: feedGenerate(state),
   }
 }
+
+
+export const feedAppSetContentContainer = function(state, payload) {
+  const contentContainer = payload.contentContainer,
+        feedApp = { ...state.feedApp, contentContainer };
+  return { ...state, feedApp };
+}

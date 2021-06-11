@@ -7,9 +7,8 @@ import FeedApp from '../../FeedApp/FeedApp';
 import QueueApp from '../../QueueApp/QueueApp';
 import MiniQueue from '../../QueueApp/MiniQueue/MiniQueue';
 import SearchApp from '../../SearchApp/SearchApp';
+import MiniNotes from '../../SearchApp/MiniNotes/MiniNotes';
 import WelcomeApp from '../../WelcomeApp/WelcomeApp';
-import Player from '../../PlaybackApp/Player/Player';
-import MiniPlayer from '../../PlaybackApp/MiniPlayer/MiniPlayer';
 
 import BottomBar from '../BottomBar/BottomBar';
 import SideBar from '../SideBar/SideBar';
@@ -83,27 +82,14 @@ function Session(props) {
               <FeedApp playbackControls={props.playbackControls}/>
             </Route>
 
-            {/* PLAYER */}
-            <Route path="/app/player">
-              <div className={styles.MainContent}>
-                <Player nextTrack={props.playbackControls.nextTrack}
-                        prevTrack={props.playbackControls.prevTrack}
-                        seek={props.playbackControls.seek}
-                        pause={props.playbackControls.pause}
-                        play={props.playbackControls.play} />
-              </div>
-            </Route>
-
             {/* QUEUE */}
             <Route path="/app/queue">
               <div className={styles.PrimaryContent}>
                 <QueueApp playbackControls={props.playbackControls}/>
               </div>
-              <Link to="/app/player" onClick={() => { handleTab("player"); }} style={{ textDecoration: 'none', color: "#000" }}>
-                <div className={styles.SecondaryContent}>
-                    <MiniPlayer />
-                </div>
-              </Link>
+              <div className={styles.SecondaryContent}>
+                <MiniNotes />
+              </div>
             </Route>
 
             {/* SEARCH */}
@@ -111,11 +97,12 @@ function Session(props) {
               <div className={styles.PrimaryContent}>
                 <SearchApp />
               </div>
-              <Link to="/app/queue" onClick={() => { handleTab("queue"); }} style={{ textDecoration: 'none', color: "#000" }}>
                 <div className={styles.SecondaryContent}>
-                  <MiniQueue />
+                  <MiniNotes />
+                  <Link to="/app/queue" onClick={() => { handleTab("queue"); }} style={{ textDecoration: 'none', color: "#000" }}>
+                    <MiniQueue />
+                  </Link>
                 </div>
-              </Link>
             </Route>
 
           </Switch>

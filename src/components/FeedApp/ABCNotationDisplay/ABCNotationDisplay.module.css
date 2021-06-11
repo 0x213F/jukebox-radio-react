@@ -7,7 +7,8 @@
 .ABCNotationDisplay {
   width: 355px;
   min-height: 62px;
-  border: 1px solid #EAEAEA;
+  background-color: #FFF;
+  border-radius: 6px;
   padding: 22px 28px;
   margin-bottom: 19px;
 }

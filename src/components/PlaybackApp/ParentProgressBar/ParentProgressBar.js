@@ -4,7 +4,7 @@ import { connect } from 'react-redux';
 import Draggable from 'react-draggable';
 
 import styles from './ParentProgressBar.module.css';
-import { getPositionMilliseconds, getProgressMilliseconds } from '../utils';
+import { getPositionMilliseconds, getProgressMilliseconds, isPositionValid } from '../utils';
 import ChildProgressBar from '../ChildProgressBar/ChildProgressBar';
 import ProgressBarMarker from '../ProgressBarMarker/ProgressBarMarker';
 import { iconSmallCircle } from '../icons';
@@ -23,7 +23,10 @@ function ParentProgressBar(props) {
 
   const [markerHover, setMarkerHover] = useState(false);
 
-  const queue = { ...props.queue },
+  const queueMap = props.queueMap,
+        stream = props.stream,
+        playback = props.playback,
+        queue = queueMap[playback.nowPlayingUuid],
         mode = props.mode,
         allIntervals = queue?.allIntervals || [],
         duration = queue?.track?.durationMilliseconds || 0,
@@ -44,7 +47,6 @@ function ParentProgressBar(props) {
 
   const markerMap = props.markerMap,
         markers = (
-          props.markers ||
           Object.values(markerMap[queue?.track?.uuid] || []).sort((a, b) => {
             return a.timestampMilliseconds - b.timestampMilliseconds;
           })
@@ -54,7 +56,7 @@ function ParentProgressBar(props) {
   for(let i=0; i < markers.length; i++) {
     let pix = markers[i].timestampMilliseconds / duration * 100;
     markers[i].styleLeft = `calc(${pix}% - ${runningMark}px)`;
-    runningMark += 12;
+    runningMark += 2;
 
     if(mode === "player") {
 
@@ -129,10 +131,30 @@ function ParentProgressBar(props) {
     const cursorRect = draggableRef.current.getBoundingClientRect(),
           progressRect = progressRef.current.getBoundingClientRect(),
           playbackPercent = (cursorRect.left - progressRect.left) / (progressRef.current.offsetWidth - 8),
-          nextPosition = Math.round(duration * playbackPercent),
-          nextProgress = getProgressMilliseconds(queue, nextPosition);
+          nextPosition = Math.round(duration * playbackPercent);
 
-    await props.playbackControls.seek(nextProgress);
+    const isValid = isPositionValid(queue, nextPosition);
+
+    if(!isValid) {
+      setAnimationStatus(ENABLE_ANIMATION);
+      setDragOffset(ui.x);
+      setStickyPointerLeftDistance(false);
+      return;
+    }
+
+    const nextProgress = getProgressMilliseconds(queue, nextPosition);
+
+    const action = {
+      name: "seek",
+      timestampMilliseconds: nextProgress,
+      status: "kickoff",
+      fake: !(playback.nowPlayingUuid === stream.nowPlayingUuid),
+    };
+    props.dispatch({
+      type: "main/addAction",
+      payload: { action },
+    });
+
     setDragOffset(ui.x);
     setAnimationStatus(ENABLE_ANIMATION);
     setStickyPointerLeftDistance(false);
@@ -155,7 +177,7 @@ function ParentProgressBar(props) {
 
     const periodicTask = setInterval(() => {
       setCounter(prev => prev + 1);
-    }, 150);
+    }, 1500);
 
     setAnimationPeriodicTask(periodicTask);
 
@@ -169,7 +191,6 @@ function ParentProgressBar(props) {
   if(stickyPointerLeftDistance) {
     pointerLeftDistance = stickyPointerLeftDistance;
   }
-
 
   return (
     <div ref={progressRef} className={styles.ParentProgressBar}>
@@ -225,6 +246,9 @@ function ParentProgressBar(props) {
 
 const mapStateToProps = (state) => ({
   markerMap: state.markerMap,
+  queueMap: state.queueMap,
+  playback: state.playback,
+  stream: state.stream,
 });
 
 

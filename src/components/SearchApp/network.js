@@ -5,17 +5,13 @@ import { fetchBackend } from '../../utils/network'
 /*
  * Fetches an auth token from the server.
  */
-export const fetchSearchMusicLibrary = async (query, providerAppleMusic, providerSpotify, providerYouTube, providerAudius, providerJukeboxRadio, formatTrack, formatAlbum, formatPlaylist, formatVideo) => {
+export const fetchSearchMusicLibrary = async (query, service, formatTrack, formatAlbum, formatPlaylist, formatVideo) => {
   const response = await fetchBackend(
     TYPE_GET,
     ENDPOINT_MUSIC_SEARCH,
     {
       query,
-      providerAppleMusic,
-      providerSpotify,
-      providerYouTube,
-      providerAudius,
-      providerJukeboxRadio,
+      service,
       formatTrack,
       formatAlbum,
       formatPlaylist,

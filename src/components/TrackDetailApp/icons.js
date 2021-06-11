@@ -44,8 +44,8 @@ export const iconPause = (
 
 export const iconMiniCheckboxChecked = (
   <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
-  <rect x="1" y="1" width="18" height="18" stroke="#0047FF" stroke-width="2"/>
-  <path d="M14.6155 6.92188L8.26938 13.845L5.38477 10.6981" stroke="#0047FF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+  <rect x="1" y="1" width="18" height="18" stroke="#0047FF" strokeWidth="2"/>
+  <path d="M14.6155 6.92188L8.26938 13.845L5.38477 10.6981" stroke="#0047FF" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
   </svg>
 );
 
