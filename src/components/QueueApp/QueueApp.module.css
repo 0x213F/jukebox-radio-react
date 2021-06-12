@@ -125,6 +125,8 @@
   margin-left: 24px;
 
   background-color: rgba(251, 252, 255, 0.93);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
 }
 
 .AddToQueue {

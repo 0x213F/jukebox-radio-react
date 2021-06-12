@@ -149,7 +149,13 @@ function App() {
     return (
       <Router>
         <Provider store={store}>
-          <div style={{textAlign: "center", lineHeight: "100vh"}}>
+          <div style={{
+            textAlign: "center",
+            lineHeight: "100vh",
+            fontSize: "24px",
+            fontWeight: "400",
+            letterSpacing: "0.03em",
+          }}>
             Loading...
           </div>
         </Provider>

@@ -32,7 +32,7 @@
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 .HoverContainer {
   position: absolute;
-  left: calc(100% - 99px);
+  left: 100%;
   top: 0;
   padding: 22px;
   width: 62px;

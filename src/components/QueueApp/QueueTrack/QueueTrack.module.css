@@ -16,7 +16,7 @@
 }
 
 .QueueTrackChild {
-  height: 53px;
+  height: 60px;
   display: block;
   width: calc(100% - 100px);
   padding-left: 100px;
@@ -57,7 +57,7 @@
   float: left;
   height: 48px;
   margin-left: 34px;
-  width: calc(100% - 362px);
+  width: calc(100% - 366px);
 }
 
 .QueueInformationChild {
@@ -107,15 +107,16 @@
 .ButtonContainer {
   display: inline-block;
   float: right;
-  margin-right: 26px;
+  margin-right: 18px;
 }
 
 .ButtonContainer > button {
-  background-color: inherit;
+  background-color: #FFF;
   border: 0;
   padding: 0;
-  height: 30px;
-  width: 30px;
+  height: 48px;
+  width: 48px;
+  border-radius: 24px;
 
   display: inline-flex;
   align-items: center;
@@ -126,15 +127,13 @@
 
 .ButtonHead {
   padding: 6px;
-  margin: 23.5px;
-  margin-left: 26px;
+  margin: 18px;
+  margin-left: 18px;
   margin-right: 0px;
 }
 
 .ButtonChild {
-  padding: 6px;
-  margin: 9px;
-  margin-left: 26px;
+  margin-left: 18px;
   margin-right: 0px;
 }
 
