@@ -8,6 +8,7 @@
     "@testing-library/react": "^11.2.2",
     "@testing-library/user-event": "^12.6.0",
     "mic-recorder-to-mp3": "^2.2.2",
+    "pizzicato": "^0.6.4",
     "react": "^17.0.1",
     "react-abc": "^0.4.0",
     "react-circular-progressbar": "^2.0.3",

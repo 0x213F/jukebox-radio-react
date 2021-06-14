@@ -87,8 +87,10 @@
 .FeedWrapper {
   display: inline-block;
   width: 512px;
+  height: calc(100% - 95px);
+
   margin-right: 77px;
-  height: 100%;
+  margin-bottom: 95px;
   float: right;
 }
 
@@ -100,8 +102,7 @@
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 .ComposeBar {
   position: absolute;
-  bottom: 84px;
-  caret-color: #0047FF;
+  bottom: 95px;
   height: 35px;
 }
 
@@ -110,11 +111,14 @@
   height: 22px;
   padding: 16px;
 
-  border: 1px solid #BCBCBC;
+  border: 0;
   box-sizing: border-box;
   border-radius: 26.5px;
 
   outline: none;
+
+  background-color: #FFF;
+  box-shadow: 4px 4px 12px rgba(0, 0, 0, 0.15);
 
   font-family: Raleway;
   font-style: normal;
@@ -125,24 +129,31 @@
   padding: 0;
   margin: 0;
   border: 0;
-  background-color: #FFF;
-  cursor: pointer;
-  margin-right: 16px;
 
+  margin-right: 16px;
   width: 34px;
   height: 34px;
-  border: 1px solid #BCBCBC;
+
   border-radius: 17px;
   box-sizing: border-box;
+
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  background-color: rgba(251, 252, 255, 0.93);
+  box-shadow: 4px 4px 12px rgba(0, 0, 0, 0.15);
 
   display: inline-flex;
   align-items: center;
   justify-content: center;
+
+  cursor: pointer;
 }
 
 .ComposeBar > input:disabled,
 .ComposeBar > button:disabled {
-  background-color: rgba(239, 239, 239, 0.3);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  background-color: rgba(251, 252, 255, 0.93);
   cursor: not-allowed;
 }
 
