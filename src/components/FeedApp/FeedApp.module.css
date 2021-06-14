@@ -139,7 +139,7 @@
 
   backdrop-filter: blur(10px);
   -webkit-backdrop-filter: blur(10px);
-  background-color: rgba(251, 252, 255, 0.93);
+  background-color: #FFF;
   box-shadow: 4px 4px 12px rgba(0, 0, 0, 0.15);
 
   display: inline-flex;

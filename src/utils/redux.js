@@ -9,15 +9,10 @@ import {
 } from './reducers/marker';
 import {
   playbackMount,
-  playbackUnmount,
-  playbackAppleMusic,
   playbackSpotify,
   playbackLoaded,
   playbackYouTube,
   playbackYouTubeTriggerAutoplay,
-  playbackAddToQueue,
-  playbackStart,
-  playbackStarted,
   playbackSetSeekTimeoutId,
   playbackClearSeekTimeoutId,
   playbackDisable,
@@ -25,8 +20,6 @@ import {
   playbackLoadFiles,
   playbackLoadAudius,
   playbackCycleVolumeLevelAudio,
-  playbackModalOpen,
-  playbackModalClose,
   playbackAction,
 } from './reducers/playback';
 import {
@@ -44,10 +37,6 @@ import {
   mainSetAutoplayTimeoutId,
   mainClearAutoplayTimeoutId,
 } from './reducers/main';
-// import {
-//   queueIntervalCreate,
-//   queueIntervalDelete,
-// } from './reducers/queueInterval';
 import {
   streamSetWrapper,
   streamPlay,
@@ -240,23 +229,13 @@ const reducer = (state = initialState, action) => {
     case "marker/delete":
       return markerDelete(state, action.payload);
     ////////////////////////////////////////////////////////////////////////////
-    // QUEUE INTERVAL
-    // case "queueInterval/create":
-    //   return queueIntervalCreate(state, action.payload);
-    // case "queueInterval/delete":
-    //   return queueIntervalDelete(state, action.payload);
-    ////////////////////////////////////////////////////////////////////////////
     // PLAYBACK
     case "playback/mount":
       return playbackMount(state, action.payload);
-    case "playback/unmount":
-      return playbackUnmount(state, action.payload);
     case "playback/disable":
       return playbackDisable(state);
     case "playback/enable":
       return playbackEnable(state);
-    case "playback/appleMusic":
-      return playbackAppleMusic(state, action.payload);
     case "playback/spotify":
       return playbackSpotify(state, action.payload);
     case "playback/loaded":
@@ -265,12 +244,6 @@ const reducer = (state = initialState, action) => {
       return playbackYouTube(state, action.payload);
     case "playback/youTubeTriggerAutoplay":
       return playbackYouTubeTriggerAutoplay(state, action.payload);
-    case "playback/addToQueue":
-      return playbackAddToQueue(state);
-    case "playback/start":
-      return playbackStart(state);
-    case "playback/started":
-      return playbackStarted(state);
     case "playback/setSeekTimeoutId":
       return playbackSetSeekTimeoutId(state, action.payload);
     case "playback/clearSeekTimeoutId":
@@ -281,10 +254,6 @@ const reducer = (state = initialState, action) => {
       return playbackLoadAudius(state, action.payload);
     case "playback/cycleVolumeLevelAudio":
       return playbackCycleVolumeLevelAudio(state);
-    case "playback/modalOpen":
-      return playbackModalOpen(state, action.payload);
-    case "playback/modalClose":
-      return playbackModalClose(state, action.payload);
     case "playback/action":
       return playbackAction(state, action.payload);
     case "main/enable":

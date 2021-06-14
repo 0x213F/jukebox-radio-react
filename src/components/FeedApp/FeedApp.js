@@ -191,13 +191,13 @@ function FeedApp(props) {
           <button className={styles.NotationButton}
                   type="button"
                   onClick={openModal}
-                  disabled={nowPlaying.status !== "played"} >
+                  disabled={nowPlaying?.status !== "played"} >
             <div></div>
           </button>
           <button className={styles.RecordButton}
                   type="button"
                   onClick={handleRecord}
-                  disabled={nowPlaying.status !== "played"} >
+                  disabled={nowPlaying?.status !== "played"} >
             <div></div>
           </button>
           <input type="text"
@@ -205,10 +205,10 @@ function FeedApp(props) {
                  value={textCommentText}
                  onChange={handleTextChange}
                  autoComplete="off"
-                 disabled={nowPlaying.status !== "played"} />
+                 disabled={nowPlaying?.status !== "played"} />
           <button className={styles.SubmitButton}
                   type="submit"
-                  disabled={nowPlaying.status !== "played"} >
+                  disabled={nowPlaying?.status !== "played"} >
             Send
           </button>
         </form>
