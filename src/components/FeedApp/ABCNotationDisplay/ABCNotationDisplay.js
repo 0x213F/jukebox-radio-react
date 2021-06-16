@@ -14,8 +14,8 @@ function ABCNotationDisplay(props) {
   /*
    * 🏗
    */
-  const abcNotation = props.data,
-        abcNotationUuid = abcNotation.uuid;
+  const abcNotationUuid = props.textCommentUuid,  // yes
+        abcNotation = props.textCommentMap[abcNotationUuid];  // yes
 
   const [hovering, setHovering] = useState(false);
 
@@ -42,6 +42,16 @@ function ABCNotationDisplay(props) {
   const deleteAbcNotation = async function() {
     const responseJson = await fetchDeleteTextComment(abcNotationUuid);
     props.dispatch(responseJson.redux);
+  }
+
+  if(!abcNotation) {
+    return (
+      <div className={styles.ABCNotationDisplayContainer}>
+        <div className={styles.ABCNotationDisplayDeleted}>
+          <p>Redacted</p>
+        </div>
+      </div>
+    );
   }
 
   /*
@@ -72,7 +82,9 @@ function ABCNotationDisplay(props) {
 }
 
 
-const mapStateToProps = (state) => ({});
+const mapStateToProps = (state) => ({
+  textCommentMap: state.textCommentMap,
+});
 
 
 export default connect(mapStateToProps)(ABCNotationDisplay);

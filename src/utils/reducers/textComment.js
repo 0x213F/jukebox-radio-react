@@ -1,20 +1,25 @@
-import { feedGenerate } from './feed';
-
-
 /*
  * ...
  */
 export const textCommentListSet = function(state, payload) {
   const textComments = payload.textComments,
-        updatedState = {
-          ...state,
-          textComments: textComments,
-        };
+        trackUuid = payload.trackUuid,
+        textCommentMap = { ...state.textCommentMap },
+        feedApp = { ...state.feedApp },
+        trackMap = { ...state.feedApp.trackMap };
 
-  return {
-    ...updatedState,
-    feed: feedGenerate(updatedState),
-  };
+  for(let textComment of textComments) {
+    textCommentMap[textComment.uuid] = textComment;
+  }
+
+  if(!trackMap.hasOwnProperty(trackUuid)) {
+    trackMap[trackUuid] = {};
+  }
+  const textCommentUuids = textComments.map(obj => obj.uuid);
+  trackMap[trackUuid].textCommentUuids = textCommentUuids;
+  feedApp.trackMap = trackMap;
+
+  return { ...state, feedApp, textCommentMap };
 }
 
 
@@ -22,16 +27,18 @@ export const textCommentListSet = function(state, payload) {
  *
  */
 export const textCommentCreate = function(state, payload) {
-  const textComments = [...state.textComments, payload.textComment],
-        updatedState = {
-          ...state,
-          textComments: textComments,
-        };
+  const textComment = payload.textComment,
+        trackUuid = textComment.trackUuid,
+        textCommentMap = { ...state.textCommentMap },
+        feedApp = { ...state.feedApp },
+        textCommentUuids = [...state.feedApp.trackMap[trackUuid].textCommentUuids];
 
-  return {
-    ...updatedState,
-    feed: feedGenerate(updatedState),
-  };
+  textComment.forceDisplay = true;
+  textCommentMap[textComment.uuid] = textComment;
+  textCommentUuids.push(textComment.uuid);
+  feedApp.trackMap[trackUuid].textCommentUuids = textCommentUuids;
+
+  return { ...state, feedApp, textCommentMap };
 }
 
 
@@ -39,15 +46,21 @@ export const textCommentCreate = function(state, payload) {
  *
  */
 export const textCommentDelete = function(state, payload) {
-  const deleteByUuid = i => i.uuid !== payload.textCommentUuid,
-        textComments = state.textComments.filter(deleteByUuid),
-        updatedState = {
-          ...state,
-          textComments: textComments,
-        };
+  const textCommentUuid = payload.textCommentUuid,
+        trackUuid = payload.trackUuid,
+        textCommentMap = { ...state.textCommentMap },
+        feedApp = { ...state.feedApp },
+        trackMap = { ...state.feedApp.trackMap };
 
-  return {
-    ...updatedState,
-    feed: feedGenerate(updatedState),
-  };
+  let textCommentUuids;
+  const deleteByUuid = uuid => uuid !== textCommentUuid;
+  textCommentUuids = [...trackMap[trackUuid].textCommentUuids];
+  textCommentUuids = textCommentUuids.filter(deleteByUuid);
+
+  trackMap[trackUuid].textCommentUuids = textCommentUuids;
+  feedApp.trackMap = trackMap;
+
+  delete textCommentMap[textCommentUuid];
+
+  return { ...state, feedApp, textCommentMap };
 }

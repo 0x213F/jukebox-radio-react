@@ -13,6 +13,21 @@
   margin-bottom: 19px;
 }
 
+.ABCNotationDisplayDeleted {
+  width: 413px;
+  min-height: 48px;
+
+  border-radius: 24px;
+  margin-bottom: 19px;
+
+  text-align: center;
+  line-height: 48px;
+  color: white;
+  font-weight: 500;
+
+  background-color: #4d7eff;
+}
+
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 .HoverBuffer {
   height: 68px;

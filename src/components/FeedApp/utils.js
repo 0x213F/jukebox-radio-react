@@ -11,7 +11,7 @@ import { store } from '../../utils/redux';
  */
 export const fetchUpdateFeed = async function(trackUuid) {
   const responseJsonTextCommentList = await fetchTextCommentList(trackUuid);
-  const responseJsonVoiceRecordingList = await fetchVoiceRecordingList(trackUuid);
   store.dispatch(responseJsonTextCommentList.redux);
+  const responseJsonVoiceRecordingList = await fetchVoiceRecordingList(trackUuid);
   store.dispatch(responseJsonVoiceRecordingList.redux);
 };

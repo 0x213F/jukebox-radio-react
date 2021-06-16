@@ -5,6 +5,7 @@ import { Switch, Route } from "react-router-dom";
 
 import SpotifySync from '../SpotifySync/SpotifySync';
 import Session from './Session/Session';
+import { fetchUpdateFeed } from '../FeedApp/utils';
 import { fetchPauseTrack, fetchPlayTrack, fetchScan, fetchNextTrack, fetchPrevTrack, fetchTrackGetFiles } from '../PlaybackApp/Player/network';
 import { getLeafQueue } from '../QueueApp/utils';
 import {
@@ -18,6 +19,7 @@ function MainApp(props) {
 
   const main = props.main,
         stream = props.stream,
+        feedApp = props.feedApp,
         playback = props.playback,
         queueMap = props.queueMap,
         lastUpQueueUuids = props.lastUpQueueUuids,
@@ -46,6 +48,15 @@ function MainApp(props) {
       props.dispatch({ type: 'main/enable' });
       return;
     }
+    props.dispatch({
+      type: 'feed/takeAction',
+      payload: {
+        timestampMilliseconds: timestampMilliseconds,
+        action: "seeked",
+        trackUuid: nowPlaying.track.uuid,
+      },
+    });
+
     if(!timestampMilliseconds) {
       // If routine seek, (skipping an muted interval) return early to prevent
       // hitting the API.
@@ -82,6 +93,12 @@ function MainApp(props) {
       props.dispatch({ type: 'main/enable' });
       return;
     }
+    props.dispatch({
+      type: 'feed/takeAction',
+      payload: {
+        action: "paused",
+      },
+    });
 
     // Pause in the API layer
     if(!action.fake) {
@@ -111,6 +128,14 @@ function MainApp(props) {
       props.dispatch({ type: 'main/enable' });
       return;
     }
+    props.dispatch({
+      type: 'feed/takeAction',
+      payload: {
+        timestampMilliseconds: timestampMilliseconds,
+        action: "played",
+        trackUuid: nowPlaying.track.uuid,
+      },
+    });
 
     // Pause in the API layer
     if(!action.fake) {
@@ -190,6 +215,19 @@ function MainApp(props) {
     props.dispatch({ type: 'main/enable' });
   }
 
+  const loadFeed = async function() {
+    props.dispatch({ type: 'main/actionStart' });
+    props.dispatch({ type: 'main/disable' });
+
+    const action = main.actions[0],
+          queue = action.queue;
+
+    await fetchUpdateFeed(queue.track.uuid);
+
+    props.dispatch({ type: 'main/actionShift' });
+    props.dispatch({ type: 'main/enable' });
+  }
+
   const mount = function() {
     props.dispatch({ type: 'main/actionStart' });
     props.dispatch({ type: 'main/disable' });
@@ -241,6 +279,8 @@ function MainApp(props) {
       prev();
     } else if(action.name === "loadAudio") {
       loadAudio();
+    } else if(action.name === "loadFeed") {
+      loadFeed();
     } else if(action.name === "mount") {
       mount();
     }
@@ -350,7 +390,7 @@ function MainApp(props) {
   }
 
   /*
-   * Used to load audio for soon-to-be-played queue items.
+   * Used to preload for soon-to-be-played queue items.
    */
   useEffect(function() {
     const queues = [lastUp, nowPlaying, nextUp];
@@ -359,6 +399,8 @@ function MainApp(props) {
       .filter(a => a.name === 'loadAudio')
       .map(a => a.queue.uuid)
     );
+
+    // Preload audio
     for(const queue of queues) {
       if(!queue?.track) {
         // No queue, nothing to load.
@@ -386,6 +428,41 @@ function MainApp(props) {
             queue: queue,
             status: "kickoff",
             fake: true,  // symbolic, not functional
+          },
+        },
+      });
+    }
+
+    // Preload feed
+    const queuesAlreadyLoadingFeed = new Set(
+      main.actions
+      .filter(a => a.name === 'loadFeed')
+      .map(a => a.queue.uuid)
+    );
+    for(const queue of queues) {
+      if(!queue?.track) {
+        // No queue, nothing to load.
+        continue;
+      }
+
+      if(queuesAlreadyLoadingFeed.has(queue.uuid)) {
+        // Feed is already loading.
+        continue;
+      }
+
+      if(feedApp.trackMap.hasOwnProperty(queue.track.uuid)) {
+        // Feed is already loaded.
+        continue;
+      }
+
+      props.dispatch({
+        type: "main/addAction",
+        payload: {
+          action: {
+            name: "loadFeed",
+            queue: queue,
+            status: "kickoff",
+            fake: false,  // symbolic, not functional
           },
         },
       });
@@ -422,6 +499,7 @@ const mapStateToProps = (state) => ({
   lastUpQueueUuids: state.lastUpQueueUuids,
   nextUpQueueUuids: state.nextUpQueueUuids,
   stream: state.stream,
+  feedApp: state.feedApp,
 });
 
 

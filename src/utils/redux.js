@@ -1,6 +1,7 @@
 import { createStore } from 'redux';
 import {
   feedUpdate,
+  feedTakeAction,
   feedAppSetContentContainer,
 } from './reducers/feed';
 import {
@@ -76,10 +77,11 @@ const initialState = {
   _lastPlayed: undefined,
   textComments: [],
   voiceRecordings: [],
-  feed: [],
   userSettings: undefined,
   markerMap: {},
   queueMap: {},
+  textCommentMap: {},
+  voiceRecordingMap: {},
   main: {
     actions: [],
     enabled: true,
@@ -125,6 +127,9 @@ const initialState = {
   },
   feedApp: {
     contentContainer: null,
+    feed: [],
+    trackMap: {},
+    lastRender: {},
   },
   notesApp: {
     store: JSON.parse(localStorage.getItem('notesStore')) || {},
@@ -205,15 +210,17 @@ const reducer = (state = initialState, action) => {
     ////////////////////////////////////////////////////////////////////////////
     // VOICE RECORDING
     case "voiceRecording/create":
-      return voiceRecordingCreate(state, action);
+      return voiceRecordingCreate(state, action.payload);
     case "voiceRecording/listSet":
       return voiceRecordingListSet(state, action.payload);
     case "voiceRecording/delete":
-      return voiceRecordingDelete(state, action);
+      return voiceRecordingDelete(state, action.payload);
     ////////////////////////////////////////////////////////////////////////////
     // FEED
     case "feed/update":
       return feedUpdate(state);
+    case "feed/takeAction":
+      return feedTakeAction(state, action.payload)
     case "feedApp/setContentContainer":
       return feedAppSetContentContainer(state, action.payload);
     ////////////////////////////////////////////////////////////////////////////

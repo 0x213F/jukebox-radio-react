@@ -18,7 +18,8 @@ function NotableText(props) {
   /*
    * 🏗
    */
-  const textColor = props.textColor;
+  const textCommentUuid = props.textCommentUuid,
+        textComment = props.textCommentMap[textCommentUuid];
 
   const selectableRef = useRef(null);
 
@@ -30,7 +31,6 @@ function NotableText(props) {
    * When the user highlights part of the comment.
    */
   const handleNotation = async function(style) {
-    const textCommentUuid = props.data.uuid;
     const responseJson = await fetchCreateTextCommentModification(
       textCommentUuid,
       style,
@@ -80,8 +80,7 @@ function NotableText(props) {
    * Notation is used to display the underline, strike-through, or highlight.
    */
   const renderTextComment = function() {
-    const textComment = props.data,
-          textCommentText = textComment.text,
+    const textCommentText = textComment.text,
           modifications = textComment.modifications;
 
     // Initializes an array of empty sets.
@@ -134,7 +133,7 @@ function NotableText(props) {
    * 🎨
    */
   return (
-    <div className={styles.NotableText} style={{color: textColor}}>
+    <div className={styles.NotableText} style={{color: 'black'}}>
       <p ref={selectableRef}>
         {renderTextComment()}
       </p>
@@ -164,7 +163,9 @@ function NotableText(props) {
 }
 
 
-const mapStateToProps = (state) => ({});
+const mapStateToProps = (state) => ({
+  textCommentMap: state.textCommentMap,
+});
 
 
 export default connect(mapStateToProps)(NotableText);

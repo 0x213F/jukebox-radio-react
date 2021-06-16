@@ -2,12 +2,13 @@ import React, { useState, useEffect, useRef } from "react";
 
 import { connect } from 'react-redux';
 import MicRecorder from 'mic-recorder-to-mp3';
+import SpeechRecognition, { useSpeechRecognition } from 'react-speech-recognition';
 
 import ABCNotationDisplay from './ABCNotationDisplay/ABCNotationDisplay';
 import ABCNotationCompose from './ABCNotationCompose/ABCNotationCompose';
 import VoiceRecording from './VoiceRecording/VoiceRecording';
 import { getPositionMilliseconds } from '../PlaybackApp/utils';
-import { CLASS_TEXT_COMMENT, CLASS_VOICE_RECORDING } from '../../config/model';
+import { CLASS_TEXT_COMMENT, CLASS_VOICE_RECORDING, CLASS_SYSTEM_ACTION } from '../../config/model';
 import {
   SERVICE_YOUTUBE,
 } from '../../config/services';
@@ -17,6 +18,7 @@ import { fetchTextCommentCreate } from './network';
 import { FORMAT_TEXT, FORMAT_ABC_NOTATION } from './constants';
 import { fetchCreateVoiceRecording } from './VoiceRecording/network';
 import TextComment from './TextComment/TextComment';
+import SystemAction from './SystemAction/SystemAction';
 
 
 function FeedApp(props) {
@@ -24,7 +26,8 @@ function FeedApp(props) {
   /*
    * 🏗
    */
-  const feed = props.feed,
+  const feedApp = props.feedApp,
+        feed = feedApp.feed,
         stream = props.stream,
         queueMap = props.queueMap,
         nowPlaying = queueMap[stream.nowPlayingUuid];
@@ -93,11 +96,25 @@ function FeedApp(props) {
   /*
    * ...
    */
+
+  const {
+    transcript,
+    resetTranscript,
+    browserSupportsSpeechRecognition
+  } = useSpeechRecognition();
+
   const handleRecord = function() {
     if(!isRecording) {
       recorder.start();
+      if(browserSupportsSpeechRecognition) {
+        SpeechRecognition.startListening({ continuous: true });
+      }
       setIsRecording(true);
       return;
+    }
+
+    if(browserSupportsSpeechRecognition) {
+      SpeechRecognition.stopListening();
     }
 
     recorder.stop()
@@ -111,13 +128,12 @@ function FeedApp(props) {
           const arr = getPositionMilliseconds(nowPlaying, nowPlaying.startedAt),
                 position = arr[0];
 
-          const responseJson = await fetchCreateVoiceRecording(file, JSON.stringify([]), '', position);
+          const responseJson = await fetchCreateVoiceRecording(file, JSON.stringify([]), transcript, position);
+          props.dispatch(responseJson.redux);
 
-          await props.dispatch({
-            type: 'voiceRecording/create',
-            voiceRecording: responseJson.data,
-          });
-
+          if (SpeechRecognition.browserSupportsSpeechRecognition()) {
+            resetTranscript();
+          }
         })()
       });
 
@@ -175,12 +191,14 @@ function FeedApp(props) {
           {feed.map((value, index) => {
             if(value.class === CLASS_TEXT_COMMENT) {
               if(value.format === FORMAT_TEXT) {
-                return <TextComment key={value.uuid} data={value} playbackControls={props.playbackControls} />;
+                return <TextComment key={index} textCommentUuid={value.uuid} playbackControls={props.playbackControls} />;
               } else if(value.format === FORMAT_ABC_NOTATION) {
-                return <ABCNotationDisplay key={value.uuid} data={value} playbackControls={props.playbackControls} />;
+                return <ABCNotationDisplay key={index} textCommentUuid={value.uuid} playbackControls={props.playbackControls} />;
               }
             } else if(value.class === CLASS_VOICE_RECORDING) {
-              return <VoiceRecording key={value.uuid} data={value} playbackControls={props.playbackControls} />
+              return <VoiceRecording key={index} voiceRecordingUuid={value.uuid} playbackControls={props.playbackControls} />
+            } else if(value.class === CLASS_SYSTEM_ACTION) {
+              return <SystemAction key={index} data={value} playbackControls={props.playbackControls} />
             }
             return <></>;
           })}
@@ -222,7 +240,7 @@ function FeedApp(props) {
 const mapStateToProps = (state) => ({
     stream: state.stream,
     queueMap: state.queueMap,
-    feed: state.feed,
+    feedApp: state.feedApp,
 });
 
 

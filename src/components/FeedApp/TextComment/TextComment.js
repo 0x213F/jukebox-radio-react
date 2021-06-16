@@ -17,8 +17,8 @@ function TextComment(props) {
   /*
    * 🏗
    */
-  const textComment = props.data,
-        textCommentUuid = textComment.uuid,
+  const textCommentUuid = props.textCommentUuid,
+        textComment = props.textCommentMap[textCommentUuid],
         stream = props.stream,
         queueMap = props.queueMap,
         nowPlaying = queueMap[stream.nowPlayingUuid],
@@ -73,14 +73,15 @@ function TextComment(props) {
     }
   }
 
-  // TODO: change styles with a class instead of injecting CSS
-  let textColor;
-  if(textComment.renderStatus === 'history') {
-    textColor = 'grey';
-  } else if(textComment.renderStatus === 'display') {
-    textColor = 'black';
-  } else {
-    textColor = 'red';
+  if(!textComment) {
+    return (
+      <div className={styles.TextCommentContainer}>
+
+        <div className={styles.TextCommentDeleted}>
+          <p>Redacted</p>
+        </div>
+      </div>
+    );
   }
 
   /*
@@ -95,7 +96,7 @@ function TextComment(props) {
       </div>
 
       <div className={styles.TextComment}>
-        <NotableText data={textComment} textColor={textColor}></NotableText>
+        <NotableText textCommentUuid={textCommentUuid}></NotableText>
 
         {hovering &&
           <div className={styles.HoverContainer}>
@@ -123,6 +124,7 @@ function TextComment(props) {
 const mapStateToProps = (state) => ({
   stream: state.stream,
   queueMap: state.queueMap,
+  textCommentMap: state.textCommentMap,
 });
 
 

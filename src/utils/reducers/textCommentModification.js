@@ -2,15 +2,12 @@
  * ...
  */
 export const textCommentModificationCreate = function(state, payload) {
-  const textCommentModifications = payload.textCommentModifications,
+  const textCommentMap = { ...state.textCommentMap },
+        textCommentModifications = payload.textCommentModifications,
         modifiedModification = textCommentModifications.modified,
         deletedModifications = textCommentModifications.deleted,
         textCommentUuid = payload.textCommentUuid,
-        textComments = [...state.textComments],
-        textCommentIndex = textComments.findIndex(t => (
-          t.uuid === textCommentUuid
-        )),
-        textComment = textComments[textCommentIndex];
+        textComment = { ...state.textCommentMap[textCommentUuid] };
 
   let modifications = [...textComment.modifications],
       existingIdx;
@@ -38,12 +35,10 @@ export const textCommentModificationCreate = function(state, payload) {
     }
   }
 
-  textComments[textCommentIndex].modifications = modifications;
+  textComment.modifications = modifications;
+  textCommentMap[textComment.uuid] = textComment;
 
-  return {
-    ...state,
-    textComments: textComments,
-  }
+  return { ...state, textCommentMap };
 }
 
 
@@ -51,13 +46,12 @@ export const textCommentModificationCreate = function(state, payload) {
  * ...
  */
 export const textCommentClearModifications = function(state, payload) {
-  const textCommentIndex = state.textComments.findIndex(t => t.uuid === payload.textCommentUuid),
-        textComments = [...state.textComments];
+  const textCommentMap = { ...state.textCommentMap },
+        textCommentUuid = payload.textCommentUuid,
+        textComment = textCommentMap[textCommentUuid];
 
-  textComments[textCommentIndex].modifications = [];
+  textComment.modifications = [];
+  textCommentMap[textCommentUuid] = textComment;
 
-  return {
-    ...state,
-    textComments: textComments,
-  }
+  return { ...state, textCommentMap };
 }

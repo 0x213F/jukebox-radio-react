@@ -14,8 +14,8 @@ function VoiceRecording(props) {
   /*
    * 🏗
    */
-  const voiceRecording = props.data,
-        voiceRecordingUuid = voiceRecording.uuid,
+  const voiceRecordingUuid = props.voiceRecordingUuid,
+        voiceRecording = props.voiceRecordingMap[voiceRecordingUuid],
         stream = props.stream,
         queueMap = props.queueMap,
         nowPlaying = queueMap[stream.nowPlayingUuid];
@@ -41,11 +41,8 @@ function VoiceRecording(props) {
    * Delete a voice recording.
    */
   const handleDelete = async function() {
-    await fetchDeleteVoiceRecording(voiceRecordingUuid);
-    props.dispatch({
-      type: 'voiceRecording/delete',
-      voiceRecordingUuid: voiceRecordingUuid,
-    });
+    const responseJson = await fetchDeleteVoiceRecording(voiceRecordingUuid);
+    props.dispatch(responseJson.redux);
   }
 
   useEffect(function() {
@@ -54,7 +51,7 @@ function VoiceRecording(props) {
     }
 
     setIsPlaying(true);
-    if(nowPlaying.status !== "played" || voiceRecording.created) {
+    if(nowPlaying.status !== "played" || voiceRecording?.created) {
       return;
     }
 
@@ -72,6 +69,16 @@ function VoiceRecording(props) {
     audio.play();
   // eslint-disable-next-line
   }, [isPlaying])
+
+  if(!voiceRecording) {
+    return (
+      <div className={styles.VoiceRecordingContainer}>
+        <div className={styles.VoiceRecordingDeleted}>
+          <p>Redacted</p>
+        </div>
+      </div>
+    );
+  }
 
   /*
    * 🎨
@@ -109,6 +116,7 @@ function VoiceRecording(props) {
 const mapStateToProps = (state) => ({
   stream: state.stream,
   queueMap: state.queueMap,
+  voiceRecordingMap: state.voiceRecordingMap,
 });
 
 

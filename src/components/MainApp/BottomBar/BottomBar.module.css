@@ -64,7 +64,7 @@
   width: 65px;
   height: 65px;
   float: right;
-  background-color: inherit;
+  background-color: rgba(0,0,0,0);
   border: 0;
   padding: 0;
   cursor: pointer;
