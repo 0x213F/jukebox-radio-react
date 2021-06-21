@@ -16,9 +16,9 @@ function QueueTrack(props) {
   /*
    * 🏗
    */
-  const queueMap = props.queueMap;
-
-  const queue = props.data || queueMap[props.queueUuid];
+  const queueMap = props.queueMap,
+        queueUuid = props.queueUuid,
+        queue = queueMap[queueUuid];
 
   const stream = props.stream,
         main = props.main,
@@ -75,7 +75,7 @@ function QueueTrack(props) {
       setShouldPlayOnClose(true);
     }
 
-    loadTrack(nowPlaying);
+    loadTrack(queue);
 
     props.dispatch({
       type: "main/addAction",
