@@ -25,18 +25,31 @@ export const playbackControlStart = function(playback, queue) {
         playbackService = queue.track.service;
   if(playbackService === SERVICE_APPLE_MUSIC) {
     const music = window.MusicKit.getInstance();
-    console.log(positionMilliseconds / 1000)
     if(queue.track.format === 'track') {
       music.setQueue({ song: queue.track.externalId, startTime: positionMilliseconds / 1000 })
         .then(() => {
           const music = window.MusicKit.getInstance();
-          music.play();
+          music.play()
+            .then(() => {
+              const action = null;
+              store.dispatch({
+                type: "playback/action",
+                payload: { action },
+              });
+            });
         });
     } else if(queue.track.format === 'video') {
       music.setQueue({ musicVideo: queue.track.externalId, startTime: positionMilliseconds / 1000 })
         .then(() => {
           const music = window.MusicKit.getInstance();
-          music.play();
+          music.play()
+            .then(() => {
+              const action = null;
+              store.dispatch({
+                type: "playback/action",
+                payload: { action },
+              });
+            });
         });
     }
   } else if(playbackService === SERVICE_SPOTIFY) {
@@ -82,7 +95,14 @@ export const playbackControlPause = function(playback, queue) {
 
   if(playbackService === SERVICE_APPLE_MUSIC) {
     const music = window.MusicKit.getInstance();
-    music.pause();
+    music.pause()
+      .then(() => {
+        const action = null;
+        store.dispatch({
+          type: "playback/action",
+          payload: { action },
+        });
+      });
   } else if(playbackService === SERVICE_SPOTIFY) {
     playback.spotifyApi.pause();
   } else if(playbackService === SERVICE_YOUTUBE) {
@@ -146,7 +166,14 @@ export const playbackControlSeek = function(playback, queue, startedAt) {
 
   if(playbackService === SERVICE_APPLE_MUSIC) {
     const music = window.MusicKit.getInstance();
-    music.seekToTime(positionMilliseconds / 1000);
+    music.seekToTime(positionMilliseconds / 1000)
+      .then(() => {
+        const action = null;
+        store.dispatch({
+          type: "playback/action",
+          payload: { action },
+        });
+      });
   } else if(playbackService === SERVICE_SPOTIFY) {
     playback.spotifyApi.seek(positionMilliseconds);
   } else if(playbackService === SERVICE_YOUTUBE) {

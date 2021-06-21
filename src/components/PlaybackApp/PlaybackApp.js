@@ -39,7 +39,6 @@ function PlaybackApp(props) {
         nowPlaying = queueMap[playback.nowPlayingUuid];
 
   // Convenience values to help clarify setting up playback SDKs.
-  const [appleMusicSDKReady, setAppleMusicSDKReady] = useState(false);
   const [spotifySDKReady, setSpotifySDKReady] = useState(false);
   const [spotifySDKDeviceID, setSpotifySDKDeviceID] = useState(undefined);
 
@@ -59,6 +58,7 @@ function PlaybackApp(props) {
       // A queue must be mounted to the playback engine.
       return false;
     }
+    console.log(playback)
     if(!playback.isPlaying) {
       // That something in must also currently be playing.
       return false;
@@ -112,8 +112,10 @@ function PlaybackApp(props) {
       // A queue must be mounted to the playback engine.
       return false;
     }
+    console.log(store.getState().playback)
     if(!playback.isPlaying) {
       // That something in must also currently be playing.
+      console.log('why!!!')
       return false;
     }
     if(playback.action) {
@@ -260,6 +262,7 @@ function PlaybackApp(props) {
   useEffect(() => {
     appendSpotifySDK();
     appendAppleMusicSDK();
+  // eslint-disable-next-line
   }, []);
 
   //////////////////////////////////////////////////////////////////////////////
@@ -434,75 +437,23 @@ function PlaybackApp(props) {
   }
 
   const appendAppleMusicSDK = function() {
-    appendScript("https://js-cdn.music.apple.com/musickit/v3/musickit.js")
-      .then(() => {
-        setAppleMusicSDKReady(true);
-      });
-  };
+    appendScript("https://js-cdn.music.apple.com/musickit/v3/musickit.js");
 
-  useEffect(() => {
-    if(!appleMusicSDKReady) {
-      return;
-    }
-
-    window.addEventListener('musickitloaded', () => {
-      props.dispatch({
-        type: "playback/loaded",
-        payload: { service: "appleMusic" },
-      });
-    })
-
-    const setupMusicKit = async function() {
-      // Define the Apple Music Web SDK.
-      const player = await window.MusicKit.configure({
+    // Then...
+    window.addEventListener('musickitloaded', async function() {
+      await window.MusicKit.configure({
         developerToken: userSettings.appleMusic.token,
         app: {
           name: 'Jukebox Radio',
           build: '0.0.1',
         },
       });
-
-      // TODO: Listen to Apple Music events.
-      player.addEventListener("playbackStateDidChange", (e) => {
-        const reduxState = store.getState(),
-              playbackStates = window.MusicKit.PlaybackStates;
-        console.log(playbackStates[e.oldState], playbackStates[e.state])
-        const didPlay = (
-          (
-            (playbackStates[e.oldState] === "seeking" && playbackStates[e.state] === "playing") ||
-            (playbackStates[e.oldState] === "waiting" && playbackStates[e.state] === "playing") ||
-            (playbackStates[e.oldState] === "loading" && playbackStates[e.state] === "playing")
-          ) &&
-          reduxState.playback.action === "played"
-        )
-        console.log(didPlay)
-        if(didPlay) {
-          const action = null;
-          props.dispatch({
-            type: "playback/action",
-            payload: { action },
-          });
-        }
-
-        const didPause = (
-          playbackStates[e.oldState] === "playing" &&
-          playbackStates[e.state] === "paused" &&
-          reduxState.playback.action === "paused"
-        )
-        if(didPause) {
-          const action = null;
-          props.dispatch({
-            type: "playback/action",
-            payload: { action },
-          });
-        }
+      props.dispatch({
+        type: "playback/loaded",
+        payload: { service: "appleMusic" },
       });
-    }
-
-    setupMusicKit();
-
-  // eslint-disable-next-line
-  }, [appleMusicSDKReady]);
+    })
+  };
 
   //////////////////////////////////////////////////////////////////////////////
   //////////////////////////////////////////////////////////////////////////////

@@ -167,17 +167,6 @@ function MainApp(props) {
     props.dispatch({ type: 'main/actionStart' });
     props.dispatch({ type: 'main/disable' });
     props.dispatch({ type: 'stream/nextTrack' });
-    props.dispatch({
-      type: "main/addAction",
-      payload: {
-        action: {
-          name: "mount",
-          queue: nextUp,
-          status: "kickoff",
-          fake: true,  // symbolic, not functional
-        },
-      },
-    });
     await fetchNextTrack(false);
     props.dispatch({ type: 'main/actionShift' });
   }
@@ -186,17 +175,6 @@ function MainApp(props) {
     props.dispatch({ type: 'main/actionStart' });
     props.dispatch({ type: 'main/disable' });
     props.dispatch({ type: 'stream/prevTrack' });
-    props.dispatch({
-      type: "main/addAction",
-      payload: {
-        action: {
-          name: "mount",
-          queue: lastUp,
-          status: "kickoff",
-          fake: true,  // symbolic, not functional
-        },
-      },
-    });
     await fetchPrevTrack(false);
     props.dispatch({ type: 'main/actionShift' });
   }

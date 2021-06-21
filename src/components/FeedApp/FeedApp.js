@@ -11,6 +11,7 @@ import { getPositionMilliseconds } from '../PlaybackApp/utils';
 import { CLASS_TEXT_COMMENT, CLASS_VOICE_RECORDING, CLASS_SYSTEM_ACTION } from '../../config/model';
 import {
   SERVICE_YOUTUBE,
+  SERVICE_APPLE_MUSIC,
 } from '../../config/services';
 
 import styles from './FeedApp.module.css';
@@ -174,7 +175,8 @@ function FeedApp(props) {
 
       <div className={styles.ContentContainer}>
         <div ref={contentContainer} className={styles.ImageContainer}>
-          {nowPlaying?.track?.service !== SERVICE_YOUTUBE &&
+          {!(nowPlaying?.track?.service === SERVICE_YOUTUBE && nowPlaying?.track?.format === 'video') &&
+          !(nowPlaying?.track?.service === SERVICE_APPLE_MUSIC && nowPlaying?.track?.format === 'video') &&
             <img alt="" src={nowPlaying?.track?.imageUrl} />
           }
         </div>
