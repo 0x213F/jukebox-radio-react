@@ -11,13 +11,12 @@ function QueueCollection(props) {
   /*
    * 🏗
    */
-  const queueMap = props.queueMap;
-
-  const queue = props.data,
+  const queueMap = props.queueMap,
         stream = props.stream,
         lastUpQueueUuids = props.lastUpQueueUuids,
-        lastUp = getLeafQueue(lastUpQueueUuids[lastUpQueueUuids.length - 1], queueMap),
-        queueUuid = queue.uuid;
+        queueUuid = props.queueUuid,
+        queue = queueMap[queueUuid],
+        lastUp = getLeafQueue(lastUpQueueUuids[lastUpQueueUuids.length - 1], queueMap);
 
   const nowPlaying = queueMap[stream.nowPlayingUuid];
 

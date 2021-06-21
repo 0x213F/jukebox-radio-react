@@ -81,7 +81,7 @@ function QueueApp(props) {
           if(value.collection) {
             return (
               <QueueCollection key={index}
-                               data={value}
+                               queueUuid={value.uuid}
                                destroy={destroyQueueItem}
                                playbackControls={props.playbackControls}>
               </QueueCollection>
@@ -89,7 +89,7 @@ function QueueApp(props) {
           } else if(value.track) {
             return (
               <QueueTrack key={index}
-                          data={value}
+                          queueUuid={value.uuid}
                           destroy={destroyQueueItem}
                           playbackControls={props.playbackControls}>
               </QueueTrack>
