@@ -1,11 +1,10 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 
 import { connect } from 'react-redux';
 
 import { iconTrash } from '../icons';
 
 import styles from './VoiceRecording.module.css';
-import { getPositionMilliseconds } from '../../PlaybackApp/utils';
 import { fetchDeleteVoiceRecording } from './network';
 
 
@@ -15,13 +14,9 @@ function VoiceRecording(props) {
    * 🏗
    */
   const voiceRecordingUuid = props.voiceRecordingUuid,
-        voiceRecording = props.voiceRecordingMap[voiceRecordingUuid],
-        stream = props.stream,
-        queueMap = props.queueMap,
-        nowPlaying = queueMap[stream.nowPlayingUuid];
+        voiceRecording = props.voiceRecordingMap[voiceRecordingUuid];
 
   const [hovering, setHovering] = useState(false);
-  const [isPlaying, setIsPlaying] = useState(false);
 
   /*
    * When the mouse enters the area, show the contextual buttons.
@@ -44,31 +39,6 @@ function VoiceRecording(props) {
     const responseJson = await fetchDeleteVoiceRecording(voiceRecordingUuid);
     props.dispatch(responseJson.redux);
   }
-
-  useEffect(function() {
-    if(isPlaying) {
-      return;
-    }
-
-    setIsPlaying(true);
-    if(nowPlaying.status !== "played" || voiceRecording?.created) {
-      return;
-    }
-
-    const arr = getPositionMilliseconds(nowPlaying, nowPlaying.startedAt),
-          position = arr[0],
-          withinContext = (
-            voiceRecording.timestampMilliseconds >= position - 2000 &&
-            voiceRecording.timestampMilliseconds <= position + 2000
-          );
-    if(!withinContext) {
-      return;
-    }
-
-    let audio = new Audio(voiceRecording.audioUrl);
-    audio.play();
-  // eslint-disable-next-line
-  }, [isPlaying])
 
   if(!voiceRecording) {
     return (
@@ -115,7 +85,6 @@ function VoiceRecording(props) {
 
 const mapStateToProps = (state) => ({
   stream: state.stream,
-  queueMap: state.queueMap,
   voiceRecordingMap: state.voiceRecordingMap,
 });
 

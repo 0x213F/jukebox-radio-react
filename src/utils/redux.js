@@ -61,6 +61,9 @@ import {
   voiceRecordingListSet,
   voiceRecordingCreate,
   voiceRecordingDelete,
+  voiceRecordingPause,
+  voiceRecordingPlay,
+  voiceRecordingSchedulePlay,
 } from './reducers/voiceRecording';
 import {
   userSettingsUpdate,
@@ -78,13 +81,16 @@ const initialState = {
   nextUpQueueUuids: [],
   lastUpQueueUuids: [],
   _lastPlayed: undefined,
-  textComments: [],
-  voiceRecordings: [],
   userSettings: undefined,
   markerMap: {},
   queueMap: {},
   textCommentMap: {},
   voiceRecordingMap: {},
+  voiceRecordings: {
+    currentlyPlayingUuids: new Set(),
+    update: 0,
+  },
+  voiceRecordingTimeoutId: 1,
   main: {
     actions: [],
     enabled: true,
@@ -183,6 +189,12 @@ const reducer = (state = initialState, action) => {
       return voiceRecordingListSet(state, action.payload);
     case "voiceRecording/delete":
       return voiceRecordingDelete(state, action.payload);
+    case "voiceRecording/pause":
+      return voiceRecordingPause(state, action.payload);
+    case "voiceRecording/play":
+      return voiceRecordingPlay(state, action.payload);
+    case "voiceRecording/schedulePlay":
+      return voiceRecordingSchedulePlay(state, action.payload);
     ////////////////////////////////////////////////////////////////////////////
     // FEED
     case "feed/update":

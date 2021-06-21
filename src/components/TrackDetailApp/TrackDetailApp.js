@@ -83,7 +83,6 @@ function TrackDetailApp(props) {
    */
   const handleCloseModal = function() {
     if(nowPlaying.status === "played") {
-      console.log('ause!!!')
       props.dispatch({
         type: "main/addAction",
         payload: {
@@ -443,8 +442,6 @@ function TrackDetailApp(props) {
     }
   // eslint-disable-next-line
   }, [isOpen, rerenderIntervals])
-
-  console.log(markers)
 
   /*
    * 🎨

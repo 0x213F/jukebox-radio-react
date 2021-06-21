@@ -15,9 +15,7 @@
   border: 2px solid #0047FF;
   border-radius: 44px;
 
-  background-color: rgba(251, 252, 255, 0.93);
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
+  background-color: #FFF;
 
   font-size: 20px;
   outline: none;

@@ -102,7 +102,7 @@ function QueueApp(props) {
               </>
             ) : (
               <>
-                There is nothing in the queue.
+                There is nothing in the queue
               </>
             )
           }

@@ -6,6 +6,7 @@ import { Switch, Route } from "react-router-dom";
 import SpotifySync from '../SpotifySync/SpotifySync';
 import Session from './Session/Session';
 import { fetchUpdateFeed } from '../FeedApp/utils';
+import { getPositionMilliseconds } from '../PlaybackApp/utils';
 import { fetchPauseTrack, fetchPlayTrack, fetchScan, fetchNextTrack, fetchPrevTrack, fetchTrackGetFiles } from '../PlaybackApp/Player/network';
 import { getLeafQueue } from '../QueueApp/utils';
 import {
@@ -24,6 +25,7 @@ function MainApp(props) {
         queueMap = props.queueMap,
         lastUpQueueUuids = props.lastUpQueueUuids,
         nextUpQueueUuids = props.nextUpQueueUuids,
+        voiceRecordingTimeoutId = props.voiceRecordingTimeoutId,
         nowPlaying = queueMap[playback.nowPlayingUuid],
         lastUp = getLeafQueue(lastUpQueueUuids[lastUpQueueUuids.length - 1], queueMap),
         nextUp = getLeafQueue(nextUpQueueUuids[0], queueMap);
@@ -48,6 +50,10 @@ function MainApp(props) {
       props.dispatch({ type: 'main/enable' });
       return;
     }
+
+    // Do other related things
+    props.dispatch({ type: "voiceRecording/pause" });
+    props.dispatch({ type: "voiceRecording/play" });
     props.dispatch({
       type: 'feed/takeAction',
       payload: {
@@ -57,12 +63,16 @@ function MainApp(props) {
       },
     });
 
-    if(!timestampMilliseconds) {
-      // If routine seek, (skipping an muted interval) return early to prevent
-      // hitting the API.
-      props.dispatch({ type: 'main/actionShift' });
-      props.dispatch({ type: 'main/enable' });
-      return;
+    if(timestampMilliseconds) {
+      // If not routine seek, append to feed
+      props.dispatch({
+        type: 'feed/takeAction',
+        payload: {
+          timestampMilliseconds: timestampMilliseconds,
+          action: "seeked",
+          trackUuid: nowPlaying.track.uuid,
+        },
+      });
     }
 
     // Seek in the API layer
@@ -93,6 +103,10 @@ function MainApp(props) {
       props.dispatch({ type: 'main/enable' });
       return;
     }
+
+
+    // Do other related things
+    props.dispatch({ type: "voiceRecording/pause" });
     props.dispatch({
       type: 'feed/takeAction',
       payload: {
@@ -128,6 +142,9 @@ function MainApp(props) {
       props.dispatch({ type: 'main/enable' });
       return;
     }
+
+    // Do other related things
+    props.dispatch({ type: "voiceRecording/play" });
     props.dispatch({
       type: 'feed/takeAction',
       payload: {
@@ -470,6 +487,38 @@ function MainApp(props) {
   // eslint-disable-next-line
   }, [playback])
 
+
+  useEffect(() => {
+    if(voiceRecordingTimeoutId) {
+      return;
+    }
+
+    const arr = getPositionMilliseconds(nowPlaying, nowPlaying.startedAt),
+          position = arr[0],
+          voiceRecordingUuids = [...(feedApp.trackMap[nowPlaying.track.uuid]?.voiceRecordingUuids || [])];
+
+    let voiceRecordings;
+    voiceRecordings = voiceRecordingUuids.map(uuid => props.voiceRecordingMap[uuid]);
+    voiceRecordings = voiceRecordings.filter(obj => obj.timestampMilliseconds > position);
+    if(!voiceRecordings.length) {
+      return;
+    }
+    voiceRecordings = voiceRecordings.sort(function(a, b) {
+      return a.timeoutMilliseconds - b.voiceRecordings;
+    });
+
+    const nextVoiceRecordingDelay = voiceRecordings[0].timestampMilliseconds - position,
+          timeoutId = setTimeout(() => {
+            props.dispatch({ type: "voiceRecording/play" });
+          }, nextVoiceRecordingDelay);
+
+    props.dispatch({
+      type: "voiceRecording/schedulePlay",
+      payload: { timeoutId },
+    });
+  // eslint-disable-next-line
+}, [voiceRecordingTimeoutId])
+
   /*
    * 🎨
    */
@@ -500,6 +549,8 @@ const mapStateToProps = (state) => ({
   nextUpQueueUuids: state.nextUpQueueUuids,
   stream: state.stream,
   feedApp: state.feedApp,
+  voiceRecordingMap: state.voiceRecordingMap,
+  voiceRecordingTimeoutId: state.voiceRecordingTimeoutId,
 });
 
 

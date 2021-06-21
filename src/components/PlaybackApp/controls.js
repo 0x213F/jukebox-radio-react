@@ -25,10 +25,20 @@ export const playbackControlStart = function(playback, queue) {
         playbackService = queue.track.service;
   if(playbackService === SERVICE_APPLE_MUSIC) {
     const music = window.MusicKit.getInstance();
-    music.setQueue({ song: queue.track.externalId, startTime: positionMilliseconds / 1000 })
-      .then(() => {
-        music.play();
-      });
+    console.log(positionMilliseconds / 1000)
+    if(queue.track.format === 'track') {
+      music.setQueue({ song: queue.track.externalId, startTime: positionMilliseconds / 1000 })
+        .then(() => {
+          const music = window.MusicKit.getInstance();
+          music.play();
+        });
+    } else if(queue.track.format === 'video') {
+      music.setQueue({ musicVideo: queue.track.externalId, startTime: positionMilliseconds / 1000 })
+        .then(() => {
+          const music = window.MusicKit.getInstance();
+          music.play();
+        });
+    }
   } else if(playbackService === SERVICE_SPOTIFY) {
     playback.spotifyApi.play({
       uris: [queue.track.externalId],

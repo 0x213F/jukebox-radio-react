@@ -7,6 +7,7 @@ import MainApp from '../MainApp/MainApp';
 import { fetchGetUserSettings } from '../UserSettings/network';
 import {
   SERVICE_YOUTUBE,
+  SERVICE_APPLE_MUSIC,
 } from '../../config/services';
 import { appendScript } from '../../utils/async';
 import { store } from '../../utils/redux';
@@ -392,6 +393,45 @@ function PlaybackApp(props) {
   //////////////////////////////////////////////////////////////////////////////
   //////////////////////////////////////////////////////////////////////////////
   //// APPLE MUSIC
+  let appleMusicContainerStyle = {},
+      appleMusicWidth = 300,
+      appleMusicHeight = 169;
+  if(window.location.pathname !== '/app/welcome' && nowPlaying?.track?.service === SERVICE_APPLE_MUSIC && nowPlaying?.track?.format === 'video') {
+    if(stream.nowPlayingUuid === playback.nowPlayingUuid) {
+      if(sideBar.tab === "feed" && feedApp.contentContainer) {
+        const containerRect = feedApp.contentContainer;
+        appleMusicWidth = containerRect.width - 88;
+        appleMusicHeight = appleMusicWidth / 16 * 9;
+        appleMusicContainerStyle = {
+          position: "absolute",
+          width: appleMusicWidth,
+          height: appleMusicHeight,
+          top: `${95 + 44}px`,
+          left: `${341 + 44}px`,
+          zIndex: 16,
+        }
+      } else {
+        appleMusicContainerStyle = {
+          position: "absolute",
+          width: 300,
+          height: 169,
+          top: "95px",
+          right: "57px",
+          boxShadow: "4px 4px 12px rgba(0, 0, 0, 0.15)",
+        };
+      }
+    } else {
+      appleMusicContainerStyle = {
+        position: "fixed",
+        top: "295px",
+        right: "257px",
+      };
+    }
+  } else {
+    appleMusicContainerStyle = {
+      display: "none",
+    };
+  }
 
   const appendAppleMusicSDK = function() {
     appendScript("https://js-cdn.music.apple.com/musickit/v3/musickit.js")
@@ -430,7 +470,8 @@ function PlaybackApp(props) {
         const didPlay = (
           (
             (playbackStates[e.oldState] === "seeking" && playbackStates[e.state] === "playing") ||
-            (playbackStates[e.oldState] === "waiting" && playbackStates[e.state] === "playing")
+            (playbackStates[e.oldState] === "waiting" && playbackStates[e.state] === "playing") ||
+            (playbackStates[e.oldState] === "loading" && playbackStates[e.state] === "playing")
           ) &&
           reduxState.playback.action === "played"
         )
@@ -469,7 +510,7 @@ function PlaybackApp(props) {
   let youTubeContainerStyle = {},
       youTubeWidth = 300,
       youTubeHeight = 169;
-  if(window.location.pathname !== '/app/welcome' && nowPlaying?.track?.service === SERVICE_YOUTUBE) {
+  if(window.location.pathname !== '/app/welcome' && nowPlaying?.track?.service === SERVICE_YOUTUBE && nowPlaying?.track?.format === 'video') {
     if(stream.nowPlayingUuid === playback.nowPlayingUuid) {
       if(sideBar.tab === "feed" && feedApp.contentContainer) {
         const containerRect = feedApp.contentContainer;
@@ -587,6 +628,10 @@ function PlaybackApp(props) {
                    onReady={onYouTubeReady}
                    onPause={onYouTubePause}
                    onPlay={onYouTubePlay} />
+      </div>
+      <div className={styles.AppleMusicContainer}
+           style={appleMusicContainerStyle}>
+          <div id="apple-music-video-container"></div>
       </div>
       <MainApp playbackControls={playbackControls}/>
     </>
