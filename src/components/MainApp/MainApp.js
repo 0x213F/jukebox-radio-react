@@ -122,6 +122,7 @@ function MainApp(props) {
 
     // Play in the playback engine
     const isPlaying = props.playbackControls.play(timestampMilliseconds);
+    console.log(isPlaying)
     if(!isPlaying) {
       // If play failed for some reason, return early.
       props.dispatch({ type: 'main/actionShift' });
@@ -233,7 +234,7 @@ function MainApp(props) {
     props.dispatch({ type: 'main/disable' });
 
     const action = main.actions[0];
-    let payload;
+    let payload = {};
     if(action.queue) {
       payload = { queue: action.queue };
     } else if(action.stream) {

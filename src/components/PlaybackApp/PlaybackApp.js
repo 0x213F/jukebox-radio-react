@@ -53,7 +53,7 @@ function PlaybackApp(props) {
    *      seek to the new expected track progress (in the case of a muted
    *      interval).
    */
-  const seek = async function(timestampMilliseconds = undefined) {
+  const seek = function(timestampMilliseconds = undefined) {
     if(!nowPlaying) {
       // A queue must be mounted to the playback engine.
       return false;
@@ -106,7 +106,7 @@ function PlaybackApp(props) {
   /*
    * Toggling the player from "playing" to "paused."
    */
-  const pause = async function() {
+  const pause = function() {
     if(!nowPlaying) {
       // A queue must be mounted to the playback engine.
       return false;
@@ -153,7 +153,7 @@ function PlaybackApp(props) {
   /*
    * Toggling the player from the "paused" to "playing" state.
    */
-  const play = async function(timestampMilliseconds = undefined) {
+  const play = function(timestampMilliseconds = undefined) {
     if(!nowPlaying) {
       // A queue must be mounted to the playback engine.
       return false;
@@ -165,6 +165,12 @@ function PlaybackApp(props) {
     if(playback.action) {
       // No other action can be in progress, like playing a new track.
       return false;
+    }
+    console.log(nowPlaying)
+    if(!nowPlaying.track?.uuid) {
+      console.log('here wowo!')
+      return false;
+      // The now playing item is an empty queue.
     }
 
     // Valid conditions, so we play.
@@ -389,7 +395,7 @@ function PlaybackApp(props) {
   //// APPLE MUSIC
 
   const appendAppleMusicSDK = function() {
-    appendScript("https://js-cdn.music.apple.com/musickit/v1/musickit.js")
+    appendScript("https://js-cdn.music.apple.com/musickit/v3/musickit.js")
       .then(() => {
         setAppleMusicSDKReady(true);
       });
@@ -407,48 +413,52 @@ function PlaybackApp(props) {
       });
     })
 
-    // Define the Apple Music Web SDK.
-    const player = window.MusicKit.configure({
-      developerToken: userSettings.appleMusic.token,
-      app: {
-        name: 'Jukebox Radio',
-        build: '0.0.1',
-      },
-    });
+    const setupMusicKit = async function() {
+      // Define the Apple Music Web SDK.
+      const player = await window.MusicKit.configure({
+        developerToken: userSettings.appleMusic.token,
+        app: {
+          name: 'Jukebox Radio',
+          build: '0.0.1',
+        },
+      });
 
-    // TODO: Listen to Apple Music events.
-    player.addEventListener("playbackStateDidChange", (e) => {
-      const reduxState = store.getState(),
-            playbackStates = window.MusicKit.PlaybackStates;
+      // TODO: Listen to Apple Music events.
+      player.addEventListener("playbackStateDidChange", (e) => {
+        const reduxState = store.getState(),
+              playbackStates = window.MusicKit.PlaybackStates;
 
-      const didPlay = (
-        (
-          (playbackStates[e.oldState] === "seeking" && playbackStates[e.state] === "playing") ||
-          (playbackStates[e.oldState] === "waiting" && playbackStates[e.state] === "playing")
-        ) &&
-        reduxState.playback.action === "played"
-      )
-      if(didPlay) {
-        const action = null;
-        props.dispatch({
-          type: "playback/action",
-          payload: { action },
-        });
-      }
+        const didPlay = (
+          (
+            (playbackStates[e.oldState] === "seeking" && playbackStates[e.state] === "playing") ||
+            (playbackStates[e.oldState] === "waiting" && playbackStates[e.state] === "playing")
+          ) &&
+          reduxState.playback.action === "played"
+        )
+        if(didPlay) {
+          const action = null;
+          props.dispatch({
+            type: "playback/action",
+            payload: { action },
+          });
+        }
 
-      const didPause = (
-        playbackStates[e.oldState] === "playing" &&
-        playbackStates[e.state] === "paused" &&
-        reduxState.playback.action === "paused"
-      )
-      if(didPause) {
-        const action = null;
-        props.dispatch({
-          type: "playback/action",
-          payload: { action },
-        });
-      }
-    });
+        const didPause = (
+          playbackStates[e.oldState] === "playing" &&
+          playbackStates[e.state] === "paused" &&
+          reduxState.playback.action === "paused"
+        )
+        if(didPause) {
+          const action = null;
+          props.dispatch({
+            type: "playback/action",
+            payload: { action },
+          });
+        }
+      });
+    }
+
+    setupMusicKit();
 
   // eslint-disable-next-line
   }, [appleMusicSDKReady]);
@@ -459,7 +469,7 @@ function PlaybackApp(props) {
   let youTubeContainerStyle = {},
       youTubeWidth = 300,
       youTubeHeight = 169;
-  if(nowPlaying?.track?.service === SERVICE_YOUTUBE) {
+  if(window.location.pathname !== '/app/welcome' && nowPlaying?.track?.service === SERVICE_YOUTUBE) {
     if(stream.nowPlayingUuid === playback.nowPlayingUuid) {
       if(sideBar.tab === "feed" && feedApp.contentContainer) {
         const containerRect = feedApp.contentContainer;

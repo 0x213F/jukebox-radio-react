@@ -1,6 +1,8 @@
 .ParentProgressBar {
   height: 2px;
   padding: 18px 0;
+  margin-top: -18px;
+  position: relative;
 }
 
 .ProgressBar {

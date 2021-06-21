@@ -66,6 +66,8 @@ function BottomBar(props) {
     serviceSvg = iconLogoAlt;
   } else if(nowPlayingTrackService === SERVICE_AUDIUS) {
     serviceSvg = iconAudius;
+  } else {
+    serviceSvg = iconLogoAlt;
   }
 
   /*

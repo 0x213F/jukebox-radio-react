@@ -5,17 +5,16 @@
   height: 112px;
   z-index: 3;
 
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
-  background-color: rgba(251, 252, 255, 0.93);
+  background-color: #FFF;
 }
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 .ProgressBarContainer {
   position: absolute;
-  top:  -20px;
+  top:  -2px;
   width: 100%;
   height: 2px;
+  background-color: #eaeaea;
 }
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */

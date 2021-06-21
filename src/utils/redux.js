@@ -69,6 +69,9 @@ import {
 import {
   sideBarSelectTab,
 } from './reducers/sideBar';
+import {
+  searchSetService,
+} from './reducers/search';
 
 
 const initialState = {
@@ -119,11 +122,7 @@ const initialState = {
   },
   // UI
   search: {
-    serviceSpotify: false,
-    serviceYouTube: false,
-    serviceAppleMusic: false,
-    serviceJukeboxRadio: false,
-    serviceAudius: false,
+    service: (localStorage.getItem('searchService') || null),
   },
   feedApp: {
     contentContainer: null,
@@ -132,42 +131,11 @@ const initialState = {
     lastRender: {},
   },
   notesApp: {
-    store: JSON.parse(localStorage.getItem('notesStore')) || {},
+    store: (JSON.parse(localStorage.getItem('notesStore')) || {}),
   },
   sideBar: {
     tab: null,
   }
-}
-
-
-const searchToggleServiceOff = function(state, payload) {
-  return {
-    ...state,
-    search : {
-      serviceSpotify: false,
-      serviceYouTube: false,
-      serviceAppleMusic: false,
-      serviceJukeboxRadio: false,
-      serviceAudius: false,
-      ...payload
-    }
-  }
-}
-
-const searchToggleService = function(state, payload) {
-  const newState = {
-    ...state,
-    search : {
-      serviceSpotify: false,
-      serviceYouTube: false,
-      serviceAppleMusic: false,
-      serviceJukeboxRadio: false,
-      serviceAudius: false,
-      ...payload
-    }
-  };
-  newState.search[payload.serviceName] = true;
-  return newState;
 }
 
 
@@ -277,10 +245,8 @@ const reducer = (state = initialState, action) => {
       return mainSetAutoplayTimeoutId(state, action.payload);
     case "main/clearAutoplayTimeoutId":
       return mainClearAutoplayTimeoutId(state, action.payload);
-    case "search/toggleServiceOff":
-      return searchToggleServiceOff(state, action.payload);
-    case "search/toggleService":
-      return searchToggleService(state, action.payload);
+    case "search/setService":
+      return searchSetService(state, action.payload);
     case "sideBar/selectTab":
       return sideBarSelectTab(state, action.payload);
     case "notesApp/set":

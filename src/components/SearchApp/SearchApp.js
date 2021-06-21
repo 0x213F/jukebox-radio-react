@@ -5,6 +5,13 @@ import styles from './SearchApp.module.css';
 import { fetchSearchMusicLibrary, fetchCreateQueue } from './network';
 import SearchResult from './SearchResult/SearchResult';
 import Upload from '../Upload/Upload';
+import {
+  SERVICE_AUDIUS,
+  SERVICE_SPOTIFY,
+  SERVICE_YOUTUBE,
+  SERVICE_JUKEBOX_RADIO,
+  SERVICE_APPLE_MUSIC,
+} from '../../config/services';
 import { fetchQueueList } from '../QueueApp/network';
 import { iconUpload } from './icons';
 import { iconSpotify, iconYouTube, iconAppleMusic, iconLogoAlt, iconAudius } from '../../icons';
@@ -46,21 +53,11 @@ function SearchApp(props) {
 
     const queryCache = { ...searchResultCache[query] } || {};
 
-    if(!service) {
-      if(search.serviceAppleMusic) {
-        service = 'apple_music';
-      } else if (search.serviceSpotify) {
-        service = 'spotify';
-      } else if (search.serviceYouTube) {
-        service = 'youtube';
-      } else if (search.serviceAudius) {
-        service = 'audius';
-      } else if (search.serviceJukeboxRadio) {
-        service = 'jukebox_radio';
-      }
-    }
 
-    console.log(service)
+
+    if(!service) {
+      service = search.service;
+    }
 
     let responseJson;
     responseJson = queryCache[service];
@@ -84,44 +81,14 @@ function SearchApp(props) {
     setAutoSearchTimeoutId(false);
   }
 
-  const handleSpotify = function() {
-    props.dispatch({
-      type: 'search/toggleService',
-      payload: { serviceName: "serviceSpotify" },
-    });
-    fetchSearch('spotify');
-  }
-
-  const handleYouTube = function() {
-    props.dispatch({
-      type: 'search/toggleService',
-      payload: { serviceName: "serviceYouTube" },
-    });
-    fetchSearch('youtube');
-  }
-
-  const handleAppleMusic = function() {
-    props.dispatch({
-      type: 'search/toggleService',
-      payload: { serviceName: "serviceAppleMusic" },
-    });
-    fetchSearch('apple_music');
-  }
-
-  const handleAudius = function() {
-    props.dispatch({
-      type: 'search/toggleService',
-      payload: { serviceName: "serviceAudius" },
-    });
-    fetchSearch('audius');
-  }
-
-  const handleJukeboxRadio = function() {
-    props.dispatch({
-      type: 'search/toggleService',
-      payload: { serviceName: "serviceJukeboxRadio" },
-    });
-    fetchSearch('jukebox_radio');
+  const generateServiceHandler = function(service) {
+    return function() {
+      props.dispatch({
+        type: 'search/setService',
+        payload: { service },
+      });
+      fetchSearch(service);
+    }
   }
 
   /*
@@ -187,32 +154,32 @@ function SearchApp(props) {
       <div className={styles.SearchResultsContainer}>
         <div className={styles.ServiceCheckboxContainer}>
           <button className={styles.ServiceCheckbox}
-                  onClick={handleSpotify}
-                  style={(search.serviceSpotify && {border: "2px solid rgba(29, 185, 84, 1)"}) || {}}>
+                  onClick={generateServiceHandler(SERVICE_SPOTIFY)}
+                  style={(search.service === SERVICE_SPOTIFY && {border: "2px solid rgba(29, 185, 84, 1)"}) || {}}>
             <div className={styles.ServiceCheckboxLogoContainer}>{iconSpotify}</div>
           </button>
 
           <button className={styles.ServiceCheckbox}
-                  onClick={handleYouTube}
-                  style={(search.serviceYouTube && {border: "2px solid rgba(255, 0, 0, 1)"}) || {}}>
+                  onClick={generateServiceHandler(SERVICE_YOUTUBE)}
+                  style={(search.service === SERVICE_YOUTUBE && {border: "2px solid rgba(255, 0, 0, 1)"}) || {}}>
             <div className={styles.ServiceCheckboxLogoContainer}>{iconYouTube}</div>
           </button>
 
           <button className={styles.ServiceCheckbox}
-                  onClick={handleAppleMusic}
-                  style={(search.serviceAppleMusic && {border: "2px solid rgba(251, 92, 116, 1)"}) || {}}>
+                  onClick={generateServiceHandler(SERVICE_APPLE_MUSIC)}
+                  style={(search.service === SERVICE_APPLE_MUSIC && {border: "2px solid rgba(251, 92, 116, 1)"}) || {}}>
             <div className={styles.ServiceCheckboxLogoContainer}>{iconAppleMusic}</div>
           </button>
 
           <button className={styles.ServiceCheckbox}
-                  onClick={handleAudius}
-                  style={(search.serviceAudius && {border: "2px solid rgba(126, 27, 204, 1)"}) || {}}>
+                  onClick={generateServiceHandler(SERVICE_AUDIUS)}
+                  style={(search.service === SERVICE_AUDIUS && {border: "2px solid rgba(126, 27, 204, 1)"}) || {}}>
             <div className={styles.ServiceCheckboxLogoContainer}>{iconAudius}</div>
           </button>
 
           <button className={styles.ServiceCheckbox}
-                  onClick={handleJukeboxRadio}
-                  style={(search.serviceJukeboxRadio && {border: "2px solid rgba(0, 71, 255, 1)"}) || {}}>
+                  onClick={generateServiceHandler(SERVICE_JUKEBOX_RADIO)}
+                  style={(search.service === SERVICE_JUKEBOX_RADIO && {border: "2px solid rgba(0, 71, 255, 1)"}) || {}}>
             <div className={styles.ServiceCheckboxLogoContainer}>{iconLogoAlt}</div>
           </button>
         </div>

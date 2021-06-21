@@ -194,19 +194,21 @@ function ParentProgressBar(props) {
 
   return (
     <div ref={progressRef} className={styles.ParentProgressBar}>
-      <Draggable axis="x"
-                 bounds="body"
-                 nodeRef={draggableRef}
-                 disabled={queue?.status === 'paused'}
-                 onStart={handleDragStart}
-                 onDrag={handleDragChange}
-                 onStop={handleDragStop}>
-        <div ref={draggableRef}
-             className={styles.ProgressPointer}
-             style={{left: `calc(${pointerLeftDistance}% - ${4 + dragOffset}px)`}}>
-          {iconSmallCircle}
-        </div>
-      </Draggable>
+      {queue?.track?.uuid &&
+        <Draggable axis="x"
+                   bounds="body"
+                   nodeRef={draggableRef}
+                   disabled={queue?.status === 'paused'}
+                   onStart={handleDragStart}
+                   onDrag={handleDragChange}
+                   onStop={handleDragStop}>
+          <div ref={draggableRef}
+               className={styles.ProgressPointer}
+               style={{left: `calc(${pointerLeftDistance}% - ${4 + dragOffset}px)`}}>
+            {iconSmallCircle}
+          </div>
+        </Draggable>
+      }
       <div className={styles.ProgressBar}>
         {  // eslint-disable-next-line
         allIntervals.map((interval, index) => {

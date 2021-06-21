@@ -58,18 +58,22 @@ function QueueApp(props) {
   return (
     <div className={styles.QueueApp}>
       <div className={styles.NowPlaying}>
-        <div className={styles.NowPlayingArt}>
-          <img src={nowPlaying?.track?.imageUrl} alt={"Album Art"} />
-        </div>
+        {nowPlaying?.track?.uuid &&
+          <>
+            <div className={styles.NowPlayingArt}>
+              <img src={nowPlaying?.track?.imageUrl} alt={"Album Art"} />
+            </div>
 
-        <div className={styles.NowPlayingInformation}>
-          <h5>{nowPlaying?.track?.name}</h5>
-          <h6>{nowPlaying?.track?.artistName}</h6>
-        </div>
+            <div className={styles.NowPlayingInformation}>
+              <h5>{nowPlaying?.track?.name}</h5>
+              <h6>{nowPlaying?.track?.artistName}</h6>
+            </div>
 
-        <div className={styles.NowPlayingDuration}>
-          {durationPretty(nowPlaying?.track?.durationMilliseconds)}
-        </div>
+            <div className={styles.NowPlayingDuration}>
+              {durationPretty(nowPlaying?.track?.durationMilliseconds)}
+            </div>
+          </>
+        }
       </div>
       <div className={styles.QueueContainer}>
         {  // eslint-disable-next-line

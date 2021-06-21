@@ -24,28 +24,10 @@ export const playbackControlStart = function(playback, queue) {
         instrument = arr[2],
         playbackService = queue.track.service;
   if(playbackService === SERVICE_APPLE_MUSIC) {
-    const music = window.MusicKit.getInstance(),
-          state = store.getState(),
-          volumeLevel = state.playback.volumeLevel.audio;
-    music.setQueue({ song: queue.track.externalId })
+    const music = window.MusicKit.getInstance();
+    music.setQueue({ song: queue.track.externalId, startTime: positionMilliseconds / 1000 })
       .then(() => {
-        if(positionMilliseconds >= 1000) {
-          music.player.volume = 0;
-        }
-        music.player.play()
-          .then(() => {
-            if(positionMilliseconds < 1000) {
-              return;
-            }
-            setTimeout(function() {
-              const delayArr = getPositionMilliseconds(queue, queue.startedAt),
-                    delayPositionMilliseconds = delayArr[0];
-              music.player.seekToTime(delayPositionMilliseconds / 1000)
-                .then(() => {
-                  music.player.volume = volumeLevel;
-                });
-            }, 500);
-          });
+        music.play();
       });
   } else if(playbackService === SERVICE_SPOTIFY) {
     playback.spotifyApi.play({
@@ -90,7 +72,7 @@ export const playbackControlPause = function(playback, queue) {
 
   if(playbackService === SERVICE_APPLE_MUSIC) {
     const music = window.MusicKit.getInstance();
-    music.player.pause();
+    music.pause();
   } else if(playbackService === SERVICE_SPOTIFY) {
     playback.spotifyApi.pause();
   } else if(playbackService === SERVICE_YOUTUBE) {
@@ -122,7 +104,7 @@ export const playbackControlPlay = function(playback, queue) {
 
   if(playbackService === SERVICE_APPLE_MUSIC) {
     const music = window.MusicKit.getInstance();
-    music.player.play();
+    music.play();
   } else if(playbackService === SERVICE_SPOTIFY) {
     playback.spotifyApi.play();
   } else if(playbackService === SERVICE_YOUTUBE) {
@@ -154,7 +136,7 @@ export const playbackControlSeek = function(playback, queue, startedAt) {
 
   if(playbackService === SERVICE_APPLE_MUSIC) {
     const music = window.MusicKit.getInstance();
-    music.player.seekToTime(positionMilliseconds / 1000);
+    music.seekToTime(positionMilliseconds / 1000);
   } else if(playbackService === SERVICE_SPOTIFY) {
     playback.spotifyApi.seek(positionMilliseconds);
   } else if(playbackService === SERVICE_YOUTUBE) {
@@ -196,7 +178,7 @@ export const playbackControlSkipToNext = function(playback, queue) {
 
   if(playbackService === SERVICE_APPLE_MUSIC) {
     const music = window.MusicKit.getInstance();
-    music.player.skipToNextItem();
+    music.skipToNextItem();
   } else if(playbackService === SERVICE_SPOTIFY) {
     playback.spotifyApi.skipToNext();
   } else if(playbackService === SERVICE_YOUTUBE) {
@@ -232,7 +214,7 @@ export const playbackControlQueue = function(playback, queue, nextUp) {
   shouldAddToQueue = nextPlaybackService === SERVICE_APPLE_MUSIC;
   if(shouldAddToQueue) {
     const music = window.MusicKit.getInstance();
-    music.player.prepareToPlay(nextUp.track.externalId);
+    music.prepareToPlay(nextUp.track.externalId);
 
     const canPlayNext = (
       playbackService === SERVICE_APPLE_MUSIC &&
@@ -281,7 +263,7 @@ export const playbackControlQueue = function(playback, queue, nextUp) {
 
 export const playbackChangeVolume = function(playback, queue, volumeLevel) {
   const music = window.MusicKit.getInstance();
-  music.player.volume = volumeLevel;
+  music.volume = volumeLevel;
 
   try {
     playback.spotifyApi.setVolume(volumeLevel * 100);

@@ -20,7 +20,7 @@
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 .LoginHeader {
-  margin-bottom: 52px;
+  margin-bottom: 55px;
 }
 
 .LoginHeader > h3 {
@@ -42,9 +42,23 @@
 }
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
+.Login {
+  background-color: rgba(251, 252, 255, 0.93);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+
+  padding: 55px;
+  border-radius: 55px;
+}
+
+/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 .FormBlock {
-  margin-bottom: 30px;
+  margin-top: 30px;
   display: block;
+}
+
+.FormBlock:first-child {
+  margin-top: 0px;
 }
 
 .FormBlock > span {
@@ -63,10 +77,8 @@
   font-size: 20px;
   padding-left: 20px;
   display: inline;
-}
-
-.FormBlock > input:focus {
-  background-color: rgba(0, 71, 255, 0.12);
+  background-color: #FFF;
+  outline: none;
 }
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
@@ -91,8 +103,8 @@
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 .Submit {
   width: 218px;
-  height: 45px;
-  border-radius: 22.5px;
+  height: 48px;
+  border-radius: 24px;
   font-size: 20px;
   font-weight: bold;
   background-color: #0047FF;
@@ -100,12 +112,15 @@
   color: white;
   display: inline-block;
   cursor: pointer;
+  margin-bottom: 4px;
 }
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 .ForgotPassword {
   display: inline-block!important;
   margin-left: 30px;
+  float: right;
+  margin-top: 12px;
 }
 
 .ForgotPassword > a {

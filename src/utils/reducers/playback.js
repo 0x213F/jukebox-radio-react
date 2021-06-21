@@ -2,23 +2,20 @@ import { cycleVolumeLevel } from '../../components/PlaybackApp/utils';
 
 
 export const playbackMount = function(state, payload) {
+  let nowPlayingUuid = undefined;
   if(payload.stream) {
-    return {
-      ...state,
-      playback: {
-        ...state.playback,
-        nowPlayingUuid: payload.stream.nowPlayingUuid,
-        isPlaying: false,
-      }
-    }
-  } else {
-    return {
-      ...state,
-      playback: {
-        ...state.playback,
-        nowPlayingUuid: payload.queue.uuid,
-        isPlaying: false,
-      }
+    nowPlayingUuid = payload.stream.nowPlayingUuid;
+  }
+  if(payload.queue) {
+    nowPlayingUuid = payload.queue.uuid;
+  }
+
+  return {
+    ...state,
+    playback: {
+      ...state.playback,
+      nowPlayingUuid,
+      isPlaying: false,
     }
   }
 }
