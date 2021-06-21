@@ -4,8 +4,7 @@ import styles from './QueueApp.module.css';
 import { fetchDeleteQueue } from './network'
 import QueueCollection from './QueueCollection/QueueCollection'
 import QueueTrack from './QueueTrack/QueueTrack'
-import { getQueues, getQueueDuration, durationPretty } from './utils';
-import ReactTimeAgo from 'react-time-ago';
+import { getQueues, getQueueDuration, durationPretty, durationWords } from './utils';
 
 
 function QueueApp(props) {
@@ -18,7 +17,6 @@ function QueueApp(props) {
   const nextUpQueues = getQueues(nextUpQueueUuids, queueMap);
 
   const queueDuration = getQueueDuration(nextUpQueues, nowPlaying);
-  const endsAt = new Date(Date.now() + queueDuration);
 
   /*
    * Called inside a child component, this first deletes the queue from the
@@ -100,8 +98,7 @@ function QueueApp(props) {
           {queueDuration ?
             (
               <>
-                Playback will end&nbsp;
-                <ReactTimeAgo future date={endsAt} locale="en-US" />
+                Playback will end {durationWords(queueDuration)}
               </>
             ) : (
               <>

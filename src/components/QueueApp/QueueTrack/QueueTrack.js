@@ -113,7 +113,6 @@ function QueueTrack(props) {
     }
   }
 
-  console.log(queue)
   const mainClass = queue.parentUuid ? "QueueTrackChild" : "QueueTrackHead",
         infoClass = queue.parentUuid ? "QueueInformationChild" : "QueueInformationHead",
         buttonClass = queue.parentUuid ? "ButtonChild" : "ButtonHead",

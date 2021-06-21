@@ -6,7 +6,6 @@
   z-index: 6;
   border-top-right-radius: 16px;
   border-top-left-radius: 16px;
-  background-color: rgba(251, 252, 255, 0.93);
 }
 
 .ProgressBarMarkerPointer,
@@ -42,13 +41,20 @@
 .ProgressBarMarkerName {
   display: inline-block;
   position: relative;
-  padding-left: 17px;
-  padding-right: 10px;
-  top: -4px;
+  padding-left: 6px;
+  padding-right: 6px;
+  margin-left: 15px;
+  margin-right: 6px;
+  top: -6px;
   float: left;
   cursor: default;
   height: 24px;
+  line-height: 24px;
   z-index: 4;
+
+  border-radius: 4px;
+  background-color: rgba(251, 252, 255, 0.93);
+  backdrop-filter: blur(10px);
 }
 
 .Delete {

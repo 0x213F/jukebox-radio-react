@@ -1,7 +1,6 @@
 import { connect } from 'react-redux'
 import styles from './MiniQueue.module.css';
-import { getQueues, getQueueDuration } from '../utils';
-import ReactTimeAgo from 'react-time-ago';
+import { getQueues, getQueueDuration, durationWords } from '../utils';
 
 
 function MiniQueue(props) {
@@ -15,7 +14,6 @@ function MiniQueue(props) {
 
   // TODO needs to add however much is left inside now playing.
   const queueDuration = getQueueDuration(nextUpQueues, nowPlaying);
-  const endsAt = new Date(Date.now() + queueDuration);
 
   /*
    * 🎨
@@ -26,8 +24,7 @@ function MiniQueue(props) {
       {queueDuration ?
         (
           <p>
-            Playback will end&nbsp;
-            <ReactTimeAgo future date={endsAt} locale="en-US" />
+            Playback will end {durationWords(queueDuration)}
           </p>
         ) : (
           <p>

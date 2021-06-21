@@ -109,3 +109,39 @@ export const durationPretty = function(durationMilliseconds) {
     return mins + ':' + pad(secs);
   }
 }
+
+export const durationWords = function(durationMilliseconds) {
+  if(durationMilliseconds < 60000) {
+    return "shortly";
+  }
+
+  var s = durationMilliseconds;
+  var ms = s % 1000;
+  s = (s - ms) / 1000;
+  var secs = s % 60;
+  s = (s - secs) / 60;
+  var mins = s % 60;
+  var hrs = (s - mins) / 60;
+
+  var retStr = 'in ';
+  if(hrs) {
+    if(hrs === 1) {
+      retStr += `${hrs} hour`;
+    } else {
+      retStr += `${hrs} hours`;
+    }
+
+    if(mins) {
+      retStr += " ";
+    }
+  }
+  if(mins) {
+    if(mins === 1) {
+      retStr += `${mins} minute`;
+    } else {
+      retStr += `${mins} minutes`;
+    }
+  }
+
+  return retStr;
+}

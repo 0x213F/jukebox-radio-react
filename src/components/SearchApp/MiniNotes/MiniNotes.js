@@ -26,8 +26,6 @@ function MiniNotes(props) {
     });
   }
 
-  console.log(nowPlaying?.track?.service === SERVICE_YOUTUBE, stream.nowPlayingUuid === playback.nowPlayingUuid)
-
   let extraStyle;
   if(nowPlaying?.track?.service === SERVICE_YOUTUBE) {
     if(stream.nowPlayingUuid === playback.nowPlayingUuid) {

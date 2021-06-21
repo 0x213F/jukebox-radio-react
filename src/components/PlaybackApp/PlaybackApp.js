@@ -166,9 +166,8 @@ function PlaybackApp(props) {
       // No other action can be in progress, like playing a new track.
       return false;
     }
-    console.log(nowPlaying)
+
     if(!nowPlaying.track?.uuid) {
-      console.log('here wowo!')
       return false;
       // The now playing item is an empty queue.
     }
@@ -427,7 +426,7 @@ function PlaybackApp(props) {
       player.addEventListener("playbackStateDidChange", (e) => {
         const reduxState = store.getState(),
               playbackStates = window.MusicKit.PlaybackStates;
-
+        console.log(playbackStates[e.oldState], playbackStates[e.state])
         const didPlay = (
           (
             (playbackStates[e.oldState] === "seeking" && playbackStates[e.state] === "playing") ||
@@ -435,6 +434,7 @@ function PlaybackApp(props) {
           ) &&
           reduxState.playback.action === "played"
         )
+        console.log(didPlay)
         if(didPlay) {
           const action = null;
           props.dispatch({
@@ -494,7 +494,6 @@ function PlaybackApp(props) {
         };
       }
     } else {
-      console.log('pop up queue view')
       youTubeContainerStyle = {
         position: "fixed",
         top: "295px",

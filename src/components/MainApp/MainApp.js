@@ -122,7 +122,6 @@ function MainApp(props) {
 
     // Play in the playback engine
     const isPlaying = props.playbackControls.play(timestampMilliseconds);
-    console.log(isPlaying)
     if(!isPlaying) {
       // If play failed for some reason, return early.
       props.dispatch({ type: 'main/actionShift' });
