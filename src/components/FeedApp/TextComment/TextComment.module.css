@@ -12,7 +12,7 @@
   padding: 22px 28px;
   margin-bottom: 19px;
 
-  background-color: rgba(231, 249, 255, 0.93);
+  background-color: rgba(231, 249, 255, 1);
   backdrop-filter: blur(10px);
   -webkit-backdrop-filter: blur(10px);
 }

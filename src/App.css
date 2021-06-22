@@ -9,6 +9,8 @@
   display: flex;
   justify-content: center;
   align-items: center;
+
+  backdrop-filter: blur(20px);
 }
 
 #apple-music-video-container > video {

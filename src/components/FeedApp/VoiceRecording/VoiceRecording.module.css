@@ -15,7 +15,7 @@
 
   backdrop-filter: blur(10px);
   -webkit-backdrop-filter: blur(10px);
-  background-color: rgba(236, 231, 255, 0.93);
+  background-color: rgba(236, 231, 255, 1);
 }
 
 .VoiceRecordingDeleted {
