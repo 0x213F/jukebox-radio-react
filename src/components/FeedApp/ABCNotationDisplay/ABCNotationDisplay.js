@@ -1,12 +1,12 @@
 import React, { useState } from "react";
 
 import { connect } from 'react-redux';
-import { Notation } from 'react-abc';
 
 import { fetchDeleteTextComment } from '../TextComment/network';
 import { iconTrash } from '../icons';
 
 import styles from './ABCNotationDisplay.module.css';
+import TheoryNotation from '../TheoryNotation/TheoryNotation';
 
 
 function ABCNotationDisplay(props) {
@@ -66,8 +66,7 @@ function ABCNotationDisplay(props) {
       </div>
 
       <div className={styles.ABCNotationDisplay}>
-        <Notation notation={abcNotation.text}
-                  engraverParams={{ staffwidth: 278 }} />
+        <TheoryNotation text={abcNotation.text} />
 
         {hovering &&
           <div className={styles.HoverContainer}>

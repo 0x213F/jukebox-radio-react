@@ -1,12 +1,12 @@
 import React, { useState } from "react";
 import Modal from 'react-modal';
 
-import { Notation } from 'react-abc';
 import { connect } from 'react-redux';
 
 import { fetchTextCommentCreate } from './../network';
 import { iconBack } from './../../../icons';
 import { FORMAT_ABC_NOTATION } from '../constants';
+import TheoryNotation from '../TheoryNotation/TheoryNotation';
 
 import styles from './ABCNotationCompose.module.css';
 
@@ -78,8 +78,7 @@ function ABCNotationCompose(props) {
             Rendering
           </h4>
           <div className={styles.RenderingWrapper}>
-            <Notation notation={text}
-                      engraverParams={{ staffwidth: 278 }}/>
+            <TheoryNotation text={text} />
           </div>
           <button onClick={createABCNotation}
                   disabled={isDisabled}>

@@ -198,7 +198,7 @@ function BottomBar(props) {
           action: {
             name: "play",
             status: "kickoff",
-            fake: false,
+            fake: true,
           },
         },
       });

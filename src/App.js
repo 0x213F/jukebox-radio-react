@@ -130,7 +130,7 @@ function App() {
 
   // When the page is initially loaded, display nothing.
   if(status === 'initial') {
-    return <></>;
+    return <div className="app-main-container"></div>;
   }
 
   // If the user is NOT authenticated, display the login portal.
@@ -138,7 +138,9 @@ function App() {
     return (
       <Router>
         <Provider store={store}>
-          <Login />
+          <div className="app-main-container">
+            <Login />
+          </div>
         </Provider>
       </Router>
     )
@@ -149,13 +151,14 @@ function App() {
     return (
       <Router>
         <Provider store={store}>
-          <div style={{
-            textAlign: "center",
-            lineHeight: "100vh",
-            fontSize: "24px",
-            fontWeight: "400",
-            letterSpacing: "0.03em",
-          }}>
+          <div className="app-main-container"
+               style={{
+                 textAlign: "center",
+                 lineHeight: "100vh",
+                 fontSize: "24px",
+                 fontWeight: "400",
+                 letterSpacing: "0.03em",
+               }}>
             Loading...
           </div>
         </Provider>
