@@ -104,7 +104,7 @@ function TextComment(props) {
               {iconTrash}
             </button>
 
-            <button type="button" onClick={clearModifications}>
+            <button type="button" onClick={clearModifications} style={{top: "-1px"}}>
               {iconErase}
             </button>
 
