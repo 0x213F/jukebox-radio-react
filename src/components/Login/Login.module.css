@@ -43,9 +43,8 @@
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 .Login {
-  background-color: rgba(251, 252, 255, 0.93);
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
+  background-color: #FFF;
+  box-shadow: 4px 4px 12px rgba(0, 0, 0, 0.15);
 
   padding: 55px;
   border-radius: 55px;
@@ -68,7 +67,7 @@
 }
 
 .FormBlock > input {
-  width: 422px;
+  width: 360px;
   height: 68px;
   border: 2px solid #0047FF;
   caret-color: #0047FF;

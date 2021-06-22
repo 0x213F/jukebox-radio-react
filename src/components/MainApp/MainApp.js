@@ -6,7 +6,6 @@ import { Switch, Route } from "react-router-dom";
 import SpotifySync from '../SpotifySync/SpotifySync';
 import Session from './Session/Session';
 import { fetchUpdateFeed } from '../FeedApp/utils';
-import { getPositionMilliseconds } from '../PlaybackApp/utils';
 import { fetchPauseTrack, fetchPlayTrack, fetchScan, fetchNextTrack, fetchPrevTrack, fetchTrackGetFiles } from '../PlaybackApp/Player/network';
 import { getLeafQueue } from '../QueueApp/utils';
 import {
@@ -14,6 +13,7 @@ import {
   SERVICE_AUDIUS,
 } from '../../config/services';
 import { onplay, onpause, onseeked } from './utils';
+import { scheduleSpeakVoiceRecordings } from './effects';
 
 
 function MainApp(props) {
@@ -466,36 +466,10 @@ function MainApp(props) {
   }, [playback])
 
 
-  useEffect(() => {
-    if(voiceRecordingTimeoutId) {
-      return;
-    }
-
-    const arr = getPositionMilliseconds(nowPlaying, nowPlaying.startedAt),
-          position = arr[0],
-          voiceRecordingUuids = [...(feedApp.trackMap[nowPlaying.track.uuid]?.voiceRecordingUuids || [])];
-
-    let voiceRecordings;
-    voiceRecordings = voiceRecordingUuids.map(uuid => props.voiceRecordingMap[uuid]);
-    voiceRecordings = voiceRecordings.filter(obj => obj.timestampMilliseconds > position);
-    if(!voiceRecordings.length) {
-      return;
-    }
-    voiceRecordings = voiceRecordings.sort(function(a, b) {
-      return a.timeoutMilliseconds - b.voiceRecordings;
-    });
-
-    const nextVoiceRecordingDelay = voiceRecordings[0].timestampMilliseconds - position,
-          timeoutId = setTimeout(() => {
-            props.dispatch({ type: "voiceRecording/play" });
-          }, nextVoiceRecordingDelay);
-
-    props.dispatch({
-      type: "voiceRecording/schedulePlay",
-      payload: { timeoutId },
-    });
-  // eslint-disable-next-line
-}, [voiceRecordingTimeoutId])
+  /*
+   * Schedule speak voice recordings
+   */
+  useEffect(scheduleSpeakVoiceRecordings, [voiceRecordingTimeoutId]);
 
   /*
    * 🎨

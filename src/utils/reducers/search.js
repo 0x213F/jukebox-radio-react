@@ -14,12 +14,12 @@ export const searchSetService = function(state, payload) {
     const music = window.MusicKit.getInstance();
     if(!music.musicUserToken) {
       music.authorize();
-      return;
+      return state;
     }
   } else if(service === SERVICE_SPOTIFY) {
     if(userSettings && !userSettings.spotify.accessToken) {
       window.location.href = userSettings.spotify.authorizationUrl;
-      return;
+      return state;
     }
   }
 

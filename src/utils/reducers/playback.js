@@ -234,7 +234,6 @@ export const playbackAction = function(state, payload) {
 
   if(!action) {
     const staleAction = state.playback.action;
-    console.log(staleAction)
     if(staleAction === 'played') {
       playback.isPlaying = true;
     } else if(staleAction === 'paused') {
@@ -245,6 +244,5 @@ export const playbackAction = function(state, payload) {
     }
   }
 
-  console.log(playback.isPlaying)
   return { ...state, playback, queueMap };
 }

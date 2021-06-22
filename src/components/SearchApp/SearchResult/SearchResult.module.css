@@ -17,9 +17,10 @@
 
 .SearchResultSubmitted {
   height: 84px;
-  background-color: rgba(251, 252, 255, 0.93);
+  /* background-color: rgba(251, 252, 255, 0.93);
   backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px); */
+  background-color: #FFF;
   box-sizing: border-box;
   box-shadow: inset 0px 0px 0px 2.5px #0047FF;
   margin-bottom: 14px;

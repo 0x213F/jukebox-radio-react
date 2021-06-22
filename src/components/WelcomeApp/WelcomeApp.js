@@ -58,7 +58,7 @@ function WelcomeApp(props) {
       <div className={styles.WelcomeAppContainer}>
         <div className={styles.WelcomeHeader}>
           <h2>Welcome</h2>
-          <h5>From where do you want to start?</h5>
+          <h5>From where would you like to begin?</h5>
         </div>
 
         <div className={styles.PlaybackOptionContainer}>

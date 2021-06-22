@@ -58,7 +58,6 @@ function PlaybackApp(props) {
       // A queue must be mounted to the playback engine.
       return false;
     }
-    console.log(playback)
     if(!playback.isPlaying) {
       // That something in must also currently be playing.
       return false;
@@ -112,10 +111,8 @@ function PlaybackApp(props) {
       // A queue must be mounted to the playback engine.
       return false;
     }
-    console.log(store.getState().playback)
     if(!playback.isPlaying) {
       // That something in must also currently be playing.
-      console.log('why!!!')
       return false;
     }
     if(playback.action) {

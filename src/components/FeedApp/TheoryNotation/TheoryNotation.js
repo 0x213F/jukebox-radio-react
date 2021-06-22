@@ -6,6 +6,9 @@ import { Notation } from 'react-abc';
 import { chordParserFactory, chordRendererFactory } from 'chord-symbol';
 import { BbFormat } from 'bb-format';
 
+// eslint-disable-next-line
+import { Pianokeys } from 'custom-piano-keys'
+
 
 function TheoryNotation(props) {
 
@@ -75,12 +78,12 @@ function TheoryNotation(props) {
    */
   return (
     chord && !chord.error ?
-      <div style={{paddingBottom: '27.5px'}}>
+      <>
         <canvas ref={bbRef} style={{width: "100%", height: "100px"}} />
-        <custom-piano-keys marked-keys={markedKeys}
-                           oct-count={2}
+        <custom-piano-keys oct-w-factor={1} marked-keys={markedKeys}
+                           oct-count={3}
                            style={{marginLeft: '27.5px'}} />
-      </div> :
+      </> :
       <Notation notation={text}
                 engraverParams={{ staffwidth: 278 }}/>
   );

@@ -23,7 +23,8 @@
   display: block;
 
   width: 985px;
-  padding: 32px;
+  height: 105px;
+  padding: 42px;
   margin-bottom: 26px;
 
   border-radius: 35px;
@@ -37,11 +38,14 @@
 .WelcomeHeader > h2 {
   font-weight: bold;
   font-size: 40px;
+  margin: 0;
 }
 
 .WelcomeHeader > h5 {
   font-weight: normal;
   font-size: 20px;
+  margin: 0;
+  margin-top: 34px;
 }
 
 .PlaybackOptionContainer {
@@ -76,7 +80,7 @@
 }
 
 .PlaybackOption:hover {
-  background-color: rgba(251, 252, 255);
+  background-color: #FFF;
 }
 
 .PlaybackOptionLogo {
