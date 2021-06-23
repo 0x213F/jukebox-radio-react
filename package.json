@@ -12,6 +12,7 @@
     "chord-symbol": "^2.1.0",
     "custom-piano-keys": "^0.0.8",
     "mic-recorder-to-mp3": "^2.2.2",
+    "midi": "^0.4.2",
     "pizzicato": "^0.6.4",
     "react": "^17.0.1",
     "react-abc": "^0.4.0",
