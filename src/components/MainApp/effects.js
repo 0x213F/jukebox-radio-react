@@ -32,7 +32,7 @@ export const scheduleSpeakVoiceRecordings = function() {
 
   const nextVoiceRecordingDelay = voiceRecordings[0].timestampMilliseconds - position,
         timeoutId = setTimeout(() => {
-          state.dispatch({ type: "voiceRecording/play" });
+          store.dispatch({ type: "voiceRecording/play" });
         }, nextVoiceRecordingDelay);
 
   store.dispatch({

@@ -1,14 +1,4 @@
-/*
- * - hide:    A tag given to a feed item which should not be shown.
- * - history: A tag given to a feed item which signifies that it is no longer
- *            relevant. This is because it has been lingering on for a
- *            significant amount of time since its original context.
- * - display: A tag given to a feed item which signifies that it is still
- *            "fresh." It is within a reasonable amount of time since its
- *            original context.
- */
-const DISPLAY_DURATION = 1000,
-      HISTORY_DURATION = 60000;
+import { getPositionMilliseconds } from '../../components/PlaybackApp/utils';
 
 /*
  * Regenerates the feed. When regenerating the feed, it takes the previous
@@ -28,7 +18,8 @@ export const feedUpdate = function(state, payload) {
   }
 
   // eslint-disable-next-line
-  const [progress, displayThreshold, historyThreshold] = getPositionMilliseconds(nowPlaying);
+  const arr = getPositionMilliseconds(nowPlaying, nowPlaying.startedAt),
+        position = arr[0];
   const now = Date.now();
   let feed = [...state.feedApp.feed];
 
@@ -68,7 +59,7 @@ export const feedUpdate = function(state, payload) {
     return (
       (
         el.timestampMilliseconds > lowerBound &&
-        el.timestampMilliseconds <= progress
+        el.timestampMilliseconds <= position
       ) ||
       el.forceDisplay
     );
@@ -120,62 +111,6 @@ export const feedUpdate = function(state, payload) {
   feedApp.feed = feed;
 
   return { ...state, feedApp, textCommentMap, voiceRecordingMap };
-}
-
-
-/*
- * Helper method which gets the timestamp marker thresholds to help define
- * which comments should be displayed.
-
- DELETE MEEMEEMEMEMEMEM
- */
-const getPositionMilliseconds = function(nowPlaying) {
-
-  if(!nowPlaying?.track) {
-    return [undefined, undefined, undefined];
-  }
-
-  const startedAt = nowPlaying.startedAt;
-
-  let progress = (
-        nowPlaying.status === "played" ? Date.now() - startedAt : nowPlaying.statusAt - startedAt
-      ),
-      playbackIntervalIdx = 0,
-      displayThreshold = 0,
-      historyThreshold = 0,
-      cumulativeProgress = 0;
-
-  while(true) {
-    const playbackInterval = nowPlaying.playbackIntervals[playbackIntervalIdx],
-          playbackIntervalDuration = playbackInterval.endPosition - playbackInterval.startPosition;
-    let remainingProgress;
-
-    // if display threshold progress definition has been reached
-    const displayProgress = (progress - DISPLAY_DURATION);
-    remainingProgress = displayProgress - cumulativeProgress;
-    if(remainingProgress >= 0 && remainingProgress < playbackIntervalDuration) {
-      displayThreshold = playbackInterval.startPosition + remainingProgress;
-    }
-
-    // if history threshold progress definition has been reached
-    const historyProgress = (progress - DISPLAY_DURATION - HISTORY_DURATION);
-    remainingProgress = historyProgress - cumulativeProgress;
-    if(remainingProgress >= 0 && remainingProgress < playbackIntervalDuration) {
-      historyThreshold = playbackInterval.startPosition + remainingProgress;
-    }
-
-    // if the progress definition has been reached
-    remainingProgress = progress - cumulativeProgress;
-    if(remainingProgress < playbackIntervalDuration) {
-      progress = playbackInterval.startPosition + remainingProgress;
-      break;
-    }
-
-    playbackIntervalIdx += 1;
-    cumulativeProgress += playbackIntervalDuration;
-  }
-
-  return [progress, displayThreshold, historyThreshold];
 }
 
 

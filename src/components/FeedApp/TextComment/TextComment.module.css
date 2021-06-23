@@ -10,7 +10,7 @@
 
   border-radius: 6px;
   padding: 22px 28px;
-  margin-bottom: 19px;
+  margin-bottom: 16px;
 
   background-color: rgba(231, 249, 255, 1);
   backdrop-filter: blur(10px);
@@ -26,10 +26,10 @@
 
   text-align: center;
   line-height: 48px;
-  color: white;
+  color: #DFE5F8;
   font-weight: 500;
 
-  background-color: #4d7eff;
+  background-color: #5A80F7;
 }
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */

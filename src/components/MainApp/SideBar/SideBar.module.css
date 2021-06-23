@@ -43,7 +43,7 @@
   float: left;
 
   width: 141px;
-  background-color: rgba(251, 252, 255, 1);
+  background-color: #DFE5F8;
   backdrop-filter: blur(10px);
   -webkit-backdrop-filter: blur(10px);
 }
@@ -79,9 +79,7 @@ a:visited {
   width: 24px;
   border-radius: 16px;
 
-  background-color: rgba(251, 252, 255, 1);
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
+  background-color: #DFE5F8;
 
   position: absolute;
   left: 223px;

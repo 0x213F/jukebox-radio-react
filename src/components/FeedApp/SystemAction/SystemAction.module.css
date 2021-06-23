@@ -6,20 +6,20 @@
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 .SystemAction {
   width: 413px;
-  margin-bottom: 19px;
+  margin-bottom: 16px;
 
   border-radius: 24px;
 
   backdrop-filter: blur(10px);
   -webkit-backdrop-filter: blur(10px);
-  background-color: rgba(251, 252, 255, 1);
+  background-color: #DFE5F8;
 }
 
 .SystemAction > p {
   margin: 0;
 
   text-align: center;
-  color: #BCBCBC;
+  color: black;
   font-family: Raleway;
   font-style: normal;
   font-weight: 500;

@@ -94,20 +94,20 @@
 
 .Feed {
   position: absolute;
-  bottom: 128px;
+  bottom: 137px;
 }
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 .ComposeBar {
   position: absolute;
   bottom: 95px;
-  height: 35px;
+  height: 42px;
 }
 
 .ComposeBar > input {
-  width: 313px;
-  height: 22px;
-  padding: 16px;
+  width: 320px;
+  height: 42px;
+  padding-left: 20px;
 
   border: 0;
   box-sizing: border-box;
@@ -121,6 +121,7 @@
   font-family: Raleway;
   font-style: normal;
   font-weight: 500;
+  font-size: 14px;
 }
 
 .ComposeBar > button {
@@ -129,14 +130,12 @@
   border: 0;
 
   margin-right: 16px;
-  width: 34px;
-  height: 34px;
+  width: 30px;
+  height: 30px;
 
-  border-radius: 17px;
+  border-radius: 15px;
   box-sizing: border-box;
 
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
   background-color: #FFF;
   box-shadow: 4px 4px 12px rgba(0, 0, 0, 0.15);
 
@@ -154,17 +153,17 @@
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 .NotationButton > div {
-  width: 12px;
-  height: 12px;
-  border-radius: 6px;
+  width: 14px;
+  height: 14px;
+  border-radius: 7px;
   background-color: #C4C4C4;
 }
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 .RecordButton > div {
-  width: 12px;
-  height: 12px;
-  border-radius: 6px;
+  width: 14px;
+  height: 14px;
+  border-radius: 7px;
   background-color: #FF0000;
 }
 
