@@ -68,7 +68,7 @@ function TheoryNotation(props) {
       context.clearRect(0, 0, rect.width * ratio, 100 * ratio);
       context.font = "100px Boogaloo";
 
-      bbChordRenderer.fillChordSymbol(renderChord(chord), 100, 60);
+      bbChordRenderer.fillChordSymbol(renderChord(chord), 100, 100);
     }
   // eslint-disable-next-line
   }, [text])
