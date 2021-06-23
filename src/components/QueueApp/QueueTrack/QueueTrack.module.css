@@ -1,6 +1,6 @@
 .QueueTrackHead {
   height: 84px;
-  box-shadow: inset 0px 0px 0px 1px #EAEAEA;
+  box-shadow: inset 0px 0px 0px 1px #bcbcbc;
   display: inline-flex;
   align-items: center;
   width: calc(100% - 48px);
