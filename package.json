@@ -8,6 +8,7 @@
     "@testing-library/react": "^11.2.2",
     "@testing-library/user-event": "^12.6.0",
     "bb-chord-symbol": "^1.0.10",
+    "bb-format": "^1.0.1",
     "chord-symbol": "^2.1.0",
     "custom-piano-keys": "^0.0.8",
     "mic-recorder-to-mp3": "^2.2.2",
