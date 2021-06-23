@@ -144,6 +144,9 @@
   justify-content: center;
 
   cursor: pointer;
+
+  float: left;
+  margin-top: 6px;
 }
 
 .ComposeBar > input:disabled,
