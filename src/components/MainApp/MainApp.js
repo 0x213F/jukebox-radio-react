@@ -6,13 +6,13 @@ import { Switch, Route } from "react-router-dom";
 import SpotifySync from '../SpotifySync/SpotifySync';
 import Session from './Session/Session';
 import { fetchUpdateFeed } from '../FeedApp/utils';
-import { fetchPauseTrack, fetchPlayTrack, fetchScan, fetchNextTrack, fetchPrevTrack, fetchTrackGetFiles } from '../PlaybackApp/Player/network';
+import { fetchPauseTrack, fetchPlayTrack, fetchScan, fetchTrackGetFiles } from '../PlaybackApp/Player/network';
 import { getLeafQueue } from '../QueueApp/utils';
 import {
   SERVICE_JUKEBOX_RADIO,
   SERVICE_AUDIUS,
 } from '../../config/services';
-import { onplay, onpause, onseeked } from './utils';
+import { onplay, onpause, onseeked, handleNext, handlePrev } from './utils';
 import { scheduleSpeakVoiceRecordings } from './effects';
 
 
@@ -135,7 +135,7 @@ function MainApp(props) {
           timestampMilliseconds = action.timestampMilliseconds;
 
     // Play in the playback engine
-    const isPlaying = props.playbackControls.play(timestampMilliseconds);
+    const isPlaying = props.playbackControls.play(timestampMilliseconds, action.fake.playback);
     if(!isPlaying) {
       // If play failed for some reason, return early.
       props.dispatch({ type: 'main/actionShift' });
@@ -155,28 +155,12 @@ function MainApp(props) {
     });
 
     // Pause in the API layer
-    if(!action.fake) {
+    if(!action.fake.api) {
       await fetchPlayTrack(timestampMilliseconds);
     }
 
     props.dispatch({ type: 'main/actionShift' });
     props.dispatch({ type: 'main/enable' });
-  }
-
-  const next = async function() {
-    props.dispatch({ type: 'main/actionStart' });
-    props.dispatch({ type: 'main/disable' });
-    props.dispatch({ type: 'stream/nextTrack' });
-    await fetchNextTrack(false);
-    props.dispatch({ type: 'main/actionShift' });
-  }
-
-  const prev = async function() {
-    props.dispatch({ type: 'main/actionStart' });
-    props.dispatch({ type: 'main/disable' });
-    props.dispatch({ type: 'stream/prevTrack' });
-    await fetchPrevTrack(false);
-    props.dispatch({ type: 'main/actionShift' });
   }
 
   const loadAudio = async function() {
@@ -232,12 +216,32 @@ function MainApp(props) {
     if(action.queue) {
       payload = { queue: action.queue };
     } else if(action.stream) {
-      payload = { stream: action.stream };
+      // payload = { stream: action.stream };
     }
     props.dispatch({ type: "playback/mount", payload });
 
     props.dispatch({ type: 'main/actionShift' });
     props.dispatch({ type: 'main/enable' });
+  }
+
+  const handleSkip = async function() {
+    props.dispatch({ type: 'main/actionStart' });
+    props.dispatch({ type: 'main/disable' });
+
+    const queueMap = props.queueMap,
+          stream = props.stream,
+          streamNowPlaying = queueMap[stream.nowPlayingUuid];
+
+    // Play in the playback engine
+    const isSkipping = props.playbackControls.skip(streamNowPlaying);
+    if(!isSkipping) {
+      // If play failed for some reason, return early.
+      props.dispatch({ type: 'main/actionShift' });
+      props.dispatch({ type: 'main/enable' });
+      return;
+    }
+
+    props.dispatch({ type: 'main/actionShift' });
   }
 
   /*
@@ -268,10 +272,12 @@ function MainApp(props) {
       pause();
     } else if(action.name === "play") {
       play();
+    } else if(action.name === "skip") {
+      handleSkip();
     } else if(action.name === "next") {
-      next();
+      handleNext();
     } else if(action.name === "prev") {
-      prev();
+      handlePrev();
     } else if(action.name === "loadAudio") {
       loadAudio();
     } else if(action.name === "loadFeed") {
@@ -323,6 +329,24 @@ function MainApp(props) {
           remainingMilliseconds = nowPlaying.durationMilliseconds - timestampMilliseconds,
           timeoutDelay = remainingMilliseconds;
 
+    const isQueued = props.playbackControls.queue(nextUp.uuid);
+    let pause = true,
+        skip = false,
+        play = true;
+    if(isQueued) {
+      const lastIdx = nowPlaying.playbackIntervals.length - 1;
+
+      pause = false;
+      skip = (
+        nowPlaying.playbackIntervals[lastIdx].endPosition !==
+        nowPlaying.track.durationMilliseconds
+      );
+      play = false;
+    }
+
+    const settings = { pause, skip, play };
+    console.log(settings)
+
     setTimeout(function() {
       props.dispatch({
         type: "main/addAction",
@@ -331,16 +355,7 @@ function MainApp(props) {
             name: "next",
             status: "kickoff",
             fake: false,
-          },
-        },
-      });
-      props.dispatch({
-        type: "main/addAction",
-        payload: {
-          action: {
-            name: "play",
-            status: "kickoff",
-            fake: true,
+            settings,
           },
         },
       });

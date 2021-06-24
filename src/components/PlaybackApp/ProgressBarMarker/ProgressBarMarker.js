@@ -62,7 +62,7 @@ function ProgressBarMarker(props) {
         name: "play",
         timestampMilliseconds: progress,
         status: "kickoff",
-        fake: !(playback.nowPlayingUuid === stream.nowPlayingUuid),
+        fake: { api: !(playback.nowPlayingUuid === stream.nowPlayingUuid) },
       };
       props.dispatch({
         type: "main/addAction",

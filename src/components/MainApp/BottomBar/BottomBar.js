@@ -81,29 +81,14 @@ function BottomBar(props) {
       type: "main/addAction",
       payload: {
         action: {
-          name: "pause",
-          status: "kickoff",
-          fake: true,
-        },
-      },
-    });
-    props.dispatch({
-      type: "main/addAction",
-      payload: {
-        action: {
           name: "next",
           status: "kickoff",
           fake: false,
-        },
-      },
-    });
-    props.dispatch({
-      type: "main/addAction",
-      payload: {
-        action: {
-          name: "play",
-          status: "kickoff",
-          fake: true,
+          settings: {
+            pause: true,
+            skip: false,
+            play: true,
+          },
         },
       },
     });
@@ -120,30 +105,9 @@ function BottomBar(props) {
       type: "main/addAction",
       payload: {
         action: {
-          name: "pause",
-          status: "kickoff",
-          fake: true,
-        },
-      },
-    });
-    props.dispatch({
-      type: "main/addAction",
-      payload: {
-        action: {
           name: "prev",
           status: "kickoff",
           fake: false,
-        },
-      },
-    });
-    props.dispatch({
-      type: "main/addAction",
-      payload: {
-        action: {
-          name: "play",
-          timestampMilliseconds: 0,
-          status: "kickoff",
-          fake: true,
         },
       },
     });
@@ -177,7 +141,7 @@ function BottomBar(props) {
             name: "play",
             timestampMilliseconds: nowPlaying.statusAt - nowPlaying.startedAt,
             status: "kickoff",
-            fake: false,
+            fake: { api: false },
           },
         },
       });
@@ -189,16 +153,11 @@ function BottomBar(props) {
             name: "next",
             status: "kickoff",
             fake: false,
-          },
-        },
-      });
-      props.dispatch({
-        type: "main/addAction",
-        payload: {
-          action: {
-            name: "play",
-            status: "kickoff",
-            fake: true,
+            settings: {
+              pause: false,
+              skip: false,
+              play: true,
+            },
           },
         },
       });

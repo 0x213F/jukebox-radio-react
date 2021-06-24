@@ -133,26 +133,28 @@ export const streamPrevTrack = function(state, payload) {
   const nextUpUuid = nextUpQueueUuids[0],
         nextUp = getLeafQueue(nextUpUuid, queueMap);
 
-  const nowPlaying = { ...queueMap[nowPlayingUuid] };
-  if(!nextUp) {
-    if(nowPlaying.parentUuid) {
-      nextUpQueueUuids.unshift(nowPlaying.parentUuid);
-      const nextUpCollection = { ...queueMap[nowPlaying.parentUuid] };
+  if(nowPlayingUuid) {
+    const nowPlaying = { ...queueMap[nowPlayingUuid] };
+    if(!nextUp) {
+      if(nowPlaying.parentUuid) {
+        nextUpQueueUuids.unshift(nowPlaying.parentUuid);
+        const nextUpCollection = { ...queueMap[nowPlaying.parentUuid] };
+        nextUpCollection.childUuids.unshift(nowPlayingUuid);
+      } else {
+        nextUpQueueUuids.unshift(nowPlayingUuid);
+      }
+    } else if(nextUp.uuid !== nextUpUuid) {
+      let nextUpCollection;
+      nextUpCollection = { ...queueMap[nextUpUuid] };
+      if(nowPlaying.parentUuid !== nextUpCollection.uuid) {
+        nextUpQueueUuids.unshift(nowPlaying.parentUuid);
+        nextUpCollection = { ...queueMap[nowPlaying.parentUuid] };
+      }
       nextUpCollection.childUuids.unshift(nowPlayingUuid);
+      queueMap[nextUpCollection.uuid] = nextUpCollection;
     } else {
       nextUpQueueUuids.unshift(nowPlayingUuid);
     }
-  } else if(nextUp.uuid !== nextUpUuid) {
-    let nextUpCollection;
-    nextUpCollection = { ...queueMap[nextUpUuid] };
-    if(nowPlaying.parentUuid !== nextUpCollection.uuid) {
-      nextUpQueueUuids.unshift(nowPlaying.parentUuid);
-      nextUpCollection = { ...queueMap[nowPlaying.parentUuid] };
-    }
-    nextUpCollection.childUuids.unshift(nowPlayingUuid);
-    queueMap[nextUpCollection.uuid] = nextUpCollection;
-  } else {
-    nextUpQueueUuids.unshift(nowPlayingUuid);
   }
 
   const nextNowPlayingUuid = lastUpQueueUuids.pop();
@@ -161,10 +163,6 @@ export const streamPrevTrack = function(state, payload) {
       ...state,
       stream: {
         ...state.stream,
-        nowPlayingUuid: nextNowPlayingUuid,
-      },
-      playback: {
-        ...state.playback,
         nowPlayingUuid: nextNowPlayingUuid,
       },
       lastUpQueueUuids: lastUpQueueUuids,
@@ -209,10 +207,6 @@ export const streamNextTrack = function(state, payload) {
       ...state,
       stream: {
         ...state.stream,
-        nowPlayingUuid: nextNowPlaying.uuid,
-      },
-      playback: {
-        ...state.playback,
         nowPlayingUuid: nextNowPlaying.uuid,
       },
       lastUpQueueUuids: lastUpQueueUuids,

@@ -211,7 +211,7 @@ function TrackDetailApp(props) {
             name: "play",
             timestampMilliseconds: timestampMilliseconds,
             status: "kickoff",
-            fake: true,
+            fake: { api: true },
           },
         },
       });
@@ -223,7 +223,7 @@ function TrackDetailApp(props) {
             name: "play",
             timestampMilliseconds: 0,
             status: "kickoff",
-            fake: true,
+            fake: { api: true },
           },
         },
       });

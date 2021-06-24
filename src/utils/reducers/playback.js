@@ -3,11 +3,12 @@ import { cycleVolumeLevel } from '../../components/PlaybackApp/utils';
 
 export const playbackMount = function(state, payload) {
   let nowPlayingUuid = undefined;
-  if(payload.stream) {
-    nowPlayingUuid = payload.stream.nowPlayingUuid;
-  }
   if(payload.queue) {
     nowPlayingUuid = payload.queue.uuid;
+  } else if(payload.queueUuid) {
+    nowPlayingUuid = payload.queueUuid;
+  } else {
+    nowPlayingUuid = state.stream.nowPlayingUuid;
   }
 
   return {

@@ -20,7 +20,7 @@ function SystemAction(props) {
 
       <div className={styles.SystemAction}>
         <p>
-          Playback {systemAction.action}.
+          Playback {systemAction.action}
         </p>
       </div>
     </div>

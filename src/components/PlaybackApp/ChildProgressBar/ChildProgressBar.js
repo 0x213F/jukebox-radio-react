@@ -59,7 +59,7 @@ function ChildProgressBar(props) {
         name: "play",
         timestampMilliseconds: progress,
         status: "kickoff",
-        fake: false,
+        fake: { api: false },
       };
       props.dispatch({
         type: "main/addAction",

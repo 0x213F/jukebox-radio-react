@@ -8,6 +8,7 @@ import { fetchGetUserSettings } from '../UserSettings/network';
 import {
   SERVICE_YOUTUBE,
   SERVICE_APPLE_MUSIC,
+  SERVICE_SPOTIFY,
 } from '../../config/services';
 import { appendScript } from '../../utils/async';
 import { store } from '../../utils/redux';
@@ -16,6 +17,8 @@ import {
   playbackControlStart,
   playbackControlSeek,
   playbackControlPause,
+  playbackControlSkip,
+  playbackControlQueue,
 } from './controls';
 import { getPositionMilliseconds, updateSpotifyPlayer } from './utils';
 import styles from './PlaybackApp.module.css';
@@ -153,7 +156,7 @@ function PlaybackApp(props) {
   /*
    * Toggling the player from the "paused" to "playing" state.
    */
-  const play = function(timestampMilliseconds = undefined) {
+  const play = function(timestampMilliseconds = undefined, fake = false) {
     if(!nowPlaying) {
       // A queue must be mounted to the playback engine.
       return false;
@@ -188,7 +191,9 @@ function PlaybackApp(props) {
     nowPlaying.statusAt = now;
     nowPlaying.startedAt = startedAt;
 
-    playbackControlStart(playback, nowPlaying);
+    if(!fake) {
+      playbackControlStart(playback, nowPlaying);
+    }
 
     // We need to update the queue object as well.
     props.dispatch({
@@ -208,10 +213,90 @@ function PlaybackApp(props) {
     return true;
   }
 
+  const queue = function(queueUuid) {
+    const queue = queueMap[queueUuid],
+          shouldQueueAppleMusic = (
+            nowPlaying.track.service === SERVICE_APPLE_MUSIC &&
+            queue.track.service === SERVICE_APPLE_MUSIC
+          ),
+          shouldQueueSpotify = (
+            nowPlaying.track.service === SERVICE_SPOTIFY &&
+            queue.track.service === SERVICE_SPOTIFY &&
+            queue.playbackIntervals[0].startPosition === 0
+          );
+
+    if(!(shouldQueueAppleMusic || shouldQueueSpotify)) {
+      return false;
+    }
+
+    playbackControlQueue(playback, queue);
+    console.log('queued!')
+
+    return true;
+  }
+
+  /*
+   *
+   */
+  const skip = function() {
+    if(!nowPlaying) {
+      // A queue must be mounted to the playback engine.
+      return false;
+    }
+    if(!playback.isPlaying) {
+      // That something in must also currently be playing.
+      return false;
+    }
+    if(playback.action) {
+      // No other action can be in progress, like playing a new track.
+      return false;
+    }
+    // if(!playback.onDeckUuid) {
+    //   // There must be a track "on deck," previously pre-loaded via a playback
+    //   // service (like MusicKit or Spotify).
+    //   return false;
+    // }
+
+    // Valid conditions, so we skip.
+    // const action = 'skipped';
+    // props.dispatch({
+    //   type: 'playback/action',
+    //   payload: { action },
+    // });
+
+    // Clear scheduled "seek"
+    props.dispatch({ type: 'playback/clearSeekTimeoutId' });
+
+    playbackControlSkip(playback, nowPlaying);
+
+    // We need to update the queue object as well.
+    // const onDeck = queueMap[playback.onDeckUuid];
+    props.dispatch({
+      type: 'queue/update',
+      payload: {
+        queues: [
+          {
+            ...nowPlaying,
+            statusAt: Date.now(),
+            status: "paused",
+          },
+          // {
+          //   ...onDeck,
+          //   statusAt: Date.now(),
+          //   status: "played",
+          // }
+        ]
+      },
+    });
+
+    // Let the caller know that pause was initiated.
+    return true;
+  }
+
   /*
    * Passed down to child components so they can have a handle on playback.
    */
-  const playbackControls = { seek, pause, play };
+  const playbackControls = { seek, pause, play, skip, queue };
 
   //////////////////////////////////////////////////////////////////////////////
   //////////////////////////////////////////////////////////////////////////////

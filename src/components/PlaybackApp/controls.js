@@ -7,9 +7,6 @@ import {
   SERVICE_JUKEBOX_RADIO,
   SERVICE_AUDIUS,
 } from '../../config/services';
-import {
-  fetchTrackGetFiles,
-} from './Player/network';
 import { store } from '../../utils/redux';
 
 
@@ -210,20 +207,14 @@ export const playbackControlSeek = function(playback, queue, startedAt) {
 /*
  *
  */
-export const playbackControlSkipToNext = function(playback, queue) {
-  const playbackService = queue.track.service;
+export const playbackControlSkip = function(playback, nowPlaying) {
+  const playbackService = nowPlaying.track.service;
 
   if(playbackService === SERVICE_APPLE_MUSIC) {
     const music = window.MusicKit.getInstance();
     music.skipToNextItem();
   } else if(playbackService === SERVICE_SPOTIFY) {
     playback.spotifyApi.skipToNext();
-  } else if(playbackService === SERVICE_YOUTUBE) {
-    // TODO - seems to work out of the box :)
-  } else if(playbackService === SERVICE_JUKEBOX_RADIO) {
-    // TODO - refactor stuff to go inside of here instead
-  } else if(playbackService === SERVICE_AUDIUS) {
-    // TODO - refactor stuff to go inside of here instead
   }
 }
 
@@ -237,63 +228,20 @@ export const playbackControlSkipToNext = function(playback, queue) {
  * In this context, queuing up the track means doing as much pre-loading as
  * possible.
  */
-export const playbackControlQueue = function(playback, queue, nextUp) {
-  if(!nextUp) {
-    return;
-  }
-
-  const nowPlaying = queue,
-        playbackService = nowPlaying.track.service,
-        nextPlaybackService = nextUp.track.service;
-  let shouldAddToQueue;
+export const playbackControlQueue = function(playback, onDeck) {
 
   // Apple Music
-  shouldAddToQueue = nextPlaybackService === SERVICE_APPLE_MUSIC;
-  if(shouldAddToQueue) {
+  if(onDeck.track.service === SERVICE_APPLE_MUSIC) {
     const music = window.MusicKit.getInstance();
-    music.prepareToPlay(nextUp.track.externalId);
-
-    const canPlayNext = (
-      playbackService === SERVICE_APPLE_MUSIC &&
-      nextUp.playbackIntervals[0].startPosition === 0
-    );
-    if(canPlayNext) {
-      music.playNext({ song: nextUp.track.externalId });
-    }
+    music.playNext({
+      song: onDeck.track.externalId,
+      startTime: onDeck.playbackIntervals[0].startTime / 1000,
+    });
   }
 
   // Spotify
-  shouldAddToQueue = (
-    playbackService === SERVICE_SPOTIFY &&
-    nextPlaybackService === SERVICE_SPOTIFY &&
-    nextUp.playbackIntervals[0].startPosition === 0
-  );
-  if(shouldAddToQueue) {
-    playback.spotifyApi.queue(nextUp.track.externalId);
-  }
-
-  // YouTube
-  // TODO
-
-  // Jukebox Radio
-  shouldAddToQueue = nextPlaybackService === SERVICE_JUKEBOX_RADIO;
-  if(shouldAddToQueue) {
-    fetchTrackGetFiles(nextUp.track.uuid)
-      .then((responseJson) => {
-        store.dispatch(responseJson.redux);
-      });
-  }
-
-  // Audius
-  shouldAddToQueue = nextPlaybackService === SERVICE_AUDIUS;
-  if(shouldAddToQueue) {
-    store.dispatch({
-      "type": "playback/loadAudius",
-      "payload": {
-        "id": nextUp.track.externalId,
-        "trackUuid": nextUp.track.uuid,
-      }
-    });
+  if(onDeck.track.service === SERVICE_SPOTIFY) {
+    playback.spotifyApi.queue(onDeck.track.externalId);
   }
 }
 
