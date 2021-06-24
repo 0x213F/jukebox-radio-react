@@ -52,11 +52,11 @@ function ParentProgressBar(props) {
           })
         );
 
-  let runningMark = 6;
+  let runningMark = 8;
   for(let i=0; i < markers.length; i++) {
     let pix = markers[i].timestampMilliseconds / duration * 100;
     markers[i].styleLeft = `calc(${pix}% - ${runningMark}px)`;
-    runningMark += 2;
+    runningMark += 0;
 
     if(mode === "player") {
 
@@ -204,7 +204,7 @@ function ParentProgressBar(props) {
                    onStop={handleDragStop}>
           <div ref={draggableRef}
                className={styles.ProgressPointer}
-               style={{left: `calc(${pointerLeftDistance}% - ${4 + dragOffset}px)`}}>
+               style={{left: `calc(${pointerLeftDistance}% - ${3 + dragOffset}px)`}}>
             {iconSmallCircle}
           </div>
         </Draggable>
