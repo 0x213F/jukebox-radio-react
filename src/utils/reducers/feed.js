@@ -71,13 +71,10 @@ export const feedUpdate = function(state, payload) {
   });
 
   // Set statistics for current generation/ rendering
-  const lastItem = addedFeed[addedFeed.length - 1];
-  if(lastItem) {
-    feedApp.lastRender = {
-      trackUuid: lastItem.trackUuid,
-      timestampMilliseconds: lastItem.timestampMilliseconds,
-    };
-  }
+  feedApp.lastRender = {
+    trackUuid: nowPlaying.track.uuid,
+    timestampMilliseconds: position,
+  };
 
   // Modify and slim down the feed data
   addedFeed = addedFeed.map(el => {
@@ -165,4 +162,14 @@ export const feedAppSetContentContainer = function(state, payload) {
   const contentContainer = payload.contentContainer,
         feedApp = { ...state.feedApp, contentContainer };
   return { ...state, feedApp };
+}
+
+export const feedAppSetTextComment = function(state, payload) {
+  const { textComment } = payload;
+  return { ...state, feedApp: { ...state.feedApp, textComment } };
+}
+
+export const feedAppResetTextComment = function(state, payload) {
+  const textComment = { text: '', trackUuid: undefined, position: undefined };
+  return { ...state, feedApp: { ...state.feedApp, textComment } };
 }

@@ -10,6 +10,7 @@ import {
   fetchStreamQueueIntervalDelete,
 } from './Interval/network';
 import styles from './TrackDetailApp.module.css';
+import modalStyles from '../../styles/Modal.module.css';
 import {
   // eslint-disable-next-line
   iconForward1000,
@@ -24,7 +25,15 @@ import {
   iconMiniCheckboxChecked,
   iconMiniCheckboxUnchecked,
 } from './icons';
+import {
+  iconInstrumentMicrophone,
+  iconInstrumentDrums,
+  iconInstrumentBass,
+  iconInstrumentPiano,
+  iconInstrumentOther,
+} from './Interval/icons';
 import { iconBack } from './../../icons';
+import { SERVICE_JUKEBOX_RADIO } from './../../config/services';
 import ParentProgressBar from '../PlaybackApp/ParentProgressBar/ParentProgressBar';
 import { getPositionMilliseconds } from '../PlaybackApp/utils';
 
@@ -42,6 +51,20 @@ function TrackDetailApp(props) {
         queueMap = props.queueMap,
         markerMap = props.markerMap,
         nowPlaying = queueMap[playback.nowPlayingUuid];
+
+  const intervalModificationsOptions = (
+    nowPlaying?.track?.service === SERVICE_JUKEBOX_RADIO ?
+    [{value: 'muted', name: 'Trim'}, {value: 'stems', name: 'Stem isolation'}] :
+    [{value: 'muted', name: 'Trim'}]
+  );
+
+  const stemChoices = [
+    {value: 'vocals', display: iconInstrumentMicrophone},
+    {value: 'drums', display: iconInstrumentDrums},
+    {value: 'bass', display: iconInstrumentBass},
+    {value: 'piano', display: iconInstrumentPiano},
+    {value: 'other', display: iconInstrumentOther},
+  ];
 
   ////////////
   // Markers
@@ -449,10 +472,10 @@ function TrackDetailApp(props) {
   return (
     <Modal isOpen={isOpen}
            ariaHideApp={false}
-           className={styles.Modal}
-           overlayClassName={styles.ModalOverlay}>
+           className={modalStyles.Modal}
+           overlayClassName={modalStyles.ModalOverlay}>
 
-      <button className={styles.CloseModal}
+      <button className={modalStyles.CloseModal}
               onClick={handleCloseModal}>
         {iconBack}
       </button>
@@ -575,41 +598,54 @@ function TrackDetailApp(props) {
               <select className={styles.FormSelect}
                       value={purpose}
                       onChange={(e) => {setPurpose(e.target.value)}}>
-                <option value={'muted'}>Trim</option>
-                <option value={'drums'}>Solo drums</option>
-                <option value={'vocals'}>Solo vocals</option>
-                <option value={'bass'}>Solo bass</option>
-                <option value={'other'}>Solo other</option>
-              </select>
-            </label>
-
-            <label className={styles.FormLabel}>
-              <span>
-                Start Marker
-              </span>
-              <select className={styles.FormSelect}
-                      value={lowerBoundMarkerUuid}
-                      onChange={handleLowerBoundMarker}>
-                <option value={'null'}>Beginning</option>
-                {markers.map((value, index) => (
-                  <option key={index} value={value.uuid}>{value.name}</option>
+                {intervalModificationsOptions.map((value, index) => (
+                  <option key={index} value={value.value}>{value.name}</option>
                 ))}
               </select>
             </label>
 
+            {purpose === 'muted' &&
+              <>
+                <label className={styles.FormLabel}>
+                  <span>
+                    Start Marker
+                  </span>
+                  <select className={styles.FormSelect}
+                          value={lowerBoundMarkerUuid}
+                          onChange={handleLowerBoundMarker}>
+                    <option value={'null'}>Beginning</option>
+                    {markers.map((value, index) => (
+                      <option key={index} value={value.uuid}>{value.name}</option>
+                    ))}
+                  </select>
+                </label>
+
+                <label className={styles.FormLabel}>
+                  <span>
+                    End Marker
+                  </span>
+                  <select className={styles.FormSelect}
+                          value={upperBoundMarkerUuid}
+                          onChange={handleUpperBoundMarker}>
+                    {markers.map((value, index) => (
+                      <option key={index} value={value.uuid}>{value.name}</option>
+                    ))}
+                    <option value={'null'}>End</option>
+                  </select>
+                </label>
+              </>
+            }
+
+            {purpose === 'stems' &&
             <label className={styles.FormLabel}>
               <span>
-                End Marker
+                Stems
               </span>
-              <select className={styles.FormSelect}
-                      value={upperBoundMarkerUuid}
-                      onChange={handleUpperBoundMarker}>
-                {markers.map((value, index) => (
-                  <option key={index} value={value.uuid}>{value.name}</option>
-                ))}
-                <option value={'null'}>End</option>
-              </select>
+              {stemChoices.map((value, index) => (
+                <button key={index} className={styles.StemCheckbox}>{value.display}</button>
+              ))}
             </label>
+            }
 
             <button className={styles.FormSubmit}
                     onClick={createQueueInterval}>

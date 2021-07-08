@@ -11,14 +11,6 @@
   justify-content: center;
 }
 
-.SearchBarIcon {
-  position: relative;
-  left: 660px;
-  top: 19px;
-  z-index: 1;
-  cursor: pointer;
-}
-
 .SearchBar {
   width: 100%;
   height: 84px;

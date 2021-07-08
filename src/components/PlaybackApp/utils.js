@@ -13,7 +13,7 @@ export const getPositionMilliseconds = function(queue, startedAt) {
 
   let progress = getProgress(queue);
 
-  let instrument = 'all',
+  let instruments = ['all'],
       seekTimeout,
       playbackIntervalIdx = 0,
       cumulativeProgress = 0;
@@ -23,7 +23,12 @@ export const getPositionMilliseconds = function(queue, startedAt) {
           remainingProgress = progress - cumulativeProgress;
     if(remainingProgress < playbackIntervalDuration) {
       progress = playbackInterval.startPosition + remainingProgress;
-      instrument = playbackInterval.purpose;
+      if(playbackInterval.vocals) instruments.push('vocals');
+      if(playbackInterval.drums) instruments.push('drums');
+      if(playbackInterval.bass) instruments.push('bass');
+      if(playbackInterval.piano) instruments.push('piano');
+      if(playbackInterval.other) instruments.push('other');
+      if(instruments.length > 1) instruments.shift();
       seekTimeout = playbackInterval.endPosition - progress;
       break;
     }
@@ -35,7 +40,7 @@ export const getPositionMilliseconds = function(queue, startedAt) {
     seekTimeout = undefined;
   }
 
-  return [progress, seekTimeout, instrument];
+  return [progress, seekTimeout, instruments];
 }
 
 

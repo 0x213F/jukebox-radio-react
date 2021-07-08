@@ -1,8 +1,19 @@
 import React, { useState } from 'react';
 import styles from './SearchResult.module.css';
-// import { iconCheck } from './icons';
-import { SERVICE_SPOTIFY, SERVICE_YOUTUBE, SERVICE_APPLE_MUSIC, SERVICE_JUKEBOX_RADIO, SERVICE_AUDIUS } from '../../../config/services';
-import { iconSpotify, iconYouTube, iconAppleMusic, iconLogoAlt, iconAudius } from '../../../icons';
+import {
+  SERVICE_SPOTIFY,
+  SERVICE_YOUTUBE,
+  SERVICE_APPLE_MUSIC,
+  SERVICE_JUKEBOX_RADIO,
+  SERVICE_AUDIUS,
+} from '../../../config/services';
+import {
+  iconSpotify,
+  iconYouTube,
+  iconAppleMusic,
+  iconLogoAlt,
+  iconAudius,
+} from '../../../icons';
 
 
 function SearchResult(props) {

@@ -3,6 +3,8 @@ import {
   feedUpdate,
   feedTakeAction,
   feedAppSetContentContainer,
+  feedAppSetTextComment,
+  feedAppResetTextComment,
 } from './reducers/feed';
 import {
   markerCreate,
@@ -74,6 +76,8 @@ import {
 } from './reducers/sideBar';
 import {
   searchSetService,
+  searchSetQuery,
+  searchSetCache,
 } from './reducers/search';
 
 
@@ -90,7 +94,7 @@ const initialState = {
     currentlyPlayingUuids: new Set(),
     update: 0,
   },
-  voiceRecordingTimeoutId: 1,
+  voiceRecordingTimeoutId: -1,
   main: {
     actions: [],
     enabled: true,
@@ -129,12 +133,19 @@ const initialState = {
   // UI
   search: {
     service: (localStorage.getItem('searchService') || null),
+    query: '',
+    cache: {},
   },
   feedApp: {
     contentContainer: null,
     feed: [],
     trackMap: {},
     lastRender: {},
+    textComment: {
+      text: '',
+      trackUuid: undefined,
+      position: undefined,
+    },
   },
   notesApp: {
     store: (JSON.parse(localStorage.getItem('notesStore')) || {}),
@@ -200,9 +211,13 @@ const reducer = (state = initialState, action) => {
     case "feed/update":
       return feedUpdate(state);
     case "feed/takeAction":
-      return feedTakeAction(state, action.payload)
+      return feedTakeAction(state, action.payload);
     case "feedApp/setContentContainer":
       return feedAppSetContentContainer(state, action.payload);
+    case "feedApp/setTextComment":
+      return feedAppSetTextComment(state, action.payload);
+    case "feedApp/resetTextComment":
+      return feedAppResetTextComment(state, action.payload);
     ////////////////////////////////////////////////////////////////////////////
     // USER
     case "user/get-settings":
@@ -259,6 +274,10 @@ const reducer = (state = initialState, action) => {
       return mainClearAutoplayTimeoutId(state, action.payload);
     case "search/setService":
       return searchSetService(state, action.payload);
+    case "search/setQuery":
+      return searchSetQuery(state, action.payload);
+    case "search/setCache":
+      return searchSetCache(state, action.payload);
     case "sideBar/selectTab":
       return sideBarSelectTab(state, action.payload);
     case "notesApp/set":

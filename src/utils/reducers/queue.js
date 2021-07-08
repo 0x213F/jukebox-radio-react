@@ -186,6 +186,11 @@ export const finalizeQueue = function(state, queue) {
       endPosition: upperBound || trackDurationMilliseconds,
       purpose: interval.purpose,
       uuid: interval.uuid,
+      vocals: interval.vocals,
+      drums: interval.drums,
+      bass: interval.bass,
+      piano: interval.piano,
+      other: interval.other,
     });
 
     lastBound = upperBound;

@@ -50,6 +50,7 @@
   margin-top: 18px;
   margin-left: 36px;
   display: inline-block;
+  width: calc(100% - 267px);
 }
 
 .NowPlayingInformation > h5 {

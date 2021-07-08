@@ -10,10 +10,19 @@ import { fetchBackend } from '../../../utils/network';
  * Fetches...
  */
 export const fetchStreamQueueIntervalCreate = async (queueUuid, lowerBoundMarkerUuid, upperBoundMarkerUuid, purpose, repeatCount, parentQueueUuid) => {
+  const stemVocals = true,
+        stemDrums = true,
+        stemBass = true,
+        stemPiano = true,
+        stemOther = true;
+
   const response = await fetchBackend(
     TYPE_POST,
     ENDPOINT_QUEUE_INTERVAL_CREATE,
-    { queueUuid, lowerBoundMarkerUuid, upperBoundMarkerUuid, purpose, repeatCount, parentQueueUuid }
+    {
+      queueUuid, lowerBoundMarkerUuid, upperBoundMarkerUuid, purpose, repeatCount, parentQueueUuid,
+      stemVocals, stemDrums, stemBass, stemPiano, stemOther,
+    }
   );
   return await response.json();
 };

@@ -96,6 +96,8 @@ export const voiceRecordingPause = function(state, payload) {
 
 
 export const voiceRecordingPlay = function(state, payload) {
+  console.log('PLAYING!')
+
   const currentlyPlayingUuids = state.voiceRecordings.currentlyPlayingUuids,
         voiceRecordingMap = { ...state.voiceRecordingMap },
         files = { ...state.playback.files },
@@ -135,6 +137,10 @@ export const voiceRecordingPlay = function(state, payload) {
     currentlyPlayingUuids.add(voiceRecording.uuid)
   }
 
+  const voiceRecordingTimeoutId = (
+    state.voiceRecordingTimeoutId > 0 ? -1 : state.voiceRecordingTimeoutId - 1
+  );
+
   return {
     ...state,
     playback,
@@ -143,7 +149,7 @@ export const voiceRecordingPlay = function(state, payload) {
       currentlyPlayingUuids: currentlyPlayingUuids,
       update: state.voiceRecordings.update + 1,
     },
-    voiceRecordingTimeoutId: null,
+    voiceRecordingTimeoutId: voiceRecordingTimeoutId,
   };
 }
 

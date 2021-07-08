@@ -6,12 +6,12 @@
   background-color: #0047FF;
 }
 
-.ProgressSolo {
+.ProgressStem_isolation {
   display: inline-block;
   position: relative;
   float: left;
   height: 2px;
-  background-color: #a0e0f4;
+  background-color: #000;
 }
 
 .ProgressMuted {

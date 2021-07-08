@@ -208,7 +208,7 @@ function BottomBar(props) {
                 rotation: 1 / 2 + 1 / 8,
                 strokeLinecap: "butt",
                 pathColor: "#0047FF",
-                trailColor: "#EAEAEA",
+                trailColor: "#BCBCBC",
                 pathTransitionDuration: 0.15,
               })} >
           <div className={styles.IconContainer}>

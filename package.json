@@ -35,7 +35,7 @@
   },
   "scripts": {
     "predeploy": "npm run build",
-    "deploy": "git remote set-url origin https://git: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@github.com/0x213f/jukebox-radio-react.git | gh-pages -d build",
+    "deploy": "git remote set-url origin2 https://git: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@github.com/0x213f/jukebox-radio-react.git | gh-pages -d build",
     "start": "react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test",

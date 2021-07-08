@@ -3,6 +3,7 @@ import Modal from 'react-modal';
 import { connect } from 'react-redux';
 import { fetchUpdateUserSettings } from './network';
 import styles from './UserSettings.module.css';
+import modalStyles from '../../styles/Modal.module.css';
 import { iconBack } from './../../icons';
 
 
@@ -53,10 +54,10 @@ function UserSettings(props) {
   return (
     <Modal isOpen={isOpen}
            ariaHideApp={false}
-           className={styles.Modal}
-           overlayClassName={styles.ModalOverlay}>
+           className={modalStyles.Modal}
+           overlayClassName={modalStyles.ModalOverlay}>
 
-      <button className={styles.CloseModal}
+      <button className={modalStyles.CloseModal}
               onClick={closeModal}>
         {iconBack}
       </button>

@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import Modal from 'react-modal';
 import styles from './Upload.module.css';
+import modalStyles from '../../styles/Modal.module.css';
 
 import { fetchCreateTrack } from './network';
 
@@ -53,10 +54,10 @@ function Upload(props) {
   return (
     <Modal isOpen={isOpen}
            ariaHideApp={false}
-           className={styles.Modal}
-           overlayClassName={styles.ModalOverlay}>
+           className={modalStyles.Modal}
+           overlayClassName={modalStyles.ModalOverlay}>
 
-      <button className={styles.CloseModal}
+      <button className={modalStyles.CloseModal}
               onClick={closeModal}>
         {iconBack}
       </button>

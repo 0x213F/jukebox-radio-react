@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { connect } from 'react-redux';
 import styles from './SearchApp.module.css';
 
@@ -14,7 +14,13 @@ import {
 } from '../../config/services';
 import { fetchQueueList } from '../QueueApp/network';
 import { iconUpload } from './icons';
-import { iconSpotify, iconYouTube, iconAppleMusic, iconLogoAlt, iconAudius } from '../../icons';
+import {
+  iconSpotify,
+  iconYouTube,
+  iconAppleMusic,
+  iconLogoAlt,
+  iconAudius,
+} from '../../icons';
 
 
 function SearchApp(props) {
@@ -23,18 +29,11 @@ function SearchApp(props) {
    * 🏗
    */
 
-  const search = props.search;
+  const search = props.search,
+        query = search.query;
 
   const [searchResults, setSearchResults] = useState([]);
-  const [searchResultCache, setSearchResultCache] = useState({});
   const [autoSearchTimeoutId, setAutoSearchTimeoutId] = useState(false);
-
-  const [query, setQuery] = useState('');
-
-  const formatTrack = true,
-        formatAlbum = true,
-        formatPlaylist = true,
-        formatVideo = true;
 
   const [showModal, setShowModal] = useState(false);
 
@@ -46,43 +45,52 @@ function SearchApp(props) {
     setShowModal(false);
   }
 
+  const handleQueryChange = function(e) {
+    props.dispatch({
+      type: "search/setQuery",
+      payload: { query: e.target.value },
+    });
+  }
+
+  /*
+   * Get search results from server or local cache.
+   */
   const fetchSearch = async function(service = undefined) {
+
+    // Only search if there is a query
     if(!query) {
       return;
     }
-
-    const queryCache = { ...searchResultCache[query] } || {};
-
-
 
     if(!service) {
       service = search.service;
     }
 
-    let responseJson;
-    responseJson = queryCache[service];
+    const queryCache = search.cache[query] || {};
+    let responseJson = queryCache[service];
+
+    // Base case: run the search query
     if(!responseJson) {
-      responseJson = await fetchSearchMusicLibrary(
-        query,
-        service,
-        formatTrack,
-        formatAlbum,
-        formatPlaylist,
-        formatVideo,
-      );
+      responseJson = await fetchSearchMusicLibrary(query, service);
       queryCache[service] = responseJson;
-      setSearchResultCache(function(oldState) {
-        const state = { ...oldState };
-        state[query] = queryCache;
-        return state;
+      props.dispatch({
+        type: "search/setCache",
+        payload: { query, service, responseJson },
       });
     }
     setSearchResults(responseJson.data);
     setAutoSearchTimeoutId(false);
   }
 
+  /*
+   * On click for service buttons
+   */
   const generateServiceHandler = function(service) {
     return function() {
+      if(autoSearchTimeoutId) {
+        clearTimeout(autoSearchTimeoutId);
+      }
+      fetchSearch();
       props.dispatch({
         type: 'search/setService',
         payload: { service },
@@ -92,17 +100,7 @@ function SearchApp(props) {
   }
 
   /*
-   * When the user initializes a login attempt.
-   */
-  const handleSubmit = function() {
-    if(!query) {
-      return;
-    }
-    fetchSearch();
-  }
-
-  /*
-   * When...
+   * Adding a search item to the queue
    */
   const addToQueue = async function(className, genericUuid) {
     await fetchCreateQueue(
@@ -115,18 +113,28 @@ function SearchApp(props) {
   }
 
   /*
-   *
+   * Handle typing in the search bar.
    */
   const handleKeyDown = (event) => {
     if(autoSearchTimeoutId) {
       clearTimeout(autoSearchTimeoutId);
     }
-    setAutoSearchTimeoutId(setTimeout(fetchSearch, 500));
-    if (event.key === 'Enter') {
-      handleSubmit();
+    setAutoSearchTimeoutId(setTimeout(fetchSearch, 150));
+    if(event.key === 'Enter') {
+      clearTimeout(autoSearchTimeoutId);
+      fetchSearch();
     }
   }
 
+  // Display search results on componentDidLoad
+  useEffect(() => {
+    fetchSearch();
+  // eslint-disable-next-line
+  }, []);
+
+  /*
+   * 🎨
+   */
   return (
     <div className={styles.SearchApp}>
 
@@ -138,7 +146,7 @@ function SearchApp(props) {
                placeholder=""
                className={styles.SearchBar}
                value={query}
-               onChange={(e) => {setQuery(e.target.value)}}
+               onChange={handleQueryChange}
                onKeyDown={handleKeyDown} />
         {/*}
         <div className={styles.SearchBarIcon}>

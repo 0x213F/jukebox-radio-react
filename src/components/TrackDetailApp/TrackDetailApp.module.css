@@ -3,18 +3,6 @@
 }
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
-/* CLOSE BUTTON */
-.CloseModal {
-  margin-top: 29px;
-  margin-left: 29px;
-  background-color: #FFF;
-  border: 0;
-  padding: 0;
-  cursor: pointer;
-  position: absolute;
-}
-
-/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 /* TRACK PLAYBACK CONTROLS */
 .Preview {
   display: block;
@@ -211,38 +199,6 @@
   line-height: 15px;
 }
 
-/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
-/* MODAL */
-.Modal {
-  position: absolute;
-
-  width: calc(100% - 408px);
-  height: calc(100% - 363px);
-  min-width: 978px;
-  min-height: 537px;
-
-  border-radius: 14px;
-  margin: auto;
-
-  background-color: white;
-  outline: none;
-}
-
-.ModalOverlay {
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background-color: rgba(11, 29, 45, 0.53);
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
-
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
 .ModalContent {
   margin: 88px;
   margin-top: 100px;
@@ -259,4 +215,18 @@
   width: calc(100% - 176px);
   position: absolute;
   bottom: 88px;
+}
+
+.StemCheckbox {
+  height: 52px;
+  width: 52px;
+  border: 2px;
+  border-color: #fff;
+  border-radius: 35px;
+  box-shadow: 4px 4px 12px rgb(0 0 0 / 15%);
+  cursor: pointer;
+
+  display: inline-flex;
+  justify-content: center;
+  align-items: center;
 }

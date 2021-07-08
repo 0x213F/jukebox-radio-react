@@ -3,7 +3,9 @@ import {
   SERVICE_APPLE_MUSIC,
 } from '../../config/services';
 
-
+/*
+ * Set service used for search.
+ */
 export const searchSetService = function(state, payload) {
   const { service } = payload,
         { userSettings } = state;
@@ -27,4 +29,33 @@ export const searchSetService = function(state, payload) {
     ...state,
     search: { ...state.search, service },
   }
+}
+
+/*
+ * Set search query.
+ */
+export const searchSetQuery = function(state, payload) {
+  const { query } = payload;
+
+  return {
+    ...state,
+    search: { ...state.search, query },
+  };
+}
+
+/*
+ * Set search query.
+ */
+export const searchSetCache = function(state, payload) {
+  const { query, service, responseJson } = payload,
+        cache = { ...state.search.cache },
+        queryCache = { ...cache[query] } || {};
+
+  queryCache[service] = responseJson;
+  cache[query] = queryCache;
+
+  return {
+    ...state,
+    search: { ...state.search, cache },
+  };
 }

@@ -169,7 +169,6 @@ function PlaybackApp(props) {
       // No other action can be in progress, like playing a new track.
       return false;
     }
-
     if(!nowPlaying.track?.uuid) {
       return false;
       // The now playing item is an empty queue.
@@ -193,6 +192,15 @@ function PlaybackApp(props) {
 
     if(!fake) {
       playbackControlStart(playback, nowPlaying);
+    } else {
+      // NOTE: if faking a MusicKit play, then we must update the playback
+      //       action as complete.
+      if(nowPlaying.track.service === SERVICE_APPLE_MUSIC) {
+        props.dispatch({
+          type: 'playback/action',
+          payload: { action: null },
+        });
+      }
     }
 
     // We need to update the queue object as well.
@@ -402,8 +410,6 @@ function PlaybackApp(props) {
       if(!state) {
         return;
       }
-      // console.log(`Time delta: ${Date.now() - state.timestamp}`)
-      // console.log(state)
       const reduxState = store.getState(),
             reduxPlayback = reduxState.playback;
       if(!reduxPlayback.loaded.spotify) {
@@ -611,6 +617,7 @@ function PlaybackApp(props) {
     });
 
     if(playback.youTubeAutoplay) {
+      youTubeApi.setVolume(playback.volumeLevel * 100);
       youTubeApi.playVideo();
       props.dispatch({
         type: 'playback/youTubeTriggerAutoplay',

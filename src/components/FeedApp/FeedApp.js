@@ -3,6 +3,7 @@ import React, { useState, useEffect, useRef } from "react";
 import { connect } from 'react-redux';
 import MicRecorder from 'mic-recorder-to-mp3';
 import SpeechRecognition, { useSpeechRecognition } from 'react-speech-recognition';
+import Pizzicato from 'pizzicato';
 
 import ABCNotationDisplay from './ABCNotationDisplay/ABCNotationDisplay';
 import ABCNotationCompose from './ABCNotationCompose/ABCNotationCompose';
@@ -33,10 +34,6 @@ function FeedApp(props) {
         queueMap = props.queueMap,
         nowPlaying = queueMap[stream.nowPlayingUuid];
 
-  const [textCommentText, setTextCommentText] = useState('');
-  const [textCommentTrackUuid, setTextCommentTrackUuid] = useState(undefined);
-  const [textCommentTimestamp, setTextCommentTimestamp] = useState(undefined);
-
   const [isRecording, setIsRecording] = useState(false);
   const [recorder] = useState(new MicRecorder({ bitRate: 320 }));
 
@@ -49,10 +46,6 @@ function FeedApp(props) {
    * Opens the modal, showing ABCNotationCompose.
    */
   const openModal = function() {
-    const arr = getPositionMilliseconds(nowPlaying, nowPlaying.startedAt),
-          position = arr[0];
-    setTextCommentTrackUuid(nowPlaying.track.uuid);
-    setTextCommentTimestamp(position);
     setShowModal(true);
   }
 
@@ -60,8 +53,6 @@ function FeedApp(props) {
    * Closes the modal.
    */
   const closeModal = function() {
-    setTextCommentTrackUuid(undefined);
-    setTextCommentTimestamp(undefined);
     setShowModal(false);
   }
 
@@ -69,14 +60,40 @@ function FeedApp(props) {
    * When a user is typing a text comment.
    */
   const handleTextChange = function(e) {
-    setTextCommentText(e.target.value);
-    if(textCommentTrackUuid && textCommentTimestamp) {
-      return;
+    if(!feedApp.textComment.trackUuid) {
+      props.dispatch({
+        type: "main/addAction",
+        payload: {
+          action: {
+            name: "pause",
+            status: "kickoff",
+            fake: false,
+          },
+        },
+      });
+      var voice = new Pizzicato.Sound({ source: 'input' }, function() {
+          // Sound loaded!
+          var dubDelay = new Pizzicato.Effects.DubDelay({
+              feedback: 0.6,
+              time: 0.7,
+              mix: 0.5,
+              cutoff: 700
+          });
+
+          voice.addEffect(dubDelay);
+          voice.play();
+      });
     }
-    const arr = getPositionMilliseconds(nowPlaying, nowPlaying.startedAt),
+
+    const text = e.target.value,
+          trackUuid = nowPlaying.track.uuid,
+          arr = getPositionMilliseconds(nowPlaying, nowPlaying.startedAt),
           position = arr[0];
-    setTextCommentTimestamp(position);
-    setTextCommentTrackUuid(nowPlaying.track.uuid);
+
+    props.dispatch({
+      type: "feedApp/setTextComment",
+      payload: { textComment: { text, trackUuid, position } },
+    });
   }
 
   /*
@@ -84,14 +101,26 @@ function FeedApp(props) {
    */
   const createTextComment = async function(e) {
     e.preventDefault();
+
+    props.dispatch({
+      type: "main/addAction",
+      payload: {
+        action: {
+          name: "play",
+          timestampMilliseconds: nowPlaying.statusAt - nowPlaying.startedAt,
+          status: "kickoff",
+          fake: { api: false },
+        },
+      },
+    });
+
+    props.dispatch({ type: "feedApp/resetTextComment" });
+
     const responseJson = await fetchTextCommentCreate(
-      textCommentText, FORMAT_TEXT, textCommentTrackUuid, textCommentTimestamp
+      feedApp.textComment.text, FORMAT_TEXT, feedApp.textComment.trackUuid, feedApp.textComment.position
     );
 
     props.dispatch(responseJson.redux);
-    setTextCommentTimestamp(undefined);
-    setTextCommentTrackUuid(undefined);
-    setTextCommentText('');
   }
 
   /*
@@ -168,8 +197,8 @@ function FeedApp(props) {
   return (
     <div className={styles.FeedApp}>
 
-      <ABCNotationCompose textCommentTrackUuid={textCommentTrackUuid}
-                          textCommentTimestamp={textCommentTimestamp}
+      <ABCNotationCompose textCommentTrackUuid={feedApp.textComment.trackUuid}
+                          textCommentTimestamp={feedApp.textComment.position}
                           isOpen={showModal}
                           closeModal={closeModal} />
 
@@ -222,13 +251,11 @@ function FeedApp(props) {
           </button>
           <input type="text"
                  name="text"
-                 value={textCommentText}
+                 value={feedApp.textComment.text}
                  onChange={handleTextChange}
-                 autoComplete="off"
-                 disabled={nowPlaying?.status !== "played"} />
+                 autoComplete="off" />
           <button className={styles.SubmitButton}
-                  type="submit"
-                  disabled={nowPlaying?.status !== "played"} >
+                  type="submit" >
             Send
           </button>
         </form>

@@ -10,11 +10,14 @@ export const scheduleSpeakVoiceRecordings = function() {
         voiceRecordingTimeoutId = state.voiceRecordingTimeoutId,
         voiceRecordingMap = state.voiceRecordingMap;
 
-  if(voiceRecordingTimeoutId) {
+  if(voiceRecordingTimeoutId > 0) {
     return;
   }
 
   const nowPlaying = queueMap[playback.nowPlayingUuid];
+  if(!nowPlaying) {
+    return;
+  }
 
   const arr = getPositionMilliseconds(nowPlaying, nowPlaying.startedAt),
         position = arr[0],
@@ -39,5 +42,4 @@ export const scheduleSpeakVoiceRecordings = function() {
     type: "voiceRecording/schedulePlay",
     payload: { timeoutId },
   });
-// eslint-disable-next-line
 }

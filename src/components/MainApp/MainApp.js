@@ -316,20 +316,22 @@ function MainApp(props) {
 
     const timestampMilliseconds = Date.now() - nowPlaying.startedAt,
           remainingMilliseconds = nowPlaying.durationMilliseconds - timestampMilliseconds,
-          timeoutDelay = remainingMilliseconds - 4000;
+          timeoutDelay = remainingMilliseconds - 4850;
 
     setTimeout(initializeAutoplay, timeoutDelay);
   }
 
   const initializeAutoplay = function() {
 
-    console.log('TODO: pre-loading for autoplay');
+    if(!nextUp) {
+      return;
+    }
 
     const timestampMilliseconds = Date.now() - nowPlaying.startedAt,
           remainingMilliseconds = nowPlaying.durationMilliseconds - timestampMilliseconds,
           timeoutDelay = remainingMilliseconds;
 
-    const isQueued = props.playbackControls.queue(nextUp.uuid);
+    const isQueued = props.playbackControls.queue(nextUp?.uuid);
     let pause = true,
         skip = false,
         play = true;
@@ -345,7 +347,6 @@ function MainApp(props) {
     }
 
     const settings = { pause, skip, play };
-    console.log(settings)
 
     setTimeout(function() {
       props.dispatch({

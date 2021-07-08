@@ -18,7 +18,7 @@ import { store } from '../../utils/redux';
 export const playbackControlStart = function(playback, queue) {
   const arr = getPositionMilliseconds(queue, queue.startedAt),
         positionMilliseconds = arr[0],
-        instrument = arr[2],
+        instruments = arr[2],
         playbackService = queue.track.service;
   if(playbackService === SERVICE_APPLE_MUSIC) {
     const music = window.MusicKit.getInstance();
@@ -56,6 +56,7 @@ export const playbackControlStart = function(playback, queue) {
     });
   } else if(playbackService === SERVICE_YOUTUBE) {
     if(typeof playback.youTubeApi.getPlayerState() === "number") {
+      playback.youTubeApi.setVolume(playback.volumeLevel.audio * 100);
       playback.youTubeApi.seekTo(Math.floor(positionMilliseconds / 1000));
       playback.youTubeApi.playVideo();
     } else {
@@ -65,18 +66,22 @@ export const playbackControlStart = function(playback, queue) {
         });
     }
   } else if(playbackService === SERVICE_JUKEBOX_RADIO) {
-    const trackUuid = queue.track.uuid,
-          audio = playback.files[trackUuid][instrument];
-    if(positionMilliseconds > 0) {
-      audio.currentTime = positionMilliseconds / 1000;
+    for(let instrument of instruments) {
+      const trackUuid = queue.track.uuid,
+            audio = playback.files[trackUuid][instrument];
+      if(positionMilliseconds > 0) {
+        audio.currentTime = positionMilliseconds / 1000;
+      }
+      audio.volume = playback.volumeLevel.audio;
+      audio.play();
     }
-    audio.play();
   } else if(playbackService === SERVICE_AUDIUS) {
     const trackUuid = queue.track.uuid,
           audio = playback.files[trackUuid];
     if(positionMilliseconds > 0) {
       audio.currentTime = positionMilliseconds / 1000;
     }
+    audio.volume = playback.volumeLevel.audio;
     audio.play();
   }
 };
@@ -126,28 +131,28 @@ export const playbackControlPause = function(playback, queue) {
  *     - playback (singleton instance in the React application)
  *     - queue
  */
-export const playbackControlPlay = function(playback, queue) {
-  const playbackService = queue.track.service;
-
-  if(playbackService === SERVICE_APPLE_MUSIC) {
-    const music = window.MusicKit.getInstance();
-    music.play();
-  } else if(playbackService === SERVICE_SPOTIFY) {
-    playback.spotifyApi.play();
-  } else if(playbackService === SERVICE_YOUTUBE) {
-    playback.youTubeApi.playVideo();
-  } else if(playbackService === SERVICE_JUKEBOX_RADIO) {
-    const arr = getPositionMilliseconds(queue, queue.startedAt),
-          instrument = arr[2],
-          trackUuid = queue.track.uuid,
-          audio = playback.files[trackUuid][instrument];
-    audio.play();
-  } else if(playbackService === SERVICE_AUDIUS) {
-    const trackUuid = queue.track.uuid,
-          audio = playback.files[trackUuid];
-    audio.play();
-  }
-}
+// export const playbackControlPlay = function(playback, queue) {
+//   const playbackService = queue.track.service;
+//
+//   if(playbackService === SERVICE_APPLE_MUSIC) {
+//     const music = window.MusicKit.getInstance();
+//     music.play();
+//   } else if(playbackService === SERVICE_SPOTIFY) {
+//     playback.spotifyApi.play();
+//   } else if(playbackService === SERVICE_YOUTUBE) {
+//     playback.youTubeApi.playVideo();
+//   } else if(playbackService === SERVICE_JUKEBOX_RADIO) {
+//     const arr = getPositionMilliseconds(queue, queue.startedAt),
+//           instrument = arr[2],
+//           trackUuid = queue.track.uuid,
+//           audio = playback.files[trackUuid][instrument];
+//     audio.play();
+//   } else if(playbackService === SERVICE_AUDIUS) {
+//     const trackUuid = queue.track.uuid,
+//           audio = playback.files[trackUuid];
+//     audio.play();
+//   }
+// }
 
 
 /*
@@ -158,7 +163,7 @@ export const playbackControlPlay = function(playback, queue) {
 export const playbackControlSeek = function(playback, queue, startedAt) {
   const arr = getPositionMilliseconds(queue, startedAt),
         positionMilliseconds = arr[0],
-        instrument = arr[2],
+        instruments = new Set(arr[2]),
         playbackService = queue.track.service;
 
   if(playbackService === SERVICE_APPLE_MUSIC) {
@@ -174,17 +179,16 @@ export const playbackControlSeek = function(playback, queue, startedAt) {
   } else if(playbackService === SERVICE_SPOTIFY) {
     playback.spotifyApi.seek(positionMilliseconds);
   } else if(playbackService === SERVICE_YOUTUBE) {
-    console.log(Math.floor(positionMilliseconds / 1000))
     playback.youTubeApi.seekTo(Math.floor(positionMilliseconds / 1000));
     // playback.youTubeApi.playVideo();
   } else if(playbackService === SERVICE_JUKEBOX_RADIO) {
+
     const trackUuid = queue.track.uuid,
-          audios = playback.files[trackUuid],
-          audio = audios[instrument];
+          audios = playback.files[trackUuid];
 
     // Pause everything else so only the new stem is played
-    for(const [instr, aud] of Object.entries(audios)) {
-      if(instr === instrument) {
+    for(const [instrument, aud] of Object.entries(audios)) {
+      if(instruments.has(instrument)) {
         continue;
       }
       if(!aud.paused) {
@@ -192,8 +196,11 @@ export const playbackControlSeek = function(playback, queue, startedAt) {
       }
     }
 
-    audio.currentTime = positionMilliseconds / 1000;
-    audio.play();
+    for(let instrument of instruments) {
+      const audio = audios[instrument];
+      audio.currentTime = positionMilliseconds / 1000;
+      audio.play();
+    }
   } else if(playbackService === SERVICE_AUDIUS) {
     const trackUuid = queue.track.uuid,
           audio = playback.files[trackUuid];
@@ -271,6 +278,7 @@ export const playbackChangeVolume = function(playback, queue, volumeLevel) {
       audios.drums.volume = volumeLevel;
       audios.vocals.volume = volumeLevel;
       audios.bass.volume = volumeLevel;
+      audios.piano.volume = volumeLevel;
       audios.other.volume = volumeLevel;
     }
   } catch (e) {

@@ -5,7 +5,7 @@ import { fetchNextTrack, fetchPrevTrack } from '../PlaybackApp/Player/network';
 export const onpause = function() {
   const reduxState = store.getState();
   if(reduxState.playback.action !== "paused") {
-    console.log('Paused, Hmm?');
+    // console.log('Paused, Hmm?');
     return;
   }
   const action = null;
@@ -18,7 +18,7 @@ export const onpause = function() {
 export const onplay = function() {
   const reduxState = store.getState();
   if(reduxState.playback.action !== "played") {
-    console.log('Played, Hmm?');
+    // console.log('Played, Hmm?');
     return;
   }
   const action = null;
@@ -33,7 +33,7 @@ export const onseeked = function() {
 
   // TODO: should be "seeked"
   if(reduxState.playback.action !== "played") {
-    console.log('Seeked, Hmm?');
+    // console.log('Seeked, Hmm?');
     return;
   }
   const action = null;
@@ -52,6 +52,8 @@ export const handleNext = async function() {
 
   const main = reduxState.main,
         action = main.actions[0];
+
+  store.dispatch({ type: "feedApp/resetTextComment" });
 
   if(action.settings.pause) {
     store.dispatch({
@@ -110,6 +112,8 @@ export const handlePrev = async function() {
   store.dispatch({ type: 'main/actionStart' });
   store.dispatch({ type: 'main/disable' });
   store.dispatch({ type: 'stream/prevTrack' });
+
+  store.dispatch({ type: "feedApp/resetTextComment" });
 
   store.dispatch({
     type: "main/addAction",

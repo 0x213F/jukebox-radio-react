@@ -10,6 +10,8 @@ import TheoryNotation from '../TheoryNotation/TheoryNotation';
 
 import styles from './ABCNotationCompose.module.css';
 
+import modalStyles from '../../../styles/Modal.module.css';
+
 
 function ABCNotationCompose(props) {
 
@@ -51,9 +53,9 @@ function ABCNotationCompose(props) {
   return (
     <Modal isOpen={isOpen}
            ariaHideApp={false}
-           className={styles.Modal}
-           overlayClassName={styles.ModalOverlay}>
-      <button className={styles.CloseModal}
+           className={modalStyles.Modal}
+           overlayClassName={modalStyles.ModalOverlay}>
+      <button className={modalStyles.CloseModal}
               onClick={closeModal}
               disabled={isDisabled}>
         {iconBack}
