@@ -9,7 +9,6 @@
   display: block;
   width: 100%;
   position: absolute;
-  top: 18px;
 }
 
 .ProgressPointer {
@@ -17,7 +16,7 @@
   display: block;
   height: 12px;
   width: 8px;
-  top: 13px;
+  top: -5px;
   cursor: pointer;
   z-index: 8;
   transition-property: left;

@@ -1,5 +1,5 @@
-import { store } from '../../utils/redux';
-import { fetchNextTrack, fetchPrevTrack } from '../PlaybackApp/Player/network';
+import { store } from '../../../utils/redux';
+import { fetchNextTrack, fetchPrevTrack } from './network';
 
 
 export const onpause = function() {

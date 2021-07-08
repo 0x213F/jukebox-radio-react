@@ -1,8 +1,8 @@
 import React, { useState } from "react";
 import { connect } from 'react-redux';
 import styles from './ChildProgressBar.module.css';
-import { iconMarker, iconTrash, iconPlay } from '../icons';
-import { getProgressMilliseconds } from '../utils';
+import { iconMarker, iconTrash, iconPlay } from '../../icons';
+import { getProgressMilliseconds } from '../../utils';
 
 
 function ChildProgressBar(props) {

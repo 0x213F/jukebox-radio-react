@@ -33,8 +33,8 @@ import {
   iconInstrumentOther,
 } from './Interval/icons';
 import { iconBack } from './../../icons';
-import { SERVICE_JUKEBOX_RADIO } from './../../config/services';
-import ParentProgressBar from '../PlaybackApp/ParentProgressBar/ParentProgressBar';
+import * as services from './../../config/services';
+import ProgressBar from '../PlaybackApp/ProgressBar/ProgressBar';
 import { getPositionMilliseconds } from '../PlaybackApp/utils';
 
 
@@ -53,7 +53,7 @@ function TrackDetailApp(props) {
         nowPlaying = queueMap[playback.nowPlayingUuid];
 
   const intervalModificationsOptions = (
-    nowPlaying?.track?.service === SERVICE_JUKEBOX_RADIO ?
+    nowPlaying?.track?.service === services.JUKEBOX_RADIO ?
     [{value: 'muted', name: 'Trim'}, {value: 'stems', name: 'Stem isolation'}] :
     [{value: 'muted', name: 'Trim'}]
   );
@@ -655,7 +655,7 @@ function TrackDetailApp(props) {
         }
 
         <div className={styles.ProgressBar}>
-          <ParentProgressBar mode={tab}
+          <ProgressBar mode={tab}
                              playbackControls={props.playbackControls}
                              deleteTrackMarker={deleteTrackMarker}
                              deleteTrackInterval={deleteTrackInterval}
@@ -663,7 +663,7 @@ function TrackDetailApp(props) {
                              allowMarkerDelete={allowMarkerDelete}
                              allowIntervalPlay={allowIntervalPlay}
                              allowIntervalDelete={allowIntervalDelete}>
-          </ParentProgressBar>
+          </ProgressBar>
         </div>
       </div>
     </Modal>

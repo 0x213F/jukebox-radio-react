@@ -1,5 +1,5 @@
-import { store } from '../../utils/redux';
-import { getPositionMilliseconds } from '../PlaybackApp/utils';
+import { store } from '../../../utils/redux';
+import { getPositionMilliseconds } from '../utils';
 
 
 export const scheduleSpeakVoiceRecordings = function() {

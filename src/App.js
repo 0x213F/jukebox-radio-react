@@ -7,12 +7,12 @@ import { fetchVerifyToken } from './components/Login/network';
 import {
   fetchStreamGet,
   fetchPauseTrack,
-} from './components/PlaybackApp/Player/network';
+} from './components/PlaybackApp/StreamEngine/network';
 import { fetchGetUserSettings } from './components/UserSettings/network';
 import { fetchQueueList } from './components/QueueApp/network'
 import { store } from './utils/redux'
 import Login from './components/Login/Login';
-import PlaybackApp from './components/PlaybackApp/PlaybackApp';
+import PlaybackEngine from './components/PlaybackApp/PlaybackEngine/PlaybackEngine';
 import { useEffect, useState } from "react";
 import { Provider } from 'react-redux';
 import { BrowserRouter as Router } from "react-router-dom";
@@ -175,7 +175,7 @@ function App() {
     <Router>
       <Provider store={store}>
         <div className="app-main-container">
-          <PlaybackApp />
+          <PlaybackEngine />
         </div>
       </Provider>
     </Router>

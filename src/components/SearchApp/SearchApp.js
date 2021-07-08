@@ -5,13 +5,7 @@ import styles from './SearchApp.module.css';
 import { fetchSearchMusicLibrary, fetchCreateQueue } from './network';
 import SearchResult from './SearchResult/SearchResult';
 import Upload from '../Upload/Upload';
-import {
-  SERVICE_AUDIUS,
-  SERVICE_SPOTIFY,
-  SERVICE_YOUTUBE,
-  SERVICE_JUKEBOX_RADIO,
-  SERVICE_APPLE_MUSIC,
-} from '../../config/services';
+import * as services from '../../config/services';
 import { fetchQueueList } from '../QueueApp/network';
 import { iconUpload } from './icons';
 import {
@@ -162,32 +156,32 @@ function SearchApp(props) {
       <div className={styles.SearchResultsContainer}>
         <div className={styles.ServiceCheckboxContainer}>
           <button className={styles.ServiceCheckbox}
-                  onClick={generateServiceHandler(SERVICE_SPOTIFY)}
-                  style={(search.service === SERVICE_SPOTIFY && {border: "2px solid rgba(29, 185, 84, 1)"}) || {}}>
+                  onClick={generateServiceHandler(services.SPOTIFY)}
+                  style={(search.service === services.SPOTIFY && {border: "2px solid rgba(29, 185, 84, 1)"}) || {}}>
             <div className={styles.ServiceCheckboxLogoContainer}>{iconSpotify}</div>
           </button>
 
           <button className={styles.ServiceCheckbox}
-                  onClick={generateServiceHandler(SERVICE_YOUTUBE)}
-                  style={(search.service === SERVICE_YOUTUBE && {border: "2px solid rgba(255, 0, 0, 1)"}) || {}}>
+                  onClick={generateServiceHandler(services.YOUTUBE)}
+                  style={(search.service === services.YOUTUBE && {border: "2px solid rgba(255, 0, 0, 1)"}) || {}}>
             <div className={styles.ServiceCheckboxLogoContainer}>{iconYouTube}</div>
           </button>
 
           <button className={styles.ServiceCheckbox}
-                  onClick={generateServiceHandler(SERVICE_APPLE_MUSIC)}
-                  style={(search.service === SERVICE_APPLE_MUSIC && {border: "2px solid rgba(251, 92, 116, 1)"}) || {}}>
+                  onClick={generateServiceHandler(services.APPLE_MUSIC)}
+                  style={(search.service === services.APPLE_MUSIC && {border: "2px solid rgba(251, 92, 116, 1)"}) || {}}>
             <div className={styles.ServiceCheckboxLogoContainer}>{iconAppleMusic}</div>
           </button>
 
           <button className={styles.ServiceCheckbox}
-                  onClick={generateServiceHandler(SERVICE_AUDIUS)}
-                  style={(search.service === SERVICE_AUDIUS && {border: "2px solid rgba(126, 27, 204, 1)"}) || {}}>
+                  onClick={generateServiceHandler(services.AUDIUS)}
+                  style={(search.service === services.AUDIUS && {border: "2px solid rgba(126, 27, 204, 1)"}) || {}}>
             <div className={styles.ServiceCheckboxLogoContainer}>{iconAudius}</div>
           </button>
 
           <button className={styles.ServiceCheckbox}
-                  onClick={generateServiceHandler(SERVICE_JUKEBOX_RADIO)}
-                  style={(search.service === SERVICE_JUKEBOX_RADIO && {border: "2px solid rgba(0, 71, 255, 1)"}) || {}}>
+                  onClick={generateServiceHandler(services.JUKEBOX_RADIO)}
+                  style={(search.service === services.JUKEBOX_RADIO && {border: "2px solid rgba(0, 71, 255, 1)"}) || {}}>
             <div className={styles.ServiceCheckboxLogoContainer}>{iconLogoAlt}</div>
           </button>
         </div>

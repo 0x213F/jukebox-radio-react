@@ -130,7 +130,8 @@ export const cycleVolumeLevel = function(volumeLevel) {
 
 
 export const featureIsEnabled = function(stateLike) {
-  return stateLike.main.enabled;
+  return true;
+  // return stateLike.main.enabled;
   // const { queueMap, playback, action, main } = stateLike,
   //       queue = queueMap[playback.nowPlayingUuid];
   //

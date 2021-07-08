@@ -1,26 +1,20 @@
-import { getPositionMilliseconds } from './utils';
+import { getPositionMilliseconds } from '../utils';
 
-import {
-  SERVICE_APPLE_MUSIC,
-  SERVICE_SPOTIFY,
-  SERVICE_YOUTUBE,
-  SERVICE_JUKEBOX_RADIO,
-  SERVICE_AUDIUS,
-} from '../../config/services';
-import { store } from '../../utils/redux';
+import * as services from '../../../config/services';
+import { store } from '../../../utils/redux';
 
 
 /*
- * Executes the "start" of playback given:
- *     - playback (singleton instance in the React application)
- *     - queue
+ * Executes the "start" of playback.
+ *
+ * NOTE: this should only be called by the PlaybackEngine!
  */
-export const playbackControlStart = function(playback, queue) {
+export const start = function(playback, queue) {
   const arr = getPositionMilliseconds(queue, queue.startedAt),
         positionMilliseconds = arr[0],
         instruments = arr[2],
         playbackService = queue.track.service;
-  if(playbackService === SERVICE_APPLE_MUSIC) {
+  if(playbackService === services.APPLE_MUSIC) {
     const music = window.MusicKit.getInstance();
     if(queue.track.format === 'track') {
       music.setQueue({ song: queue.track.externalId, startTime: positionMilliseconds / 1000 })
@@ -49,12 +43,12 @@ export const playbackControlStart = function(playback, queue) {
             });
         });
     }
-  } else if(playbackService === SERVICE_SPOTIFY) {
+  } else if(playbackService === services.SPOTIFY) {
     playback.spotifyApi.play({
       uris: [queue.track.externalId],
       position_ms: positionMilliseconds,
     });
-  } else if(playbackService === SERVICE_YOUTUBE) {
+  } else if(playbackService === services.YOUTUBE) {
     if(typeof playback.youTubeApi.getPlayerState() === "number") {
       playback.youTubeApi.setVolume(playback.volumeLevel.audio * 100);
       playback.youTubeApi.seekTo(Math.floor(positionMilliseconds / 1000));
@@ -65,7 +59,7 @@ export const playbackControlStart = function(playback, queue) {
           payload: { autoplay: true },
         });
     }
-  } else if(playbackService === SERVICE_JUKEBOX_RADIO) {
+  } else if(playbackService === services.JUKEBOX_RADIO) {
     for(let instrument of instruments) {
       const trackUuid = queue.track.uuid,
             audio = playback.files[trackUuid][instrument];
@@ -75,7 +69,7 @@ export const playbackControlStart = function(playback, queue) {
       audio.volume = playback.volumeLevel.audio;
       audio.play();
     }
-  } else if(playbackService === SERVICE_AUDIUS) {
+  } else if(playbackService === services.AUDIUS) {
     const trackUuid = queue.track.uuid,
           audio = playback.files[trackUuid];
     if(positionMilliseconds > 0) {
@@ -86,16 +80,15 @@ export const playbackControlStart = function(playback, queue) {
   }
 };
 
-
 /*
- * "Pauses" the current playback given:
- *     - playback (singleton instance in the React application)
- *     - queue
+ * "Pauses" the current playback.
+ *
+ * NOTE: this should only be called by the PlaybackEngine!
  */
-export const playbackControlPause = function(playback, queue) {
+export const pause = function(playback, queue) {
   const playbackService = queue.track.service;
 
-  if(playbackService === SERVICE_APPLE_MUSIC) {
+  if(playbackService === services.APPLE_MUSIC) {
     const music = window.MusicKit.getInstance();
     music.pause()
       .then(() => {
@@ -105,11 +98,11 @@ export const playbackControlPause = function(playback, queue) {
           payload: { action },
         });
       });
-  } else if(playbackService === SERVICE_SPOTIFY) {
+  } else if(playbackService === services.SPOTIFY) {
     playback.spotifyApi.pause();
-  } else if(playbackService === SERVICE_YOUTUBE) {
+  } else if(playbackService === services.YOUTUBE) {
     playback.youTubeApi.pauseVideo();
-  } else if(playbackService === SERVICE_JUKEBOX_RADIO) {
+  } else if(playbackService === services.JUKEBOX_RADIO) {
     const trackUuid = queue.track.uuid,
           audios = playback.files[trackUuid];
     // eslint-disable-next-line
@@ -118,55 +111,55 @@ export const playbackControlPause = function(playback, queue) {
         audio.pause();
       }
     }
-  } else if(playbackService === SERVICE_AUDIUS) {
+  } else if(playbackService === services.AUDIUS) {
     const trackUuid = queue.track.uuid,
           audio = playback.files[trackUuid];
     audio.pause();
   }
 }
 
-
 /*
- * "Plays" the current playback given:
- *     - playback (singleton instance in the React application)
- *     - queue
+ * "Plays" the current playback.
+ *
+ * NOTE: this should only be called by the PlaybackEngine
+ * NOTE: this is currently unused, but in the future, it should be used in
+ *       order to optimize playback for certain services.
  */
 // export const playbackControlPlay = function(playback, queue) {
 //   const playbackService = queue.track.service;
 //
-//   if(playbackService === SERVICE_APPLE_MUSIC) {
+//   if(playbackService === services.APPLE_MUSIC) {
 //     const music = window.MusicKit.getInstance();
 //     music.play();
-//   } else if(playbackService === SERVICE_SPOTIFY) {
+//   } else if(playbackService === services.SPOTIFY) {
 //     playback.spotifyApi.play();
-//   } else if(playbackService === SERVICE_YOUTUBE) {
+//   } else if(playbackService === services.YOUTUBE) {
 //     playback.youTubeApi.playVideo();
-//   } else if(playbackService === SERVICE_JUKEBOX_RADIO) {
+//   } else if(playbackService === services.JUKEBOX_RADIO) {
 //     const arr = getPositionMilliseconds(queue, queue.startedAt),
 //           instrument = arr[2],
 //           trackUuid = queue.track.uuid,
 //           audio = playback.files[trackUuid][instrument];
 //     audio.play();
-//   } else if(playbackService === SERVICE_AUDIUS) {
+//   } else if(playbackService === services.AUDIUS) {
 //     const trackUuid = queue.track.uuid,
 //           audio = playback.files[trackUuid];
 //     audio.play();
 //   }
 // }
 
-
 /*
- * "Seeks" the current playback given to the expected position given:
- *     - playback (singleton instance in the React application)
- *     - queue
+ * "Seeks" the current playback given to the expected position.
+ *
+ * NOTE: this should only be called by the PlaybackEngine!
  */
-export const playbackControlSeek = function(playback, queue, startedAt) {
+export const seek = function(playback, queue, startedAt) {
   const arr = getPositionMilliseconds(queue, startedAt),
         positionMilliseconds = arr[0],
         instruments = new Set(arr[2]),
         playbackService = queue.track.service;
 
-  if(playbackService === SERVICE_APPLE_MUSIC) {
+  if(playbackService === services.APPLE_MUSIC) {
     const music = window.MusicKit.getInstance();
     music.seekToTime(positionMilliseconds / 1000)
       .then(() => {
@@ -176,12 +169,12 @@ export const playbackControlSeek = function(playback, queue, startedAt) {
           payload: { action },
         });
       });
-  } else if(playbackService === SERVICE_SPOTIFY) {
+  } else if(playbackService === services.SPOTIFY) {
     playback.spotifyApi.seek(positionMilliseconds);
-  } else if(playbackService === SERVICE_YOUTUBE) {
+  } else if(playbackService === services.YOUTUBE) {
     playback.youTubeApi.seekTo(Math.floor(positionMilliseconds / 1000));
     // playback.youTubeApi.playVideo();
-  } else if(playbackService === SERVICE_JUKEBOX_RADIO) {
+  } else if(playbackService === services.JUKEBOX_RADIO) {
 
     const trackUuid = queue.track.uuid,
           audios = playback.files[trackUuid];
@@ -201,7 +194,7 @@ export const playbackControlSeek = function(playback, queue, startedAt) {
       audio.currentTime = positionMilliseconds / 1000;
       audio.play();
     }
-  } else if(playbackService === SERVICE_AUDIUS) {
+  } else if(playbackService === services.AUDIUS) {
     const trackUuid = queue.track.uuid,
           audio = playback.files[trackUuid];
 
@@ -210,35 +203,16 @@ export const playbackControlSeek = function(playback, queue, startedAt) {
   }
 }
 
-
 /*
+ * "Queues" the next track. This is used as an optimization technique that
+ * some services support.
  *
+ * NOTE: this should only be called by the PlaybackEngine
  */
-export const playbackControlSkip = function(playback, nowPlaying) {
-  const playbackService = nowPlaying.track.service;
-
-  if(playbackService === SERVICE_APPLE_MUSIC) {
-    const music = window.MusicKit.getInstance();
-    music.skipToNextItem();
-  } else if(playbackService === SERVICE_SPOTIFY) {
-    playback.spotifyApi.skipToNext();
-  }
-}
-
-
-/*
- * "Queues" the (track) queue item up next given:
- *     - playback (singleton instance in the React application)
- *     - queue
- *     - nextUp
- *
- * In this context, queuing up the track means doing as much pre-loading as
- * possible.
- */
-export const playbackControlQueue = function(playback, onDeck) {
+export const queue = function(playback, onDeck) {
 
   // Apple Music
-  if(onDeck.track.service === SERVICE_APPLE_MUSIC) {
+  if(onDeck.track.service === services.APPLE_MUSIC) {
     const music = window.MusicKit.getInstance();
     music.playNext({
       song: onDeck.track.externalId,
@@ -247,13 +221,36 @@ export const playbackControlQueue = function(playback, onDeck) {
   }
 
   // Spotify
-  if(onDeck.track.service === SERVICE_SPOTIFY) {
+  if(onDeck.track.service === services.SPOTIFY) {
     playback.spotifyApi.queue(onDeck.track.externalId);
   }
 }
 
+/*
+ * "Skips" the current song. This is used as an optimization technique that
+ * some services support.
+ *
+ * NOTE: this should only be called by the PlaybackEngine!
+ */
+export const skip = function(playback, nowPlaying) {
+  const playbackService = nowPlaying.track.service;
 
-export const playbackChangeVolume = function(playback, queue, volumeLevel) {
+  if(playbackService === services.APPLE_MUSIC) {
+    const music = window.MusicKit.getInstance();
+    music.skipToNextItem();
+  } else if(playbackService === services.SPOTIFY) {
+    playback.spotifyApi.skipToNext();
+  }
+}
+
+/*
+ * Changes playback volume.
+ *
+ * NOTE: this should only be called by the PlaybackEngine!
+ * NOTE: there is one place in the code that calls this outside of the
+ *       PlaybackEngine and I'm going to let it slide for now!
+ */
+export const volume = function(playback, queue, volumeLevel) {
   const music = window.MusicKit.getInstance();
   music.volume = volumeLevel;
 

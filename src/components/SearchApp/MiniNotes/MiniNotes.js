@@ -2,10 +2,7 @@ import React from 'react';
 
 import { connect } from 'react-redux';
 
-import {
-  SERVICE_YOUTUBE,
-  SERVICE_APPLE_MUSIC,
-} from '../../../config/services';
+import * as services from '../../../config/services';
 import styles from './MiniNotes.module.css';
 
 
@@ -28,7 +25,7 @@ function MiniNotes(props) {
   }
 
   let extraStyle;
-  if((nowPlaying?.track?.service === SERVICE_YOUTUBE || nowPlaying?.track?.service === SERVICE_APPLE_MUSIC) && nowPlaying?.track?.format === 'video') {
+  if((nowPlaying?.track?.service === services.YOUTUBE || nowPlaying?.track?.service === services.APPLE_MUSIC) && nowPlaying?.track?.format === 'video') {
     if(stream.nowPlayingUuid === playback.nowPlayingUuid) {
       extraStyle = {
         marginTop: "205px",

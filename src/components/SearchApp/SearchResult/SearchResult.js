@@ -1,12 +1,6 @@
 import React, { useState } from 'react';
 import styles from './SearchResult.module.css';
-import {
-  SERVICE_SPOTIFY,
-  SERVICE_YOUTUBE,
-  SERVICE_APPLE_MUSIC,
-  SERVICE_JUKEBOX_RADIO,
-  SERVICE_AUDIUS,
-} from '../../../config/services';
+import * as services from '../../../config/services';
 import {
   iconSpotify,
   iconYouTube,
@@ -30,21 +24,21 @@ function SearchResult(props) {
   }
 
   let imgUrl = searchResult.img_url;
-  if(searchResult.provider === SERVICE_APPLE_MUSIC) {
+  if(searchResult.provider === services.APPLE_MUSIC) {
     imgUrl = imgUrl.replace("{w}", "300");
     imgUrl = imgUrl.replace("{h}", "300");
   }
 
   let serviceSvg;
-  if(searchResult.provider === SERVICE_SPOTIFY) {
+  if(searchResult.provider === services.SPOTIFY) {
     serviceSvg = iconSpotify;
-  } else if(searchResult.provider === SERVICE_YOUTUBE) {
+  } else if(searchResult.provider === services.YOUTUBE) {
     serviceSvg = iconYouTube;
-  } else if(searchResult.provider === SERVICE_APPLE_MUSIC) {
+  } else if(searchResult.provider === services.APPLE_MUSIC) {
     serviceSvg = iconAppleMusic;
-  } else if(searchResult.provider === SERVICE_JUKEBOX_RADIO) {
+  } else if(searchResult.provider === services.JUKEBOX_RADIO) {
     serviceSvg = iconLogoAlt;
-  } else if(searchResult.provider === SERVICE_AUDIUS) {
+  } else if(searchResult.provider === services.AUDIUS) {
     serviceSvg = iconAudius;
   }
 

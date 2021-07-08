@@ -3,14 +3,14 @@ import React, { useState, useEffect, useRef } from "react";
 import { connect } from 'react-redux';
 import Draggable from 'react-draggable';
 
-import styles from './ParentProgressBar.module.css';
+import styles from './ProgressBar.module.css';
 import { getPositionMilliseconds, getProgressMilliseconds, isPositionValid } from '../utils';
-import ChildProgressBar from '../ChildProgressBar/ChildProgressBar';
-import ProgressBarMarker from '../ProgressBarMarker/ProgressBarMarker';
+import ChildProgressBar from './ChildProgressBar/ChildProgressBar';
+import ProgressBarMarker from './ProgressBarMarker/ProgressBarMarker';
 import { iconSmallCircle } from '../icons';
 
 
-function ParentProgressBar(props) {
+function ProgressBar(props) {
 
   const DISABLE_ANIMATION = -1,
         ENABLE_ANIMATION = 0;
@@ -193,7 +193,7 @@ function ParentProgressBar(props) {
   }
 
   return (
-    <div ref={progressRef} className={styles.ParentProgressBar}>
+    <div ref={progressRef} className={styles.ProgressBar}>
       {queue?.track?.uuid &&
         <Draggable axis="x"
                    bounds="body"
@@ -254,4 +254,4 @@ const mapStateToProps = (state) => ({
 });
 
 
-export default connect(mapStateToProps)(ParentProgressBar);
+export default connect(mapStateToProps)(ProgressBar);

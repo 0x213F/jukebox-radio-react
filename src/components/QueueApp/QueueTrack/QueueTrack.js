@@ -5,10 +5,7 @@ import styles from './QueueTrack.module.css';
 import { iconEdit, iconRemove } from '../icons';
 import { durationPretty } from '../utils';
 
-import {
-  SERVICE_JUKEBOX_RADIO,
-  SERVICE_AUDIUS,
-} from '../../../config/services';
+import * as services from '../../../config/services';
 
 
 function QueueTrack(props) {
@@ -30,8 +27,8 @@ function QueueTrack(props) {
 
   const loadTrack = function(queue) {
     const rawAudioServices = new Set();
-    rawAudioServices.add(SERVICE_JUKEBOX_RADIO);
-    rawAudioServices.add(SERVICE_AUDIUS);
+    rawAudioServices.add(services.JUKEBOX_RADIO);
+    rawAudioServices.add(services.AUDIUS);
     if(!rawAudioServices.has(queue.track.service)) {
       // We only need to load audio from raw audio services.
       return;

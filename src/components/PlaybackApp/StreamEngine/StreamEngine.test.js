@@ -1,10 +1,9 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
-import ParentProgressBar from './ParentProgressBar';
-
+import StreamEngine from './StreamEngine';
 
 it('It should mount', () => {
   const div = document.createElement('div');
-  ReactDOM.render(<ParentProgressBar />, div);
+  ReactDOM.render(<StreamEngine />, div);
   ReactDOM.unmountComponentAtNode(div);
 });

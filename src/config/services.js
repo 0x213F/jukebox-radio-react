@@ -1,5 +1,5 @@
-export const SERVICE_APPLE_MUSIC = 'apple_music';
-export const SERVICE_SPOTIFY = 'spotify';
-export const SERVICE_YOUTUBE = 'youtube';
-export const SERVICE_AUDIUS = 'audius';
-export const SERVICE_JUKEBOX_RADIO = 'jukebox_radio';
+export const APPLE_MUSIC = 'apple_music';
+export const SPOTIFY = 'spotify';
+export const YOUTUBE = 'youtube';
+export const AUDIUS = 'audius';
+export const JUKEBOX_RADIO = 'jukebox_radio';

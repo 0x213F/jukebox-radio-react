@@ -1,9 +1,9 @@
 import React, { useState } from "react";
 import { connect } from 'react-redux';
 import styles from './ProgressBarMarker.module.css';
-import { iconTrash, iconPlay, iconMarkerExtension, iconStop } from '../icons';
-import { getProgressMilliseconds } from '../utils';
-import { fetchStreamQueueIntervalStop } from '../../TrackDetailApp/Interval/network';
+import { iconTrash, iconPlay, iconMarkerExtension, iconStop } from '../../icons';
+import { getProgressMilliseconds } from '../../utils';
+import { fetchStreamQueueIntervalStop } from '../../../TrackDetailApp/Interval/network';
 
 
 function ProgressBarMarker(props) {

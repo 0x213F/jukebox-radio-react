@@ -1,7 +1,4 @@
-import {
-  SERVICE_SPOTIFY,
-  SERVICE_APPLE_MUSIC,
-} from '../../config/services';
+import * as services from '../../config/services';
 
 /*
  * Set service used for search.
@@ -12,13 +9,13 @@ export const searchSetService = function(state, payload) {
 
   localStorage.setItem('searchService', service);
 
-  if(service === SERVICE_APPLE_MUSIC) {
+  if(service === services.APPLE_MUSIC) {
     const music = window.MusicKit.getInstance();
     if(!music.musicUserToken) {
       music.authorize();
       return state;
     }
-  } else if(service === SERVICE_SPOTIFY) {
+  } else if(service === services.SPOTIFY) {
     if(userSettings && !userSettings.spotify.accessToken) {
       window.location.href = userSettings.spotify.authorizationUrl;
       return state;

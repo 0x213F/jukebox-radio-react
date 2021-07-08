@@ -1,10 +1,10 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
-import ParentProgressBar from './ChildProgressBar';
+import ProgressBar from './ProgressBar';
 
 
 it('It should mount', () => {
   const div = document.createElement('div');
-  ReactDOM.render(<ChildProgressBar />, div);
+  ReactDOM.render(<ProgressBar />, div);
   ReactDOM.unmountComponentAtNode(div);
 });

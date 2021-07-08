@@ -5,11 +5,11 @@ import { CircularProgressbarWithChildren, buildStyles } from 'react-circular-pro
 import 'react-circular-progressbar/dist/styles.css';
 
 import { cycleVolumeLevel, featureIsEnabled } from '../../PlaybackApp/utils';
-import { playbackChangeVolume } from '../../PlaybackApp/controls';
+import * as controls from '../../PlaybackApp/PlaybackEngine/controls';
 import { iconNextTrack, iconPrevTrack } from '../../PlaybackApp/icons';
-import ParentProgressBar from '../../PlaybackApp/ParentProgressBar/ParentProgressBar';
+import ProgressBar from '../../PlaybackApp/ProgressBar/ProgressBar';
 import { iconSpotify, iconYouTube, iconAppleMusic, iconLogoAlt, iconAudius } from '../../../icons';
-import { SERVICE_SPOTIFY, SERVICE_YOUTUBE, SERVICE_APPLE_MUSIC, SERVICE_JUKEBOX_RADIO, SERVICE_AUDIUS } from '../../../config/services';
+import * as services from '../../../config/services';
 import UserSettings from '../../UserSettings/UserSettings'
 
 import styles from './BottomBar.module.css';
@@ -56,15 +56,15 @@ function BottomBar(props) {
   }
 
   let serviceSvg;
-  if(nowPlayingTrackService === SERVICE_SPOTIFY) {
+  if(nowPlayingTrackService === services.SPOTIFY) {
     serviceSvg = iconSpotify;
-  } else if(nowPlayingTrackService === SERVICE_YOUTUBE) {
+  } else if(nowPlayingTrackService === services.YOUTUBE) {
     serviceSvg = iconYouTube;
-  } else if(nowPlayingTrackService === SERVICE_APPLE_MUSIC) {
+  } else if(nowPlayingTrackService === services.APPLE_MUSIC) {
     serviceSvg = iconAppleMusic;
-  } else if(nowPlayingTrackService === SERVICE_JUKEBOX_RADIO) {
+  } else if(nowPlayingTrackService === services.JUKEBOX_RADIO) {
     serviceSvg = iconLogoAlt;
-  } else if(nowPlayingTrackService === SERVICE_AUDIUS) {
+  } else if(nowPlayingTrackService === services.AUDIUS) {
     serviceSvg = iconAudius;
   } else {
     serviceSvg = iconLogoAlt;
@@ -170,7 +170,7 @@ function BottomBar(props) {
    */
   const handleCycleVolumeLevel = function() {
     const nextVolumeLevel = cycleVolumeLevel(audioVolumeLevel);
-    playbackChangeVolume(playback, nowPlaying, nextVolumeLevel);
+    controls.volume(playback, nowPlaying, nextVolumeLevel);
     props.dispatch({ type: 'playback/cycleVolumeLevelAudio' });
   }
 
@@ -181,14 +181,14 @@ function BottomBar(props) {
     <div className={styles.BottomBar}>
 
       <div className={styles.ProgressBarContainer}>
-        <ParentProgressBar queue={nowPlaying}
+        <ProgressBar queue={nowPlaying}
                            mode={"player"}
                            playbackControls={props.playbackControls}
                            allowMarkerSeek={true}
                            allowMarkerDelete={false}
                            allowIntervalPlay={false}
                            allowIntervalDelete={false}>
-        </ParentProgressBar>
+        </ProgressBar>
       </div>
 
       <div className={styles.Settings}>

@@ -3,31 +3,21 @@ import { useEffect, useState } from "react";
 import { connect } from 'react-redux';
 import YouTube from 'react-youtube';
 
-import MainApp from '../MainApp/MainApp';
-import { fetchGetUserSettings } from '../UserSettings/network';
-import {
-  SERVICE_YOUTUBE,
-  SERVICE_APPLE_MUSIC,
-  SERVICE_SPOTIFY,
-} from '../../config/services';
-import { appendScript } from '../../utils/async';
-import { store } from '../../utils/redux';
+import StreamEngine from '../StreamEngine/StreamEngine';
+import { fetchGetUserSettings } from '../../UserSettings/network';
+import * as services from '../../../config/services';
+import { appendScript } from '../../../utils/async';
+import { store } from '../../../utils/redux';
 
-import {
-  playbackControlStart,
-  playbackControlSeek,
-  playbackControlPause,
-  playbackControlSkip,
-  playbackControlQueue,
-} from './controls';
-import { getPositionMilliseconds, updateSpotifyPlayer } from './utils';
-import styles from './PlaybackApp.module.css';
+import * as controls from './controls';
+import { getPositionMilliseconds, updateSpotifyPlayer } from '../utils';
+import styles from './PlaybackEngine.module.css';
 
 
 const SpotifyWebApi = require('spotify-web-api-js');
 
 
-function PlaybackApp(props) {
+function PlaybackEngine(props) {
 
   /*
    * 🏗
@@ -85,7 +75,7 @@ function PlaybackApp(props) {
       nowPlaying.startedAt : Date.now() - timestampMilliseconds
     );
     nowPlaying.startedAt = startedAt;
-    playbackControlSeek(playback, nowPlaying, startedAt);
+    controls.seek(playback, nowPlaying, startedAt);
 
     // We need to update the queue object as well.
     props.dispatch({
@@ -133,7 +123,7 @@ function PlaybackApp(props) {
     // Clear scheduled "seek"
     props.dispatch({ type: 'playback/clearSeekTimeoutId' });
 
-    playbackControlPause(playback, nowPlaying);
+    controls.pause(playback, nowPlaying);
 
     // We need to update the queue object as well.
     props.dispatch({
@@ -191,11 +181,11 @@ function PlaybackApp(props) {
     nowPlaying.startedAt = startedAt;
 
     if(!fake) {
-      playbackControlStart(playback, nowPlaying);
+      controls.start(playback, nowPlaying);
     } else {
       // NOTE: if faking a MusicKit play, then we must update the playback
       //       action as complete.
-      if(nowPlaying.track.service === SERVICE_APPLE_MUSIC) {
+      if(nowPlaying.track.service === services.APPLE_MUSIC) {
         props.dispatch({
           type: 'playback/action',
           payload: { action: null },
@@ -224,12 +214,12 @@ function PlaybackApp(props) {
   const queue = function(queueUuid) {
     const queue = queueMap[queueUuid],
           shouldQueueAppleMusic = (
-            nowPlaying.track.service === SERVICE_APPLE_MUSIC &&
-            queue.track.service === SERVICE_APPLE_MUSIC
+            nowPlaying.track.service === services.APPLE_MUSIC &&
+            queue.track.service === services.APPLE_MUSIC
           ),
           shouldQueueSpotify = (
-            nowPlaying.track.service === SERVICE_SPOTIFY &&
-            queue.track.service === SERVICE_SPOTIFY &&
+            nowPlaying.track.service === services.SPOTIFY &&
+            queue.track.service === services.SPOTIFY &&
             queue.playbackIntervals[0].startPosition === 0
           );
 
@@ -237,7 +227,7 @@ function PlaybackApp(props) {
       return false;
     }
 
-    playbackControlQueue(playback, queue);
+    controls.queue(playback, queue);
     console.log('queued!')
 
     return true;
@@ -275,7 +265,7 @@ function PlaybackApp(props) {
     // Clear scheduled "seek"
     props.dispatch({ type: 'playback/clearSeekTimeoutId' });
 
-    playbackControlSkip(playback, nowPlaying);
+    controls.skip(playback, nowPlaying);
 
     // We need to update the queue object as well.
     // const onDeck = queueMap[playback.onDeckUuid];
@@ -487,7 +477,7 @@ function PlaybackApp(props) {
   let appleMusicContainerStyle = {},
       appleMusicWidth = 300,
       appleMusicHeight = 169;
-  if(window.location.pathname !== '/app/welcome' && nowPlaying?.track?.service === SERVICE_APPLE_MUSIC && nowPlaying?.track?.format === 'video') {
+  if(window.location.pathname !== '/app/welcome' && nowPlaying?.track?.service === services.APPLE_MUSIC && nowPlaying?.track?.format === 'video') {
     if(stream.nowPlayingUuid === playback.nowPlayingUuid) {
       if(sideBar.tab === "feed" && feedApp.contentContainer) {
         const containerRect = feedApp.contentContainer;
@@ -549,7 +539,7 @@ function PlaybackApp(props) {
   let youTubeContainerStyle = {},
       youTubeWidth = 300,
       youTubeHeight = 169;
-  if(window.location.pathname !== '/app/welcome' && nowPlaying?.track?.service === SERVICE_YOUTUBE && nowPlaying?.track?.format === 'video') {
+  if(window.location.pathname !== '/app/welcome' && nowPlaying?.track?.service === services.YOUTUBE && nowPlaying?.track?.format === 'video') {
     if(stream.nowPlayingUuid === playback.nowPlayingUuid) {
       if(sideBar.tab === "feed" && feedApp.contentContainer) {
         const containerRect = feedApp.contentContainer;
@@ -587,7 +577,7 @@ function PlaybackApp(props) {
   }
 
   const currentQueue = nowPlaying,
-        isYouTube = currentQueue?.track?.service === SERVICE_YOUTUBE;
+        isYouTube = currentQueue?.track?.service === services.YOUTUBE;
 
   const youTubeStart = isYouTube ? Math.floor(currentQueue.playbackIntervals[0].startPosition / 1000) : null,
         youTubeVideoId = isYouTube ? currentQueue?.track?.externalId : null,
@@ -673,7 +663,7 @@ function PlaybackApp(props) {
            style={appleMusicContainerStyle}>
           <div id="apple-music-video-container"></div>
       </div>
-      <MainApp playbackControls={playbackControls}/>
+      <StreamEngine playbackControls={playbackControls}/>
     </>
   );
 }
@@ -691,4 +681,4 @@ const mapStateToProps = (state) => ({
 });
 
 
-export default connect(mapStateToProps)(PlaybackApp);
+export default connect(mapStateToProps)(PlaybackEngine);

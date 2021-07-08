@@ -4,13 +4,7 @@ import { connect } from 'react-redux';
 import Modal from 'react-modal';
 
 import { iconLogo, iconSpotify, iconYouTube, iconAppleMusic, iconAudius26, iconFolder } from '../../icons';
-import {
-  SERVICE_AUDIUS,
-  SERVICE_SPOTIFY,
-  SERVICE_YOUTUBE,
-  SERVICE_JUKEBOX_RADIO,
-  SERVICE_APPLE_MUSIC,
-} from '../../config/services';
+import * as services from '../../config/services';
 import styles from './WelcomeApp.module.css';
 
 
@@ -64,7 +58,7 @@ function WelcomeApp(props) {
         <div className={styles.PlaybackOptionContainer}>
 
           <div className={styles.PlaybackOption}
-                  onClick={generateServiceHandler(SERVICE_SPOTIFY)}
+                  onClick={generateServiceHandler(services.SPOTIFY)}
                   disabled={!userSettings}>
             <div className={styles.PlaybackOptionLogo}>
               {iconSpotify}
@@ -78,7 +72,7 @@ function WelcomeApp(props) {
           </div>
 
           <div className={styles.PlaybackOption}
-               onClick={generateServiceHandler(SERVICE_YOUTUBE)}>
+               onClick={generateServiceHandler(services.YOUTUBE)}>
             <div className={styles.PlaybackOptionLogo}>
               {iconYouTube}
             </div>
@@ -91,7 +85,7 @@ function WelcomeApp(props) {
           </div>
 
           <div className={styles.PlaybackOption}
-                  onClick={generateServiceHandler(SERVICE_APPLE_MUSIC)}>
+                  onClick={generateServiceHandler(services.APPLE_MUSIC)}>
             <div className={styles.PlaybackOptionLogo}>
               {iconAppleMusic}
             </div>
@@ -104,7 +98,7 @@ function WelcomeApp(props) {
           </div>
 
           <div className={styles.PlaybackOption}
-                  onClick={generateServiceHandler(SERVICE_AUDIUS)}>
+                  onClick={generateServiceHandler(services.AUDIUS)}>
             <div className={styles.PlaybackOptionLogo}>
               {iconAudius26}
             </div>
@@ -117,7 +111,7 @@ function WelcomeApp(props) {
           </div>
 
           <div className={styles.PlaybackOption}
-               onClick={generateServiceHandler(SERVICE_JUKEBOX_RADIO)}>
+               onClick={generateServiceHandler(services.JUKEBOX_RADIO)}>
             <div className={styles.PlaybackOptionLogo}>
               {iconFolder}
             </div>

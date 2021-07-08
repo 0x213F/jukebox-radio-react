@@ -1,4 +1,4 @@
-import { SERVICE_APPLE_MUSIC } from './../../config/services';
+import * as services from './../../config/services';
 
 
 export const finalizeQueues = function(state, queues) {
@@ -22,7 +22,7 @@ export const finalizeQueue = function(state, queue) {
 
   // Recursive case: parent node (queue item of format collection)
   if(copy.children?.length) {
-    if(copy.collection?.service === SERVICE_APPLE_MUSIC) {
+    if(copy.collection?.service === services.APPLE_MUSIC) {
       copy.collection.imageUrl = copy.collection.imageUrl.replace("{w}", "300");
       copy.collection.imageUrl = copy.collection.imageUrl.replace("{h}", "300");
     }
@@ -41,7 +41,7 @@ export const finalizeQueue = function(state, queue) {
   copy.childUuids = [];
 
   // Some data cleaning that probably shouldn't happen here.
-  if(copy.track?.service === SERVICE_APPLE_MUSIC) {
+  if(copy.track?.service === services.APPLE_MUSIC) {
     copy.track.imageUrl = copy.track.imageUrl.replace("{w}", "300");
     copy.track.imageUrl = copy.track.imageUrl.replace("{h}", "300");
   }
