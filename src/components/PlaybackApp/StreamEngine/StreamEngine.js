@@ -3,7 +3,7 @@ import React, { useEffect } from "react";
 import { connect } from 'react-redux';
 import { Switch, Route } from "react-router-dom";
 
-import MainApp from '../../MainApp/MainApp';
+import MainRouter from '../../MainRouter/MainRouter';
 import { fetchUpdateFeed } from '../../FeedApp/utils';
 import { fetchPauseTrack, fetchPlayTrack, fetchScan, fetchTrackGetFiles } from './network';
 import { getLeafQueue } from '../../QueueApp/utils';
@@ -486,7 +486,7 @@ function StreamEngine(props) {
   /*
    * 🎨
    */
-  return <MainApp />;
+  return <MainRouter />;
 }
 
 

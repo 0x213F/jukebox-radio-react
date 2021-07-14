@@ -8,7 +8,7 @@ import {
   fetchStreamGet,
   fetchPauseTrack,
 } from './components/PlaybackApp/StreamEngine/network';
-import { fetchGetUserSettings } from './components/UserSettings/network';
+import { fetchGetUserSettings } from './components/ModalApp/UserSettings/network';
 import { fetchQueueList } from './components/QueueApp/network'
 import { store } from './utils/redux'
 import Login from './components/Login/Login';

@@ -4,8 +4,8 @@ import styles from './SearchApp.module.css';
 
 import { fetchSearchMusicLibrary, fetchCreateQueue } from './network';
 import SearchResult from './SearchResult/SearchResult';
-import Upload from '../Upload/Upload';
 import * as services from '../../config/services';
+import * as modalViews from '../../config/views/modal';
 import { fetchQueueList } from '../QueueApp/network';
 import { iconUpload } from './icons';
 import {
@@ -29,20 +29,17 @@ function SearchApp(props) {
   const [searchResults, setSearchResults] = useState([]);
   const [autoSearchTimeoutId, setAutoSearchTimeoutId] = useState(false);
 
-  const [showModal, setShowModal] = useState(false);
-
-  const openModal = function() {
-    setShowModal(true);
-  }
-
-  const closeModal = function() {
-    setShowModal(false);
-  }
-
   const handleQueryChange = function(e) {
     props.dispatch({
       type: "search/setQuery",
       payload: { query: e.target.value },
+    });
+  }
+
+  const openUploadForm = function() {
+    props.dispatch({
+      type: "modal/open",
+      payload: { view: modalViews.UPLOAD_TRACK },
     });
   }
 
@@ -148,7 +145,7 @@ function SearchApp(props) {
         </div>
         */}
         <button className={styles.Upload}
-                onClick={openModal}>
+                onClick={openUploadForm}>
           {iconUpload}
         </button>
       </div>
@@ -192,9 +189,6 @@ function SearchApp(props) {
           ))}
         </div>
       </div>
-
-      <Upload isOpen={showModal}
-              closeModal={closeModal} />
     </div>
   );
 }

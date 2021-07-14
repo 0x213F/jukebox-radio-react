@@ -1,0 +1,96 @@
+.ModalClose {
+  margin-top: 29px;
+  margin-left: 29px;
+  background-color: #FFF;
+  border: 0;
+  padding: 0;
+  cursor: pointer;
+  position: absolute;
+}
+
+.ModalContent {
+  margin: 88px;
+  margin-top: 100px;
+}
+
+/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
+/* FORM */
+.Title {
+  font-size: 22px;
+  font-weight: 500;
+  margin: 32px 0;
+}
+
+.FormLabel {
+  display: block;
+  font-size: 16px;
+  margin-bottom: 12px;
+}
+
+.FormLabel > span {
+  width: 145px;
+  display: inline-block;
+}
+
+.FormLabel > input {
+  margin-left: 16px;
+  border: 0;
+  border-bottom: 1px solid #0047FF;
+  outline: none;
+  font-family: Raleway;
+  font-style: normal;
+  font-weight: 500;
+  font-size: 16px;
+  outline: none;
+  width: 260px;
+}
+
+.FormLabel > input::placeholder {
+  color: #BCBCBC;
+}
+
+.FileInput {
+  height: 21px;
+}
+
+.FileInput::-webkit-file-upload-button {
+  visibility: hidden;
+}
+
+.FileInput::before {
+  content: 'Select a file';
+  color: #BCBCBC;
+  display: inline-block;
+  padding: 0 78px 0 2px;
+  outline: none;
+  white-space: nowrap;
+  -webkit-user-select: none;
+  cursor: pointer;
+  font-family: Raleway;
+  font-style: normal;
+  font-weight: 500;
+  font-size: 16px;
+  position: relative;
+  bottom: 2px;
+}
+
+.FormSubmit {
+  width: 86px;
+  height: 25px;
+
+  border: 1px solid #0047FF;
+  background-color: #FFF;
+  border-radius: 25px;
+  color: #0047FF;
+  margin-top: 24px;
+  margin-left: 0;
+  margin-right: auto;
+
+  cursor: pointer;
+
+  font-family: Raleway;
+  font-style: normal;
+  font-weight: bold;
+  font-size: 13px;
+  line-height: 15px;
+}

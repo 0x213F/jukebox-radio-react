@@ -1,0 +1,105 @@
+/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
+/* ABC Notation Compose Container */
+.ContentContainer {
+  margin: 88px;
+  margin-top: 100px;
+  height: calc(100% - 188px);
+  width: calc(100% - 176px);
+}
+
+.ContentContainer > div > h4 {
+  font-family: Raleway;
+  font-style: normal;
+  font-weight: 500;
+  font-size: 22px;
+  line-height: 26px;
+  margin: 0;
+  margin-bottom: 17px;
+}
+
+.ContentContainer > button {
+  width: 206px;
+  height: 35px;
+  left: 948px;
+  top: 606px;
+
+  border: 2px solid #0047FF;
+  box-sizing: border-box;
+  border-radius: 17.5px;
+
+  color: #0047FF;
+  font-family: Raleway;
+  font-style: normal;
+  font-weight: bold;
+  font-size: 18px;
+  line-height: 21px;
+  text-align: center;
+}
+
+.NotationContainer {
+  display: inline-block;
+  height: 100%;
+  width: calc(100% - 407px);
+  margin-right: 50px;
+}
+
+.NotationContainer > textarea {
+  border: 1px solid #000000;
+  box-sizing: border-box;
+  margin-bottom: 64px;
+  display: block;
+  position: relative;
+  width: 100%;
+  height: calc(100% - 107px);
+  outline: none;
+  resize: none;
+  font-size: 20px;
+  padding: 10px;
+}
+
+.RenderingContainer {
+  display: inline-block;
+  height: 100%;
+  width: 357px;
+  float: right;
+}
+
+.RenderingContainer > button {
+  width: 206px;
+  height: 35px;
+
+  border: 2px solid #0047FF;
+  box-sizing: border-box;
+  border-radius: 17.5px;
+
+  font-family: Raleway;
+  font-style: normal;
+  font-weight: bold;
+  font-size: 18px;
+  line-height: 21px;
+  text-align: center;
+
+  color: #0047FF;
+  background-color: #FFF;
+  margin-top: 29px;
+
+  display: block;
+  float: right;
+  cursor: pointer;
+}
+
+.RenderingWrapper {
+  border: 1px solid #000000;
+  box-sizing: border-box;
+  height: calc(100% - 107px);
+}
+
+.CloseModal {
+  margin-top: 29px;
+  margin-left: 29px;
+  background-color: #FFF;
+  border: 0;
+  padding: 0;
+  cursor: pointer;
+  position: absolute;
+}

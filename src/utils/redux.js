@@ -1,4 +1,7 @@
 import { createStore } from 'redux';
+
+import * as modal from './reducers/modal';
+
 import {
   feedUpdate,
   feedTakeAction,
@@ -152,11 +155,34 @@ const initialState = {
   },
   sideBar: {
     tab: null,
-  }
+  },
+  modal: modal.initialState(),
 }
 
 
 const reducer = (state = initialState, action) => {
+
+  const reducers = {
+    modal,
+  };
+  for(const [reducerCategory, reducerObject] of Object.entries(reducers)) {
+    // reducerCategory:  e.g. "modal"
+    // reducerObject:    e.g. "./reducers/modal.js"
+
+    for(const [reducerName, reducerFunc] of Object.entries(reducerObject)) {
+      // reducerName:    e.g. "close"
+      // reducerFunc:    e.g. "(state, payload) => { ... }"
+
+      if(reducerName === "initialState") {
+        continue;
+      }
+
+      if(action.type === `${reducerCategory}/${reducerName}`) {
+        return reducerFunc(state, action.payload);
+      }
+    }
+  }
+
   switch (action.type) {
     ////////////////////////////////////////////////////////////////////////////
     // STREAM

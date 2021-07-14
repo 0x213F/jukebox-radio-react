@@ -58,7 +58,17 @@ function TextComment(props) {
 
   const handleSeek = function() {
     if(nowPlaying.status === 'paused') {
-      props.playbackControls.play(textComment.timestampMilliseconds);
+      props.dispatch({
+        type: "main/addAction",
+        payload: {
+          action: {
+            name: "play",
+            timestampMilliseconds: textComment.timestampMilliseconds,
+            status: "kickoff",
+            fake: { api: false },
+          },
+        },
+      });
     } else {
       const action = {
         name: "seek",

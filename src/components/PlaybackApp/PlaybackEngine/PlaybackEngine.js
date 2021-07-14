@@ -4,7 +4,7 @@ import { connect } from 'react-redux';
 import YouTube from 'react-youtube';
 
 import StreamEngine from '../StreamEngine/StreamEngine';
-import { fetchGetUserSettings } from '../../UserSettings/network';
+import { fetchGetUserSettings } from '../../ModalApp/UserSettings/network';
 import * as services from '../../../config/services';
 import { appendScript } from '../../../utils/async';
 import { store } from '../../../utils/redux';
@@ -26,7 +26,8 @@ function PlaybackEngine(props) {
         playback = props.playback,
         userSettings = props.userSettings,
         feedApp = props.feedApp,
-        sideBar = props.sideBar;
+        sideBar = props.sideBar,
+        modal = props.modal;
 
   const queueMap = props.queueMap,
         nowPlaying = queueMap[playback.nowPlayingUuid];
@@ -513,6 +514,7 @@ function PlaybackEngine(props) {
       display: "none",
     };
   }
+  appleMusicContainerStyle.zIndex = 3;
 
   const appendAppleMusicSDK = function() {
     appendScript("https://js-cdn.music.apple.com/musickit/v3/musickit.js");
@@ -539,9 +541,9 @@ function PlaybackEngine(props) {
   let youTubeContainerStyle = {},
       youTubeWidth = 300,
       youTubeHeight = 169;
-  if(window.location.pathname !== '/app/welcome' && nowPlaying?.track?.service === services.YOUTUBE && nowPlaying?.track?.format === 'video') {
-    if(stream.nowPlayingUuid === playback.nowPlayingUuid) {
-      if(sideBar.tab === "feed" && feedApp.contentContainer) {
+  if(nowPlaying?.track?.service === services.YOUTUBE && nowPlaying?.track?.format === 'video') {
+    // if(stream.nowPlayingUuid === playback.nowPlayingUuid) {
+      if(sideBar.tab === "feed" && feedApp.contentContainer && !modal.isOpen) {
         const containerRect = feedApp.contentContainer;
         youTubeWidth = containerRect.width - 88;
         youTubeHeight = youTubeWidth / 16 * 9;
@@ -563,18 +565,19 @@ function PlaybackEngine(props) {
           boxShadow: "4px 4px 12px rgba(0, 0, 0, 0.15)",
         };
       }
-    } else {
-      youTubeContainerStyle = {
-        position: "fixed",
-        top: "295px",
-        right: "257px",
-      };
-    }
+    // } else {
+    //   youTubeContainerStyle = {
+    //     position: "fixed",
+    //     top: "295px",
+    //     right: "257px",
+    //   };
+    // }
   } else {
     youTubeContainerStyle = {
       display: "none",
     };
   }
+  youTubeContainerStyle.zIndex = 3;
 
   const currentQueue = nowPlaying,
         isYouTube = currentQueue?.track?.service === services.YOUTUBE;
@@ -678,6 +681,7 @@ const mapStateToProps = (state) => ({
     userSettings: state.userSettings,
     feedApp: state.feedApp,
     sideBar: state.sideBar,
+    modal: state.modal,
 });
 
 

@@ -80,16 +80,14 @@ function QueueApp(props) {
             return (
               <QueueCollection key={index}
                                queueUuid={value.uuid}
-                               destroy={destroyQueueItem}
-                               playbackControls={props.playbackControls}>
+                               destroy={destroyQueueItem}>
               </QueueCollection>
             );
           } else if(value.track) {
             return (
               <QueueTrack key={index}
                           queueUuid={value.uuid}
-                          destroy={destroyQueueItem}
-                          playbackControls={props.playbackControls}>
+                          destroy={destroyQueueItem}>
               </QueueTrack>
             );
           }

@@ -1,0 +1,58 @@
+/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
+/* MODAL */
+.ModalPrimary {
+  position: absolute;
+
+  left: 114px;
+  top: 95px;
+
+  width: calc(100% - 228px);
+  min-width: 660px;
+
+  box-shadow: inset 0px 0px 0px 1px #bcbcbc;
+  margin: auto;
+
+  background-color: white;
+  outline: none;
+}
+
+.ModalSecondary {
+  position: absolute;
+
+  left: 114px;
+  top: 95px;
+
+  width: calc(100% - 585px);
+  min-width: 660px;
+
+  box-shadow: inset 0px 0px 0px 1px #bcbcbc;
+  margin: auto;
+
+  background-color: white;
+  outline: none;
+}
+
+.ModalOverlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  backdrop-filter: blur(40px);
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
+/* CLOSE BUTTON */
+.CloseModal {
+  margin-top: 29px;
+  margin-left: 29px;
+  background-color: #FFF;
+  border: 0;
+  padding: 0;
+  cursor: pointer;
+  position: absolute;
+}

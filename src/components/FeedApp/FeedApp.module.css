@@ -12,7 +12,7 @@
   margin-left: 77px;
   margin-right: 57px;
   top: 95px;
-  bottom: 95px;
+  bottom: 170px;
   position: absolute;
 
   background-color: #FFF;
@@ -85,22 +85,22 @@
 .FeedWrapper {
   display: inline-block;
   width: 512px;
-  height: calc(100% - 95px);
+  height: calc(100% - 170px);
 
   margin-right: 77px;
-  margin-bottom: 95px;
+  margin-bottom: 170px;
   float: right;
 }
 
 .Feed {
   position: absolute;
-  bottom: 137px;
+  bottom: 228px;
 }
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 .ComposeBar {
   position: absolute;
-  bottom: 95px;
+  bottom: 170px;
   height: 42px;
 }
 

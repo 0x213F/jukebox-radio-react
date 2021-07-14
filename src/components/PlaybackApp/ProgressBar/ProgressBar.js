@@ -217,7 +217,6 @@ function ProgressBar(props) {
                                    duration={duration}
                                    queue={queue}
                                    editable={mode === "intervals"}
-                                   playbackControls={props.playbackControls}
                                    deleteTrackInterval={props.deleteTrackInterval}
                                    allowIntervalPlay={allowIntervalPlay}
                                    allowIntervalDelete={allowIntervalDelete}>
@@ -234,7 +233,6 @@ function ProgressBar(props) {
                                     editable={allowMarkerDelete}
                                     playable={marker.playable}
                                     stoppable={marker.stoppable}
-                                    playbackControls={props.playbackControls}
                                     deleteTrackMarker={props.deleteTrackMarker}
                                     markerHover={markerHover}
                                     setMarkerHover={setMarkerHover}

@@ -5,16 +5,16 @@ import MicRecorder from 'mic-recorder-to-mp3';
 import SpeechRecognition, { useSpeechRecognition } from 'react-speech-recognition';
 import Pizzicato from 'pizzicato';
 
-import ABCNotationDisplay from './ABCNotationDisplay/ABCNotationDisplay';
-import ABCNotationCompose from './ABCNotationCompose/ABCNotationCompose';
+import TheoryNotationDisplay from './TheoryNotationDisplay/TheoryNotationDisplay';
 import VoiceRecording from './VoiceRecording/VoiceRecording';
 import { getPositionMilliseconds } from '../PlaybackApp/utils';
 import { CLASS_TEXT_COMMENT, CLASS_VOICE_RECORDING, CLASS_SYSTEM_ACTION } from '../../config/model';
 import * as services from '../../config/services';
+import * as modalViews from '../../config/views/modal';
 
 import styles from './FeedApp.module.css';
 import { fetchTextCommentCreate } from './network';
-import { FORMAT_TEXT, FORMAT_ABC_NOTATION } from './constants';
+import * as formats from '../../config/formats';
 import { fetchCreateVoiceRecording } from './VoiceRecording/network';
 import TextComment from './TextComment/TextComment';
 import SystemAction from './SystemAction/SystemAction';
@@ -43,14 +43,17 @@ function FeedApp(props) {
    * Opens the modal, showing ABCNotationCompose.
    */
   const openModal = function() {
-    setShowModal(true);
+    props.dispatch({
+      type: "modal/open",
+      payload: { view: modalViews.NOTATION_COMPOSE },
+    });
   }
 
   /*
    * Closes the modal.
    */
   const closeModal = function() {
-    setShowModal(false);
+    props.dispatch({ type: "modal/close" });
   }
 
   /*
@@ -114,7 +117,7 @@ function FeedApp(props) {
     props.dispatch({ type: "feedApp/resetTextComment" });
 
     const responseJson = await fetchTextCommentCreate(
-      feedApp.textComment.text, FORMAT_TEXT, feedApp.textComment.trackUuid, feedApp.textComment.position
+      feedApp.textComment.text, formats.TEXT, feedApp.textComment.trackUuid, feedApp.textComment.position
     );
 
     props.dispatch(responseJson.redux);
@@ -194,11 +197,6 @@ function FeedApp(props) {
   return (
     <div className={styles.FeedApp}>
 
-      <ABCNotationCompose textCommentTrackUuid={feedApp.textComment.trackUuid}
-                          textCommentTimestamp={feedApp.textComment.position}
-                          isOpen={showModal}
-                          closeModal={closeModal} />
-
       <div className={styles.ContentContainer}>
         <div ref={contentContainer} className={styles.ImageContainer}>
           {!(nowPlaying?.track?.service === services.YOUTUBE && nowPlaying?.track?.format === 'video') &&
@@ -218,15 +216,15 @@ function FeedApp(props) {
         <div className={styles.Feed}>
           {feed.map((value, index) => {
             if(value.class === CLASS_TEXT_COMMENT) {
-              if(value.format === FORMAT_TEXT) {
-                return <TextComment key={index} textCommentUuid={value.uuid} playbackControls={props.playbackControls} />;
-              } else if(value.format === FORMAT_ABC_NOTATION) {
-                return <ABCNotationDisplay key={index} textCommentUuid={value.uuid} playbackControls={props.playbackControls} />;
+              if(value.format === formats.TEXT) {
+                return <TextComment key={index} textCommentUuid={value.uuid} />;
+              } else {
+                return <TheoryNotationDisplay key={index} textCommentUuid={value.uuid} />;
               }
             } else if(value.class === CLASS_VOICE_RECORDING) {
-              return <VoiceRecording key={index} voiceRecordingUuid={value.uuid} playbackControls={props.playbackControls} />
+              return <VoiceRecording key={index} voiceRecordingUuid={value.uuid} />
             } else if(value.class === CLASS_SYSTEM_ACTION) {
-              return <SystemAction key={index} data={value} playbackControls={props.playbackControls} />
+              return <SystemAction key={index} data={value} />
             }
             return <></>;
           })}

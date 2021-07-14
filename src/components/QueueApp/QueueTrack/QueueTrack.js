@@ -1,11 +1,11 @@
 import React, { useState } from "react";
 import { connect } from 'react-redux'
-import TrackDetailApp from '../../TrackDetailApp/TrackDetailApp'
 import styles from './QueueTrack.module.css';
 import { iconEdit, iconRemove } from '../icons';
 import { durationPretty } from '../utils';
 
 import * as services from '../../../config/services';
+import * as modalViews from '../../../config/views/modal';
 
 
 function QueueTrack(props) {
@@ -86,7 +86,10 @@ function QueueTrack(props) {
       },
     });
 
-    setShowModal(true);
+    props.dispatch({
+      type: "modal/open",
+      payload: { view: modalViews.TRACK_DETAIL },
+    });
   }
 
   const closeModal = function() {
@@ -103,9 +106,8 @@ function QueueTrack(props) {
       },
     });
 
-    setShowModal(false);
+    props.dispatch({ type: "modal/close" });
     if(shouldPlayOnClose) {
-      // props.playbackControls.play();
       setShouldPlayOnClose(false);
     }
   }
@@ -143,9 +145,6 @@ function QueueTrack(props) {
           {iconRemove}
         </button>
       </div>
-      <TrackDetailApp isOpen={showModal}
-                      closeModal={closeModal}
-                      playbackControls={props.playbackControls} />
     </div>
   );
 }
