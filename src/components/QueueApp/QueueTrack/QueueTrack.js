@@ -25,24 +25,17 @@ function QueueTrack(props) {
   const [showModal, setShowModal] = useState(false);
   const [shouldPlayOnClose, setShouldPlayOnClose] = useState(false);
 
-  const loadTrack = function(queue) {
-    const rawAudioServices = new Set();
-    rawAudioServices.add(services.JUKEBOX_RADIO);
-    rawAudioServices.add(services.AUDIUS);
-    if(!rawAudioServices.has(queue.track.service)) {
-      // We only need to load audio from raw audio services.
-      return;
-    }
-
-    const queuesAlreadyLoading = new Set(
-      main.actions
-      .filter(a => a.name === 'loadAudio')
-      .map(a => a.queue.uuid)
-    );
-    if(queuesAlreadyLoading.has(queue.uuid) || playback.files.hasOwnProperty(queue.track.uuid)) {
-      // Audio is already loading or loaded.
-      return;
-    }
+  const openModal = function() {
+    props.dispatch({
+      type: "main/addAction",
+      payload: {
+        action: {
+          name: "pause",
+          status: "kickoff",
+          fake: false,
+        },
+      },
+    });
 
     props.dispatch({
       type: "main/addAction",
@@ -55,24 +48,6 @@ function QueueTrack(props) {
         },
       },
     });
-  }
-
-  const openModal = function() {
-    if(nowPlaying?.status === 'played') {
-      props.dispatch({
-        type: "main/addAction",
-        payload: {
-          action: {
-            name: "pause",
-            status: "kickoff",
-            fake: false,
-          },
-        },
-      });
-      setShouldPlayOnClose(true);
-    }
-
-    loadTrack(queue);
 
     props.dispatch({
       type: "main/addAction",
@@ -87,8 +62,15 @@ function QueueTrack(props) {
     });
 
     props.dispatch({
-      type: "modal/open",
-      payload: { view: modalViews.TRACK_DETAIL },
+      type: "main/addAction",
+      payload: {
+        action: {
+          name: "openModal",
+          view: modalViews.TRACK_DETAIL,
+          status: "kickoff",
+          fake: true,  // symbolic, not functional
+        },
+      },
     });
   }
 

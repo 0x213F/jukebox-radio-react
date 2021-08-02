@@ -17,6 +17,7 @@ import BottomBar from '../BottomBar/BottomBar';
 import SideBar from '../SideBar/SideBar';
 
 import styles from './Session.module.css';
+import { iconLogo } from './icons';
 
 
 function Session(props) {
@@ -40,6 +41,7 @@ function Session(props) {
         payload: { view: modalViews.WELCOME },
       });
     }
+  // eslint-disable-next-line
   }, [])
 
    /*
@@ -47,6 +49,11 @@ function Session(props) {
     */
   return (
     <div className={styles.Session}>
+
+      {/* LOGO */}
+      <div className={styles.Logo}>
+        {iconLogo}
+      </div>
 
       {/* SIDE BAR */}
       {!modal.isOpen &&

@@ -9,7 +9,7 @@ import { fetchPauseTrack, fetchPlayTrack, fetchScan, fetchTrackGetFiles } from '
 import { getLeafQueue } from '../../QueueApp/utils';
 import * as services from '../../../config/services';
 import { onplay, onpause, onseeked, handleNext, handlePrev } from './utils';
-import { scheduleSpeakVoiceRecordings } from './effects';
+import { scheduleSpeakVoiceRecordings, closeModal } from './effects';
 
 
 function StreamEngine(props) {
@@ -19,12 +19,15 @@ function StreamEngine(props) {
         feedApp = props.feedApp,
         playback = props.playback,
         queueMap = props.queueMap,
+        streamEngine = props.streamEngine,
         lastUpQueueUuids = props.lastUpQueueUuids,
         nextUpQueueUuids = props.nextUpQueueUuids,
         voiceRecordingTimeoutId = props.voiceRecordingTimeoutId,
         nowPlaying = queueMap[playback.nowPlayingUuid],
         lastUp = getLeafQueue(lastUpQueueUuids[lastUpQueueUuids.length - 1], queueMap),
         nextUp = getLeafQueue(nextUpQueueUuids[0], queueMap);
+
+  const playbackIsStream = stream.nowPlayingUuid === playback.nowPlayingUuid;
 
   /*
    *
@@ -166,21 +169,27 @@ function StreamEngine(props) {
     const action = main.actions[0],
           queue = action.queue;
 
-    if(queue.track.service === services.JUKEBOX_RADIO) {
-      const responseJson = await fetchTrackGetFiles(queue.track.uuid);
-      responseJson.redux.payload = {
-        ...responseJson.redux.payload, onplay, onpause, onseeked,
-      };
-      props.dispatch(responseJson.redux);
-    }
-    if(queue.track.service === services.AUDIUS) {
+    if(!playback.files.hasOwnProperty(queue.track.uuid)) {
+      if(queue.track.service === services.JUKEBOX_RADIO) {
+        const responseJson = await fetchTrackGetFiles(queue.track.uuid);
+        responseJson.redux.payload = {
+          ...responseJson.redux.payload, onplay, onpause, onseeked,
+        };
+        props.dispatch(responseJson.redux);
+      }
+      if(queue.track.service === services.AUDIUS) {
+        props.dispatch({
+          "type": "playback/loadAudius",
+          "payload": {
+            "id": queue.track.externalId,
+            "trackUuid": queue.track.uuid,
+            onplay, onpause, onseeked,
+          },
+        });
+      }
       props.dispatch({
-        "type": "playback/loadAudius",
-        "payload": {
-          "id": queue.track.externalId,
-          "trackUuid": queue.track.uuid,
-          onplay, onpause, onseeked,
-        },
+        type: "streamEngine/queueLoaded",
+        payload: { queueUuid: queue.uuid },
       });
     }
 
@@ -214,7 +223,23 @@ function StreamEngine(props) {
     } else if(action.stream) {
       // payload = { stream: action.stream };
     }
+
     props.dispatch({ type: "playback/mount", payload });
+
+    props.dispatch({ type: 'main/actionShift' });
+    props.dispatch({ type: 'main/enable' });
+  }
+
+  const openModal = function() {
+    props.dispatch({ type: 'main/actionStart' });
+    props.dispatch({ type: 'main/disable' });
+
+    const action = main.actions[0],
+          { view } = action;
+    props.dispatch({
+      type: "modal/open",
+      payload: { view },
+    });
 
     props.dispatch({ type: 'main/actionShift' });
     props.dispatch({ type: 'main/enable' });
@@ -280,6 +305,10 @@ function StreamEngine(props) {
       loadFeed();
     } else if(action.name === "mount") {
       mount();
+    } else if(action.name === "openModal") {
+      openModal();
+    } else if(action.name === "closeModal") {
+      closeModal();
     }
   // eslint-disable-next-line
   }, [main, playback])
@@ -400,6 +429,10 @@ function StreamEngine(props) {
    * Used to preload for soon-to-be-played queue items.
    */
   useEffect(function() {
+    if(!playbackIsStream) {
+      return;
+    }
+
     const queues = [lastUp, nowPlaying, nextUp];
     const queuesAlreadyLoading = new Set(
       main.actions
@@ -414,15 +447,17 @@ function StreamEngine(props) {
         continue;
       }
 
-      const rawAudioServices = new Set();
-      rawAudioServices.add(services.JUKEBOX_RADIO);
-      rawAudioServices.add(services.AUDIUS);
-      if(!rawAudioServices.has(queue.track.service)) {
-        // We only need to load audio from raw audio services.
-        continue;
+      const queuesAlreadyLoading = new Set(
+        main.actions
+        .filter(a => a.name === 'loadAudio')
+        .map(a => a.queue.uuid)
+      );
+      if(queuesAlreadyLoading.has(queue.uuid)) {
+        // Audio is already been queued up for loading.
+        return;
       }
 
-      if(queuesAlreadyLoading.has(queue.uuid) || playback.files.hasOwnProperty(queue.track.uuid)) {
+      if(streamEngine.loadedQueueUuids.has(queue.track.uuid)) {
         // Audio is already loading or loaded.
         continue;
       }
@@ -500,6 +535,7 @@ const mapStateToProps = (state) => ({
   feedApp: state.feedApp,
   voiceRecordingMap: state.voiceRecordingMap,
   voiceRecordingTimeoutId: state.voiceRecordingTimeoutId,
+  streamEngine: state.streamEngine,
 });
 
 

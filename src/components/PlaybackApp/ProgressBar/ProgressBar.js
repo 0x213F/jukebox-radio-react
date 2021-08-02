@@ -8,9 +8,27 @@ import { getPositionMilliseconds, getProgressMilliseconds, isPositionValid } fro
 import ChildProgressBar from './ChildProgressBar/ChildProgressBar';
 import ProgressBarMarker from './ProgressBarMarker/ProgressBarMarker';
 import { iconSmallCircle } from '../icons';
+import * as progressBarUtils from './utils';
+import * as modalViews from '../../../config/views/modal';
+import * as tabs from '../../../config/tabs';
+import * as motives from '../../../config/motives';
+import * as stringUtils from '../../../utils/strings';
 
 
 function ProgressBar(props) {
+
+  /*
+   * 🏗
+   */
+
+  // Unpack Redux state
+  const { queueMap, stream, playback, trackDetail, feedApp, sideBar, modal } = props;
+
+  // Convenience values
+  const queue = queueMap[playback.nowPlayingUuid],
+        allIntervals = queue?.allIntervals || [],
+        duration = queue?.track?.durationMilliseconds || 0,
+        allowIntervalPlay = false;
 
   const DISABLE_ANIMATION = -1,
         ENABLE_ANIMATION = 0;
@@ -20,20 +38,7 @@ function ProgressBar(props) {
 
   const [stickyPointerLeftDistance, setStickyPointerLeftDistance] = useState(false);
   const [dragOffset, setDragOffset] = useState(0);
-
   const [markerHover, setMarkerHover] = useState(false);
-
-  const queueMap = props.queueMap,
-        stream = props.stream,
-        playback = props.playback,
-        queue = queueMap[playback.nowPlayingUuid],
-        mode = props.mode,
-        allIntervals = queue?.allIntervals || [],
-        duration = queue?.track?.durationMilliseconds || 0,
-        allowMarkerSeek = props.allowMarkerSeek,
-        allowMarkerDelete = props.allowMarkerDelete,
-        allowIntervalPlay = props.allowIntervalPlay,
-        allowIntervalDelete = props.allowIntervalDelete;
 
   let position, pointerLeftDistance;
   try {
@@ -45,69 +50,34 @@ function ProgressBar(props) {
     pointerLeftDistance = (position / duration) * 100;
   }
 
-  const markerMap = props.markerMap,
-        markers = (
-          Object.values(markerMap[queue?.track?.uuid] || []).sort((a, b) => {
-            return a.timestampMilliseconds - b.timestampMilliseconds;
-          })
-        );
+  const markerMap = props.markerMap;
+  let markers;
+  markers = progressBarUtils.getMarkers(markerMap, queue?.track?.uuid);
 
-  let runningMark = 8;
-  for(let i=0; i < markers.length; i++) {
-    let pix = markers[i].timestampMilliseconds / duration * 100;
-    markers[i].styleLeft = `calc(${pix}% - ${runningMark}px)`;
-    runningMark += 0;
-
-    if(mode === "player") {
-
-      // Force display contextual marker
-      if(markers[i].timestampMilliseconds < position) {
-        markers[i].forceDisplay = true;
-        if(i !== 0) {
-          markers[i - 1].forceDisplay = false;
-        }
-      } else {
-        markers[i].forceDisplay = false;
-      }
-
-      // Allow "stop"
-      if(markers[i].timestampMilliseconds > position + 5000) {
-        markers[i].stoppable = true;
-      } else {
-        markers[i].stoppable = false;
-      }
-    }
-
-    // Change styles for markers that are "not playable"
-    for(let j=0; j < queue.allIntervals.length; j++) {
-      const interval = queue.allIntervals[j],
-            notPlayable = (
-              interval.purpose === 'muted' &&
-              interval.startPosition <= markers[i].timestampMilliseconds &&
-              interval.endPosition > markers[i].timestampMilliseconds
-            );
-
-      markers[i].playable = true;
-      if(notPlayable) {
-        markers[i].playable = false;
-
-        // If this is the end of the song, do not allow "stop"
-        const playbackIntervals = queue.playbackIntervals,
-              endPosition = playbackIntervals[playbackIntervals.length - 1].endPosition,
-              forceStoppable = (
-                markers[i].timestampMilliseconds === endPosition ||
-                (
-                  interval.startPosition < markers[i].timestampMilliseconds &&
-                  interval.endPosition > markers[i].timestampMilliseconds
-                )
-              );
-        if(forceStoppable) {
-          markers[i].stoppable = false;
-        }
-        break;
-      }
+  if(trackDetail.tab === tabs.MARKERS && trackDetail.motive === motives.CREATE) {
+    if(trackDetail.form.marker.name && trackDetail.form.marker.timestamp) {
+      const tempMarker = {
+        forceDisplay: true,
+        name: trackDetail.form.marker.name,
+        timestampMilliseconds: trackDetail.form.marker.timestamp,
+        trackUuid: queue?.track?.uuid,
+        uuid: 'fake-uuid',
+      };
+      markers.push(tempMarker);
     }
   }
+  if(feedApp.textComment.trackUuid && sideBar.tab === 'feed' && modal.view === modalViews.NOTATION_COMPOSE) {
+    const tempMarker = {
+      forceDisplay: true,
+      name: stringUtils.truncate(feedApp.textComment.text),
+      timestampMilliseconds: feedApp.textComment.position,
+      trackUuid: feedApp.textComment.trackUuid,
+      uuid: 'fake-uuid',
+    };
+    markers.push(tempMarker);
+  }
+
+  markers = progressBarUtils.cleanMarkers(markers, queue, duration, position);
 
   /*
    *
@@ -216,11 +186,8 @@ function ProgressBar(props) {
                                    interval={interval}
                                    duration={duration}
                                    queue={queue}
-                                   editable={mode === "intervals"}
                                    deleteTrackInterval={props.deleteTrackInterval}
-                                   allowIntervalPlay={allowIntervalPlay}
-                                   allowIntervalDelete={allowIntervalDelete}>
-                 </ChildProgressBar>;
+                                   allowIntervalPlay={allowIntervalPlay} />;
         })}
       </div>
       <div className={styles.ProgressMarkerContainer}>
@@ -230,14 +197,11 @@ function ProgressBar(props) {
                                     marker={marker}
                                     queue={queue}
                                     forceDisplay={marker.forceDisplay}
-                                    editable={allowMarkerDelete}
                                     playable={marker.playable}
                                     stoppable={marker.stoppable}
-                                    deleteTrackMarker={props.deleteTrackMarker}
                                     markerHover={markerHover}
                                     setMarkerHover={setMarkerHover}
-                                    allowMarkerSeek={allowMarkerSeek}
-                                    hoveringEnabled={mode !== "intervals"} />;
+                                    hoveringEnabled={true} />;
         })}
       </div>
     </div>
@@ -249,6 +213,10 @@ const mapStateToProps = (state) => ({
   queueMap: state.queueMap,
   playback: state.playback,
   stream: state.stream,
+  trackDetail: state.trackDetail,
+  feedApp: state.feedApp,
+  sideBar: state.sideBar,
+  modal: state.modal,
 });
 
 

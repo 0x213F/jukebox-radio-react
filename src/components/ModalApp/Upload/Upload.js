@@ -1,7 +1,6 @@
 import React, { useState } from "react";
 import { connect } from 'react-redux';
 
-import Modal from 'react-modal';
 import styles from './Upload.module.css';
 
 import { fetchCreateTrack } from './network';

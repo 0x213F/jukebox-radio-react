@@ -48,7 +48,7 @@ function TheoryNotationDisplay(props) {
     return (
       <div className={styles.ABCNotationDisplayContainer}>
         <div className={styles.ABCNotationDisplayDeleted}>
-          <p>Redacted</p>
+          <p>Retracted</p>
         </div>
       </div>
     );

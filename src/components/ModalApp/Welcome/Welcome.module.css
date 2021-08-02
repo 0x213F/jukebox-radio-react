@@ -27,11 +27,6 @@
   padding: 42px;
   margin-bottom: 26px;
 
-  border-radius: 35px;
-  background-color: rgba(251, 252, 255, 0.93);
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
-
   text-align: center;
 }
 

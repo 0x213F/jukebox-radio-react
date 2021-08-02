@@ -37,8 +37,8 @@
   justify-content: center;
 }
 
-.Playback > button:disabled {
-  color: grey;
+.Playback > button:disabled > svg > path {
+  stroke: #BCBCBC;
 }
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
@@ -80,4 +80,40 @@
   display: flex;
   align-items: center;
   justify-content: center;
+}
+
+/**********/
+/* CSS.GG */
+.ggSpinner {
+    transform: scale(var(--ggs,1))
+}
+.ggSpinner,
+.ggSpinner::after,
+.ggSpinner::before {
+    box-sizing: border-box;
+    position: relative;
+    display: block;
+    width: 65px;
+    height: 65px
+}
+.ggSpinner::after,
+.ggSpinner::before {
+    content: "";
+    position: absolute;
+    border-radius: 100px
+}
+.ggSpinner::before {
+    animation: spinner 1s
+    cubic-bezier(.6,0,.4,1) infinite;
+    border: 2px solid transparent;
+    border-top-color: #0047FF;
+}
+.ggSpinner::after {
+    border: 2px solid #BCBCBC;
+    opacity: 0.5;
+    z-index: -1;
+}
+@keyframes spinner {
+    0% { transform: rotate(0deg) }
+    to { transform: rotate(359deg) }
 }

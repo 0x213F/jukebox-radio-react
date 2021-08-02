@@ -1,4 +1,5 @@
 import { store } from '../../../utils/redux';
+import * as modalViews from '../../../config/views/modal';
 import { getPositionMilliseconds } from '../utils';
 
 
@@ -42,4 +43,10 @@ export const scheduleSpeakVoiceRecordings = function() {
     type: "voiceRecording/schedulePlay",
     payload: { timeoutId },
   });
+}
+
+export const closeModal = function() {
+  store.dispatch({ type: 'main/actionStart' });
+  store.dispatch({ type: "modal/close" });
+  store.dispatch({ type: 'main/actionShift' });
 }

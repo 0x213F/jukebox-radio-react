@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React from "react";
 
 import { connect } from 'react-redux';
 import { CircularProgressbarWithChildren, buildStyles } from 'react-circular-progressbar';
@@ -24,14 +24,13 @@ function BottomBar(props) {
   const stream = props.stream,
         queueMap = props.queueMap,
         playback = props.playback,
+        modal = props.modal,
         nowPlaying = queueMap[playback.nowPlayingUuid],
         audioVolumeLevel = playback.volumeLevel.audio;
 
   // eslint-disable-next-line
   const controlsEnabled = featureIsEnabled(props),
         nowPlayingTrackService = nowPlaying?.track?.service;
-
-  const [showModal, setShowModal] = useState(false);
 
   const playbackIsStream = stream.nowPlayingUuid === playback.nowPlayingUuid;
 
@@ -43,13 +42,6 @@ function BottomBar(props) {
       type: "modal/open",
       payload: { view: modalViews.USER_SETTINGS },
     });
-  }
-
-  /*
-   * Closes the "User Settings" modal.
-   */
-  const closeModal = function() {
-    props.dispatch({ type: "modal/close" });
   }
 
   let serviceSvg;
@@ -192,11 +184,7 @@ function BottomBar(props) {
 
       <div className={styles.ProgressBarContainer}>
         <ProgressBar queue={nowPlaying}
-                           mode={"player"}
                            playbackControls={props.playbackControls}
-                           allowMarkerSeek={true}
-                           allowMarkerDelete={false}
-                           allowIntervalPlay={false}
                            allowIntervalDelete={false}>
         </ProgressBar>
       </div>
@@ -225,24 +213,7 @@ function BottomBar(props) {
         </CircularProgressbarWithChildren>
       </button>
 
-      {playbackIsStream ?
-        <div className={styles.Playback}>
-          <button onClick={handlePrev}
-                  disabled={!controlsEnabled} >
-            {iconPrevTrack}
-          </button>
-          <button onClick={handlePlayPause}
-                  disabled={!controlsEnabled} >
-            {nowPlaying && nowPlaying.status === "played" ?
-              bottomBarIcons.iconPauseCircle : bottomBarIcons.iconPlayCircle
-            }
-          </button>
-          <button onClick={handleNext}
-                  disabled={!controlsEnabled} >
-            {iconNextTrack}
-          </button>
-        </div>
-        :
+      {modal.view === modalViews.TRACK_DETAIL ?
         <div className={styles.Playback}>
           <button onClick={handleNext}
                   disabled={!controlsEnabled} >
@@ -254,8 +225,13 @@ function BottomBar(props) {
           </button>
           <button onClick={handlePlayPause}
                   disabled={!controlsEnabled} >
-            {nowPlaying && nowPlaying.status === "played" ?
-              bottomBarIcons.iconPauseCircle : bottomBarIcons.iconPlayCircle
+            {controlsEnabled ? (
+              nowPlaying && nowPlaying.status === "played" ?
+                bottomBarIcons.iconPauseCircle : bottomBarIcons.iconPlayCircle
+              ) : <></>
+            }
+            {!controlsEnabled &&
+              <i className={styles.ggSpinner}></i>
             }
           </button>
           <button onClick={handleNext}
@@ -265,6 +241,28 @@ function BottomBar(props) {
           <button onClick={handleNext}
                   disabled={!controlsEnabled} >
             {bottomBarIcons.iconForward1000}
+          </button>
+        </div>
+        :
+        <div className={styles.Playback}>
+          <button onClick={handlePrev}
+                  disabled={!controlsEnabled} >
+            {iconPrevTrack}
+          </button>
+          <button onClick={handlePlayPause}
+                  disabled={!controlsEnabled} >
+            {controlsEnabled ? (
+              nowPlaying && nowPlaying.status === "played" ?
+                bottomBarIcons.iconPauseCircle : bottomBarIcons.iconPlayCircle
+              ) : <></>
+            }
+            {!controlsEnabled &&
+              <i className={styles.ggSpinner}></i>
+            }
+          </button>
+          <button onClick={handleNext}
+                  disabled={!controlsEnabled} >
+            {iconNextTrack}
           </button>
         </div>
       }
@@ -279,6 +277,7 @@ const mapStateToProps = (state) => ({
     queueMap: state.queueMap,
     playback: state.playback,
     main: state.main,
+    modal: state.modal,
 });
 
 

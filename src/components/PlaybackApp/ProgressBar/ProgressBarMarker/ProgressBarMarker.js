@@ -4,26 +4,49 @@ import styles from './ProgressBarMarker.module.css';
 import { iconTrash, iconPlay, iconMarkerExtension, iconStop } from '../../icons';
 import { getProgressMilliseconds } from '../../utils';
 import { fetchStreamQueueIntervalStop } from '../../../ModalApp/TrackDetail/Interval/network';
+import {
+  fetchStreamMarkerDelete,
+} from '../../../ModalApp/TrackDetail/Marker/network';
+
+import * as modalViews from '../../../../config/views/modal';
+import * as tabs from '../../../../config/tabs';
+import * as motives from '../../../../config/motives';
 
 
 function ProgressBarMarker(props) {
 
   const marker = props.marker,
         queue = props.queue,
-        editable = props.editable,
+        modal = props.modal,
+        trackDetail = props.trackDetail,
         playable = props.playable,
         stoppable = props.stoppable,
         forceDisplay = props.forceDisplay,
-        allowMarkerSeek = props.allowMarkerSeek,
         hoveringEnabled = props.hoveringEnabled;
 
+  const deleteable = (
+    modal.view === modalViews.TRACK_DETAIL &&
+    trackDetail.tab === tabs.MARKERS &&
+    trackDetail.motive === motives.DELETE
+  );
+
   const stream = props.stream,
-        playback = props.playback;
+        playback = props.playback,
+        queueMap = props.queueMap,
+        nowPlaying = queueMap[playback.nowPlayingUuid];
 
   const [hovering, setHovering] = useState(false);
 
-  const classPointer = playable ? "ProgressBarMarkerPointer" : "ProgressBarMarkerPointerGrey",
-        classPointerExt = playable ? "ProgressBarMarkerPointerExtension" : "ProgressBarMarkerPointerExtensionGrey";
+  let classPointer = "ProgressBarMarkerPointer",
+      classPointerExt = "ProgressBarMarkerPointerExtension";
+
+  if(marker.uuid === "fake-uuid") {
+    classPointer = 'ProgressBarMarkerPointerHighlighted';
+    classPointerExt = "ProgressBarMarkerPointerExtensionHighlighted";
+  } else if(!playable) {
+    classPointer = 'ProgressBarMarkerPointerGrey';
+    classPointerExt = "ProgressBarMarkerPointerExtensionGrey";
+  }
 
   /*
    * ENTER
@@ -39,6 +62,14 @@ function ProgressBarMarker(props) {
   const onMouseLeave = function() {
     setHovering(false);
     props.setMarkerHover(false);
+  }
+
+  /*
+   * Delete a marker.
+   */
+  const deleteTrackMarker = async function(marker) {
+    const responseJson = await fetchStreamMarkerDelete(marker.uuid, nowPlaying.uuid);
+    await props.dispatch(responseJson.redux);
   }
 
   /*
@@ -110,14 +141,14 @@ function ProgressBarMarker(props) {
               </div>
             }
 
-            {hovering && editable &&
+            {hovering && deleteable &&
               <button className={styles.Delete}
-                      onClick={(e) => {props.deleteTrackMarker(marker)}}>
+                      onClick={(e) => {deleteTrackMarker(marker)}}>
                 {iconTrash}
               </button>
             }
 
-            {hovering && playable && allowMarkerSeek &&
+            {hovering && playable && !deleteable &&
               <button className={styles.Play}
                       onClick={seekToMarker}>
                 {iconPlay}
@@ -141,6 +172,9 @@ function ProgressBarMarker(props) {
 const mapStateToProps = (state) => ({
   stream: state.stream,
   playback: state.playback,
+  modal: state.modal,
+  trackDetail: state.trackDetail,
+  queueMap: state.queueMap,
 });
 
 

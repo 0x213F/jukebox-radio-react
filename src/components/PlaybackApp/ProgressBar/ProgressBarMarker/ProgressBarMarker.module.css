@@ -9,22 +9,32 @@
 }
 
 .ProgressBarMarkerPointer,
-.ProgressBarMarkerPointerGrey {
+.ProgressBarMarkerPointerGrey,
+.ProgressBarMarkerPointerHighlighted {
   height: 10px;
   width: 2px;
   background-color: #0047FF;
 }
 
+.ProgressBarMarkerPointerHighlighted {
+  background-color: #ffb800;
+}
+
+.ProgressBarMarkerPointerExtensionHighlighted > svg > path {
+  fill: #ffb800;
+}
+
 .ProgressBarMarkerPointerGrey {
-  background-color: #BCBCBC;
+  background-color: #bcbcbc;
 }
 
 .ProgressBarMarkerPointerExtensionGrey > svg > path {
-  fill: #BCBCBC;
+  fill: #bcbcbc;
 }
 
 .ProgressBarMarkerPointerExtension,
-.ProgressBarMarkerPointerExtensionGrey {
+.ProgressBarMarkerPointerExtensionGrey,
+.ProgressBarMarkerPointerHighlighted {
   position: relative;
   top: -15px;
   display: inline-block;

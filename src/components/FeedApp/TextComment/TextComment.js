@@ -88,7 +88,7 @@ function TextComment(props) {
       <div className={styles.TextCommentContainer}>
 
         <div className={styles.TextCommentDeleted}>
-          <p>Redacted</p>
+          <p>Retracted</p>
         </div>
       </div>
     );

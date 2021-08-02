@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 
 import { connect } from 'react-redux';
 
@@ -15,8 +15,15 @@ function NotationCompose(props) {
   /*
    * 🏗
    */
-  const textCommentTrackUuid = props.textCommentTrackUuid,
-        textCommentTimestamp = props.textCommentTimestamp;
+
+  // Unpack Redux state
+  const { feedApp, playback, queueMap } = props;
+
+  // Convenience values
+  const { trackUuid, position } = feedApp.textComment,
+        nowPlaying = queueMap[playback.nowPlayingUuid];
+
+  console.log(position)
 
   const [isDisabled, setIsDisabled] = useState(false);
   const [text, setText] = useState('');
@@ -32,13 +39,30 @@ function NotationCompose(props) {
     setIsDisabled(true);
 
     const responseJson = await fetchTextCommentCreate(
-      text, formats.ABC_NOTATION, textCommentTrackUuid, textCommentTimestamp
+      text, formats.ABC_NOTATION, trackUuid, position
     );
     props.dispatch(responseJson.redux);
 
     closeModal();
     setText('');
     setIsDisabled(false);
+
+    props.dispatch({
+      type: "feedApp/setTextComment",
+      payload: { textComment: { text: "" } },
+    });
+
+    props.dispatch({
+      type: "main/addAction",
+      payload: {
+        action: {
+          name: "play",
+          timestampMilliseconds: feedApp.textComment.position,
+          status: "kickoff",
+          fake: { api: false },
+        },
+      },
+    });
   }
 
   /*
@@ -48,6 +72,13 @@ function NotationCompose(props) {
   const handleTextChange = function(e) {
     setText(e.target.value);
   }
+
+  useEffect(() => {
+    props.dispatch({
+      type: "feedApp/setTextComment",
+      payload: { textComment: { text: "Notation", trackUuid, position } },
+    });
+  }, []);
 
   return (
     <>
@@ -89,7 +120,11 @@ function NotationCompose(props) {
 }
 
 
-const mapStateToProps = (state) => ({});
+const mapStateToProps = (state) => ({
+  feedApp: state.feedApp,
+  playback: state.playback,
+  queueMap: state.queueMap,
+});
 
 
 export default connect(mapStateToProps)(NotationCompose);

@@ -4,7 +4,6 @@ import { connect } from 'react-redux';
 import { Link } from "react-router-dom";
 
 import styles from './SideBar.module.css';
-import { iconLogo } from './icons';
 
 
 function SideBar(props) {
@@ -42,10 +41,6 @@ function SideBar(props) {
     */
   return (
     <div className={styles.SideBar}>
-
-      <div className={styles.Logo}>
-        {iconLogo}
-      </div>
 
       <div className={styles.MenuContainer}>
         <div className={styles.Menu}

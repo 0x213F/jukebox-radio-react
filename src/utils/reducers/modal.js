@@ -35,8 +35,6 @@ export const open = function(state, payload) {
  * Closes the modal.
  */
 export const close = function(state, payload) {
-  const modal = { ...state.modal, view: modalViews.DEFAULT, isOpen: false };
-  delete modal.data;
-  delete modal.config;
+  const modal = initialState();
   return { ...state, modal };
 }

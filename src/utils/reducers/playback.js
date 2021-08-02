@@ -11,13 +11,25 @@ export const playbackMount = function(state, payload) {
     nowPlayingUuid = state.stream.nowPlayingUuid;
   }
 
+  const queueMap = { ...state.queueMap },
+        queue = queueMap[nowPlayingUuid],
+        now = Date.now();
+
+  if(queue) {
+    queue.status = "paused";
+    queue.statusAt = now;
+    queue.startedAt = now;
+    queueMap[queue.uuid] = queue;
+  }
+
   return {
     ...state,
     playback: {
       ...state.playback,
       nowPlayingUuid,
       isPlaying: false,
-    }
+    },
+    queueMap: queueMap,
   }
 }
 

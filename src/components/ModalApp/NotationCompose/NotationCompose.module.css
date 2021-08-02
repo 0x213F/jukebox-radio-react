@@ -50,7 +50,7 @@
   display: block;
   position: relative;
   width: 100%;
-  height: calc(100% - 107px);
+  height: calc(100vh - 570px);
   outline: none;
   resize: none;
   font-size: 20px;
@@ -91,7 +91,7 @@
 .RenderingWrapper {
   border: 1px solid #000000;
   box-sizing: border-box;
-  height: calc(100% - 107px);
+  height: calc(100vh - 570px);
 }
 
 .CloseModal {

@@ -3,6 +3,13 @@ import { connect } from 'react-redux';
 import styles from './ChildProgressBar.module.css';
 import { iconMarker, iconTrash, iconPlay } from '../../icons';
 import { getProgressMilliseconds } from '../../utils';
+import {
+  fetchStreamQueueIntervalDelete,
+} from '../../../ModalApp/TrackDetail/Interval/network';
+
+import * as modalViews from '../../../../config/views/modal';
+import * as tabs from '../../../../config/tabs';
+import * as motives from '../../../../config/motives';
 
 
 function ChildProgressBar(props) {
@@ -13,9 +20,17 @@ function ChildProgressBar(props) {
   const interval = props.interval,
         duration = props.duration,
         queue = props.queue,
-        editable = props.editable,
         allowIntervalPlay = props.allowIntervalPlay,
-        allowIntervalDelete = props.allowIntervalDelete;
+        modal = props.modal,
+        trackDetail = props.trackDetail;
+
+  const allowIntervalDelete = (
+    modal.view === modalViews.TRACK_DETAIL &&
+    trackDetail.tab === tabs.INTERVALS &&
+    trackDetail.motive === motives.DELETE
+  );
+  const editable = allowIntervalDelete;
+  console.log(allowIntervalDelete)
 
   const intervalWidthDuration = interval.endPosition - interval.startPosition,
         intervalWidth = intervalWidthDuration / duration * 100;
@@ -39,6 +54,28 @@ function ChildProgressBar(props) {
 
   const onMouseLeave = function() {
     setHovering(false);
+  }
+
+  /*
+   * Delete an interval.
+   */
+  const deleteTrackInterval = async function() {
+    if(queue.status === "played") {
+      props.dispatch({
+        type: "main/addAction",
+        payload: {
+          action: {
+            name: "pause",
+            status: "kickoff",
+            fake: true,
+          },
+        },
+      });
+    }
+    const responseJson = await fetchStreamQueueIntervalDelete(
+      interval.uuid, queue.uuid, queue.parentUuid
+    );
+    await props.dispatch(responseJson.redux);
   }
 
   const seekToInterval = async function() {
@@ -88,7 +125,7 @@ function ChildProgressBar(props) {
             </div>
             {interval.uuid && allowIntervalDelete &&
               <button className={styles.ProgressHoverDelete}
-                      onClick={(e) => {props.deleteTrackInterval(interval)}}>
+                      onClick={deleteTrackInterval}>
                 {iconTrash}
               </button>
             }
@@ -106,7 +143,10 @@ function ChildProgressBar(props) {
 }
 
 
-const mapStateToProps = (state) => ({});
+const mapStateToProps = (state) => ({
+  modal: state.modal,
+  trackDetail: state.trackDetail,
+});
 
 
 export default connect(mapStateToProps)(ChildProgressBar);

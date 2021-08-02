@@ -1,6 +1,8 @@
 import { createStore } from 'redux';
 
 import * as modal from './reducers/modal';
+import * as streamEngine from './reducers/streamEngine';
+import * as trackDetail from './reducers/trackDetail';
 
 import {
   feedUpdate,
@@ -157,13 +159,15 @@ const initialState = {
     tab: null,
   },
   modal: modal.initialState(),
+  streamEngine: streamEngine.initialState(),
+  trackDetail: trackDetail.initialState(),
 }
 
 
 const reducer = (state = initialState, action) => {
 
   const reducers = {
-    modal,
+    modal, streamEngine, trackDetail,
   };
   for(const [reducerCategory, reducerObject] of Object.entries(reducers)) {
     // reducerCategory:  e.g. "modal"

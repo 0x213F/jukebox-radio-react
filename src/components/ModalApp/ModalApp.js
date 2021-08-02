@@ -1,6 +1,5 @@
 import React from "react";
 import { connect } from 'react-redux';
-import Modal from 'react-modal';
 
 import Upload from './Upload/Upload';
 import TrackDetail from './TrackDetail/TrackDetail';

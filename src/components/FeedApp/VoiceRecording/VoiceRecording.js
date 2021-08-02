@@ -44,7 +44,7 @@ function VoiceRecording(props) {
     return (
       <div className={styles.VoiceRecordingContainer}>
         <div className={styles.VoiceRecordingDeleted}>
-          <p>Redacted</p>
+          <p>Retracted</p>
         </div>
       </div>
     );

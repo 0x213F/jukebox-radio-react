@@ -34,26 +34,44 @@ function FeedApp(props) {
   const [isRecording, setIsRecording] = useState(false);
   const [recorder] = useState(new MicRecorder({ bitRate: 320 }));
 
-  // Modal displays ABCNotationCompose
-  const [showModal, setShowModal] = useState(false);
-
   const contentContainer = useRef();
 
   /*
    * Opens the modal, showing ABCNotationCompose.
    */
   const openModal = function() {
-    props.dispatch({
-      type: "modal/open",
-      payload: { view: modalViews.NOTATION_COMPOSE },
-    });
-  }
+    const text = "",
+          trackUuid = nowPlaying.track.uuid,
+          arr = getPositionMilliseconds(nowPlaying, nowPlaying.startedAt),
+          position = arr[0];
 
-  /*
-   * Closes the modal.
-   */
-  const closeModal = function() {
-    props.dispatch({ type: "modal/close" });
+    props.dispatch({
+      type: "feedApp/setTextComment",
+      payload: { textComment: { text, trackUuid, position } },
+    });
+
+    props.dispatch({
+      type: "main/addAction",
+      payload: {
+        action: {
+          name: "pause",
+          status: "kickoff",
+          fake: false,
+        },
+      },
+    });
+
+    props.dispatch({
+      type: "main/addAction",
+      payload: {
+        action: {
+          name: "openModal",
+          view: modalViews.NOTATION_COMPOSE,
+          status: "kickoff",
+          fake: true,  // symbolic, not functional
+        },
+      },
+    });
   }
 
   /*
@@ -71,18 +89,18 @@ function FeedApp(props) {
           },
         },
       });
-      var voice = new Pizzicato.Sound({ source: 'input' }, function() {
-          // Sound loaded!
-          var dubDelay = new Pizzicato.Effects.DubDelay({
-              feedback: 0.6,
-              time: 0.7,
-              mix: 0.5,
-              cutoff: 700
-          });
-
-          voice.addEffect(dubDelay);
-          voice.play();
-      });
+      // var voice = new Pizzicato.Sound({ source: 'input' }, function() {
+      //     // Sound loaded!
+      //     var dubDelay = new Pizzicato.Effects.DubDelay({
+      //         feedback: 0.6,
+      //         time: 0.7,
+      //         mix: 0.5,
+      //         cutoff: 700
+      //     });
+      //
+      //     voice.addEffect(dubDelay);
+      //     voice.play();
+      // });
     }
 
     const text = e.target.value,
@@ -135,6 +153,16 @@ function FeedApp(props) {
 
   const handleRecord = function() {
     if(!isRecording) {
+      props.dispatch({
+        type: "main/addAction",
+        payload: {
+          action: {
+            name: "pause",
+            status: "kickoff",
+            fake: false,
+          },
+        },
+      });
       recorder.start();
       if(browserSupportsSpeechRecognition) {
         SpeechRecognition.startListening({ continuous: true });
@@ -158,8 +186,21 @@ function FeedApp(props) {
           const arr = getPositionMilliseconds(nowPlaying, nowPlaying.startedAt),
                 position = arr[0];
 
-          const responseJson = await fetchCreateVoiceRecording(file, JSON.stringify([]), transcript, position);
+          console.log(file, JSON.stringify([]), transcript || '', position)
+          const responseJson = await fetchCreateVoiceRecording(file, JSON.stringify([]), transcript || '', position);
+          console.log(responseJson)
           props.dispatch(responseJson.redux);
+          props.dispatch({
+            type: "main/addAction",
+            payload: {
+              action: {
+                name: "play",
+                timestampMilliseconds: nowPlaying.statusAt - nowPlaying.startedAt,
+                status: "kickoff",
+                fake: { api: false },
+              },
+            },
+          });
 
           if (SpeechRecognition.browserSupportsSpeechRecognition()) {
             resetTranscript();
@@ -241,7 +282,7 @@ function FeedApp(props) {
           <button className={styles.RecordButton}
                   type="button"
                   onClick={handleRecord}
-                  disabled={nowPlaying?.status !== "played"} >
+                  disabled={nowPlaying?.status !== "played" && !isRecording} >
             <div></div>
           </button>
           <input type="text"
