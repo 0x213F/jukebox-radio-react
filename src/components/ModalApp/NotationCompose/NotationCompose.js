@@ -17,13 +17,10 @@ function NotationCompose(props) {
    */
 
   // Unpack Redux state
-  const { feedApp, playback, queueMap } = props;
+  const { feedApp } = props;
 
   // Convenience values
-  const { trackUuid, position } = feedApp.textComment,
-        nowPlaying = queueMap[playback.nowPlayingUuid];
-
-  console.log(position)
+  const { trackUuid, position } = feedApp.textComment;
 
   const [isDisabled, setIsDisabled] = useState(false);
   const [text, setText] = useState('');
@@ -78,6 +75,7 @@ function NotationCompose(props) {
       type: "feedApp/setTextComment",
       payload: { textComment: { text: "Notation", trackUuid, position } },
     });
+  // eslint-disable-next-line
   }, []);
 
   return (
@@ -122,8 +120,6 @@ function NotationCompose(props) {
 
 const mapStateToProps = (state) => ({
   feedApp: state.feedApp,
-  playback: state.playback,
-  queueMap: state.queueMap,
 });
 
 

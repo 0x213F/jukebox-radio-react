@@ -609,6 +609,7 @@ function PlaybackEngine(props) {
       payload: { service: "youtube" },
     });
 
+    console.log('YouTube on ready:', playback.youTubeAutoplay)
     if(playback.youTubeAutoplay) {
       youTubeApi.setVolume(playback.volumeLevel * 100);
       youTubeApi.playVideo();

@@ -11,6 +11,7 @@ import ProgressBar from '../../PlaybackApp/ProgressBar/ProgressBar';
 import { iconSpotify, iconYouTube, iconAppleMusic, iconLogoAlt, iconAudius } from '../../../icons';
 import * as services from '../../../config/services';
 import * as modalViews from '../../../config/views/modal';
+import * as streamEngineActions from '../../PlaybackApp/StreamEngine/actions';
 
 import styles from './BottomBar.module.css';
 import * as bottomBarIcons from './icons';
@@ -66,21 +67,7 @@ function BottomBar(props) {
     if(!controlsEnabled) {
       return;
     }
-    props.dispatch({
-      type: "main/addAction",
-      payload: {
-        action: {
-          name: "next",
-          status: "kickoff",
-          fake: false,
-          settings: {
-            pause: true,
-            skip: false,
-            play: true,
-          },
-        },
-      },
-    });
+    streamEngineActions.next({ pause: true });
   };
 
   /*
@@ -90,16 +77,7 @@ function BottomBar(props) {
     if(!controlsEnabled) {
       return;
     }
-    props.dispatch({
-      type: "main/addAction",
-      payload: {
-        action: {
-          name: "prev",
-          status: "kickoff",
-          fake: false,
-        },
-      },
-    });
+    streamEngineActions.prev({ pause: true });
   };
 
   /*
@@ -112,57 +90,23 @@ function BottomBar(props) {
       return;
     }
     if(nowPlaying?.status === "played") {
-      props.dispatch({
-        type: "main/addAction",
-        payload: {
-          action: {
-            name: "pause",            // Pause
-            status: "kickoff",        // Kickoff
-            fake: !playbackIsStream,  // Hit the API
-          },
-        },
+      streamEngineActions.pause({
+        fake: { api: !playbackIsStream, playback: false },
       });
     } else if(nowPlaying?.status === 'paused' || !playbackIsStream) {
       if(playbackIsStream || nowPlaying?.status === 'paused') {
-        props.dispatch({
-          type: "main/addAction",
-          payload: {
-            action: {
-              name: "play",
-              timestampMilliseconds: nowPlaying.statusAt - nowPlaying.startedAt,
-              status: "kickoff",
-              fake: { api: !playbackIsStream },
-            },
-          },
+        streamEngineActions.play({
+          progress: nowPlaying.statusAt - nowPlaying.startedAt,
+          fake: { api: !playbackIsStream, playback: false },
         });
       } else {
-        props.dispatch({
-          type: "main/addAction",
-          payload: {
-            action: {
-              name: "play",
-              status: "kickoff",
-              fake: { api: true },
-            },
-          },
+        streamEngineActions.play({
+          progress: nowPlaying.statusAt - nowPlaying.startedAt,
+          fake: { api: true, playback: false },
         });
       }
     } else {
-      props.dispatch({
-        type: "main/addAction",
-        payload: {
-          action: {
-            name: "next",
-            status: "kickoff",
-            fake: false,
-            settings: {
-              pause: false,
-              skip: false,
-              play: true,
-            },
-          },
-        },
-      });
+      streamEngineActions.next({ pause: false });
     }
   }
 

@@ -4,7 +4,7 @@ import { connect } from 'react-redux';
 import { Notation } from 'react-abc';
 
 import { chordParserFactory, chordRendererFactory } from 'chord-symbol';
-import { BbFormat } from 'bb-format';
+import { BbFormat } from 'bb-chord-symbol';
 
 // eslint-disable-next-line
 import { Pianokeys } from 'custom-piano-keys';

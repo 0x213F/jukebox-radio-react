@@ -3,6 +3,7 @@ import { createStore } from 'redux';
 import * as modal from './reducers/modal';
 import * as streamEngine from './reducers/streamEngine';
 import * as trackDetail from './reducers/trackDetail';
+import * as search from './reducers/search';
 
 import {
   feedUpdate,
@@ -79,11 +80,6 @@ import {
 import {
   sideBarSelectTab,
 } from './reducers/sideBar';
-import {
-  searchSetService,
-  searchSetQuery,
-  searchSetCache,
-} from './reducers/search';
 
 
 const initialState = {
@@ -136,11 +132,7 @@ const initialState = {
     nowPlayingUuid: undefined,
   },
   // UI
-  search: {
-    service: (localStorage.getItem('searchService') || null),
-    query: '',
-    cache: {},
-  },
+  search: search.initialState(),
   feedApp: {
     contentContainer: null,
     feed: [],
@@ -167,7 +159,7 @@ const initialState = {
 const reducer = (state = initialState, action) => {
 
   const reducers = {
-    modal, streamEngine, trackDetail,
+    modal, streamEngine, trackDetail, search,
   };
   for(const [reducerCategory, reducerObject] of Object.entries(reducers)) {
     // reducerCategory:  e.g. "modal"
@@ -302,12 +294,6 @@ const reducer = (state = initialState, action) => {
       return mainSetAutoplayTimeoutId(state, action.payload);
     case "main/clearAutoplayTimeoutId":
       return mainClearAutoplayTimeoutId(state, action.payload);
-    case "search/setService":
-      return searchSetService(state, action.payload);
-    case "search/setQuery":
-      return searchSetQuery(state, action.payload);
-    case "search/setCache":
-      return searchSetCache(state, action.payload);
     case "sideBar/selectTab":
       return sideBarSelectTab(state, action.payload);
     case "notesApp/set":

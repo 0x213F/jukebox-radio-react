@@ -1,5 +1,4 @@
 import { store } from '../../../utils/redux';
-import * as modalViews from '../../../config/views/modal';
 import { getPositionMilliseconds } from '../utils';
 
 

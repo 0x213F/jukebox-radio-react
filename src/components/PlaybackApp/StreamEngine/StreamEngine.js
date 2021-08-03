@@ -1,7 +1,6 @@
 import React, { useEffect } from "react";
 
 import { connect } from 'react-redux';
-import { Switch, Route } from "react-router-dom";
 
 import MainRouter from '../../MainRouter/MainRouter';
 import { fetchUpdateFeed } from '../../FeedApp/utils';
@@ -447,11 +446,6 @@ function StreamEngine(props) {
         continue;
       }
 
-      const queuesAlreadyLoading = new Set(
-        main.actions
-        .filter(a => a.name === 'loadAudio')
-        .map(a => a.queue.uuid)
-      );
       if(queuesAlreadyLoading.has(queue.uuid)) {
         // Audio is already been queued up for loading.
         return;

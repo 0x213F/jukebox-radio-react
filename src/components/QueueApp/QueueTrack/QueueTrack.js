@@ -1,10 +1,9 @@
-import React, { useState } from "react";
+import React from "react";
 import { connect } from 'react-redux'
 import styles from './QueueTrack.module.css';
 import { iconEdit, iconRemove } from '../icons';
 import { durationPretty } from '../utils';
 
-import * as services from '../../../config/services';
 import * as modalViews from '../../../config/views/modal';
 
 
@@ -16,14 +15,6 @@ function QueueTrack(props) {
   const queueMap = props.queueMap,
         queueUuid = props.queueUuid,
         queue = queueMap[queueUuid];
-
-  const stream = props.stream,
-        main = props.main,
-        playback = props.playback,
-        nowPlaying = queueMap[stream.nowPlayingUuid];
-
-  const [showModal, setShowModal] = useState(false);
-  const [shouldPlayOnClose, setShouldPlayOnClose] = useState(false);
 
   const openModal = function() {
     props.dispatch({
@@ -72,26 +63,6 @@ function QueueTrack(props) {
         },
       },
     });
-  }
-
-  const closeModal = function() {
-
-    props.dispatch({
-      type: "main/addAction",
-      payload: {
-        action: {
-          name: "mount",
-          stream: stream,
-          status: "kickoff",
-          fake: true,  // symbolic, not functional
-        },
-      },
-    });
-
-    props.dispatch({ type: "modal/close" });
-    if(shouldPlayOnClose) {
-      setShouldPlayOnClose(false);
-    }
   }
 
   const mainClass = queue.parentUuid ? "QueueTrackChild" : "QueueTrackHead",

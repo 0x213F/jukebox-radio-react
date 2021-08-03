@@ -49,15 +49,16 @@ export const start = function(playback, queue) {
       position_ms: positionMilliseconds,
     });
   } else if(playbackService === services.YOUTUBE) {
+    console.log(typeof playback.youTubeApi.getPlayerState() === "number")
     if(typeof playback.youTubeApi.getPlayerState() === "number") {
       playback.youTubeApi.setVolume(playback.volumeLevel.audio * 100);
       playback.youTubeApi.seekTo(Math.floor(positionMilliseconds / 1000));
       playback.youTubeApi.playVideo();
     } else {
-        store.dispatch({
-          type: 'playback/youTubeTriggerAutoplay',
-          payload: { autoplay: true },
-        });
+      store.dispatch({
+        type: 'playback/youTubeTriggerAutoplay',
+        payload: { autoplay: true },
+      });
     }
   } else if(playbackService === services.JUKEBOX_RADIO) {
     for(let instrument of instruments) {

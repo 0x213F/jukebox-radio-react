@@ -3,7 +3,7 @@ import React, { useState, useEffect, useRef } from "react";
 import { connect } from 'react-redux';
 import MicRecorder from 'mic-recorder-to-mp3';
 import SpeechRecognition, { useSpeechRecognition } from 'react-speech-recognition';
-import Pizzicato from 'pizzicato';
+// import Pizzicato from 'pizzicato';
 
 import TheoryNotationDisplay from './TheoryNotationDisplay/TheoryNotationDisplay';
 import VoiceRecording from './VoiceRecording/VoiceRecording';
@@ -11,6 +11,7 @@ import { getPositionMilliseconds } from '../PlaybackApp/utils';
 import { CLASS_TEXT_COMMENT, CLASS_VOICE_RECORDING, CLASS_SYSTEM_ACTION } from '../../config/model';
 import * as services from '../../config/services';
 import * as modalViews from '../../config/views/modal';
+import * as streamEngineActions from '../PlaybackApp/StreamEngine/actions';
 
 import styles from './FeedApp.module.css';
 import { fetchTextCommentCreate } from './network';
@@ -27,9 +28,9 @@ function FeedApp(props) {
    */
   const feedApp = props.feedApp,
         feed = feedApp.feed,
-        stream = props.stream,
+        playback = props.playback,
         queueMap = props.queueMap,
-        nowPlaying = queueMap[stream.nowPlayingUuid];
+        nowPlaying = queueMap[playback.nowPlayingUuid];
 
   const [isRecording, setIsRecording] = useState(false);
   const [recorder] = useState(new MicRecorder({ bitRate: 320 }));
@@ -50,16 +51,7 @@ function FeedApp(props) {
       payload: { textComment: { text, trackUuid, position } },
     });
 
-    props.dispatch({
-      type: "main/addAction",
-      payload: {
-        action: {
-          name: "pause",
-          status: "kickoff",
-          fake: false,
-        },
-      },
-    });
+    streamEngineActions.pause();
 
     props.dispatch({
       type: "main/addAction",
@@ -79,16 +71,7 @@ function FeedApp(props) {
    */
   const handleTextChange = function(e) {
     if(!feedApp.textComment.trackUuid) {
-      props.dispatch({
-        type: "main/addAction",
-        payload: {
-          action: {
-            name: "pause",
-            status: "kickoff",
-            fake: false,
-          },
-        },
-      });
+      streamEngineActions.pause();
       // var voice = new Pizzicato.Sound({ source: 'input' }, function() {
       //     // Sound loaded!
       //     var dubDelay = new Pizzicato.Effects.DubDelay({
@@ -120,17 +103,8 @@ function FeedApp(props) {
   const createTextComment = async function(e) {
     e.preventDefault();
 
-    props.dispatch({
-      type: "main/addAction",
-      payload: {
-        action: {
-          name: "play",
-          timestampMilliseconds: nowPlaying.statusAt - nowPlaying.startedAt,
-          status: "kickoff",
-          fake: { api: false },
-        },
-      },
-    });
+    const progress = nowPlaying.statusAt - nowPlaying.startedAt;
+    streamEngineActions.play({ progress });
 
     props.dispatch({ type: "feedApp/resetTextComment" });
 
@@ -153,16 +127,7 @@ function FeedApp(props) {
 
   const handleRecord = function() {
     if(!isRecording) {
-      props.dispatch({
-        type: "main/addAction",
-        payload: {
-          action: {
-            name: "pause",
-            status: "kickoff",
-            fake: false,
-          },
-        },
-      });
+      streamEngineActions.pause();
       recorder.start();
       if(browserSupportsSpeechRecognition) {
         SpeechRecognition.startListening({ continuous: true });
@@ -186,21 +151,11 @@ function FeedApp(props) {
           const arr = getPositionMilliseconds(nowPlaying, nowPlaying.startedAt),
                 position = arr[0];
 
-          console.log(file, JSON.stringify([]), transcript || '', position)
           const responseJson = await fetchCreateVoiceRecording(file, JSON.stringify([]), transcript || '', position);
-          console.log(responseJson)
           props.dispatch(responseJson.redux);
-          props.dispatch({
-            type: "main/addAction",
-            payload: {
-              action: {
-                name: "play",
-                timestampMilliseconds: nowPlaying.statusAt - nowPlaying.startedAt,
-                status: "kickoff",
-                fake: { api: false },
-              },
-            },
-          });
+
+          const progress = nowPlaying.statusAt - nowPlaying.startedAt;
+          streamEngineActions.play({ progress });
 
           if (SpeechRecognition.browserSupportsSpeechRecognition()) {
             resetTranscript();
@@ -303,7 +258,7 @@ function FeedApp(props) {
 
 
 const mapStateToProps = (state) => ({
-    stream: state.stream,
+    playback: state.playback,
     queueMap: state.queueMap,
     feedApp: state.feedApp,
 });

@@ -1,5 +1,4 @@
 import React, { useState } from "react";
-import Modal from 'react-modal';
 import { connect } from 'react-redux';
 import { fetchUpdateUserSettings } from './network';
 import styles from './UserSettings.module.css';
@@ -25,27 +24,33 @@ function UserSettings(props) {
   }
 
   function updateIdleQueue(event) {
+    setControlsEnabled(false);
     props.dispatch({
       type: 'userSettings/update',
       payload: { idleQueue: event.target.checked },
     });
     fetchUpdateUserSettings('idle_after_now_playing', event.target.checked);
+    setControlsEnabled(true);
   }
 
   function updateSpeakVoice(event) {
+    setControlsEnabled(false);
     props.dispatch({
       type: 'userSettings/update',
       payload: { speakVoice: event.target.checked },
     });
     fetchUpdateUserSettings('mute_voice_recordings', event.target.checked);
+    setControlsEnabled(true);
   }
 
   function updateFocusMode(event) {
+    setControlsEnabled(false);
     props.dispatch({
       type: 'userSettings/update',
       payload: { focusMode: event.target.checked },
     });
     fetchUpdateUserSettings('focus_mode', event.target.checked);
+    setControlsEnabled(true);
   }
 
   return (
@@ -67,7 +72,7 @@ function UserSettings(props) {
 
         <label className={styles.FormLabel}>
           <span>Apple Music</span>
-          <a href="#" onClick={handleAppleMusic}>Connect</a>
+          <button onClick={handleAppleMusic}>Connect</button>
         </label>
 
         <label className={styles.FormLabel}>

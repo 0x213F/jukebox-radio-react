@@ -1,9 +1,20 @@
 import * as services from '../../config/services';
 
 /*
+ * Returns the intial state value for the modal component.
+ */
+export const initialState = function() {
+  return {
+    service: (localStorage.getItem('searchService') || null),
+    query: '',
+    cache: {},
+  };
+}
+
+/*
  * Set service used for search.
  */
-export const searchSetService = function(state, payload) {
+export const setService = function(state, payload) {
   const { service } = payload,
         { userSettings } = state;
 
@@ -31,7 +42,7 @@ export const searchSetService = function(state, payload) {
 /*
  * Set search query.
  */
-export const searchSetQuery = function(state, payload) {
+export const setQuery = function(state, payload) {
   const { query } = payload;
 
   return {
@@ -43,7 +54,7 @@ export const searchSetQuery = function(state, payload) {
 /*
  * Set search query.
  */
-export const searchSetCache = function(state, payload) {
+export const setCache = function(state, payload) {
   const { query, service, responseJson } = payload,
         cache = { ...state.search.cache },
         queryCache = { ...cache[query] } || {};
